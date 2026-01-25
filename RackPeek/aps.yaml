@@ -3,3 +3,27 @@ resources:
     name: lounge-ap
     model: Unifi-Ap-Pro
     speed: 1gb
+  - kind: AccessPoint
+    name: office-ap
+    model: Unifi-U6-Lite
+    speed: 1gb
+
+  - kind: AccessPoint
+    name: garage-ap
+    model: TP-Link-EAP245
+    speed: 1gb
+
+  - kind: AccessPoint
+    name: upstairs-ap
+    model: Aruba-AP-515
+    speed: 2.5gb
+
+  - kind: AccessPoint
+    name: guest-ap
+    model: Unifi-U6-Mesh
+    speed: 1gb
+
+  - kind: AccessPoint
+    name: warehouse-ap
+    model: Cisco-Aironet-1832i
+    speed: 1gb

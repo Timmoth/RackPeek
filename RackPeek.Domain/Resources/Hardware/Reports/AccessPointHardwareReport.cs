@@ -8,7 +8,7 @@ public record AccessPointHardwareReport(
 public record AccessPointHardwareRow(
     string Name,
     string Model,
-    int SpeedGb
+    double SpeedGb
 );
 
 public class AccessPointHardwareReportUseCase(IHardwareRepository repository)
@@ -23,7 +23,7 @@ public class AccessPointHardwareReportUseCase(IHardwareRepository repository)
             return new AccessPointHardwareRow(
                 Name: ap.Name,
                 Model: ap.Model ?? "Unknown",
-                SpeedGb: ap.Speed ?? 0
+                SpeedGb: ap.SpeedGb
             );
         }).ToList();
 
