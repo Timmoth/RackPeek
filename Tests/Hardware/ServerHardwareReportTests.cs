@@ -29,6 +29,12 @@ public class ServerHardwareReportTests
                 Nics = new()
                 {
                     new Nic { Speed = 10, Ports = 2 }
+                },
+                Gpus = new()
+                {
+                    new Gpu { Model = "NVIDIA Tesla T4", Vram = 16 },
+                    new Gpu { Model = "NVIDIA Tesla T4", Vram = 16 },
+                    new Gpu { Model = "RTX 3080", Vram = 10 }
                 }
             }
         ]);
@@ -41,6 +47,9 @@ public class ServerHardwareReportTests
         Assert.Equal(2304, server.TotalStorageGb);
         Assert.Equal(4, server.TotalCores);
         Assert.Equal(10, server.MaxNicSpeedGb);
+        Assert.Equal(3, server.GpuCount);
+        Assert.Equal(42, server.TotalGpuVramGb);
+        Assert.Equal("2× NVIDIA Tesla T4, 1× RTX 3080", server.GpuSummary);
     }
 
 }
