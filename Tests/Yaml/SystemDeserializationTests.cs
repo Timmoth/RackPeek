@@ -1,7 +1,8 @@
 ﻿using RackPeek;
 using RackPeek.Domain.Resources.SystemResources;
+using RackPeek.Yaml;
 
-namespace Tests;
+namespace Tests.Yaml;
 
 public class ServiceDeserializationTests
 {

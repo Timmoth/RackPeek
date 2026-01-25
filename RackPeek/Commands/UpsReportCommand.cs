@@ -4,7 +4,7 @@ using RackPeek.Domain.Resources.Hardware.Reports;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek;
+namespace RackPeek.Commands;
 
 public class UpsReportCommand(
     ILogger<UpsReportCommand> logger,

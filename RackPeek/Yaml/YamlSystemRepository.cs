@@ -1,6 +1,6 @@
 using RackPeek.Domain.Resources.SystemResources;
 
-namespace RackPeek;
+namespace RackPeek.Yaml;
 
 public class YamlSystemRepository(YamlResourceCollection resourceCollection) : ISystemRepository
 {

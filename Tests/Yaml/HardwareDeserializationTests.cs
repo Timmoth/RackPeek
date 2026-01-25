@@ -1,8 +1,9 @@
 ﻿using RackPeek;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
+using RackPeek.Yaml;
 
-namespace Tests;
+namespace Tests.Yaml;
 
 public class HardwareDeserializationTests
 {

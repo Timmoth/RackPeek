@@ -4,9 +4,8 @@ using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.SystemResources;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using YamlDotNet.Helpers;
 
-namespace RackPeek;
+namespace RackPeek.Yaml;
 
 public sealed class YamlResourceCollection
 {

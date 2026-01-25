@@ -1,8 +1,7 @@
-using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 
-namespace RackPeek;
+namespace RackPeek.Yaml;
 
 public class YamlHardwareRepository : IHardwareRepository
 {
