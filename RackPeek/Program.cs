@@ -7,9 +7,11 @@ using Microsoft.Extensions.Logging;
 using RackPeek.Commands;
 using RackPeek.Commands.Server;
 using RackPeek.Commands.Server.Cpus;
+using RackPeek.Commands.Server.Nics;
 using RackPeek.Domain.Resources.Hardware.Reports;
 using RackPeek.Domain.Resources.Hardware.Server;
 using RackPeek.Domain.Resources.Hardware.Server.Cpu;
+using RackPeek.Domain.Resources.Hardware.Server.Nic;
 using RackPeek.Yaml;
 
 namespace RackPeek;
@@ -91,6 +93,17 @@ public static class Program
         services.AddScoped<ServerCpuSetCommand>();
         services.AddScoped<ServerCpuRemoveCommand>();
         
+        // NIC use cases
+        services.AddScoped<AddNicUseCase>();
+        services.AddScoped<UpdateNicUseCase>();
+        services.AddScoped<RemoveNicUseCase>();
+        
+        // NIC commands
+        services.AddScoped<ServerNicAddCommand>();
+        services.AddScoped<ServerNicUpdateCommand>();
+        services.AddScoped<ServerNicRemoveCommand>();
+
+        
         // Spectre bootstrap
         var registrar = new TypeRegistrar(services);
         var app = new CommandApp(registrar);
@@ -137,6 +150,21 @@ public static class Program
                     cpu.AddCommand<ServerCpuRemoveCommand>("del")
                         .WithDescription("Remove a CPU from a server");
                 });
+                
+                server.AddBranch("nic", nic =>
+                {
+                    nic.SetDescription("Manage server NICs");
+
+                    nic.AddCommand<ServerNicAddCommand>("add")
+                        .WithDescription("Add a NIC to a server");
+
+                    nic.AddCommand<ServerNicUpdateCommand>("set")
+                        .WithDescription("Update a NIC on a server");
+
+                    nic.AddCommand<ServerNicRemoveCommand>("del")
+                        .WithDescription("Remove a NIC from a server");
+                });
+
             });
 
             // ----------------------------
