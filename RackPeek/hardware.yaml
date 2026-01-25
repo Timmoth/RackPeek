@@ -1,0 +1,128 @@
+resources:
+  - kind: Server
+    name: dell-c6400-node01
+    cpus:
+      - model: Intel(R) Xeon(R) Silver 4110
+        cores: 8
+        threads: 16
+    ram:
+      size: 64gb
+      mts: 2400
+    drives:
+      - type: ssd
+        size: 480gb
+      - type: ssd
+        size: 480gb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 2
+      - type: sfp+
+        speed: 10gb
+        ports: 2
+    ipmi: true
+
+  - kind: Server
+    name: dell-c6400-node02
+    cpus:
+      - model: Intel(R) Xeon(R) Silver 4110
+        cores: 8
+        threads: 16
+    ram:
+      size: 128gb
+      mts: 2400
+    drives:
+      - type: ssd
+        size: 960gb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 2
+      - type: sfp+
+        speed: 10gb
+        ports: 2
+    ipmi: true
+
+  - kind: Server
+    name: truenas-storage01
+    cpus:
+      - model: Intel(R) Xeon(R) E5-2620 v4
+        cores: 8
+        threads: 16
+    ram:
+      size: 64gb
+      mts: 2133
+    drives:
+      - type: hdd
+        size: 8tb
+      - type: hdd
+        size: 8tb
+      - type: hdd
+        size: 8tb
+      - type: hdd
+        size: 8tb
+      - type: ssd
+        size: 120gb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 1
+      - type: sfp+
+        speed: 10gb
+        ports: 1
+    ipmi: true
+
+  - kind: Server
+    name: proxmox-edge01
+    cpus:
+      - model: Intel(R) Core(TM) i5-8500
+        cores: 6
+        threads: 6
+    ram:
+      size: 32gb
+      mts: 2666
+    drives:
+      - type: ssd
+        size: 512gb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 4
+    ipmi: false
+
+  - kind: Server
+    name: opnsense-fw01
+    cpus:
+      - model: Intel(R) Celeron(R) J4125
+        cores: 4
+        threads: 4
+    ram:
+      size: 8gb
+      mts: 2400
+    drives:
+      - type: ssd
+        size: 64gb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 4
+    ipmi: false
+
+  - kind: Server
+    name: mgmt-bastion01
+    cpus:
+      - model: Intel(R) Xeon(R) E3-1270 v6
+        cores: 4
+        threads: 8
+    ram:
+      size: 16gb
+      mts: 2400
+    drives:
+      - type: ssd
+        size: 256gb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 1
+    ipmi: true
+
