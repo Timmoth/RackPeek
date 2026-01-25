@@ -403,7 +403,7 @@ resources:
   - kind: AccessPoint
     name: lounge-ap
     model: Unifi-Ap-Pro
-    speed: 2.5gb
+    speed: 2.5Gb
 ";
 
         var sut = CreateSut(yaml);
@@ -421,7 +421,7 @@ resources:
 
         Assert.Equal("lounge-ap", accessPoint.Name);
         Assert.Equal("Unifi-Ap-Pro", accessPoint.Model);
-        Assert.Equal(2.5, accessPoint.SpeedGb);
+        Assert.Equal(2.5, accessPoint.Speed);
 
     }
     

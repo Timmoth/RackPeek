@@ -23,7 +23,7 @@ public class AccessPointHardwareReportUseCase(IHardwareRepository repository)
             return new AccessPointHardwareRow(
                 Name: ap.Name,
                 Model: ap.Model ?? "Unknown",
-                SpeedGb: ap.SpeedGb
+                SpeedGb: ap.Speed ?? 0
             );
         }).ToList();
 
