@@ -1,0 +1,5 @@
+resources:
+  - kind: AccessPoint
+    name: lounge-ap
+    model: Unifi-Ap-Pro
+    speed: 1gb

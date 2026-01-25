@@ -1,0 +1,20 @@
+resources:
+  - kind: Desktop
+    name: dell-optiplex
+    cpus:
+      - model: Intel(R) Core(TM) i5-9500
+        cores: 6
+        threads: 6
+    ram:
+      size: 16gb
+      mts: 2666
+    drives:
+      - type: ssd
+        size: 512gb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 1
+    gpus:
+      - model: RTX 3080
+        vram: 12gb

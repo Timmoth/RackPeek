@@ -1,0 +1,5 @@
+resources:
+  - kind: Ups
+    name: rack-ups
+    model: Volta
+    va: 2200

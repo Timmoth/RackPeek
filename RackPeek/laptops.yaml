@@ -1,0 +1,16 @@
+resources:
+  - kind: Laptop
+    name: thinkpad-x1
+    cpus:
+      - model: Intel(R) Core(TM) i7-10510U
+        cores: 4
+        threads: 8
+    ram:
+      size: 16gb
+      mts: 2666
+    drives:
+      - type: ssd
+        size: 1tb
+    gpus:
+      - model: RTX 3080
+        vram: 12gb

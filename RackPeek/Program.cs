@@ -26,14 +26,30 @@ public static class Program
         // Application
         services.AddScoped<ServerHardwareReportUseCase>();
         services.AddScoped<ServerReportCommand>();
+        services.AddScoped<AccessPointHardwareReportUseCase>();
+        services.AddScoped<AccessPointReportCommand>();
+        services.AddScoped<SwitchHardwareReportUseCase>();
+        services.AddScoped<SwitchReportCommand>();
+        services.AddScoped<UpsHardwareReportUseCase>();
+        services.AddScoped<UpsReportCommand>();
+        services.AddScoped<DesktopHardwareReportUseCase>();
+        services.AddScoped<DesktopReportCommand>();
 
         // Infrastructure
         services.AddScoped<IHardwareRepository>(_ =>
         {
             var path = configuration["HardwareFile"] ?? "hardware.yaml";
-
+            
             var collection = new YamlResourceCollection();
-            collection.Load([File.ReadAllText(path)]);
+            collection.Load([
+                File.ReadAllText("servers.yaml"),
+                File.ReadAllText("aps.yaml"),
+                File.ReadAllText("desktops.yaml"),
+                File.ReadAllText("switches.yaml"),
+                File.ReadAllText("ups.yaml"),
+                File.ReadAllText("firewalls.yaml"),
+                File.ReadAllText("laptops.yaml"),
+                File.ReadAllText("routers.yaml")]);
 
             return new YamlHardwareRepository(collection);
         });
@@ -54,6 +70,18 @@ public static class Program
             config.AddCommand<ServerReportCommand>("servers")
                 .WithDescription("Show server hardware report");
 
+            config.AddCommand<AccessPointReportCommand>("ap")
+                .WithDescription("Show access point hardware report");
+            
+            config.AddCommand<DesktopReportCommand>("desktops")
+                .WithDescription("Show desktop hardware report");
+            
+            config.AddCommand<SwitchReportCommand>("switches")
+                .WithDescription("Show switch hardware report");
+            
+            config.AddCommand<UpsReportCommand>("ups")
+                .WithDescription("Show ups hardware report");
+            
             config.ValidateExamples();
         });
 

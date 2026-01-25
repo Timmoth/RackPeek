@@ -1,0 +1,13 @@
+resources:
+  - kind: Firewall
+    name: pfsense
+    model: pfSense-1100
+    ports:
+      - type: rj45
+        speed: 1gb
+        count: 8
+      - type: sfp
+        speed: 10gb
+        count: 2
+    managed: true
+    poe: true
