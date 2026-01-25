@@ -5,8 +5,11 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using Microsoft.Extensions.Logging;
 using RackPeek.Commands;
-using RackPeek.Domain.Resources.Hardware.Crud;
+using RackPeek.Commands.Server;
+using RackPeek.Commands.Server.Cpus;
 using RackPeek.Domain.Resources.Hardware.Reports;
+using RackPeek.Domain.Resources.Hardware.Server;
+using RackPeek.Domain.Resources.Hardware.Server.Cpu;
 using RackPeek.Yaml;
 
 namespace RackPeek;
@@ -26,6 +29,31 @@ public static class Program
 
         services.AddSingleton<IConfiguration>(configuration);
 
+        // Infrastructure
+        services.AddScoped<IHardwareRepository>(_ =>
+        {
+            var path = configuration["HardwareFile"] ?? "hardware.yaml";
+            
+            var collection = new YamlResourceCollection();
+            collection.LoadFiles([
+                "servers.yaml",
+                "aps.yaml",
+                "desktops.yaml",
+                "switches.yaml",
+                "ups.yaml",
+                "firewalls.yaml",
+                "laptops.yaml",
+                "routers.yaml"]);
+
+            return new YamlHardwareRepository(collection);
+        });
+        
+        services.AddLogging(configure =>
+            configure
+                .AddSimpleConsole(opts => { opts.TimestampFormat = "yyyy-MM-dd HH:mm:ss "; }));
+
+
+        
         // Application
         services.AddScoped<ServerHardwareReportUseCase>();
         services.AddScoped<ServerReportCommand>();
@@ -52,30 +80,17 @@ public static class Program
         
         services.AddScoped<UpdateServerUseCase>();
         services.AddScoped<ServerSetCommand>();
-        // Infrastructure
-        services.AddScoped<IHardwareRepository>(_ =>
-        {
-            var path = configuration["HardwareFile"] ?? "hardware.yaml";
-            
-            var collection = new YamlResourceCollection();
-            collection.LoadFiles([
-                "servers.yaml",
-                "aps.yaml",
-                "desktops.yaml",
-                "switches.yaml",
-                "ups.yaml",
-                "firewalls.yaml",
-                "laptops.yaml",
-                "routers.yaml"]);
-
-            return new YamlHardwareRepository(collection);
-        });
         
-        services.AddLogging(configure =>
-            configure
-                .AddSimpleConsole(opts => { opts.TimestampFormat = "yyyy-MM-dd HH:mm:ss "; }));
+        // CPU use cases
+        services.AddScoped<AddCpuUseCase>();
+        services.AddScoped<UpdateCpuUseCase>();
+        services.AddScoped<RemoveCpuUseCase>();
 
-
+        // CPU commands
+        services.AddScoped<ServerCpuAddCommand>();
+        services.AddScoped<ServerCpuSetCommand>();
+        services.AddScoped<ServerCpuRemoveCommand>();
+        
         // Spectre bootstrap
         var registrar = new TypeRegistrar(services);
         var app = new CommandApp(registrar);
@@ -106,8 +121,22 @@ public static class Program
                 server.AddCommand<ServerSetCommand>("set")
                     .WithDescription("Update server properties");
 
-                server.AddCommand<ServerDeleteCommand>("delete")
+                server.AddCommand<ServerDeleteCommand>("del")
                     .WithDescription("Delete a server");
+                
+                server.AddBranch("cpu", cpu =>
+                {
+                    cpu.SetDescription("Manage server CPUs");
+
+                    cpu.AddCommand<ServerCpuAddCommand>("add")
+                        .WithDescription("Add a CPU to a server");
+
+                    cpu.AddCommand<ServerCpuSetCommand>("set")
+                        .WithDescription("Update a CPU on a server");
+
+                    cpu.AddCommand<ServerCpuRemoveCommand>("del")
+                        .WithDescription("Remove a CPU from a server");
+                });
             });
 
             // ----------------------------

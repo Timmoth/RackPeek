@@ -1,7 +1,7 @@
 using NSubstitute;
 using RackPeek.Domain.Resources.Hardware;
-using RackPeek.Domain.Resources.Hardware.Crud;
 using RackPeek.Domain.Resources.Hardware.Models;
+using RackPeek.Domain.Resources.Hardware.Server;
 
 namespace Tests.Hardware;
 
@@ -18,24 +18,12 @@ public class AddServerUseCaseTests
 
         // Act
         await sut.ExecuteAsync(
-            name: "node01",
-            cpuModel: "Xeon E3",
-            cores: 4,
-            threads: 8,
-            ramGb: 32,
-            ipmi: true
+            name: "node01"
         );
 
         // Assert
         await repo.Received(1).AddAsync(Arg.Is<Server>(s =>
-            s.Name == "node01" &&
-            s.Cpus != null &&
-            s.Cpus.Count == 1 &&
-            s.Cpus[0].Model == "Xeon E3" &&
-            s.Cpus[0].Cores == 4 &&
-            s.Cpus[0].Threads == 8 &&
-            s.Ram.Size == 32 &&
-            s.Ipmi == true
+            s.Name == "node01"
         ));
     }
 
@@ -51,12 +39,7 @@ public class AddServerUseCaseTests
         // Act
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await sut.ExecuteAsync(
-                name: "node01",
-                cpuModel: "Xeon E3",
-                cores: 4,
-                threads: 8,
-                ramGb: 32,
-                ipmi: true
+                name: "node01"
             )
         );
 

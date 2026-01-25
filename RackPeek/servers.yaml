@@ -395,3 +395,21 @@ resources:
   ipmi: true
   name: dell-r730-archive01
   tags: 
+- kind: Server
+  cpus: 
+  ram: 
+  drives: 
+  nics: 
+  gpus: 
+  ipmi: 
+  name: noe01
+  tags: 
+- kind: Server
+  cpus: []
+  ram: 
+  drives: 
+  nics: 
+  gpus: 
+  ipmi: 
+  name: node01
+  tags: 

@@ -29,7 +29,7 @@ public class ServerHardwareReportUseCase(IHardwareRepository repository)
     public async Task<ServerHardwareReport> ExecuteAsync()
     {
         var hardware = await repository.GetAllAsync();
-        var servers = hardware.OfType<Server>();
+        var servers = hardware.OfType<Models.Server>();
 
         var rows = servers.Select(server =>
         {

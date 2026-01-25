@@ -1,7 +1,7 @@
 using NSubstitute;
 using RackPeek.Domain.Resources.Hardware;
-using RackPeek.Domain.Resources.Hardware.Crud;
 using RackPeek.Domain.Resources.Hardware.Models;
+using RackPeek.Domain.Resources.Hardware.Server;
 
 namespace Tests.Hardware;
 
@@ -29,21 +29,14 @@ public class UpdateServerUseCaseTests
         await sut.ExecuteAsync(
             name: "node01",
             ramGb: 64,
-            ipmi: true,
-            cpuModel: "Xeon E3",
-            cores: 4,
-            threads: 8
+            ipmi: true
         );
 
         // Assert
         await repo.Received(1).UpdateAsync(Arg.Is<Server>(s =>
             s.Name == "node01" &&
             s.Ram.Size == 64 &&
-            s.Ipmi == true &&
-            s.Cpus != null &&
-            s.Cpus.First().Model == "Xeon E3" &&
-            s.Cpus.First().Cores == 4 &&
-            s.Cpus.First().Threads == 8
+            s.Ipmi == true
         ));
     }
 
@@ -88,19 +81,13 @@ public class UpdateServerUseCaseTests
         await sut.ExecuteAsync(
             name: "node01",
             ramGb: null,
-            ipmi: null,
-            cpuModel: null,
-            cores: null,
-            threads: null
+            ipmi: null
         );
 
         // Assert
         await repo.Received(1).UpdateAsync(Arg.Is<Server>(s =>
             s.Ram.Size == 32 &&
-            s.Ipmi == false &&
-            s.Cpus.First().Model == "Old" &&
-            s.Cpus.First().Cores == 2 &&
-            s.Cpus.First().Threads == 4
+            s.Ipmi == false
         ));
     }
 }

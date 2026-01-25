@@ -1,0 +1,32 @@
+using RackPeek.Domain.Resources.Hardware.Models;
+
+namespace RackPeek.Domain.Resources.Hardware.Server;
+
+public class UpdateServerUseCase(IHardwareRepository repository)
+{
+    public async Task ExecuteAsync(
+        string name,
+        int? ramGb = null,
+        bool? ipmi = null
+    )
+    {
+        var server = await repository.GetByNameAsync(name) as Models.Server;
+        if (server == null)
+            throw new InvalidOperationException($"Server '{name}' not found.");
+
+        // ---- RAM ----
+        if (ramGb.HasValue)
+        {
+            server.Ram ??= new Ram();
+            server.Ram.Size = ramGb.Value;
+        }
+
+        // ---- IPMI ----
+        if (ipmi.HasValue)
+        {
+            server.Ipmi = ipmi.Value;
+        }
+
+        await repository.UpdateAsync(server);
+    }
+}

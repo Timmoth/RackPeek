@@ -1,4 +1,4 @@
-namespace RackPeek.Domain.Resources.Hardware.Crud;
+namespace RackPeek.Domain.Resources.Hardware.Server;
 
 public class DeleteServerUseCase(IHardwareRepository repository)
 {

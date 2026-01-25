@@ -1,6 +1,4 @@
-using RackPeek.Domain.Resources.Hardware.Models;
-
-namespace RackPeek.Domain.Resources.Hardware.Crud;
+namespace RackPeek.Domain.Resources.Hardware.Server;
 
 public record ServerDescription(
     string Name,
@@ -17,7 +15,7 @@ public class DescribeServerUseCase(IHardwareRepository repository)
 {
     public async Task<ServerDescription?> ExecuteAsync(string name)
     {
-        var server = await repository.GetByNameAsync(name) as Server;
+        var server = await repository.GetByNameAsync(name) as Models.Server;
         if (server == null)
             return null;
 

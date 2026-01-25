@@ -1,14 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using RackPeek.Domain.Resources.Hardware.Reports;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands;
-public class ServerReportCommand(ILogger<ServerReportCommand> logger, IServiceProvider serviceProvider)
-    : AsyncCommand
+namespace RackPeek.Commands.Server;
+
+public class ServerGetCommand(
+    IServiceProvider serviceProvider
+) : AsyncCommand
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(
+        CommandContext context,
+        CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<ServerHardwareReportUseCase>();
@@ -29,21 +32,17 @@ public class ServerReportCommand(ILogger<ServerReportCommand> logger, IServicePr
             .AddColumn("RAM")
             .AddColumn("Storage")
             .AddColumn("NICs")
-            .AddColumn("GPUs")
             .AddColumn("IPMI");
 
         foreach (var s in report.Servers)
         {
             table.AddRow(
-                    s.Name,
-                    s.CpuSummary,
-                    $"{s.TotalCores}/{s.TotalThreads}",
-                    $"{s.RamGb} GB",
-                    $"{s.TotalStorageGb} GB (SSD {s.SsdStorageGb} / HDD {s.HddStorageGb})",
-                    $"{s.TotalNicPorts}×{s.MaxNicSpeedGb}G",
-                    s.GpuCount == 0
-                        ? "[grey]none[/]"
-                        : $"{s.GpuSummary} ({s.TotalGpuVramGb} GB VRAM)",
+                s.Name,
+                s.CpuSummary,
+                $"{s.TotalCores}/{s.TotalThreads}",
+                $"{s.RamGb} GB",
+                $"{s.TotalStorageGb} GB",
+                $"{s.TotalNicPorts}×{s.MaxNicSpeedGb}G",
                 s.Ipmi ? "[green]yes[/]" : "[red]no[/]"
             );
         }
