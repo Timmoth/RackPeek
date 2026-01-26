@@ -24,7 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Commands\AccessPoint\" />
       <Folder Include="Commands\Desktop\" />
       <Folder Include="Commands\Ups\" />
     </ItemGroup>
