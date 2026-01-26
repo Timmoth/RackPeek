@@ -1,4 +1,4 @@
-namespace Tests.EndToEnd;
+namespace Tests.EndToEnd.Infra;
 
 public sealed class TempYamlCliFixture : IAsyncLifetime
 {
@@ -15,14 +15,7 @@ public sealed class TempYamlCliFixture : IAsyncLifetime
         // Create empty YAML files so repo loads cleanly
         foreach (var file in new[]
                  {
-                     "servers.yaml",
-                     "aps.yaml",
-                     "desktops.yaml",
-                     "switches.yaml",
-                     "ups.yaml",
-                     "firewalls.yaml",
-                     "laptops.yaml",
-                     "routers.yaml"
+                     "config.yaml",
                  }) 
         {
             File.WriteAllText(Path.Combine(Root, file), "");

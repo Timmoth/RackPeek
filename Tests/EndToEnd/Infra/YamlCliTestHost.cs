@@ -3,18 +3,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RackPeek;
 using RackPeek.Spectre;
+using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Testing;
 using Xunit.Abstractions;
 
-namespace Tests.EndToEnd;
+namespace Tests.EndToEnd.Infra;
 
 public static class YamlCliTestHost
 {
     public static async Task<string> RunAsync(
         string[] args,
         string hardwarePath, 
-        ITestOutputHelper output
+        ITestOutputHelper output,
+        string configFile
     )
     {
         var services = new ServiceCollection();
@@ -30,9 +32,11 @@ public static class YamlCliTestHost
 
         var registrar = new TypeRegistrar(services);
         var app = new CommandApp(registrar);
+        
+        AnsiConsole.Console = console;
         app.Configure(c => c.Settings.Console = console);
         
-        CliBootstrap.BuildApp(app, services, config);
+        CliBootstrap.BuildApp(app, services, config, [configFile]);
         
         services.AddLogging(builder =>
         {

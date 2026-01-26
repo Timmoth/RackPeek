@@ -36,7 +36,15 @@ public static class Program
         var registrar = new TypeRegistrar(services);
         var app = new CommandApp(registrar);
         
-        CliBootstrap.BuildApp(app, services, configuration);
+        CliBootstrap.BuildApp(app, services, configuration, [
+            "servers.yaml",
+            "desktops.yaml",
+            "switches.yaml",
+            "ups.yaml",
+            "firewalls.yaml",
+            "laptops.yaml",
+            "routers.yaml"
+        ]);
         
         services.AddLogging(configure =>
             configure
@@ -48,7 +56,12 @@ public static class Program
 
 public static class CliBootstrap
 {
-    public static void BuildApp(CommandApp app, IServiceCollection services, IConfiguration configuration)
+    public static void BuildApp(
+        CommandApp app,
+        IServiceCollection services, 
+        IConfiguration configuration,
+        string[] yamlFiles
+        )
     {
         services.AddSingleton<IConfiguration>(configuration);
 
@@ -58,19 +71,7 @@ public static class CliBootstrap
             var collection = new YamlResourceCollection();
             var basePath = configuration["HardwarePath"] ?? Directory.GetCurrentDirectory();
 
-            collection.LoadFiles(new[]
-            {
-                Path.Combine(basePath, "servers.yaml"),
-                Path.Combine(basePath, "aps.yaml"),
-                Path.Combine(basePath, "desktops.yaml"),
-                Path.Combine(basePath, "switches.yaml"),
-                Path.Combine(basePath, "ups.yaml"),
-                Path.Combine(basePath, "firewalls.yaml"),
-                Path.Combine(basePath, "laptops.yaml"),
-                Path.Combine(basePath, "routers.yaml")
-            });
-
-
+            collection.LoadFiles(yamlFiles.Select(f => Path.Combine(basePath, f)));
             return new YamlHardwareRepository(collection);
         });
 
@@ -131,6 +132,7 @@ public static class CliBootstrap
         services.AddScoped<GetSwitchUseCase>();
         services.AddScoped<GetSwitchesUseCase>();
         services.AddScoped<UpdateSwitchUseCase>();
+        services.AddScoped<DescribeSwitchUseCase>();
 
         // NIC use cases
         services.AddScoped<AddNicUseCase>();
@@ -228,8 +230,11 @@ public static class CliBootstrap
                     server.AddCommand<SwitchAddCommand>("add")
                         .WithDescription("Add a new switch");
 
+                    server.AddCommand<SwitchGetCommand>("list")
+                        .WithDescription("List switches");
+                    
                     server.AddCommand<SwitchGetByNameCommand>("get")
-                        .WithDescription("List switches or get a switches by name");
+                        .WithDescription("Get a switches by name");
 
                     server.AddCommand<SwitchDescribeCommand>("describe")
                         .WithDescription("Show detailed information about a switch");
