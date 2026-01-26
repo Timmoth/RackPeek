@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Commands.Server;
-using RackPeek.Domain.Resources.Hardware.Switchs;
+using RackPeek.Domain.Resources.Hardware.Switches;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

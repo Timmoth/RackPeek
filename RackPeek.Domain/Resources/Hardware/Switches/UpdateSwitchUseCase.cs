@@ -1,6 +1,6 @@
 using RackPeek.Domain.Resources.Hardware.Models;
 
-namespace RackPeek.Domain.Resources.Hardware.Switchs;
+namespace RackPeek.Domain.Resources.Hardware.Switches;
 
 public class UpdateSwitchUseCase(IHardwareRepository repository)
 {

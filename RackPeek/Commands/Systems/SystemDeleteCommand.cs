@@ -1,25 +1,25 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.SystemResources.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches;
+namespace RackPeek.Commands.Systems;
 
-public class SwitchDeleteCommand(
+public class SystemDeleteCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<SwitchNameSettings>
+) : AsyncCommand<SystemNameSettings>
 {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
-        SwitchNameSettings settings,
+        SystemNameSettings settings,
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DeleteSwitchUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<DeleteSystemUseCase>();
 
         await useCase.ExecuteAsync(settings.Name);
 
-        AnsiConsole.MarkupLine($"[green]Switch '{settings.Name}' deleted.[/]");
+        AnsiConsole.MarkupLine($"[green]System '{settings.Name}' deleted.[/]");
         return 0;
     }
 }

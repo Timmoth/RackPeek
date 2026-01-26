@@ -1,0 +1,48 @@
+using Microsoft.Extensions.DependencyInjection;
+using RackPeek.Commands.Switches;
+using RackPeek.Domain.Resources.SystemResources.UseCases;
+using Spectre.Console;
+using Spectre.Console.Cli;
+
+namespace RackPeek.Commands.Systems;
+
+public class SystemDescribeCommand(
+    IServiceProvider serviceProvider
+) : AsyncCommand<SystemNameSettings>
+{
+    public override async Task<int> ExecuteAsync(
+        CommandContext context,
+        SystemNameSettings settings,
+        CancellationToken cancellationToken)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var useCase = scope.ServiceProvider.GetRequiredService<DescribeSystemUseCase>();
+
+        var system = await useCase.ExecuteAsync(settings.Name);
+
+        if (system == null)
+        {
+            AnsiConsole.MarkupLine($"[red]System '{settings.Name}' not found.[/]");
+            return 1;
+        }
+
+        var grid = new Grid()
+            .AddColumn(new GridColumn().NoWrap())
+            .AddColumn(new GridColumn().NoWrap());
+
+        grid.AddRow("Name:", system.Name);
+        grid.AddRow("Type:", system.Type ?? "Unknown");
+        grid.AddRow("OS:", system.Os ?? "Unknown");
+        grid.AddRow("Cores:", system.Cores.ToString());
+        grid.AddRow("RAM (GB):", system.RamGb.ToString());
+        grid.AddRow("Total Storage (GB):", system.TotalStorageGb.ToString());
+        grid.AddRow("Runs On:", system.RunsOn ?? "Unknown");
+
+        AnsiConsole.Write(
+            new Panel(grid)
+                .Header("System")
+                .Border(BoxBorder.Rounded));
+
+        return 0;
+    }
+}

@@ -8,6 +8,7 @@ using RackPeek.Commands.Server.Drives;
 using RackPeek.Commands.Server.Gpu;
 using RackPeek.Commands.Server.Nics;
 using RackPeek.Commands.Switches;
+using RackPeek.Commands.Systems;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Reports;
 using RackPeek.Domain.Resources.Hardware.Server;
@@ -15,7 +16,9 @@ using RackPeek.Domain.Resources.Hardware.Server.Cpu;
 using RackPeek.Domain.Resources.Hardware.Server.Drive;
 using RackPeek.Domain.Resources.Hardware.Server.Gpu;
 using RackPeek.Domain.Resources.Hardware.Server.Nic;
-using RackPeek.Domain.Resources.Hardware.Switchs;
+using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.SystemResources;
+using RackPeek.Domain.Resources.SystemResources.UseCases;
 using RackPeek.Spectre;
 using RackPeek.Yaml;
 using Spectre.Console.Cli;
@@ -67,15 +70,14 @@ public static class CliBootstrap
     {
         services.AddSingleton<IConfiguration>(configuration);
 
-        // Infrastructure
-        services.AddScoped<IHardwareRepository>(_ =>
-        {
-            var collection = new YamlResourceCollection();
-            var basePath = configuration["HardwarePath"] ?? Directory.GetCurrentDirectory();
+        var collection = new YamlResourceCollection();
+        var basePath = configuration["HardwarePath"] ?? Directory.GetCurrentDirectory();
 
-            collection.LoadFiles(yamlFiles.Select(f => Path.Combine(basePath, f)));
-            return new YamlHardwareRepository(collection);
-        });
+        collection.LoadFiles(yamlFiles.Select(f => Path.Combine(basePath, f)));
+        
+        // Infrastructure
+        services.AddScoped<IHardwareRepository>(_ => new YamlHardwareRepository(collection));
+        services.AddScoped<ISystemRepository>(_ => new YamlSystemRepository(collection));
 
         // Application
         services.AddScoped<ServerHardwareReportUseCase>();
@@ -161,8 +163,27 @@ public static class CliBootstrap
         services.AddScoped<ServerGpuUpdateCommand>();
         services.AddScoped<ServerGpuRemoveCommand>();
 
+        // System use cases
+        services.AddScoped<AddSystemUseCase>();
+        services.AddScoped<DeleteSystemUseCase>();
+        services.AddScoped<DescribeSystemUseCase>();
+        services.AddScoped<GetSystemsUseCase>();
+        services.AddScoped<GetSystemUseCase>();
+        services.AddScoped<UpdateSystemUseCase>();
+        services.AddScoped<SystemReportUseCase>();
 
 
+        // System commands
+        services.AddScoped<SystemSetCommand>();
+        services.AddScoped<SystemGetCommand>();
+        services.AddScoped<SystemGetByNameCommand>();
+        services.AddScoped<SystemDescribeCommand>();
+        services.AddScoped<SystemDeleteCommand>();
+        services.AddScoped<SystemAddCommand>();
+        services.AddScoped<SystemReportCommand>();
+
+        
+        
         // Spectre bootstrap
         app.Configure(config =>
         {
@@ -274,6 +295,32 @@ public static class CliBootstrap
                         .WithDescription("Delete a switch");
                 });
 
+                config.AddBranch("systems", system =>
+                {
+                    system.SetDescription("Manage systems");
+
+                    system.AddCommand<SystemReportCommand>("summary")
+                        .WithDescription("Show system report");
+
+                    system.AddCommand<SystemAddCommand>("add")
+                        .WithDescription("Add a new system");
+
+                    system.AddCommand<SystemGetCommand>("list")
+                        .WithDescription("List systems");
+                    
+                    system.AddCommand<SystemGetByNameCommand>("get")
+                        .WithDescription("Get a system by name");
+
+                    system.AddCommand<SystemDescribeCommand>("describe")
+                        .WithDescription("Show detailed information about a system");
+
+                    system.AddCommand<SystemSetCommand>("set")
+                        .WithDescription("Update system properties");
+
+                    system.AddCommand<SystemDeleteCommand>("del")
+                        .WithDescription("Delete a system");
+                });
+                
                 // ----------------------------
                 // Reports (read-only summaries)
                 // ----------------------------

@@ -1,32 +1,32 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.SystemResources.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches;
+namespace RackPeek.Commands.Systems;
 
-public class SwitchAddSettings : CommandSettings
+public class SystemAddSettings : CommandSettings
 {
     [CommandArgument(0, "<name>")] public string Name { get; set; } = default!;
 }
 
-public class SwitchAddCommand(
+public class SystemAddCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<SwitchAddSettings>
+) : AsyncCommand<SystemAddSettings>
 {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
-        SwitchAddSettings settings,
+        SystemAddSettings settings,
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddSwitchUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<AddSystemUseCase>();
 
         await useCase.ExecuteAsync(
             settings.Name
         );
 
-        AnsiConsole.MarkupLine($"[green]Switch '{settings.Name}' added.[/]");
+        AnsiConsole.MarkupLine($"[green]System '{settings.Name}' added.[/]");
         return 0;
     }
 }
