@@ -14,8 +14,8 @@ using RackPeek.Domain.Resources.Hardware.Server.Cpu;
 using RackPeek.Domain.Resources.Hardware.Server.Drive;
 using RackPeek.Domain.Resources.Hardware.Server.Nic;
 using RackPeek.Domain.Resources.Hardware.Switchs;
+using RackPeek.Spectre;
 using RackPeek.Yaml;
-using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace RackPeek;
@@ -33,32 +33,46 @@ public static class Program
         // DI
         var services = new ServiceCollection();
 
+        var registrar = new TypeRegistrar(services);
+        var app = new CommandApp(registrar);
+        
+        CliBootstrap.BuildApp(app, services, configuration);
+        
+        services.AddLogging(configure =>
+            configure
+                .AddSimpleConsole(opts => { opts.TimestampFormat = "yyyy-MM-dd HH:mm:ss "; }));
+        
+        return await app.RunAsync(args);
+    }
+}
+
+public static class CliBootstrap
+{
+    public static void BuildApp(CommandApp app, IServiceCollection services, IConfiguration configuration)
+    {
         services.AddSingleton<IConfiguration>(configuration);
 
         // Infrastructure
         services.AddScoped<IHardwareRepository>(_ =>
         {
-            var path = configuration["HardwareFile"] ?? "hardware.yaml";
-
             var collection = new YamlResourceCollection();
-            collection.LoadFiles([
-                "servers.yaml",
-                "aps.yaml",
-                "desktops.yaml",
-                "switches.yaml",
-                "ups.yaml",
-                "firewalls.yaml",
-                "laptops.yaml",
-                "routers.yaml"
-            ]);
+            var basePath = configuration["HardwarePath"] ?? Directory.GetCurrentDirectory();
+
+            collection.LoadFiles(new[]
+            {
+                Path.Combine(basePath, "servers.yaml"),
+                Path.Combine(basePath, "aps.yaml"),
+                Path.Combine(basePath, "desktops.yaml"),
+                Path.Combine(basePath, "switches.yaml"),
+                Path.Combine(basePath, "ups.yaml"),
+                Path.Combine(basePath, "firewalls.yaml"),
+                Path.Combine(basePath, "laptops.yaml"),
+                Path.Combine(basePath, "routers.yaml")
+            });
+
 
             return new YamlHardwareRepository(collection);
         });
-
-        services.AddLogging(configure =>
-            configure
-                .AddSimpleConsole(opts => { opts.TimestampFormat = "yyyy-MM-dd HH:mm:ss "; }));
-
 
         // Application
         services.AddScoped<ServerHardwareReportUseCase>();
@@ -134,9 +148,6 @@ public static class Program
 
 
         // Spectre bootstrap
-        var registrar = new TypeRegistrar(services);
-        var app = new CommandApp(registrar);
-
         app.Configure(config =>
         {
             config.SetApplicationName("rackpeek");
@@ -245,55 +256,5 @@ public static class Program
                 config.ValidateExamples();
             });
         });
-
-        return await app.RunAsync(args);
-    }
-}
-
-public class SpectreConsoleLoggerProvider : ILoggerProvider
-{
-    public ILogger CreateLogger(string categoryName)
-    {
-        return new SpectreConsoleLogger();
-    }
-
-    public void Dispose()
-    {
-    }
-}
-
-public class SpectreConsoleLogger : ILogger
-{
-    public IDisposable BeginScope<T>(T state)
-    {
-        return null!;
-    }
-
-    public bool IsEnabled(LogLevel logLevel)
-    {
-        return true;
-    }
-
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
-        Func<TState, Exception, string> formatter)
-    {
-        var message = formatter(state, exception);
-        var style = GetStyle(logLevel);
-
-        AnsiConsole.MarkupLine($"[{style}] {message}[/]");
-    }
-
-    private Style GetStyle(LogLevel logLevel)
-    {
-        return logLevel switch
-        {
-            LogLevel.Trace => new Style(Color.Grey),
-            LogLevel.Debug => new Style(Color.Grey),
-            LogLevel.Information => new Style(Color.Green),
-            LogLevel.Warning => new Style(Color.Yellow),
-            LogLevel.Error => new Style(Color.Red),
-            LogLevel.Critical => new Style(Color.Red),
-            _ => new Style(Color.White)
-        };
     }
 }

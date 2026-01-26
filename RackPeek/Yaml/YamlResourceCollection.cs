@@ -10,7 +10,9 @@ namespace RackPeek.Yaml;
 public sealed class YamlResourceCollection
 {
     private readonly List<ResourceEntry> _entries = [];
-    public IReadOnlyList<string> SourceFiles => _entries.Select(e => e.SourceFile).Distinct().ToList();
+    private readonly List<string> _knownFiles = [];
+
+    public IReadOnlyList<string> SourceFiles => _knownFiles.ToList();
 
     public IReadOnlyList<Hardware> HardwareResources =>
         _entries.Select(e => e.Resource).OfType<Hardware>().ToList();
@@ -22,19 +24,39 @@ public sealed class YamlResourceCollection
     {
         foreach (var file in filePaths)
         {
+            // Track the file even if it is empty
+            if (!_knownFiles.Contains(file))
+                _knownFiles.Add(file);
+
             var yaml = File.ReadAllText(file);
-            foreach (var resource in Deserialize(yaml)) _entries.Add(new ResourceEntry(resource, file));
+            var resources = Deserialize(yaml);
+
+            foreach (var resource in resources)
+            {
+                _entries.Add(new ResourceEntry(resource, file));
+            }
         }
     }
 
     public void Load(string yaml, string file)
     {
-        foreach (var resource in Deserialize(yaml)) _entries.Add(new ResourceEntry(resource, file));
+        if (!_knownFiles.Contains(file))
+            _knownFiles.Add(file);
+
+        foreach (var resource in Deserialize(yaml))
+            _entries.Add(new ResourceEntry(resource, file));
     }
 
     public void SaveAll()
     {
-        foreach (var group in _entries.GroupBy(e => e.SourceFile)) SaveToFile(group.Key, group.Select(e => e.Resource));
+        foreach (var file in _knownFiles)
+        {
+            var resources = _entries
+                .Where(e => e.SourceFile == file)
+                .Select(e => e.Resource);
+
+            SaveToFile(file, resources);
+        }
     }
 
     // ----------------------------
@@ -137,6 +159,9 @@ public sealed class YamlResourceCollection
 
     private static List<Resource> Deserialize(string yaml)
     {
+        if (string.IsNullOrWhiteSpace(yaml))
+            return new List<Resource>();
+
         var deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .WithCaseInsensitivePropertyMatching()
@@ -146,8 +171,8 @@ public sealed class YamlResourceCollection
         var raw = deserializer.Deserialize<
             Dictionary<string, List<Dictionary<string, object>>>>(yaml);
 
-        if (!raw.TryGetValue("resources", out var items))
-            return [];
+        if (raw == null || !raw.TryGetValue("resources", out var items))
+            return new List<Resource>();
 
         var resources = new List<Resource>();
 

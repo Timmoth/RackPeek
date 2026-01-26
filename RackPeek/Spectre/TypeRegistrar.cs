@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace RackPeek;
+namespace RackPeek.Spectre;
 
 public sealed class TypeRegistrar(IServiceCollection services) : ITypeRegistrar
 {
