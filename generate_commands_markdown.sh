@@ -108,7 +108,7 @@ generate_help_recursive() {
   anchor_link=$(echo "$anchor_text" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
   # 4. Append to Tree Temp File
-  echo "${indent}- [${tree_label}](#${anchor_link})" >> "$TREE_TEMP"
+  echo "${indent}- [${tree_label}](Commands.md#${anchor_link})" >> "$TREE_TEMP"
   # -----------------------------
 
   if [[ -n "${VISITED["$map_key"]:-}" ]]; then
@@ -158,16 +158,19 @@ echo "Generating documentation..."
 # Start recursion
 generate_help_recursive
 
-# Combine files into the final output
+# Write command index
+{
+  echo "# CLI Command Index"
+  echo ""
+  cat "$TREE_TEMP"
+} > "CommandIndex.md"
+
+# Write full command documentation
 {
   echo "# CLI Commands"
   echo ""
-  echo "## Command Tree"
-  cat "$TREE_TEMP"
-  echo ""
-  echo "---"
-  echo ""
   cat "$BODY_TEMP"
-} > "$OUTPUT_FILE"
+} > "Commands.md"
+
 
 echo "Generated $OUTPUT_FILE successfully."

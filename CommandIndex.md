@@ -1,10 +1,5 @@
-# RackPeek
+# CLI Command Index
 
-RackPeek is a lightweight CLI tool for managing and documenting your IT infrastructure and home lab.
-Track servers, switches, routers, desktops, access points, UPS systems, and more — including software systems, services, and networks — all from the command line.
-It’s designed to help you inventory, configure, and audit your environment in a consistent, reusable way.
-
-## Command Tree
 - [rpk](Commands.md#rpk)
   - [switches](Commands.md#rpk-switches)
     - [summary](Commands.md#rpk-switches-summary)

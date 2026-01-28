@@ -21,7 +21,14 @@ public sealed class ServerTreeCommand(GetServerSystemTreeUseCase useCase) : Asyn
 
         var root = new Tree($"[bold]{tree.Hardware.Name}[/]");
 
-        foreach (var system in tree.Systems) root.AddNode($"[green]System:[/] {system.Name}");
+        foreach (var system in tree.Systems)
+        {
+            var systemNode = root.AddNode($"[green]System:[/] {system.System.Name}");
+            foreach (var service in system.Services)
+            {
+                systemNode.AddNode($"[green]Service:[/] {service.Name}");
+            }
+        }
 
         AnsiConsole.Write(root);
         return 0;

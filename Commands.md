@@ -1373,4 +1373,3 @@ OPTIONS:
     -h, --help             Prints help information
         --index <INDEX>                           
 ```
-
