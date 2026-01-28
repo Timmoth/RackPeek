@@ -11,20 +11,11 @@ public class ServiceSubnetsCommand(
     IServiceProvider serviceProvider
 ) : AsyncCommand<ServiceSubnetsCommand.Settings>
 {
-    public class Settings : CommandSettings
-    {
-        [CommandOption("--cidr <CIDR>")]
-        public string? Cidr { get; set; }
-
-        [CommandOption("--prefix <PREFIX>")]
-        public int? Prefix { get; set; }
-    }
-    
     private static string BuildUtilizationBar(double fullness, int width = 30)
     {
         fullness = Math.Clamp(fullness, 0, 100);
-        int filled = (int)(width * (fullness / 100.0));
-        int empty = width - filled;
+        var filled = (int)(width * (fullness / 100.0));
+        var empty = width - filled;
 
         var color = fullness switch
         {
@@ -33,12 +24,12 @@ public class ServiceSubnetsCommand(
             _ => Color.Red
         };
 
-        string filledBar = new string('█', filled);
-        string emptyBar = new string('░', empty);
+        var filledBar = new string('█', filled);
+        var emptyBar = new string('░', empty);
 
         return $"[{color.ToString().ToLower()}]{filledBar}[/]{emptyBar} {fullness:0}%";
     }
-    
+
     private static uint IpToUInt32(string ip)
     {
         var parts = ip.Split('.');
@@ -67,7 +58,7 @@ public class ServiceSubnetsCommand(
             return 1;
         }
 
-       
+
         if (settings.Cidr is not null)
         {
             var services = result.Services
@@ -95,19 +86,19 @@ public class ServiceSubnetsCommand(
             return 0;
         }
 
-   
+
         var subnets = result.Subnets;
-        
+
         subnets = subnets
             .OrderByDescending(s =>
             {
                 var parts = s.Cidr.Split('/');
-                int prefix = int.Parse(parts[1]);
-                double alloc = Math.Pow(2, 32 - prefix) - 2;
-                return alloc <= 0 ? 0 : (s.Count / alloc);
+                var prefix = int.Parse(parts[1]);
+                var alloc = Math.Pow(2, 32 - prefix) - 2;
+                return alloc <= 0 ? 0 : s.Count / alloc;
             })
             .ToList();
-        
+
         if (subnets.Count == 0)
         {
             AnsiConsole.MarkupLine("[yellow]No subnets found.[/]");
@@ -123,14 +114,14 @@ public class ServiceSubnetsCommand(
         foreach (var subnet in subnets)
         {
             var parts = subnet.Cidr.Split('/');
-            int prefix = int.Parse(parts[1]);
+            var prefix = int.Parse(parts[1]);
 
             // allocatable addresses
-            double alloc = Math.Pow(2, 32 - prefix) - 2;
+            var alloc = Math.Pow(2, 32 - prefix) - 2;
             double used = subnet.Count;
-            double fullness = alloc <= 0 ? 0 : (used / alloc) * 100;
+            var fullness = alloc <= 0 ? 0 : used / alloc * 100;
 
-            string bar = BuildUtilizationBar(fullness);
+            var bar = BuildUtilizationBar(fullness);
 
             subnetTable.AddRow(subnet.Cidr, subnet.Count.ToString(), bar);
         }
@@ -138,5 +129,12 @@ public class ServiceSubnetsCommand(
         AnsiConsole.Write(subnetTable);
 
         return 0;
+    }
+
+    public class Settings : CommandSettings
+    {
+        [CommandOption("--cidr <CIDR>")] public string? Cidr { get; set; }
+
+        [CommandOption("--prefix <PREFIX>")] public int? Prefix { get; set; }
     }
 }

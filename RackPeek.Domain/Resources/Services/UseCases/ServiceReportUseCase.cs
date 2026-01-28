@@ -1,3 +1,4 @@
+using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
@@ -12,27 +13,36 @@ public record ServiceReportRow(
     int? Port,
     string? Protocol,
     string? Url,
-    string? RunsOn
+    string? RunsOnSystemHost,
+    string? RunsOnPhysicalHost
 );
 
-public class ServiceReportUseCase(IServiceRepository repository)
+public class ServiceReportUseCase(IServiceRepository repository, ISystemRepository systemRepo) : IUseCase
 {
     public async Task<ServiceReport> ExecuteAsync()
     {
         var services = await repository.GetAllAsync();
 
-        var rows = services.Select(s =>
+        var rows = services.Select(async s =>
         {
+            string? runsOnPhysicalHost = null;
+            if (!string.IsNullOrEmpty(s.RunsOn))
+            {
+                var systemResource = await systemRepo.GetByNameAsync(s.RunsOn);
+                runsOnPhysicalHost = systemResource?.RunsOn;
+            }
             return new ServiceReportRow(
                 s.Name,
                 s.Network?.Ip,
                 s.Network?.Port,
                 s.Network?.Protocol,
                 s.Network?.Url,
-                s.RunsOn
+                s.RunsOn,
+                runsOnPhysicalHost
             );
         }).ToList();
 
-        return new ServiceReport(rows);
+        var result = await Task.WhenAll(rows);
+        return new ServiceReport(result);
     }
 }

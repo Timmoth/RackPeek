@@ -1,6 +1,6 @@
 using RackPeek.Domain.Resources.Hardware.Models;
 
-namespace RackPeek.Domain.Resources.Hardware.Reports;
+namespace RackPeek.Domain.Resources.Hardware.Desktops;
 
 public record DesktopHardwareReport(
     IReadOnlyList<DesktopHardwareRow> Desktops
@@ -19,7 +19,7 @@ public record DesktopHardwareRow(
     string GpuSummary
 );
 
-public class DesktopHardwareReportUseCase(IHardwareRepository repository)
+public class DesktopHardwareReportUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<DesktopHardwareReport> ExecuteAsync()
     {

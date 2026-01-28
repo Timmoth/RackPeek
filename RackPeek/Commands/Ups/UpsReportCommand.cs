@@ -1,26 +1,26 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RackPeek.Domain.Resources.Hardware.Reports;
+using RackPeek.Domain.Resources.Hardware.UpsUnits;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands;
+namespace RackPeek.Commands.Ups;
 
-public class AccessPointReportCommand(
-    ILogger<AccessPointReportCommand> logger,
+public class UpsReportCommand(
+    ILogger<UpsReportCommand> logger,
     IServiceProvider serviceProvider
 ) : AsyncCommand
 {
     public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AccessPointHardwareReportUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<UpsHardwareReportUseCase>();
 
         var report = await useCase.ExecuteAsync();
 
-        if (report.AccessPoints.Count == 0)
+        if (report.UpsUnits.Count == 0)
         {
-            AnsiConsole.MarkupLine("[yellow]No access points found.[/]");
+            AnsiConsole.MarkupLine("[yellow]No UPS units found.[/]");
             return 0;
         }
 
@@ -28,13 +28,13 @@ public class AccessPointReportCommand(
             .Border(TableBorder.Rounded)
             .AddColumn("Name")
             .AddColumn("Model")
-            .AddColumn("Speed (Gbps)");
+            .AddColumn("VA");
 
-        foreach (var ap in report.AccessPoints)
+        foreach (var u in report.UpsUnits)
             table.AddRow(
-                ap.Name,
-                ap.Model,
-                $"{ap.SpeedGb}"
+                u.Name,
+                u.Model,
+                u.Va.ToString()
             );
 
         AnsiConsole.Write(table);

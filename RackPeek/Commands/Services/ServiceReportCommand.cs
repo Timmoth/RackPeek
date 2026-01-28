@@ -40,7 +40,7 @@ public class ServiceReportCommand(
                 s.Port.ToString() ?? "",
                 s.Protocol ?? "",
                 s.Url ?? "",
-                s.RunsOn ?? "Unknown"
+                ServicesFormatExtensions.FormatRunsOn(s.RunsOnSystemHost, s.RunsOnPhysicalHost)
             );
 
         AnsiConsole.Write(table);

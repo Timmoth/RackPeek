@@ -8,7 +8,7 @@ public record AccessPointDescription(
     double? Speed
 );
 
-public class DescribeAccessPointUseCase(IHardwareRepository repository)
+public class DescribeAccessPointUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<AccessPointDescription?> ExecuteAsync(string name)
     {

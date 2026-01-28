@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops.Gpus;
 
-public class RemoveDesktopGpuUseCase(IHardwareRepository repository)
+public class RemoveDesktopGpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string desktopName, int index)
     {

@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers.Cpus;
 
-public class RemoveCpuUseCase(IHardwareRepository repository)
+public class RemoveCpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(
         string serverName,

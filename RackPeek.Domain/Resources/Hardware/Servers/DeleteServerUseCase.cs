@@ -1,6 +1,6 @@
 namespace RackPeek.Domain.Resources.Hardware.Servers;
 
-public class DeleteServerUseCase(IHardwareRepository repository)
+public class DeleteServerUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {

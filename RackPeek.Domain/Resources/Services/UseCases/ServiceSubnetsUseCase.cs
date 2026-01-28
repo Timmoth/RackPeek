@@ -1,20 +1,12 @@
-using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.Services.Networking;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
-public class ServiceSubnetsUseCase
+public class ServiceSubnetsUseCase(IServiceRepository repo) : IUseCase
 {
-    private readonly IServiceRepository _repo;
-
-    public ServiceSubnetsUseCase(IServiceRepository repo)
-    {
-        _repo = repo;
-    }
-
     public async Task<ServiceSubnetsResult> ExecuteAsync(string? cidr, int? prefix, CancellationToken token)
     {
-        var services = await _repo.GetAllAsync();
+        var services = await repo.GetAllAsync();
 
         // If CIDR is provided → filter mode
         if (cidr is not null)
@@ -42,8 +34,8 @@ public class ServiceSubnetsUseCase
         }
 
         // No CIDR → subnet discovery mode
-        int effectivePrefix = prefix ?? 24;
-        uint mask = IpHelper.MaskFromPrefix(effectivePrefix);
+        var effectivePrefix = prefix ?? 24;
+        var mask = IpHelper.MaskFromPrefix(effectivePrefix);
 
         var groups = services
             .Where(s => s.Network?.Ip != null)
@@ -60,6 +52,7 @@ public class ServiceSubnetsUseCase
 }
 
 public record SubnetSummary(string Cidr, int Count);
+
 public record ServiceSummary(string Name, string Ip, string? RunsOn);
 
 public class ServiceSubnetsResult
@@ -73,11 +66,17 @@ public class ServiceSubnetsResult
     public List<ServiceSummary> Services { get; private set; } = new();
 
     public static ServiceSubnetsResult InvalidCidr(string cidr)
-        => new() { IsInvalidCidr = true, InvalidCidrValue = cidr };
+    {
+        return new ServiceSubnetsResult { IsInvalidCidr = true, InvalidCidrValue = cidr };
+    }
 
     public static ServiceSubnetsResult FromSubnets(List<SubnetSummary> subnets)
-        => new() { Subnets = subnets };
+    {
+        return new ServiceSubnetsResult { Subnets = subnets };
+    }
 
     public static ServiceSubnetsResult FromServices(List<ServiceSummary> services, string cidr)
-        => new() { Services = services, FilteredCidr = cidr };
+    {
+        return new ServiceSubnetsResult { Services = services, FilteredCidr = cidr };
+    }
 }

@@ -12,7 +12,7 @@ public record SwitchDescription(
     string PortSummary
 );
 
-public class DescribeSwitchUseCase(IHardwareRepository repository)
+public class DescribeSwitchUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<SwitchDescription?> ExecuteAsync(string name)
     {

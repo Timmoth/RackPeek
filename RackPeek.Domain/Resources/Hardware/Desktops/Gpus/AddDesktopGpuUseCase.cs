@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops.Gpus;
 
-public class AddDesktopGpuUseCase(IHardwareRepository repository)
+public class AddDesktopGpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string desktopName, Gpu gpu)
     {

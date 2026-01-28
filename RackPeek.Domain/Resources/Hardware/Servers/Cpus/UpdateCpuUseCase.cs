@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers.Cpus;
 
-public class UpdateCpuUseCase(IHardwareRepository repository)
+public class UpdateCpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(
         string serverName,

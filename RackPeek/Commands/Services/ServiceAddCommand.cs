@@ -8,7 +8,7 @@ namespace RackPeek.Commands.Services;
 
 public class ServiceAddSettings : CommandSettings
 {
-    [CommandArgument(0, "<name>")] 
+    [CommandArgument(0, "<name>")]
     [Description("The name of the service.")]
     public string Name { get; set; } = default!;
 }

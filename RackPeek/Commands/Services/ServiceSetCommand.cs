@@ -9,7 +9,7 @@ namespace RackPeek.Commands.Services;
 
 public class ServiceSetSettings : ServerNameSettings
 {
-    [CommandOption("--ip")] 
+    [CommandOption("--ip")]
     [Description("The ip address of the service.")]
     public string? Ip { get; set; }
 
@@ -21,11 +21,11 @@ public class ServiceSetSettings : ServerNameSettings
     [Description("The service protocol.")]
     public string? Protocol { get; set; }
 
-    [CommandOption("--url")] 
+    [CommandOption("--url")]
     [Description("The service URL.")]
     public string? Url { get; set; }
 
-    [CommandOption("--runs-on")] 
+    [CommandOption("--runs-on")]
     [Description("The system the service is running on.")]
     public string? RunsOn { get; set; }
 }

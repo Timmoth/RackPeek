@@ -7,7 +7,7 @@ namespace RackPeek.Domain.Resources.Hardware.Servers;
 public class GetServerSystemTreeUseCase(
     IHardwareRepository hardwareRepository,
     ISystemRepository systemRepository,
-    IServiceRepository serviceRepository)
+    IServiceRepository serviceRepository) : IUseCase
 {
     public async Task<HardwareDependencyTree?> ExecuteAsync(string hardwareName)
     {
@@ -22,10 +22,7 @@ public class GetServerSystemTreeUseCase(
         var systems = await systemRepository.GetByPhysicalHostAsync(server.Name);
 
         var systemTrees = new List<SystemDependencyTree>();
-        foreach (var system in systems)
-        {
-            systemTrees.Add(await BuildSystemDependencyTreeAsync(system));
-        }
+        foreach (var system in systems) systemTrees.Add(await BuildSystemDependencyTreeAsync(system));
 
         return new HardwareDependencyTree(server, systemTrees);
     }

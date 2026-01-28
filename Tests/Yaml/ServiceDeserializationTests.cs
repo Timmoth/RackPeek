@@ -1,5 +1,4 @@
 using RackPeek.Domain.Resources.Services;
-using RackPeek.Domain.Resources.SystemResources;
 using RackPeek.Yaml;
 
 namespace Tests.Yaml;
@@ -12,6 +11,7 @@ public class ServiceDeserializationTests
         yamlResourceCollection.Load(yaml, "test.yaml");
         return new YamlServiceRepository(yamlResourceCollection);
     }
+
     [Fact]
     public async Task deserialize_yaml_kind_Service()
     {

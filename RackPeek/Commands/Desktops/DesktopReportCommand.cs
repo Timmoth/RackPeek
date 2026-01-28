@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RackPeek.Domain.Resources.Hardware.Reports;
+using RackPeek.Domain.Resources.Hardware.Desktops;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands;
+namespace RackPeek.Commands.Desktops;
 
 public class DesktopReportCommand(
     ILogger<DesktopReportCommand> logger,

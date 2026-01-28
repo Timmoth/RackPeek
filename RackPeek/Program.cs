@@ -22,17 +22,7 @@ public static class Program
         var registrar = new TypeRegistrar(services);
         var app = new CommandApp(registrar);
 
-        CliBootstrap.BuildApp(app, services, configuration, [
-            "accesspoints.yaml",
-            "servers.yaml",
-            "desktops.yaml",
-            "switches.yaml",
-            "ups.yaml",
-            "firewalls.yaml",
-            "laptops.yaml",
-            "routers.yaml",
-            "Services.yaml"
-        ]);
+        CliBootstrap.BuildApp(app, services, configuration, "./config");
 
         services.AddLogging(configure =>
             configure

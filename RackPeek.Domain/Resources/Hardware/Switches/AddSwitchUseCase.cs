@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Switches;
 
-public class AddSwitchUseCase(IHardwareRepository repository)
+public class AddSwitchUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {

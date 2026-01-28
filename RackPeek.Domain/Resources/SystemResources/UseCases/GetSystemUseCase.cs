@@ -1,6 +1,6 @@
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
-public class GetSystemUseCase(ISystemRepository repository)
+public class GetSystemUseCase(ISystemRepository repository) : IUseCase
 {
     public async Task<SystemResource?> ExecuteAsync(string name)
     {

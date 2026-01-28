@@ -1,6 +1,6 @@
 using RackPeek.Domain.Resources.Hardware.Models;
 
-namespace RackPeek.Domain.Resources.Hardware.Reports;
+namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
 
 public record UpsHardwareReport(
     IReadOnlyList<UpsHardwareRow> UpsUnits
@@ -12,7 +12,7 @@ public record UpsHardwareRow(
     int Va
 );
 
-public class UpsHardwareReportUseCase(IHardwareRepository repository)
+public class UpsHardwareReportUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<UpsHardwareReport> ExecuteAsync()
     {

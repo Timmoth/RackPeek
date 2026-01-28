@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace RackPeek.Domain.Resources.Services;
 
 public class Service : Resource
@@ -7,17 +9,11 @@ public class Service : Resource
 
     public string NetworkString()
     {
-        if (Network == null)
-        {
-            return string.Empty;
-        }
-        
-        if (!string.IsNullOrEmpty(Network.Url))
-        {
-            return Network.Url;
-        }
+        if (Network == null) return string.Empty;
 
-        var stringBuilder = new System.Text.StringBuilder();
+        if (!string.IsNullOrEmpty(Network.Url)) return Network.Url;
+
+        var stringBuilder = new StringBuilder();
         if (!string.IsNullOrEmpty(Network.Ip))
         {
             stringBuilder.Append("Ip: ");
@@ -27,9 +23,10 @@ public class Service : Resource
                 stringBuilder.Append(':');
                 stringBuilder.Append(Network.Port.Value);
             }
+
             stringBuilder.Append(' ');
         }
-        
+
         return stringBuilder.ToString();
     }
 }

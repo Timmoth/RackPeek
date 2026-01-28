@@ -15,8 +15,7 @@ public class ServerYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
         var output = await YamlCliTestHost.RunAsync(
             inputArgs,
             fs.Root,
-            outputHelper,
-            "config.yaml"
+            outputHelper
         );
 
         outputHelper.WriteLine(output);
@@ -69,19 +68,19 @@ public class ServerYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
             "--runs-on", "node01"
         );
         Assert.Equal("System 'host03' updated.\n", output);
-        
-        
+
+
         (output, yaml) = await ExecuteAsync("services", "add", "immich");
         Assert.Equal("Service 'immich' added.\n", output);
-        
+
         (output, yaml) = await ExecuteAsync("services", "add", "paperless");
         Assert.Equal("Service 'paperless' added.\n", output);
-        
+
         (output, yaml) = await ExecuteAsync(
             "services", "set", "immich",
             "--runs-on", "host01"
         );
-        
+
         (output, yaml) = await ExecuteAsync(
             "services", "set", "paperless",
             "--runs-on", "host01"
@@ -95,7 +94,7 @@ public class ServerYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
                      │   └── Service: paperless
                      ├── System: host02
                      └── System: host03
-                     
+
                      """, output);
     }
 }

@@ -1,6 +1,6 @@
 using RackPeek.Domain.Resources.Hardware.Models;
 
-namespace RackPeek.Domain.Resources.Hardware.Reports;
+namespace RackPeek.Domain.Resources.Hardware.AccessPoints;
 
 public record AccessPointHardwareReport(
     IReadOnlyList<AccessPointHardwareRow> AccessPoints
@@ -12,7 +12,7 @@ public record AccessPointHardwareRow(
     double SpeedGb
 );
 
-public class AccessPointHardwareReportUseCase(IHardwareRepository repository)
+public class AccessPointHardwareReportUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<AccessPointHardwareReport> ExecuteAsync()
     {

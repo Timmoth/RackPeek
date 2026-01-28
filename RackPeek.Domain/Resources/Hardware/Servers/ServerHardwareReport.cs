@@ -1,6 +1,6 @@
 using RackPeek.Domain.Resources.Hardware.Models;
 
-namespace RackPeek.Domain.Resources.Hardware.Reports;
+namespace RackPeek.Domain.Resources.Hardware.Servers;
 
 public record ServerHardwareReport(
     IReadOnlyList<ServerHardwareRow> Servers
@@ -23,7 +23,7 @@ public record ServerHardwareRow(
     bool Ipmi
 );
 
-public class ServerHardwareReportUseCase(IHardwareRepository repository)
+public class ServerHardwareReportUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<ServerHardwareReport> ExecuteAsync()
     {

@@ -26,7 +26,7 @@ public class ServiceGetByNameCommand(
         }
 
         AnsiConsole.MarkupLine(
-            $"[green]{Service.Name}[/]  Ip: {Service.Ip ?? "Unknown"}, Port: {Service.Port.ToString() ?? "Unknown"}, Protocol: {Service.Protocol ?? "Unknown"}, Url: {Service.Url ?? "Unknown"}, RunsOn: {Service.RunsOn ?? "Unknown"}");
+            $"[green]{Service.Name}[/]  Ip: {Service.Ip ?? "Unknown"}, Port: {Service.Port.ToString() ?? "Unknown"}, Protocol: {Service.Protocol ?? "Unknown"}, Url: {Service.Url ?? "Unknown"}, RunsOn: {ServicesFormatExtensions.FormatRunsOn(Service.RunsOnSystemHost, Service.RunsOnPhysicalHost)}");
         return 0;
     }
 }

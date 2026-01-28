@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops.Nics;
 
-public class AddDesktopNicUseCase(IHardwareRepository repository)
+public class AddDesktopNicUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string desktopName, Nic nic)
     {

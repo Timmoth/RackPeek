@@ -1,8 +1,6 @@
-using RackPeek.Domain.Resources.SystemResources;
-
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
-public class DeleteServiceUseCase(IServiceRepository repository)
+public class DeleteServiceUseCase(IServiceRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {

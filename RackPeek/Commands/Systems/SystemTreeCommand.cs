@@ -1,4 +1,4 @@
-using RackPeek.Domain.Resources.Services.UseCases;
+using RackPeek.Domain.Resources.SystemResources.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

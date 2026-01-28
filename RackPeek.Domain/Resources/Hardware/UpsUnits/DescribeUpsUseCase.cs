@@ -8,7 +8,7 @@ public record UpsDescription(
     int? Va
 );
 
-public class DescribeUpsUseCase(IHardwareRepository repository)
+public class DescribeUpsUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<UpsDescription?> ExecuteAsync(string name)
     {

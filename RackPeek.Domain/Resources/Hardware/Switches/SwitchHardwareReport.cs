@@ -1,12 +1,12 @@
 using RackPeek.Domain.Resources.Hardware.Models;
 
-namespace RackPeek.Domain.Resources.Hardware.Reports;
+namespace RackPeek.Domain.Resources.Hardware.Switches;
 
-public record FirewallHardwareReport(
-    IReadOnlyList<FirewallHardwareRow> Firewalls
+public record SwitchHardwareReport(
+    IReadOnlyList<SwitchHardwareRow> Switches
 );
 
-public record FirewallHardwareRow(
+public record SwitchHardwareRow(
     string Name,
     string Model,
     bool Managed,
@@ -16,14 +16,14 @@ public record FirewallHardwareRow(
     string PortSummary
 );
 
-public class FirewallHardwareReportUseCase(IHardwareRepository repository)
+public class SwitchHardwareReportUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<FirewallHardwareReport> ExecuteAsync()
+    public async Task<SwitchHardwareReport> ExecuteAsync()
     {
         var hardware = await repository.GetAllAsync();
-        var firewalls = hardware.OfType<Firewall>();
+        var switches = hardware.OfType<Switch>();
 
-        var rows = firewalls.Select(sw =>
+        var rows = switches.Select(sw =>
         {
             var totalPorts = sw.Ports?.Sum(p => p.Count ?? 0) ?? 0;
 
@@ -42,7 +42,7 @@ public class FirewallHardwareReportUseCase(IHardwareRepository repository)
                             return $"{count}×{g.Key}G";
                         }));
 
-            return new FirewallHardwareRow(
+            return new SwitchHardwareRow(
                 sw.Name,
                 sw.Model ?? "Unknown",
                 sw.Managed ?? false,
@@ -53,6 +53,6 @@ public class FirewallHardwareReportUseCase(IHardwareRepository repository)
             );
         }).ToList();
 
-        return new FirewallHardwareReport(rows);
+        return new SwitchHardwareReport(rows);
     }
 }

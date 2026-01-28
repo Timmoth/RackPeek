@@ -15,9 +15,7 @@ public class AccessPointYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper ou
         var output = await YamlCliTestHost.RunAsync(
             inputArgs,
             fs.Root,
-            outputHelper,
-            "config.yaml"
-        );
+            outputHelper);
 
         outputHelper.WriteLine(output);
 
@@ -50,7 +48,7 @@ public class AccessPointYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper ou
                        speed: 1
                        name: ap01
                        tags: 
-                     
+
                      """, yaml);
 
         // Add second AP
@@ -76,7 +74,7 @@ public class AccessPointYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper ou
                        speed: 2.5
                        name: ap02
                        tags: 
-                     
+
                      """, yaml);
 
         // Get AP
@@ -92,7 +90,7 @@ public class AccessPointYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper ou
                      │ ap01 │ Unifi-U6-Lite │ 1            │
                      │ ap02 │ Aruba-AP-515  │ 2.5          │
                      ╰──────┴───────────────┴──────────────╯
-                     
+
                      """, output);
 
         // Summary
@@ -104,15 +102,15 @@ public class AccessPointYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper ou
                      │ ap01 │ Unifi-U6-Lite │ 1            │
                      │ ap02 │ Aruba-AP-515  │ 2.5          │
                      ╰──────┴───────────────┴──────────────╯
-                     
+
                      """, output);
 
         // Delete AP
         (output, yaml) = await ExecuteAsync("accesspoints", "del", "ap02");
         Assert.Equal("""
-                        Access Point 'ap02' deleted.
-                        
-                        """, output);
+                     Access Point 'ap02' deleted.
+
+                     """, output);
 
         // List again
         (output, yaml) = await ExecuteAsync("accesspoints", "list");
@@ -122,7 +120,7 @@ public class AccessPointYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper ou
                      ├──────┼───────────────┼──────────────┤
                      │ ap01 │ Unifi-U6-Lite │ 1            │
                      ╰──────┴───────────────┴──────────────╯
-                     
+
                      """, output);
     }
 }

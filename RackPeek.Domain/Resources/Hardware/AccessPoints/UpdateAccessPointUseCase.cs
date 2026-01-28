@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.AccessPoints;
 
-public class UpdateAccessPointUseCase(IHardwareRepository repository)
+public class UpdateAccessPointUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(
         string name,

@@ -1,8 +1,6 @@
-using RackPeek.Domain.Resources.SystemResources;
-
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
-public class UpdateServiceUseCase(IServiceRepository repository)
+public class UpdateServiceUseCase(IServiceRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(
         string name,
@@ -19,22 +17,25 @@ public class UpdateServiceUseCase(IServiceRepository repository)
 
         if (!string.IsNullOrWhiteSpace(ip))
         {
-            service.Network ??= new Network();      
+            service.Network ??= new Network();
             service.Network.Ip = ip;
         }
+
         if (!string.IsNullOrWhiteSpace(protocol))
         {
-            service.Network ??= new Network();      
+            service.Network ??= new Network();
             service.Network.Protocol = protocol;
         }
+
         if (!string.IsNullOrWhiteSpace(url))
         {
-            service.Network ??= new Network();      
+            service.Network ??= new Network();
             service.Network.Url = url;
         }
+
         if (port.HasValue)
         {
-            service.Network ??= new Network();      
+            service.Network ??= new Network();
             service.Network.Port = port.Value;
         }
 

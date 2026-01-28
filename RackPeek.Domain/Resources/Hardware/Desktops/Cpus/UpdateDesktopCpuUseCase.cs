@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops.Cpus;
 
-public class UpdateDesktopCpuUseCase(IHardwareRepository repository)
+public class UpdateDesktopCpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string desktopName, int index, Cpu updated)
     {

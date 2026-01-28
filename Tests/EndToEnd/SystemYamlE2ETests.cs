@@ -15,9 +15,7 @@ public class SystemYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
         var output = await YamlCliTestHost.RunAsync(
             inputArgs,
             fs.Root,
-            outputHelper,
-            "config.yaml"
-        );
+            outputHelper);
 
         outputHelper.WriteLine(output);
 
@@ -118,26 +116,26 @@ public class SystemYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
 
                      """, output);
     }
-    
+
     [Fact]
     public async Task system_tree_cli_workflow_test()
     {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
-       
+
         var (output, yaml) = await ExecuteAsync("systems", "add", "host01");
         Assert.Equal("System 'host01' added.\n", output);
-        
+
         (output, yaml) = await ExecuteAsync("services", "add", "immich");
         Assert.Equal("Service 'immich' added.\n", output);
-        
+
         (output, yaml) = await ExecuteAsync("services", "add", "paperless");
         Assert.Equal("Service 'paperless' added.\n", output);
-        
+
         (output, yaml) = await ExecuteAsync(
             "services", "set", "immich",
             "--runs-on", "host01"
         );
-        
+
         (output, yaml) = await ExecuteAsync(
             "services", "set", "paperless",
             "--runs-on", "host01"
@@ -148,7 +146,7 @@ public class SystemYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
                      host01
                      ├── Service: immich
                      └── Service: paperless
-                     
+
                      """, output);
     }
 }

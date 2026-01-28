@@ -15,9 +15,7 @@ public class UpsYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputHelp
         var output = await YamlCliTestHost.RunAsync(
             inputArgs,
             fs.Root,
-            outputHelper,
-            "config.yaml"
-        );
+            outputHelper);
 
         outputHelper.WriteLine(output);
 
@@ -50,7 +48,7 @@ public class UpsYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputHelp
                        va: 1500
                        name: ups01
                        tags: 
-                     
+
                      """, yaml);
 
         // Add second UPS
@@ -77,7 +75,7 @@ public class UpsYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputHelp
                        va: 1500
                        name: ups02
                        tags: 
-                     
+
                      """, yaml);
 
         // Get UPS
@@ -93,7 +91,7 @@ public class UpsYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputHelp
                      │ ups01 │ APC Smart-UPS 1500      │ 1500 │
                      │ ups02 │ CyberPower CP1500PFCLCD │ 1500 │
                      ╰───────┴─────────────────────────┴──────╯
-                     
+
                      """, output);
 
         // Summary
@@ -105,15 +103,15 @@ public class UpsYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputHelp
                         │ ups01 │ APC Smart-UPS 1500      │ 1500 │
                         │ ups02 │ CyberPower CP1500PFCLCD │ 1500 │
                         ╰───────┴─────────────────────────┴──────╯
-                        
+
                         """, output);
 
         // Delete UPS
         (output, yaml) = await ExecuteAsync("ups", "del", "ups02");
         Assert.Equal("""
-                        UPS 'ups02' deleted.
-                        
-                        """, output);
+                     UPS 'ups02' deleted.
+
+                     """, output);
 
         // List again
         (output, yaml) = await ExecuteAsync("ups", "list");
@@ -123,7 +121,7 @@ public class UpsYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputHelp
                      ├───────┼────────────────────┼──────┤
                      │ ups01 │ APC Smart-UPS 1500 │ 1500 │
                      ╰───────┴────────────────────┴──────╯
-                     
+
                      """, output);
     }
 }

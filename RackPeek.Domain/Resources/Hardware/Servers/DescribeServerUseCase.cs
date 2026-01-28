@@ -13,7 +13,7 @@ public record ServerDescription(
     bool Ipmi
 );
 
-public class DescribeServerUseCase(IHardwareRepository repository)
+public class DescribeServerUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<ServerDescription?> ExecuteAsync(string name)
     {

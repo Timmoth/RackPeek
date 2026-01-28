@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers;
 
-public class AddServerUseCase(IHardwareRepository repository)
+public class AddServerUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {

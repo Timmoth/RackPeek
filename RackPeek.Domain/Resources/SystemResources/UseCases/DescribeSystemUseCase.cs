@@ -10,7 +10,7 @@ public record SystemDescription(
     string? RunsOn
 );
 
-public class DescribeSystemUseCase(ISystemRepository repository)
+public class DescribeSystemUseCase(ISystemRepository repository) : IUseCase
 {
     public async Task<SystemDescription?> ExecuteAsync(string name)
     {

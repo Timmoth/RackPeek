@@ -8,10 +8,11 @@ public record ServiceDescription(
     int? Port,
     string? Protocol,
     string? Url,
-    string? RunsOn
+    string? RunsOnSystemHost,
+    string? RunsOnPhysicalHost
 );
 
-public class DescribeServiceUseCase(IServiceRepository repository)
+public class DescribeServiceUseCase(IServiceRepository repository, ISystemRepository systemRepo) : IUseCase
 {
     public async Task<ServiceDescription?> ExecuteAsync(string name)
     {
@@ -19,13 +20,21 @@ public class DescribeServiceUseCase(IServiceRepository repository)
         if (service is null)
             return null;
 
+        string? runsOnPhysicalHost = null;
+        if (!string.IsNullOrEmpty(service.RunsOn))
+        {
+            var systemResource = await systemRepo.GetByNameAsync(service.RunsOn);
+            runsOnPhysicalHost = systemResource?.RunsOn;   
+        }
+        
         return new ServiceDescription(
             service.Name,
             service.Network?.Ip,
             service.Network?.Port,
             service.Network?.Protocol,
             service.Network?.Url,
-            service.RunsOn
+            service.RunsOn,
+            runsOnPhysicalHost
         );
     }
 }

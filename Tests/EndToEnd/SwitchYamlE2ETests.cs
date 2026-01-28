@@ -15,9 +15,7 @@ public class SwitchYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
         var output = await YamlCliTestHost.RunAsync(
             inputArgs,
             fs.Root,
-            outputHelper,
-            "config.yaml"
-        );
+            outputHelper);
 
         outputHelper.WriteLine(output);
 

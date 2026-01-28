@@ -23,6 +23,7 @@ public sealed class YamlResourceCollection
 
     public IReadOnlyList<Service> ServiceResources =>
         _entries.Select(e => e.Resource).OfType<Service>().ToList();
+
     public void LoadFiles(IEnumerable<string> filePaths)
     {
         foreach (var file in filePaths)

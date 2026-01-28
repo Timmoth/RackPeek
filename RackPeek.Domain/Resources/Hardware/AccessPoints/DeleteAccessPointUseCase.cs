@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.AccessPoints;
 
-public class DeleteAccessPointUseCase(IHardwareRepository repository)
+public class DeleteAccessPointUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {

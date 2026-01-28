@@ -26,7 +26,7 @@ public class AccessPointGetByNameCommand(
         }
 
         AnsiConsole.MarkupLine(
-            $"[green]{ap.Name}[/]  Model: {ap.Model ?? "Unknown"}, Speed: {(ap.Speed?.ToString() ?? "Unknown")}Gbps");
+            $"[green]{ap.Name}[/]  Model: {ap.Model ?? "Unknown"}, Speed: {ap.Speed?.ToString() ?? "Unknown"}Gbps");
 
         return 0;
     }

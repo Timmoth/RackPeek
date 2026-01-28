@@ -1,7 +1,4 @@
-using System;
-
 namespace RackPeek.Domain.Resources.Services.Networking;
-
 
 public readonly struct Cidr
 {
@@ -16,7 +13,10 @@ public readonly struct Cidr
         Prefix = prefix;
     }
 
-    public bool Contains(uint ip) => (ip & Mask) == Network;
+    public bool Contains(uint ip)
+    {
+        return (ip & Mask) == Network;
+    }
 
     public override string ToString()
     {
@@ -29,11 +29,11 @@ public readonly struct Cidr
         if (parts.Length != 2)
             throw new ArgumentException($"CIDR must be in format a.b.c.d/nn: {cidr}");
 
-        uint ip = IpHelper.ToUInt32(parts[0]);
-        int prefix = int.Parse(parts[1]);
+        var ip = IpHelper.ToUInt32(parts[0]);
+        var prefix = int.Parse(parts[1]);
 
-        uint mask = IpHelper.MaskFromPrefix(prefix);
-        uint network = ip & mask;
+        var mask = IpHelper.MaskFromPrefix(prefix);
+        var network = ip & mask;
 
         return new Cidr(network, mask, prefix);
     }

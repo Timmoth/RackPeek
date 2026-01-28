@@ -38,7 +38,7 @@ public class ServiceDescribeCommand(
         grid.AddRow("Port:", service.Port?.ToString() ?? "Unknown");
         grid.AddRow("Protocol:", service.Protocol ?? "Unknown");
         grid.AddRow("Url:", service.Url ?? "Unknown");
-        grid.AddRow("Runs On:", service.RunsOn ?? "Unknown");
+        grid.AddRow("Runs On:", ServicesFormatExtensions.FormatRunsOn(service.RunsOnSystemHost, service.RunsOnPhysicalHost));
 
         AnsiConsole.Write(
             new Panel(grid)

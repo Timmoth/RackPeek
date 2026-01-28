@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers.Nics;
 
-public class RemoveNicUseCase(IHardwareRepository repository)
+public class RemoveNicUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string serverName, int index)
     {

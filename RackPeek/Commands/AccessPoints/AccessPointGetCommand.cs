@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Reports;
+using RackPeek.Domain.Resources.Hardware.AccessPoints;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

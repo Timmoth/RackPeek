@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
 
-public class AddUpsUseCase(IHardwareRepository repository)
+public class AddUpsUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {

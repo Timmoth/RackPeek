@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers.Drives;
 
-public class RemoveDriveUseCase(IHardwareRepository repository)
+public class RemoveDriveUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string serverName, int index)
     {

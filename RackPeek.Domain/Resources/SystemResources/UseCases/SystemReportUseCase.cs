@@ -14,7 +14,7 @@ public record SystemReportRow(
     string? RunsOn
 );
 
-public class SystemReportUseCase(ISystemRepository repository)
+public class SystemReportUseCase(ISystemRepository repository) : IUseCase
 {
     public async Task<SystemReport> ExecuteAsync()
     {

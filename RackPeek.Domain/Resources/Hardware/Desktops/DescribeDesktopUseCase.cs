@@ -12,7 +12,7 @@ public record DesktopDescription(
     int GpuCount
 );
 
-public class DescribeDesktopUseCase(IHardwareRepository repository)
+public class DescribeDesktopUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<DesktopDescription?> ExecuteAsync(string name)
     {

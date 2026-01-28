@@ -1,11 +1,11 @@
 using RackPeek.Domain.Resources.Hardware.Servers;
-using RackPeek.Domain.Resources.SystemResources;
+using RackPeek.Domain.Resources.Services;
 
-namespace RackPeek.Domain.Resources.Services.UseCases;
+namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
 public class GetSystemServiceTreeUseCase(
     ISystemRepository systemRepository,
-    IServiceRepository serviceRepository)
+    IServiceRepository serviceRepository) : IUseCase
 {
     public async Task<SystemDependencyTree?> ExecuteAsync(string systemName)
     {
@@ -15,6 +15,5 @@ public class GetSystemServiceTreeUseCase(
         var services = await serviceRepository.GetBySystemHostAsync(system.Name);
 
         return new SystemDependencyTree(system, services);
-        
     }
 }
