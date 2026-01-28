@@ -1,0 +1,95 @@
+﻿@using RackPeek.Domain.Resources.Hardware.Models
+@using RackPeek.Domain.Resources.SystemResources
+@inject ISystemRepository SystemRepository
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
+    @if (_systems is null)
+    {
+        <div class="text-zinc-500">loading systems…</div>
+    }
+    else if (_systems.Count == 0)
+    {
+        <div class="text-zinc-500">no systems found</div>
+    }
+    else
+    {
+        <div class="space-y-4">
+            @foreach (var system in _systems)
+            {
+                <NavLink href="@($"/resources/systems/{system.Name}")" class="block">
+                    <div class="border border-zinc-800 rounded p-4 bg-zinc-900 hover:bg-zinc-800 transition-colors">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="text-zinc-100">
+                                @system.Name
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(system.RunsOn))
+                            {
+                                <span class="text-xs text-emerald-400">
+                                    Runs on: @system.RunsOn
+                                </span>
+                            }
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+                            @if (!string.IsNullOrWhiteSpace(system.Type))
+                            {
+                                <div>
+                                    <div class="text-zinc-400 mb-1">Type</div>
+                                    <div class="text-zinc-300">@system.Type</div>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(system.Os))
+                            {
+                                <div>
+                                    <div class="text-zinc-400 mb-1">OS</div>
+                                    <div class="text-zinc-300">@system.Os</div>
+                                </div>
+                            }
+
+                            @if (system.Cores.HasValue)
+                            {
+                                <div>
+                                    <div class="text-zinc-400 mb-1">Cores</div>
+                                    <div class="text-zinc-300">@system.Cores</div>
+                                </div>
+                            }
+
+                            @if (system.Ram.HasValue)
+                            {
+                                <div>
+                                    <div class="text-zinc-400 mb-1">RAM</div>
+                                    <div class="text-zinc-300">@system.Ram GB</div>
+                                </div>
+                            }
+
+                            @if (system.Drives?.Any() == true)
+                            {
+                                <div>
+                                    <div class="text-zinc-400 mb-1">Drives</div>
+                                    @foreach (var drive in system.Drives)
+                                    {
+                                        <div class="text-zinc-300">
+                                            @drive.Type — @drive.Size GB
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </NavLink>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private IReadOnlyList<SystemResource>? _systems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _systems = await SystemRepository.GetAllAsync();
+    }
+}

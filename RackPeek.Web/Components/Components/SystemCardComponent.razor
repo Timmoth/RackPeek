@@ -1,0 +1,71 @@
+﻿@using RackPeek.Domain.Resources.SystemResources
+@typeparam TSystem where TSystem : SystemResource
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+    <div class="flex justify-between items-center mb-3">
+        <div class="text-zinc-100">
+            @System.Name
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(System.RunsOn))
+        {
+            <span class="text-xs text-emerald-400">
+                Runs on: @System.RunsOn
+            </span>
+        }
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+        @if (!string.IsNullOrWhiteSpace(System.Type))
+        {
+            <div>
+                <div class="text-zinc-400 mb-1">Type</div>
+                <div class="text-zinc-300">@System.Type</div>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(System.Os))
+        {
+            <div>
+                <div class="text-zinc-400 mb-1">OS</div>
+                <div class="text-zinc-300">@System.Os</div>
+            </div>
+        }
+
+        @if (System.Cores.HasValue)
+        {
+            <div>
+                <div class="text-zinc-400 mb-1">Cores</div>
+                <div class="text-zinc-300">@System.Cores</div>
+            </div>
+        }
+
+        @if (System.Ram.HasValue)
+        {
+            <div>
+                <div class="text-zinc-400 mb-1">RAM</div>
+                <div class="text-zinc-300">@System.Ram GB</div>
+            </div>
+        }
+
+        @if (System.Drives?.Any() == true)
+        {
+            <div>
+                <div class="text-zinc-400 mb-1">Drives</div>
+                @foreach (var drive in System.Drives)
+                {
+                    <div class="text-zinc-300">
+                        @drive.Type — @drive.Size GB
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public TSystem System { get; set; } = default!;
+}

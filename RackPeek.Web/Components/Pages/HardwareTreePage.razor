@@ -45,18 +45,23 @@
                                     {
                                         <li>
                                             <!-- System -->
-                                            <div class="text-zinc-300">
-                                                └─ @system.SystemName
-                                            </div>
+                                            <NavLink href="@($"/resources/systems/{system.SystemName}")" class="block">
+                                                <div class="text-zinc-300">
+                                                    └─ @system.SystemName
+                                                </div>
+                                            </NavLink>
 
                                             @if (system.Services.Any())
                                             {
                                                 <ul class="ml-4 mt-1 space-y-1">
                                                     @foreach (var service in system.Services.OrderBy(s => s))
                                                     {
-                                                        <li class="text-zinc-500">
-                                                            > @service
-                                                        </li>
+                                                        <NavLink href="@($"/resources/services/{service}")" class="block">
+
+                                                            <li class="text-zinc-500">
+                                                                > @service
+                                                            </li>
+                                                        </NavLink>
                                                     }
                                                 </ul>
                                             }

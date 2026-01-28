@@ -1,0 +1,42 @@
+﻿@page "/resources/systems/{SystemName}"
+@using RackPeek.Domain.Resources.Hardware
+@using RackPeek.Domain.Resources.Hardware.Models
+@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Web.Components.Components
+@inject ISystemRepository SystemRepository
+
+<PageTitle>System Details</PageTitle>
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
+    @if (_system is null && !_loading)
+    {
+        <div class="text-zinc-500">System not found</div>
+    }
+    else if (_loading)
+    {
+        <div class="text-zinc-500">loading system…</div>
+    }
+    else
+    {
+        <h1 class="text-lg text-zinc-100 mb-6">
+            @_system.Name (@_system.Kind)
+        </h1>
+
+        <SystemCardComponent System="_system" />
+
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string SystemName { get; set; } = string.Empty;
+
+    private SystemResource? _system;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _system = await SystemRepository.GetByNameAsync(SystemName);
+        _loading = false;
+    }
+}

@@ -1,0 +1,35 @@
+﻿@using RackPeek.Domain.Resources.Services
+@inject IServiceRepository ServiceRepository
+
+<PageTitle>Services</PageTitle>
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
+    @if (_services is null)
+    {
+        <div class="text-zinc-500">loading services…</div>
+    }
+    else if (_services.Count == 0)
+    {
+        <div class="text-zinc-500">no services found</div>
+    }
+    else
+    {
+        <div class="space-y-4">
+            @foreach (var svc in _services)
+            {
+                <NavLink href="@($"/resources/services/{svc.Name}")" class="block">
+                    <ServiceCardComponent TService="Service" Service="svc" />
+                </NavLink>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private IReadOnlyList<Service>? _services;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _services = await ServiceRepository.GetAllAsync();
+    }
+}

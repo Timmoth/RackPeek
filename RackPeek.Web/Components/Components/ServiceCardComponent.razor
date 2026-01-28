@@ -1,0 +1,61 @@
+﻿@using RackPeek.Domain.Resources.Services
+@typeparam TService where TService : Service
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+    <div class="flex justify-between items-center mb-3">
+        <div class="text-zinc-100">
+            @Service.Name
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Service.RunsOn))
+        {
+            <span class="text-xs text-emerald-400">
+                Runs on: @Service.RunsOn
+            </span>
+        }
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+        @if (Service.Network is not null)
+        {
+            @if (!string.IsNullOrWhiteSpace(Service.Network.Ip))
+            {
+                <div>
+                    <div class="text-zinc-400 mb-1">IP</div>
+                    <div class="text-zinc-300">@Service.Network.Ip</div>
+                </div>
+            }
+
+            @if (Service.Network.Port.HasValue)
+            {
+                <div>
+                    <div class="text-zinc-400 mb-1">Port</div>
+                    <div class="text-zinc-300">@Service.Network.Port</div>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Service.Network.Protocol))
+            {
+                <div>
+                    <div class="text-zinc-400 mb-1">Protocol</div>
+                    <div class="text-zinc-300">@Service.Network.Protocol</div>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Service.Network.Url))
+            {
+                <div>
+                    <div class="text-zinc-400 mb-1">URL</div>
+                    <div class="text-zinc-300 break-all">@Service.Network.Url</div>
+                </div>
+            }
+        }
+
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public TService Service { get; set; } = default!;
+}
