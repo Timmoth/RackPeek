@@ -366,7 +366,7 @@ resources:
       port: 2049
       protocol: TCP
       url: nfs://nfs.lan
-    runsOn: storage-node-2
+    runsOn: dell-c6400-node01
 
   - kind: Service
     name: iscsi-target
@@ -393,7 +393,7 @@ resources:
       port: 8000
       protocol: TCP
       url: http://docs.lan:8000
-    runsOn: docker-host
+    runsOn: dell-c6400-node01
 
   - kind: Service
     name: openldap
@@ -402,7 +402,7 @@ resources:
       port: 389
       protocol: TCP
       url: ldap://ldap.internal:389
-    runsOn: auth-node
+    runsOn: dell-c6400-node01
 
   - kind: Service
     name: keycloak
@@ -411,7 +411,7 @@ resources:
       port: 8080
       protocol: TCP
       url: http://keycloak.internal:8080
-    runsOn: auth-node
+    runsOn: dell-c6400-node01
 
   - kind: Service
     name: ntp-server
