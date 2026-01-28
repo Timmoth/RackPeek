@@ -3,6 +3,7 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Yaml;
 
+
 public class YamlHardwareRepository(YamlResourceCollection resources) : IHardwareRepository
 {
     public Task<IReadOnlyList<Hardware>> GetAllAsync()
@@ -14,6 +15,57 @@ public class YamlHardwareRepository(YamlResourceCollection resources) : IHardwar
     {
         return Task.FromResult(resources.GetByName(name) as Hardware);
     }
+    
+    public Task<List<HardwareTree>> GetTreeAsync()
+    {
+        var hardwareTree = new List<HardwareTree>();
+
+        var systemGroups = resources.SystemResources
+            .Where(s => !string.IsNullOrWhiteSpace(s.RunsOn))
+            .GroupBy(s => s.RunsOn!.Trim(), StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
+
+        var serviceGroups = resources.ServiceResources
+            .Where(s => !string.IsNullOrWhiteSpace(s.RunsOn))
+            .GroupBy(s => s.RunsOn!.Trim(), StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var hardware in resources.HardwareResources)
+        {
+            var systems = new List<SystemTree>();
+            var hardwareKey = hardware.Name.Trim();
+
+            if (systemGroups.TryGetValue(hardwareKey, out var systemResources))
+            {
+                foreach (var system in systemResources)
+                {
+                    var services = new List<string>();
+                    var systemKey = system.Name.Trim();
+
+                    if (serviceGroups.TryGetValue(systemKey, out var serviceResources))
+                    {
+                        services.AddRange(serviceResources.Select(s => s.Name));
+                    }
+
+                    systems.Add(new SystemTree
+                    {
+                        SystemName = system.Name,
+                        Services = services
+                    });
+                }
+            }
+
+            hardwareTree.Add(new HardwareTree
+            {
+                Kind = hardware.Kind,
+                HardwareName = hardware.Name,
+                Systems = systems
+            });
+        }
+
+        return Task.FromResult(hardwareTree);
+    }
+
 
     public Task AddAsync(Hardware hardware)
     {

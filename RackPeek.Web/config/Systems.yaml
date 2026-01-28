@@ -1,0 +1,184 @@
+resources:
+  - kind: System
+    type: Hypervisor
+    name: proxmox-host
+    os: proxmox
+    cores: 16
+    ram: 64gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: ContainerHost
+    name: docker-host
+    os: ubuntu
+    cores: 12
+    ram: 32gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: KubernetesNode
+    name: k8s-node-1
+    os: ubuntu
+    cores: 8
+    ram: 32gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: KubernetesNode
+    name: k8s-node-2
+    os: ubuntu
+    cores: 8
+    ram: 32gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: KubernetesNode
+    name: k8s-node-3
+    os: ubuntu
+    cores: 8
+    ram: 32gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: KubernetesControlPlane
+    name: k8s-control-plane
+    os: ubuntu
+    cores: 4
+    ram: 16gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Monitoring
+    name: monitoring-node
+    os: ubuntu
+    cores: 8
+    ram: 32gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Storage
+    name: storage-node-1
+    os: truenas
+    cores: 8
+    ram: 64gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Storage
+    name: storage-node-2
+    os: truenas
+    cores: 8
+    ram: 64gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Storage
+    name: storage-node-3
+    os: truenas
+    cores: 8
+    ram: 64gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Database
+    name: db-node-1
+    os: ubuntu
+    cores: 8
+    ram: 32gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Database
+    name: db-node-2
+    os: ubuntu
+    cores: 8
+    ram: 32gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Cache
+    name: cache-node
+    os: ubuntu
+    cores: 4
+    ram: 16gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Search
+    name: search-node
+    os: ubuntu
+    cores: 8
+    ram: 32gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Development
+    name: dev-node-1
+    os: ubuntu
+    cores: 4
+    ram: 16gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Development
+    name: dev-node-2
+    os: ubuntu
+    cores: 4
+    ram: 16gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: Development
+    name: dev-node-3
+    os: ubuntu
+    cores: 6
+    ram: 24gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: VirtualMachineCluster
+    name: vm-cluster-1
+    os: proxmox
+    cores: 12
+    ram: 48gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: VirtualMachineCluster
+    name: vm-cluster-2
+    os: proxmox
+    cores: 12
+    ram: 48gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: BareMetal
+    name: baremetal-rpi4
+    os: raspbian
+    cores: 4
+    ram: 8gb
+    runsOn: rack-edge
+
+  - kind: System
+    type: BareMetal
+    name: baremetal-rpi3
+    os: raspbian
+    cores: 4
+    ram: 4gb
+    runsOn: rack-edge
+
+  - kind: System
+    type: Infrastructure
+    name: infra-node
+    os: ubuntu
+    cores: 4
+    ram: 16gb
+    runsOn: dell-c6400-node01
+
+  - kind: System
+    type: NetworkAppliance
+    name: router-appliance
+    os: openwrt
+    cores: 2
+    ram: 2gb
+    runsOn: network-rack

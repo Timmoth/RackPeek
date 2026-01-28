@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RackPeek.Domain", "RackPeek.Domain\RackPeek.Domain.csproj", "{760E6165-A7E0-4144-B289-1BAB6483FD29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RackPeek.Web", "RackPeek.Web\RackPeek.Web.csproj", "{7E5A9ABE-B350-4D1B-86E5-03D9CDF44F84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{760E6165-A7E0-4144-B289-1BAB6483FD29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{760E6165-A7E0-4144-B289-1BAB6483FD29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{760E6165-A7E0-4144-B289-1BAB6483FD29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E5A9ABE-B350-4D1B-86E5-03D9CDF44F84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E5A9ABE-B350-4D1B-86E5-03D9CDF44F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E5A9ABE-B350-4D1B-86E5-03D9CDF44F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E5A9ABE-B350-4D1B-86E5-03D9CDF44F84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

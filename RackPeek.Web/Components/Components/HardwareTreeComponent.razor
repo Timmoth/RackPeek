@@ -1,0 +1,83 @@
+﻿@page "/tree"
+@using RackPeek.Domain.Resources.Hardware
+@inject IHardwareRepository HardwareRepository
+
+<PageTitle>Tree View</PageTitle>
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
+    <h1 class="text-lg text-zinc-100 mb-6">
+        Tree View
+    </h1>
+
+    @if (_tree is null)
+    {
+        <div class="text-zinc-500">loading tree…</div>
+    }
+    else if (_tree.Count == 0)
+    {
+        <div class="text-zinc-500">no resources found</div>
+    }
+    else
+    {
+        @foreach (var group in _tree
+            .OrderBy(h => h.Kind)
+            .ThenBy(h => h.HardwareName)
+            .GroupBy(h => h.Kind))
+        {
+            <!-- Hardware Kind Header -->
+            <div class="mb-6">
+                <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
+                    @group.Key
+                </div>
+
+                <ul class="space-y-4">
+                    @foreach (var hardware in group)
+                    {
+                        <li>
+                            <!-- Hardware -->
+                            <div class="text-zinc-100">
+                                @hardware.HardwareName
+                            </div>
+
+                            @if (hardware.Systems.Any())
+                            {
+                                <ul class="ml-4 mt-2 border-l border-zinc-800 pl-4 space-y-2">
+                                    @foreach (var system in hardware.Systems.OrderBy(s => s.SystemName))
+                                    {
+                                        <li>
+                                            <!-- System -->
+                                            <div class="text-zinc-300">
+                                                └─ @system.SystemName
+                                            </div>
+
+                                            @if (system.Services.Any())
+                                            {
+                                                <ul class="ml-4 mt-1 space-y-1">
+                                                    @foreach (var service in system.Services.OrderBy(s => s))
+                                                    {
+                                                        <li class="text-zinc-500">
+                                                            > @service
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private List<HardwareTree>? _tree;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _tree = await HardwareRepository.GetTreeAsync();
+    }
+}
