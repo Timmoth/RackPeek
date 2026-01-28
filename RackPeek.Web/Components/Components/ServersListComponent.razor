@@ -2,13 +2,9 @@
 @using RackPeek.Domain.Resources.Hardware.Servers
 @inject GetServersUseCase GetServers
 
-<PageTitle>CLI Monitor</PageTitle>
+<PageTitle>Servers</PageTitle>
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
-    <h1 class="text-lg text-zinc-100 mb-6">
-        CLI Hardware Monitor
-    </h1>
-
     @if (_servers is null)
     {
         <div class="text-zinc-500">loading servers…</div>
@@ -22,84 +18,86 @@
         <div class="space-y-4">
             @foreach (var server in _servers)
             {
-                <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="text-zinc-100">
-                            @server.Name
+                <NavLink href="@($"/resources/hardware/{server.Name}")" class="block">
+                    <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="text-zinc-100">
+                                @server.Name
+                            </div>
+
+                            @if (server.Ipmi == true)
+                            {
+                                <span class="text-xs text-emerald-400">IPMI</span>
+                            }
                         </div>
 
-                        @if (server.Ipmi == true)
-                        {
-                            <span class="text-xs text-emerald-400">IPMI</span>
-                        }
-                    </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-
-                        @if (server.Cpus?.Any() == true)
-                        {
-                            <div>
-                                <div class="text-zinc-400 mb-1">CPU</div>
-                                @foreach (var cpu in server.Cpus)
-                                {
-                                    <div class="text-zinc-300">
-                                        @cpu.Model — @cpu.Cores cores / @cpu.Threads threads
-                                    </div>
-                                }
-                            </div>
-                        }
-
-                        @if (server.Ram is not null)
-                        {
-                            <div>
-                                <div class="text-zinc-400 mb-1">RAM</div>
-                                <div class="text-zinc-300">
-                                    @server.Ram.Size GB @server.Ram.Mts MT/s
+                            @if (server.Cpus?.Any() == true)
+                            {
+                                <div>
+                                    <div class="text-zinc-400 mb-1">CPU</div>
+                                    @foreach (var cpu in server.Cpus)
+                                    {
+                                        <div class="text-zinc-300">
+                                            @cpu.Model — @cpu.Cores cores / @cpu.Threads threads
+                                        </div>
+                                    }
                                 </div>
-                            </div>
-                        }
+                            }
 
-                        @if (server.Drives?.Any() == true)
-                        {
-                            <div>
-                                <div class="text-zinc-400 mb-1">Drives</div>
-                                @foreach (var drive in server.Drives)
-                                {
+                            @if (server.Ram is not null)
+                            {
+                                <div>
+                                    <div class="text-zinc-400 mb-1">RAM</div>
                                     <div class="text-zinc-300">
-                                        @drive.Type — @drive.Size GB
+                                        @server.Ram.Size GB @server.Ram.Mts MT/s
                                     </div>
-                                }
-                            </div>
-                        }
+                                </div>
+                            }
 
-                        @if (server.Nics?.Any() == true)
-                        {
-                            <div>
-                                <div class="text-zinc-400 mb-1">NICs</div>
-                                @foreach (var nic in server.Nics)
-                                {
-                                    <div class="text-zinc-300">
-                                        @nic.Type — @nic.Speed Gbps (@nic.Ports ports)
-                                    </div>
-                                }
-                            </div>
-                        }
+                            @if (server.Drives?.Any() == true)
+                            {
+                                <div>
+                                    <div class="text-zinc-400 mb-1">Drives</div>
+                                    @foreach (var drive in server.Drives)
+                                    {
+                                        <div class="text-zinc-300">
+                                            @drive.Type — @drive.Size GB
+                                        </div>
+                                    }
+                                </div>
+                            }
 
-                        @if (server.Gpus?.Any() == true)
-                        {
-                            <div>
-                                <div class="text-zinc-400 mb-1">GPU</div>
-                                @foreach (var gpu in server.Gpus)
-                                {
-                                    <div class="text-zinc-300">
-                                        @gpu.Model — @gpu.Vram GB VRAM
-                                    </div>
-                                }
-                            </div>
-                        }
+                            @if (server.Nics?.Any() == true)
+                            {
+                                <div>
+                                    <div class="text-zinc-400 mb-1">NICs</div>
+                                    @foreach (var nic in server.Nics)
+                                    {
+                                        <div class="text-zinc-300">
+                                            @nic.Type — @nic.Speed Gbps (@nic.Ports ports)
+                                        </div>
+                                    }
+                                </div>
+                            }
 
+                            @if (server.Gpus?.Any() == true)
+                            {
+                                <div>
+                                    <div class="text-zinc-400 mb-1">GPU</div>
+                                    @foreach (var gpu in server.Gpus)
+                                    {
+                                        <div class="text-zinc-300">
+                                            @gpu.Model — @gpu.Vram GB VRAM
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                        </div>
                     </div>
-                </div>
+                </NavLink>
             }
         </div>
     }

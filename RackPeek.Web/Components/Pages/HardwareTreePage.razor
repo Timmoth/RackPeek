@@ -1,13 +1,10 @@
-﻿@page "/tree"
+﻿@page "/hardware/tree"
 @using RackPeek.Domain.Resources.Hardware
 @inject IHardwareRepository HardwareRepository
 
-<PageTitle>Tree View</PageTitle>
+<PageTitle>Hardware Tree</PageTitle>
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
-    <h1 class="text-lg text-zinc-100 mb-6">
-        Tree View
-    </h1>
 
     @if (_tree is null)
     {
@@ -35,9 +32,11 @@
                     {
                         <li>
                             <!-- Hardware -->
-                            <div class="text-zinc-100">
-                                @hardware.HardwareName
-                            </div>
+                            <NavLink href="@($"/resources/hardware/{hardware.HardwareName}")" class="block">
+                                <div class="text-zinc-100">
+                                    @hardware.HardwareName
+                                </div>
+                            </NavLink>
 
                             @if (hardware.Systems.Any())
                             {

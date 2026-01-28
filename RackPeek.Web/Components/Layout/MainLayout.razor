@@ -1,3 +1,27 @@
 ﻿@inherits LayoutComponentBase
 
-@Body
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono">
+
+    <!-- Header / Branding -->
+    <header class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900">
+        <div class="text-xl font-bold text-emerald-400 tracking-wider">
+            rackpeek
+        </div>
+
+        <!-- Navigation -->
+        <nav class="space-x-6 text-sm">
+            <NavLink href="/hardware/tree" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
+                Hardware
+            </NavLink>
+            <NavLink href="/servers/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
+                Servers
+            </NavLink>
+        </nav>
+    </header>
+
+    <!-- Page content -->
+    <main class="p-6">
+        @Body
+    </main>
+
+</div>

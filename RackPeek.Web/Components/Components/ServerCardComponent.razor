@@ -1,0 +1,87 @@
+﻿@using RackPeek.Domain.Resources.Hardware.Models
+@using RackPeek.Domain.Resources.Hardware.Servers
+@typeparam TServer where TServer : Server
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+    <div class="flex justify-between items-center mb-3">
+        <div class="text-zinc-100">
+            @Server.Name
+        </div>
+
+        @if (Server.Ipmi == true)
+        {
+            <span class="text-xs text-emerald-400">IPMI</span>
+        }
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+        @if (Server.Cpus?.Any() == true)
+        {
+            <div>
+                <div class="text-zinc-400 mb-1">CPU</div>
+                @foreach (var cpu in Server.Cpus)
+                {
+                    <div class="text-zinc-300">
+                        @cpu.Model — @cpu.Cores cores / @cpu.Threads threads
+                    </div>
+                }
+            </div>
+        }
+
+        @if (Server.Ram is not null)
+        {
+            <div>
+                <div class="text-zinc-400 mb-1">RAM</div>
+                <div class="text-zinc-300">
+                    @Server.Ram.Size GB @Server.Ram.Mts MT/s
+                </div>
+            </div>
+        }
+
+        @if (Server.Drives?.Any() == true)
+        {
+            <div>
+                <div class="text-zinc-400 mb-1">Drives</div>
+                @foreach (var drive in Server.Drives)
+                {
+                    <div class="text-zinc-300">
+                        @drive.Type — @drive.Size GB
+                    </div>
+                }
+            </div>
+        }
+
+        @if (Server.Nics?.Any() == true)
+        {
+            <div>
+                <div class="text-zinc-400 mb-1">NICs</div>
+                @foreach (var nic in Server.Nics)
+                {
+                    <div class="text-zinc-300">
+                        @nic.Type — @nic.Speed Gbps (@nic.Ports ports)
+                    </div>
+                }
+            </div>
+        }
+
+        @if (Server.Gpus?.Any() == true)
+        {
+            <div>
+                <div class="text-zinc-400 mb-1">GPU</div>
+                @foreach (var gpu in Server.Gpus)
+                {
+                    <div class="text-zinc-300">
+                        @gpu.Model — @gpu.Vram GB VRAM
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public TServer Server { get; set; } = default!;
+}

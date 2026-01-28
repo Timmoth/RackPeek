@@ -1,0 +1,49 @@
+﻿@page "/resources/hardware/{HardwareName}"
+@using RackPeek.Domain.Resources.Hardware
+@using RackPeek.Domain.Resources.Hardware.Models
+@using RackPeek.Web.Components.Components
+@inject IHardwareRepository HardwareRepository
+
+<PageTitle>Hardware Details</PageTitle>
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
+    @if (_hardware is null && !_loading)
+    {
+        <div class="text-zinc-500">Hardware not found</div>
+    }
+    else if (_loading)
+    {
+        <div class="text-zinc-500">loading hardware…</div>
+    }
+    else
+    {
+        <h1 class="text-lg text-zinc-100 mb-6">
+            @_hardware.Name (@_hardware.Kind)
+        </h1>
+
+        @if (_hardware is Server server)
+        {
+            <ServerCardComponent Server="server" />
+        }
+        else
+        {
+            <div class="text-zinc-400">
+                No detailed view for hardware type: @_hardware.Kind
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string HardwareName { get; set; } = string.Empty;
+
+    private Hardware? _hardware;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _hardware = await HardwareRepository.GetByNameAsync(HardwareName);
+        _loading = false;
+    }
+}
