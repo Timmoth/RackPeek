@@ -17,5 +17,6 @@ resources:
     gpus:
       - model: RTX 3080
         vram: 12
+    model:
     name: dell-optiplex
     tags: 

@@ -1,5 +1,4 @@
-﻿@using RackPeek.Domain.Resources.Services
-@typeparam TService where TService : Service
+﻿@typeparam TService where TService : RackPeek.Domain.Resources.Services.Service
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
@@ -7,60 +6,135 @@
             @Service.Name
         </div>
 
-        @if (!string.IsNullOrWhiteSpace(Service.RunsOn))
-        {
-            <NavLink href="@($"/resources/systems/{Service.RunsOn}")" class="block">
-                <span class="text-xs text-emerald-400">
-                    Runs on: @Service.RunsOn
-                </span>
-            </NavLink>
-        }
+        <div class="flex gap-3 text-xs">
+            @if (!_isEditing)
+            {
+                <button class="text-zinc-400 hover:text-zinc-200"
+                        @onclick="BeginEdit">
+                    Edit
+                </button>
+            }
+            else
+            {
+                <button class="text-emerald-400 hover:text-emerald-300"
+                        @onclick="Save">
+                    Save
+                </button>
+                <button class="text-zinc-500 hover:text-zinc-300"
+                        @onclick="Cancel">
+                    Cancel
+                </button>
+            }
+        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
 
-        @if (Service.Network is not null)
-        {
-            @if (!string.IsNullOrWhiteSpace(Service.Network.Ip))
+        <!-- IP -->
+        <div>
+            <div class="text-zinc-400 mb-1">IP</div>
+            @if (_isEditing)
             {
-                <div>
-                    <div class="text-zinc-400 mb-1">IP</div>
-                    <div class="text-zinc-300">@Service.Network.Ip</div>
-                </div>
+                <input class="input"
+                       @bind="_edit.Ip"/>
             }
+            else if (!string.IsNullOrWhiteSpace(Service.Network?.Ip))
+            {
+                <div class="text-zinc-300">@Service.Network!.Ip</div>
+            }
+        </div>
 
-            @if (Service.Network.Port.HasValue)
+        <!-- Port -->
+        <div>
+            <div class="text-zinc-400 mb-1">Port</div>
+            @if (_isEditing)
             {
-                <div>
-                    <div class="text-zinc-400 mb-1">Port</div>
-                    <div class="text-zinc-300">@Service.Network.Port</div>
-                </div>
+                <input type="number"
+                       class="input"
+                       @bind="_edit.Port"/>
             }
+            else if (Service.Network?.Port.HasValue == true)
+            {
+                <div class="text-zinc-300">@Service.Network.Port</div>
+            }
+        </div>
 
-            @if (!string.IsNullOrWhiteSpace(Service.Network.Protocol))
+        <!-- Protocol -->
+        <div>
+            <div class="text-zinc-400 mb-1">Protocol</div>
+            @if (_isEditing)
             {
-                <div>
-                    <div class="text-zinc-400 mb-1">Protocol</div>
-                    <div class="text-zinc-300">@Service.Network.Protocol</div>
-                </div>
+                <input class="input"
+                       @bind="_edit.Protocol"/>
             }
+            else if (!string.IsNullOrWhiteSpace(Service.Network?.Protocol))
+            {
+                <div class="text-zinc-300">@Service.Network!.Protocol</div>
+            }
+        </div>
 
-            @if (!string.IsNullOrWhiteSpace(Service.Network.Url))
+        <!-- URL -->
+        <div>
+            <div class="text-zinc-400 mb-1">URL</div>
+            @if (_isEditing)
             {
-                <div>
-                    <div class="text-zinc-400 mb-1">URL</div>
-                    <a href="@Service.Network.Url" target="_blank" rel="noopener noreferrer"
-                       class="text-emerald-400 hover:underline break-all">
-                        @Service.Network.Url
-                    </a>
-                </div>
+                <input class="input"
+                       @bind="_edit.Url"/>
             }
-        }
+            else if (!string.IsNullOrWhiteSpace(Service.Network?.Url))
+            {
+                <a href="@Service.Network!.Url"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="text-emerald-400 hover:underline break-all">
+                    @Service.Network.Url
+                </a>
+            }
+        </div>
+
+        <!-- Runs On -->
+        <div>
+            <div class="text-zinc-400 mb-1">Runs On</div>
+            @if (_isEditing)
+            {
+                <input class="input"
+                       @bind="_edit.RunsOn"/>
+            }
+            else if (!string.IsNullOrWhiteSpace(Service.RunsOn))
+            {
+                <NavLink href="@($"/resources/systems/{Service.RunsOn}")"
+                         class="text-emerald-400">
+                    @Service.RunsOn
+                </NavLink>
+            }
+        </div>
 
     </div>
 </div>
 
 @code {
-    [Parameter, EditorRequired]
-    public TService Service { get; set; } = default!;
+    [Parameter][EditorRequired] public TService Service { get; set; } = default!;
+
+    [Parameter] public EventCallback<ServiceEditModel> OnSave { get; set; }
+
+    private bool _isEditing;
+    private ServiceEditModel _edit = new();
+
+    void BeginEdit()
+    {
+        _edit = ServiceEditModel.From(Service);
+        _isEditing = true;
+    }
+
+    async Task Save()
+    {
+        _isEditing = false;
+        await OnSave.InvokeAsync(_edit);
+    }
+
+    void Cancel()
+    {
+        _isEditing = false;
+    }
+
 }

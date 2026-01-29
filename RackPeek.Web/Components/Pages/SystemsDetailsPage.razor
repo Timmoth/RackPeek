@@ -1,10 +1,11 @@
 ﻿@page "/resources/systems/{SystemName}"
 @using RackPeek.Domain.Resources.Hardware
-@using RackPeek.Domain.Resources.Hardware.Models
 @using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.SystemResources.UseCases
 @using RackPeek.Web.Components.Components
 @inject ISystemRepository SystemRepository
-
+@inject UpdateSystemUseCase UpdateSystemUseCase
+@inject GetSystemServiceTreeUseCase GetSystemServiceTreeUseCase
 <PageTitle>System Details</PageTitle>
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
@@ -22,21 +23,50 @@
             @_system.Name (@_system.Kind)
         </h1>
 
-        <SystemCardComponent System="_system" />
+        <SystemCardComponent System="_system" OnSave="UpdateSystem"/>
 
+        @if (_tree is not null && _tree.Services.Any())
+        {
+            <SystemDependencyTreeComponent Tree="_tree"/>
+        }
+        else
+        {
+            <div class="text-zinc-400 m-2">
+                No child systems / services
+            </div>
+        }
     }
 </div>
 
 @code {
-    [Parameter]
-    public string SystemName { get; set; } = string.Empty;
+    [Parameter] public string SystemName { get; set; } = string.Empty;
 
     private SystemResource? _system;
     private bool _loading = true;
+    SystemDependencyTree? _tree;
 
     protected override async Task OnInitializedAsync()
     {
         _system = await SystemRepository.GetByNameAsync(SystemName);
+        _tree = null;
+        if (!string.IsNullOrEmpty(_system?.Name))
+        {
+            _tree = await GetSystemServiceTreeUseCase.ExecuteAsync(_system?.Name!);
+        }
+
         _loading = false;
     }
+
+    async Task UpdateSystem(SystemEditModel edit)
+    {
+        await UpdateSystemUseCase.ExecuteAsync(
+            edit.Name,
+            edit.Type,
+            edit.Os,
+            edit.Cores,
+            edit.Ram,
+            edit.RunsOn
+        );
+    }
+
 }

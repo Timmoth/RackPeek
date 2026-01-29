@@ -1,6 +1,4 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Models
-@using RackPeek.Domain.Resources.Hardware.Servers
-@typeparam TServer where TServer : Server
+﻿@typeparam TServer where TServer : RackPeek.Domain.Resources.Hardware.Models.Server
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
@@ -82,6 +80,5 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired]
-    public TServer Server { get; set; } = default!;
+    [Parameter][EditorRequired] public TServer Server { get; set; } = default!;
 }

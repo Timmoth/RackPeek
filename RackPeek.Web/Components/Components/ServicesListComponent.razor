@@ -1,6 +1,7 @@
 ﻿@using RackPeek.Domain.Resources.Services
+@using RackPeek.Domain.Resources.Services.UseCases
 @inject IServiceRepository ServiceRepository
-
+@inject UpdateServiceUseCase UpdateServiceUseCase
 <PageTitle>Services</PageTitle>
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
@@ -15,10 +16,10 @@
     else
     {
         <div class="space-y-4">
-            @foreach (var svc in _services)
+            @foreach (var svc in _services.OrderBy(s => s.Name))
             {
                 <NavLink href="@($"/resources/services/{svc.Name}")" class="block">
-                    <ServiceCardComponent TService="Service" Service="svc" />
+                    <ServiceCardComponent TService="Service" Service="svc" OnSave="UpdateService"/>
                 </NavLink>
             }
         </div>
@@ -32,4 +33,17 @@
     {
         _services = await ServiceRepository.GetAllAsync();
     }
+
+    async Task UpdateService(ServiceEditModel edit)
+    {
+        await UpdateServiceUseCase.ExecuteAsync(
+            edit.Name,
+            edit.Ip,
+            edit.Port,
+            edit.Protocol,
+            edit.Url,
+            edit.RunsOn
+        );
+    }
+
 }

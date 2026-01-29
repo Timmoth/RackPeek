@@ -1,0 +1,40 @@
+﻿@using RackPeek.Domain.Resources.Hardware
+@if (Tree is null)
+{
+    <div class="text-zinc-500 text-sm">
+        No data.
+    </div>
+}
+else
+{
+    <div class="ml-4 border-l border-zinc-800 pl-4 space-y-2">
+
+        @if (Tree.Services.Any())
+        {
+            @foreach (var service in Tree.Services)
+            {
+                <NavLink href="@($"/resources/services/{service.Name}")" class="block">
+                    <div class="border border-zinc-800 rounded bg-zinc-900 p-2 hover:border-zinc-700">
+                        <div class="text-zinc-200 text-sm">
+                            @service.Name
+                        </div>
+                        <div class="text-xs text-zinc-500 mt-1">
+                            Service
+                        </div>
+                    </div>
+                </NavLink>
+            }
+        }
+        else
+        {
+            <div class="text-xs text-zinc-600 italic">
+                No services
+            </div>
+        }
+
+    </div>
+}
+
+@code {
+    [Parameter][EditorRequired] public SystemDependencyTree? Tree { get; set; }
+}

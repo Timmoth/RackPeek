@@ -3,7 +3,6 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Yaml;
 
-
 public class YamlHardwareRepository(YamlResourceCollection resources) : IHardwareRepository
 {
     public Task<int> GetCountAsync()
@@ -27,7 +26,7 @@ public class YamlHardwareRepository(YamlResourceCollection resources) : IHardwar
     {
         return Task.FromResult(resources.GetByName(name) as Hardware);
     }
-    
+
     public Task<List<HardwareTree>> GetTreeAsync()
     {
         var hardwareTree = new List<HardwareTree>();
@@ -48,16 +47,13 @@ public class YamlHardwareRepository(YamlResourceCollection resources) : IHardwar
             var hardwareKey = hardware.Name.Trim();
 
             if (systemGroups.TryGetValue(hardwareKey, out var systemResources))
-            {
                 foreach (var system in systemResources)
                 {
                     var services = new List<string>();
                     var systemKey = system.Name.Trim();
 
                     if (serviceGroups.TryGetValue(systemKey, out var serviceResources))
-                    {
                         services.AddRange(serviceResources.Select(s => s.Name));
-                    }
 
                     systems.Add(new SystemTree
                     {
@@ -65,7 +61,6 @@ public class YamlHardwareRepository(YamlResourceCollection resources) : IHardwar
                         Services = services
                     });
                 }
-            }
 
             hardwareTree.Add(new HardwareTree
             {

@@ -1,4 +1,3 @@
-using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
@@ -31,6 +30,7 @@ public class ServiceReportUseCase(IServiceRepository repository, ISystemReposito
                 var systemResource = await systemRepo.GetByNameAsync(s.RunsOn);
                 runsOnPhysicalHost = systemResource?.RunsOn;
             }
+
             return new ServiceReportRow(
                 s.Name,
                 s.Network?.Ip,

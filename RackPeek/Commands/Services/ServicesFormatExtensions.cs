@@ -4,22 +4,12 @@ public static class ServicesFormatExtensions
 {
     public static string FormatRunsOn(string? runsOn, string? runsOnHost)
     {
-        if (string.IsNullOrEmpty(runsOn) && string.IsNullOrEmpty(runsOnHost))
-        {
-            return "Unknown";
-        }
-        
-        if (string.IsNullOrEmpty(runsOn))
-        {
-            return runsOnHost!;
-        }
+        if (string.IsNullOrEmpty(runsOn) && string.IsNullOrEmpty(runsOnHost)) return "Unknown";
 
-        if (string.IsNullOrEmpty(runsOnHost))
-        {
-            return runsOn!;
-        }
-        
+        if (string.IsNullOrEmpty(runsOn)) return runsOnHost!;
+
+        if (string.IsNullOrEmpty(runsOnHost)) return runsOn!;
+
         return $"{runsOnHost}/{runsOn}";
-        
     }
 }

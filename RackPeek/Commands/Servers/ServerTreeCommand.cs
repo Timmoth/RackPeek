@@ -1,10 +1,10 @@
-using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Hardware;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace RackPeek.Commands.Servers;
 
-public sealed class ServerTreeCommand(GetServerSystemTreeUseCase useCase) : AsyncCommand<ServerNameSettings>
+public sealed class ServerTreeCommand(GetHardwareSystemTreeUseCase useCase) : AsyncCommand<ServerNameSettings>
 {
     public override async Task<int> ExecuteAsync(
         CommandContext context,

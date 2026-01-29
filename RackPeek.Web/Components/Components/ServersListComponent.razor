@@ -16,10 +16,10 @@
     else
     {
         <div class="space-y-4">
-            @foreach (var server in _servers)
+            @foreach (var server in _servers.OrderBy(s => s.Name))
             {
                 <NavLink href="@($"/resources/hardware/{server.Name}")" class="block">
-                    <ServerCardComponent Server="server" />
+                    <ServerCardComponent Server="server"/>
                 </NavLink>
             }
         </div>
@@ -33,4 +33,5 @@
     {
         _servers = await GetServers.ExecuteAsync();
     }
+
 }

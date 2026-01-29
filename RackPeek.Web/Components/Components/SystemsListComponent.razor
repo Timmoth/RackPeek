@@ -1,6 +1,7 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Models
-@using RackPeek.Domain.Resources.SystemResources
+﻿@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.SystemResources.UseCases
 @inject ISystemRepository SystemRepository
+@inject UpdateSystemUseCase UpdateSystemUseCase
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
     @if (_systems is null)
@@ -14,10 +15,10 @@
     else
     {
         <div class="space-y-4">
-            @foreach (var system in _systems)
+            @foreach (var system in _systems.OrderBy(s => s.Name))
             {
                 <NavLink href="@($"/resources/systems/{system.Name}")" class="block">
-                    <SystemCardComponent System="system" />
+                    <SystemCardComponent System="system" OnSave="UpdateSystem"/>
                 </NavLink>
             }
         </div>
@@ -31,4 +32,17 @@
     {
         _systems = await SystemRepository.GetAllAsync();
     }
+
+    async Task UpdateSystem(SystemEditModel edit)
+    {
+        await UpdateSystemUseCase.ExecuteAsync(
+            edit.Name,
+            edit.Type,
+            edit.Os,
+            edit.Cores,
+            edit.Ram,
+            edit.RunsOn
+        );
+    }
+
 }

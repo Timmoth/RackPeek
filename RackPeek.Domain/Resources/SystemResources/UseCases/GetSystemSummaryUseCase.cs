@@ -2,10 +2,6 @@ namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
 public sealed class SystemSummary
 {
-    public int TotalSystems { get; }
-    public IReadOnlyDictionary<string, int> SystemsByType { get; }
-    public IReadOnlyDictionary<string, int> SystemsByOs { get; }
-
     public SystemSummary(
         int totalSystems,
         IReadOnlyDictionary<string, int> systemsByType,
@@ -15,6 +11,10 @@ public sealed class SystemSummary
         SystemsByType = systemsByType;
         SystemsByOs = systemsByOs;
     }
+
+    public int TotalSystems { get; }
+    public IReadOnlyDictionary<string, int> SystemsByType { get; }
+    public IReadOnlyDictionary<string, int> SystemsByOs { get; }
 }
 
 public class GetSystemSummaryUseCase(ISystemRepository repository) : IUseCase

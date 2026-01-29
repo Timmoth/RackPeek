@@ -6,7 +6,8 @@ public class YamlSystemRepository(YamlResourceCollection resources) : ISystemRep
 {
     public Task<int> GetSystemCountAsync()
     {
-        return Task.FromResult(resources.SystemResources.Count);    }
+        return Task.FromResult(resources.SystemResources.Count);
+    }
 
     public Task<Dictionary<string, int>> GetSystemTypeCountAsync()
     {
@@ -23,7 +24,7 @@ public class YamlSystemRepository(YamlResourceCollection resources) : ISystemRep
             .GroupBy(h => h.Os!)
             .ToDictionary(k => k.Key, v => v.Count()));
     }
-    
+
     public Task<IReadOnlyList<SystemResource>> GetAllAsync()
     {
         return Task.FromResult(resources.SystemResources);

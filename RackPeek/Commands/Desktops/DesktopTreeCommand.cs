@@ -1,10 +1,10 @@
-using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.Resources.Hardware;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace RackPeek.Commands.Desktops;
 
-public sealed class DesktopTreeCommand(GetDesktopSystemTreeUseCase useCase)
+public sealed class DesktopTreeCommand(GetHardwareSystemTreeUseCase useCase)
     : AsyncCommand<DesktopNameSettings>
 {
     public override async Task<int> ExecuteAsync(

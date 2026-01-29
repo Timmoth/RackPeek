@@ -17,9 +17,9 @@
     else
     {
         @foreach (var group in _tree
-            .OrderBy(h => h.Kind)
-            .ThenBy(h => h.HardwareName)
-            .GroupBy(h => h.Kind))
+                          .OrderBy(h => h.Kind)
+                          .ThenBy(h => h.HardwareName)
+                          .GroupBy(h => h.Kind))
         {
             <!-- Hardware Kind Header -->
             <div class="mb-6">
@@ -56,7 +56,8 @@
                                                 <ul class="ml-4 mt-1 space-y-1">
                                                     @foreach (var service in system.Services.OrderBy(s => s))
                                                     {
-                                                        <NavLink href="@($"/resources/services/{service}")" class="block">
+                                                        <NavLink href="@($"/resources/services/{service}")"
+                                                                 class="block">
 
                                                             <li class="text-zinc-500">
                                                                 > @service
@@ -84,4 +85,5 @@
     {
         _tree = await HardwareRepository.GetTreeAsync();
     }
+
 }

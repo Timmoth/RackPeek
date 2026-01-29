@@ -1,4 +1,6 @@
-﻿<dialog id="components-reconnect-modal" class="w-full max-w-md p-6 bg-zinc-900 text-zinc-200 font-mono rounded-lg border border-zinc-800 shadow-lg" data-nosnippet>
+﻿<dialog id="components-reconnect-modal"
+        class="w-full max-w-md p-6 bg-zinc-900 text-zinc-200 font-mono rounded-lg border border-zinc-800 shadow-lg"
+        data-nosnippet>
     <div class="flex flex-col items-center space-y-4">
 
         <!-- Animated rejoin indicator -->
@@ -12,7 +14,8 @@
             Rejoining the server...
         </p>
         <p class="components-reconnect-repeated-attempt-visible text-sm text-amber-400">
-            Rejoin failed... trying again in <span id="components-seconds-to-next-attempt" class="font-bold"></span> seconds.
+            Rejoin failed... trying again in <span id="components-seconds-to-next-attempt" class="font-bold"></span>
+            seconds.
         </p>
         <p class="components-reconnect-failed-visible text-sm text-red-500 text-center">
             Failed to rejoin.<br/>Please retry or reload the page.
@@ -20,10 +23,12 @@
 
         <!-- Buttons -->
         <div class="flex space-x-3">
-            <button id="components-reconnect-button" class="components-reconnect-failed-visible px-4 py-1 bg-emerald-400 text-zinc-900 rounded hover:bg-emerald-500 transition">
+            <button id="components-reconnect-button"
+                    class="components-reconnect-failed-visible px-4 py-1 bg-emerald-400 text-zinc-900 rounded hover:bg-emerald-500 transition">
                 Retry
             </button>
-            <button id="components-resume-button" class="components-pause-visible px-4 py-1 bg-emerald-400 text-zinc-900 rounded hover:bg-emerald-500 transition">
+            <button id="components-resume-button"
+                    class="components-pause-visible px-4 py-1 bg-emerald-400 text-zinc-900 rounded hover:bg-emerald-500 transition">
                 Resume
             </button>
         </div>

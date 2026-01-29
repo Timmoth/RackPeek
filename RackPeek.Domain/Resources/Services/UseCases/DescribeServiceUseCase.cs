@@ -24,9 +24,9 @@ public class DescribeServiceUseCase(IServiceRepository repository, ISystemReposi
         if (!string.IsNullOrEmpty(service.RunsOn))
         {
             var systemResource = await systemRepo.GetByNameAsync(service.RunsOn);
-            runsOnPhysicalHost = systemResource?.RunsOn;   
+            runsOnPhysicalHost = systemResource?.RunsOn;
         }
-        
+
         return new ServiceDescription(
             service.Name,
             service.Network?.Ip,

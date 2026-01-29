@@ -1,23 +1,22 @@
-using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Servers;
+namespace RackPeek.Domain.Resources.Hardware;
 
-public class GetServerSystemTreeUseCase(
+public class GetHardwareSystemTreeUseCase(
     IHardwareRepository hardwareRepository,
     ISystemRepository systemRepository,
     IServiceRepository serviceRepository) : IUseCase
 {
     public async Task<HardwareDependencyTree?> ExecuteAsync(string hardwareName)
     {
-        var server = await hardwareRepository.GetByNameAsync(hardwareName) as Server;
+        var server = await hardwareRepository.GetByNameAsync(hardwareName);
         if (server is null) return null;
 
         return await BuildDependencyTreeAsync(server);
     }
 
-    private async Task<HardwareDependencyTree> BuildDependencyTreeAsync(Server server)
+    private async Task<HardwareDependencyTree> BuildDependencyTreeAsync(Models.Hardware server)
     {
         var systems = await systemRepository.GetByPhysicalHostAsync(server.Name);
 
@@ -35,9 +34,9 @@ public class GetServerSystemTreeUseCase(
     }
 }
 
-public sealed class HardwareDependencyTree(Server hardware, IEnumerable<SystemDependencyTree> systems)
+public sealed class HardwareDependencyTree(Models.Hardware hardware, IEnumerable<SystemDependencyTree> systems)
 {
-    public Server Hardware { get; } = hardware;
+    public Models.Hardware Hardware { get; } = hardware;
     public IEnumerable<SystemDependencyTree> Systems { get; } = systems;
 }
 

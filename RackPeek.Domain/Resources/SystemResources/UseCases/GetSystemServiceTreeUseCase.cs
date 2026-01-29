@@ -1,4 +1,4 @@
-using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;

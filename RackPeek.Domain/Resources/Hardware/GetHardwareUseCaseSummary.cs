@@ -2,9 +2,6 @@ namespace RackPeek.Domain.Resources.Hardware;
 
 public sealed class HardwareSummary
 {
-    public int TotalHardware { get; }
-    public IReadOnlyDictionary<string, int> HardwareByKind { get; }
-
     public HardwareSummary(
         int totalHardware,
         IReadOnlyDictionary<string, int> hardwareByKind)
@@ -12,6 +9,9 @@ public sealed class HardwareSummary
         TotalHardware = totalHardware;
         HardwareByKind = hardwareByKind;
     }
+
+    public int TotalHardware { get; }
+    public IReadOnlyDictionary<string, int> HardwareByKind { get; }
 }
 
 public class GetHardwareUseCaseSummary(IHardwareRepository repository) : IUseCase

@@ -1,0 +1,64 @@
+﻿@using RackPeek.Domain.Resources.Hardware
+@if (Tree is null)
+{
+    <div class="text-zinc-500 text-sm">
+        No data.
+    </div>
+}
+else
+{
+    <div class="space-y-4">
+
+        <!-- Systems -->
+        <div class="ml-4 space-y-4 border-l border-zinc-800 pl-4">
+            @foreach (var systemTree in Tree.Systems)
+            {
+                <div class="space-y-2">
+
+                    <!-- System -->
+                    <NavLink href="@($"/resources/systems/{systemTree.System.Name}")" class="block">
+                        <div class="border border-zinc-800 rounded bg-zinc-900 p-3">
+                            <div class="text-zinc-100">
+                                @systemTree.System.Name
+                            </div>
+                            <div class="text-xs text-zinc-500 mt-1">
+                                System
+                            </div>
+                        </div>
+                    </NavLink>
+
+                    <!-- Services -->
+                    @if (systemTree.Services.Any())
+                    {
+                        <div class="ml-4 space-y-2 border-l border-zinc-800 pl-4">
+                            @foreach (var service in systemTree.Services)
+                            {
+                                <NavLink href="@($"/resources/services/{service.Name}")" class="block">
+                                    <div class="border border-zinc-800 rounded bg-zinc-900 p-2">
+                                        <div class="text-zinc-200 text-sm">
+                                            @service.Name
+                                        </div>
+                                        <div class="text-xs text-zinc-500 mt-1">
+                                            Service
+                                        </div>
+                                    </div>
+                                </NavLink>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="ml-4 text-xs text-zinc-600 italic">
+                            No services
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+    </div>
+}
+
+@code {
+    [Parameter][EditorRequired] public HardwareDependencyTree? Tree { get; set; }
+}

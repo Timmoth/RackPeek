@@ -17,7 +17,7 @@ public class YamlServiceRepository(YamlResourceCollection resources) : IServiceR
             .Distinct()
             .Count());
     }
-    
+
     public Task<IReadOnlyList<Service>> GetAllAsync()
     {
         return Task.FromResult(resources.ServiceResources);

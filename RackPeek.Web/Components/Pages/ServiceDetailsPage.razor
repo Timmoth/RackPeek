@@ -1,11 +1,9 @@
 ﻿@page "/resources/services/{ServiceName}"
-@using RackPeek.Domain.Resources.Hardware
-@using RackPeek.Domain.Resources.Hardware.Models
 @using RackPeek.Domain.Resources.Services
-@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.Services.UseCases
 @using RackPeek.Web.Components.Components
 @inject IServiceRepository ServiceRepository
-
+@inject UpdateServiceUseCase UpdateServiceUseCase
 <PageTitle>Service Details</PageTitle>
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
@@ -23,14 +21,12 @@
             @_service.Name (@_service.Kind)
         </h1>
 
-        <ServiceCardComponent Service="_service" />
-
+        <ServiceCardComponent Service="_service" OnSave="UpdateService"/>
     }
 </div>
 
 @code {
-    [Parameter]
-    public string ServiceName { get; set; } = string.Empty;
+    [Parameter] public string ServiceName { get; set; } = string.Empty;
 
     private Service? _service;
     private bool _loading = true;
@@ -40,4 +36,17 @@
         _service = await ServiceRepository.GetByNameAsync(ServiceName);
         _loading = false;
     }
+
+    async Task UpdateService(ServiceEditModel edit)
+    {
+        await UpdateServiceUseCase.ExecuteAsync(
+            edit.Name,
+            edit.Ip,
+            edit.Port,
+            edit.Protocol,
+            edit.Url,
+            edit.RunsOn
+        );
+    }
+
 }

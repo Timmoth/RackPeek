@@ -1,5 +1,4 @@
-﻿@using RackPeek.Domain.Resources.SystemResources
-@typeparam TSystem where TSystem : SystemResource
+﻿@typeparam TSystem where TSystem : RackPeek.Domain.Resources.SystemResources.SystemResource
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
@@ -7,51 +6,107 @@
             @System.Name
         </div>
 
-        @if (!string.IsNullOrWhiteSpace(System.RunsOn))
-        {
-            <NavLink href="@($"/resources/hardware/{System.RunsOn}")" class="block">
-                <span class="text-xs text-emerald-400">
-                    Runs on: @System.RunsOn
-                </span>
-            </NavLink>
-        }
+        <div class="flex gap-3 text-xs">
+            @if (!_isEditing)
+            {
+                <button class="text-zinc-400 hover:text-zinc-200"
+                        @onclick="BeginEdit">
+                    Edit
+                </button>
+            }
+            else
+            {
+                <button class="text-emerald-400 hover:text-emerald-300"
+                        @onclick="Save">
+                    Save
+                </button>
+                <button class="text-zinc-500 hover:text-zinc-300"
+                        @onclick="Cancel">
+                    Cancel
+                </button>
+            }
+        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
 
-        @if (!string.IsNullOrWhiteSpace(System.Type))
-        {
-            <div>
-                <div class="text-zinc-400 mb-1">Type</div>
+        <!-- Type -->
+        <div>
+            <div class="text-zinc-400 mb-1">Type</div>
+            @if (_isEditing)
+            {
+                <input class="input"
+                       @bind="_edit.Type"/>
+            }
+            else if (!string.IsNullOrWhiteSpace(System.Type))
+            {
                 <div class="text-zinc-300">@System.Type</div>
-            </div>
-        }
+            }
+        </div>
 
-        @if (!string.IsNullOrWhiteSpace(System.Os))
-        {
-            <div>
-                <div class="text-zinc-400 mb-1">OS</div>
+        <!-- OS -->
+        <div>
+            <div class="text-zinc-400 mb-1">OS</div>
+            @if (_isEditing)
+            {
+                <input class="input"
+                       @bind="_edit.Os"/>
+            }
+            else if (!string.IsNullOrWhiteSpace(System.Os))
+            {
                 <div class="text-zinc-300">@System.Os</div>
-            </div>
-        }
+            }
+        </div>
 
-        @if (System.Cores.HasValue)
-        {
-            <div>
-                <div class="text-zinc-400 mb-1">Cores</div>
+        <!-- Cores -->
+        <div>
+            <div class="text-zinc-400 mb-1">Cores</div>
+            @if (_isEditing)
+            {
+                <input type="number"
+                       class="input"
+                       @bind="_edit.Cores"/>
+            }
+            else if (System.Cores.HasValue)
+            {
                 <div class="text-zinc-300">@System.Cores</div>
-            </div>
-        }
+            }
+        </div>
 
-        @if (System.Ram.HasValue)
-        {
-            <div>
-                <div class="text-zinc-400 mb-1">RAM</div>
+        <!-- RAM -->
+        <div>
+            <div class="text-zinc-400 mb-1">RAM (GB)</div>
+            @if (_isEditing)
+            {
+                <input type="number"
+                       class="input"
+                       @bind="_edit.Ram"/>
+            }
+            else if (System.Ram.HasValue)
+            {
                 <div class="text-zinc-300">@System.Ram GB</div>
-            </div>
-        }
+            }
+        </div>
 
-        @if (System.Drives?.Any() == true)
+        <!-- Runs On -->
+        <div>
+            <div class="text-zinc-400 mb-1">Runs On</div>
+            @if (_isEditing)
+            {
+                <input class="input"
+                       @bind="_edit.RunsOn"/>
+            }
+            else if (!string.IsNullOrWhiteSpace(System.RunsOn))
+            {
+                <NavLink href="@($"/resources/hardware/{System.RunsOn}")"
+                         class="text-emerald-400 text-sm">
+                    @System.RunsOn
+                </NavLink>
+            }
+        </div>
+
+        <!-- Drives (read-only) -->
+        @if (!_isEditing && System.Drives?.Any() == true)
         {
             <div>
                 <div class="text-zinc-400 mb-1">Drives</div>
@@ -68,6 +123,28 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired]
-    public TSystem System { get; set; } = default!;
+    [Parameter][EditorRequired] public TSystem System { get; set; } = default!;
+
+    [Parameter] public EventCallback<SystemEditModel> OnSave { get; set; }
+
+    private bool _isEditing;
+    private SystemEditModel _edit = new();
+
+    void BeginEdit()
+    {
+        _edit = SystemEditModel.From(System);
+        _isEditing = true;
+    }
+
+    async Task Save()
+    {
+        _isEditing = false;
+        await OnSave.InvokeAsync(_edit);
+    }
+
+    void Cancel()
+    {
+        _isEditing = false;
+    }
+
 }

@@ -20,7 +20,7 @@ public class Program
         );
 
         var yamlDir = "./config";
-        
+
         var collection = new YamlResourceCollection();
         var basePath = Directory.GetCurrentDirectory();
 
@@ -38,7 +38,7 @@ public class Program
         var yamlFiles = Directory.EnumerateFiles(yamlPath, "*.yml")
             .Concat(Directory.EnumerateFiles(yamlPath, "*.yaml"))
             .ToArray();
-        
+
         collection.LoadFiles(yamlFiles.Select(f => Path.Combine(basePath, f)));
 
         // Infrastructure
@@ -46,13 +46,13 @@ public class Program
         builder.Services.AddScoped<ISystemRepository>(_ => new YamlSystemRepository(collection));
         builder.Services.AddScoped<IServiceRepository>(_ => new YamlServiceRepository(collection));
 
-        
+
         builder.Services.AddUseCases();
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
-        
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

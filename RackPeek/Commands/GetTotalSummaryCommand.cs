@@ -50,14 +50,15 @@ public class GetTotalSummaryCommand(IServiceProvider provider) : AsyncCommand
 
         foreach (var (kind, count) in hardwareSummary.HardwareByKind.OrderByDescending(h => h.Value).ThenBy(h => h.Key))
             hardwareNode.AddNode($"{kind}: {count}");
-        
+
         var systemsNode = tree.AddNode(
             $"[bold]Systems[/] ({systemSummary.TotalSystems})");
 
         if (systemSummary.SystemsByType.Count > 0)
         {
             var typesNode = systemsNode.AddNode("[bold]Types[/]");
-            foreach (var (type, count) in systemSummary.SystemsByType.OrderByDescending(h => h.Value).ThenBy(h => h.Key))
+            foreach (var (type, count) in systemSummary.SystemsByType.OrderByDescending(h => h.Value)
+                         .ThenBy(h => h.Key))
                 typesNode.AddNode($"{type}: {count}");
         }
 
@@ -67,7 +68,7 @@ public class GetTotalSummaryCommand(IServiceProvider provider) : AsyncCommand
             foreach (var (os, count) in systemSummary.SystemsByOs.OrderByDescending(h => h.Value).ThenBy(h => h.Key))
                 osNode.AddNode($"{os}: {count}");
         }
-        
+
         var servicesNode = tree.AddNode(
             $"[bold]Services[/] ({serviceSummary.TotalServices})");
 
@@ -76,7 +77,7 @@ public class GetTotalSummaryCommand(IServiceProvider provider) : AsyncCommand
 
         AnsiConsole.Write(tree);
     }
-    
+
     private static void RenderTotals(
         SystemSummary systemSummary,
         AllServicesSummary serviceSummary,
