@@ -8,6 +8,9 @@ RackPeek is open source and community-driven.
 Code, docs, ideas, bug reports, and real-world usage feedback are all massively appreciated.
 If you run a home lab, you belong here.
 
+[![Join our Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/egXRPdesee)
+
+
 ## Philosophy
 RackPeek treats infrastructure documentation as living reference data rather than static paperwork.
 
