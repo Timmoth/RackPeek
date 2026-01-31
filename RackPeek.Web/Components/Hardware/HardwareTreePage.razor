@@ -34,7 +34,8 @@
     else
     {
         @foreach (var group in _tree
-                          .OrderBy(h => h.Kind)
+                          .OrderByDescending(h => h.Systems.Count)
+                          .ThenBy(h => h.Kind)
                           .ThenBy(h => h.HardwareName)
                           .GroupBy(h => h.Kind))
         {
@@ -69,7 +70,7 @@
                             @if (hardware.Systems.Any())
                             {
                                 <ul class="ml-4 mt-2 border-l border-zinc-800 pl-4 space-y-2">
-                                    @foreach (var system in hardware.Systems.OrderBy(s => s.SystemName))
+                                    @foreach (var system in hardware.Systems.OrderByDescending(s => s.Services.Count).ThenBy(s => s.SystemName))
                                     {
                                         <li>
                                             <!-- System -->

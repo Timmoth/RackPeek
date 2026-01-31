@@ -19,11 +19,15 @@
     else
     {
         <div class="space-y-4">
-            @foreach (var system in _systems.OrderBy(s => s.Name))
+            @foreach (var group in _systems.OrderBy(s => s.Name).GroupBy(s => s.RunsOn).OrderByDescending(g => g.Count()))
             {
-                <NavLink href="@($"/resources/systems/{system.Name}")" class="block">
-                    <SystemCardComponent System="system" OnSave="UpdateSystem"/>
-                </NavLink>
+                foreach (var systemResource in group)
+                {
+                    <NavLink href="@($"/resources/systems/{systemResource.Name}")" class="block">
+                        <SystemCardComponent System="systemResource" OnSave="UpdateSystem"/>
+                    </NavLink>
+                }
+      
             }
         </div>
     }

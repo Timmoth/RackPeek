@@ -20,11 +20,14 @@
     else
     {
         <div class="space-y-4">
-            @foreach (var svc in _services.OrderBy(s => s.Name))
+            @foreach (var group in _services.OrderBy(s => s.Name).GroupBy(s => s.RunsOn).OrderByDescending(g => g.Count()))
             {
-                <NavLink href="@($"/resources/services/{svc.Name}")" class="block">
-                    <ServiceCardComponent TService="Service" Service="svc" OnSave="UpdateService"/>
-                </NavLink>
+                foreach (var svc in group)
+                {
+                    <NavLink href="@($"/resources/services/{svc.Name}")" class="block">
+                        <ServiceCardComponent TService="Service" Service="svc" OnSave="UpdateService"/>
+                    </NavLink>
+                }
             }
         </div>
     }
