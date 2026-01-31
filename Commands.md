@@ -15,7 +15,7 @@ COMMANDS:
     systems         Manage systems                            
     accesspoints    Manage access points                      
     ups             Manage UPS units                          
-    desktops                                                  
+    desktops        Manage Desktops                           
     services        Manage services                           
 ```
 
@@ -946,6 +946,9 @@ OPTIONS:
 
 ## `rpk desktops`
 ```
+DESCRIPTION:
+Manage Desktops
+
 USAGE:
     rpk desktops [OPTIONS] <COMMAND>
 

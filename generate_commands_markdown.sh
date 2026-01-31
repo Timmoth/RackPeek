@@ -5,11 +5,9 @@ PROJECT_PATH="."
 OUTPUT_FILE="COMMANDS.md"
 declare -A VISITED
 
-# Create temp files for the Tree structure and the Body content
 TREE_TEMP=$(mktemp)
 BODY_TEMP=$(mktemp)
 
-# Ensure temp files are cleaned up when script exits
 trap 'rm -f "$TREE_TEMP" "$BODY_TEMP"' EXIT
 
 # ----------------------------
@@ -29,45 +27,65 @@ run_help() {
 
   if [[ ! -x "$exe" ]]; then
     echo "Publishing RackPeek ($config)..." >&2
-    if ! dotnet publish "$project" \
-        -c "$config" \
-        -r "$runtime" \
-        --self-contained false \
-        -p:PublishSingleFile=true; then
-      echo "ERROR: dotnet publish failed" >&2
-      return 1
-    fi
+    dotnet publish "$project" -c "$config" -r "$runtime" --self-contained false -p:PublishSingleFile=true >&2
   fi
-
-  echo "Running: $exe $*" >&2
 
   local output
-  if ! output=$("$exe" "$@" 2>&1 | strip_colors); then
-    echo "WARNING: command failed: $exe $*" >&2
-    echo "$output" >&2
-    return 1
-  fi
-
+  output=$("$exe" "$@" 2>&1 | strip_colors)
   echo "$output"
 }
 
-
-
-get_commands() {
+# UPDATED: Handles descriptions that start on the next line
+get_description() {
   local help_output="$1"
+  echo "$help_output" | awk '
+    # If we find the header...
+    /^DESCRIPTION:/ {
+      in_desc = 1
+      # Remove the header itself
+      sub(/^DESCRIPTION:[[:space:]]*/, "")
+      
+      # If there is text on this same line, print it and quit
+      if (length($0) > 0) {
+        print $0
+        exit
+      }
+      next
+    }
 
+    # If we are inside the description block...
+    in_desc {
+      # Stop if we hit an empty line or the next Section (UPPERCASE:)
+      if (/^[[:space:]]*$/) exit
+      if (/^[A-Z]+:/) exit
+
+      # Trim leading/trailing whitespace
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "")
+      
+      # Print the line (we only take the first non-empty line for the index)
+      print $0
+      exit
+    }
+  '
+}
+
+# UPDATED: Handles "add <name>" correctly by taking only the first column ($1)
+get_child_commands() {
+  local help_output="$1"
+  
   echo "$help_output" | awk '
     BEGIN { in_commands = 0 }
-
     /^COMMANDS:/ { in_commands = 1; next }
-
+    
     in_commands {
-      if ($0 ~ /^[[:space:]]{4}[a-zA-Z0-9-]+[[:space:]]+/) {
+      # Stop if we hit an empty line or a new section
+      if ($0 ~ /^[[:space:]]*$/) exit;
+      if ($0 ~ /^[A-Z]+:/) exit;
+
+      # Match lines that look like commands (indented)
+      if ($0 ~ /^[[:space:]]+[a-zA-Z0-9-]+/) {
+        # Print only the first word (the command name)
         print $1
-        next
-      }
-      if ($0 !~ /^[[:space:]]*$/) {
-        exit
       }
     }
   '
@@ -78,58 +96,53 @@ get_commands() {
 # ----------------------------
 
 generate_help_recursive() {
-  local current_path=("$@")
+  local path_string="$1"
   
-  local flat_cmd="${current_path[*]}"
-  local map_key="${flat_cmd:-root}"
-
-  # --- TREE GENERATION LOGIC ---
-  # 1. Calculate depth for indentation (2 spaces per level)
-  local depth=${#current_path[@]}
-  local indent=""
-  if [[ $depth -gt 0 ]]; then
-    printf -v indent "%*s" $((depth * 2)) ""
+  # Convert string to array for the run_help command
+  local current_cmd_array=()
+  if [[ -n "$path_string" ]]; then
+    IFS=' ' read -r -a current_cmd_array <<< "$path_string"
   fi
 
-  # 2. Determine the display label for the tree (Leaf name only)
-  local tree_label
-  if [[ $depth -eq 0 ]]; then
-    tree_label="rpk"
-  else
-    tree_label="${current_path[-1]}" # Last element of array
-  fi
-
-  # 3. Create a clean anchor link for Markdown (lowercase, replace spaces with dashes)
-  #    e.g., "rpk switches list" -> "#rpk-switches-list"
-  local anchor_text="rpk $flat_cmd"
-  # Trim leading space if flat_cmd was empty
-  anchor_text="${anchor_text% }" 
-  local anchor_link
-  anchor_link=$(echo "$anchor_text" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
-
-  # 4. Append to Tree Temp File
-  echo "${indent}- [${tree_label}](Commands.md#${anchor_link})" >> "$TREE_TEMP"
-  # -----------------------------
-
-  if [[ -n "${VISITED["$map_key"]:-}" ]]; then
-    return
-  fi
+  local map_key="${path_string:-root}"
+  
+  if [[ -n "${VISITED["$map_key"]:-}" ]]; then return; fi
   VISITED["$map_key"]=1
 
+  # 1. Run Help
   local help_output
-  if ! help_output=$(run_help "${current_path[@]}" --help); then
+  if ! help_output=$(run_help "${current_cmd_array[@]}" --help); then
     echo "Skipping: $map_key (help failed)" >&2
     return
   fi
 
-  # --- BODY GENERATION ---
-  # Determine header title
-  local display_header
-  if [[ -z "$flat_cmd" ]]; then
-    display_header="rpk"
-  else
-    display_header="rpk $flat_cmd"
+  # 2. Extract Description
+  local description
+  description=$(get_description "$help_output")
+  
+  # 3. Build Tree Entry
+  local depth=${#current_cmd_array[@]}
+  local indent=""
+  [[ $depth -gt 0 ]] && printf -v indent "%*s" $((depth * 2)) ""
+  
+  local tree_label
+  [[ $depth -eq 0 ]] && tree_label="rpk" || tree_label="${current_cmd_array[-1]}"
+
+  local anchor_text="rpk $path_string"
+  anchor_text="${anchor_text% }" 
+  local anchor_link=$(echo "$anchor_text" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+  # Format: - [label](link) - Description
+  local tree_entry="${indent}- [${tree_label}](Commands.md#${anchor_link})"
+  if [[ -n "$description" ]]; then
+    tree_entry="${tree_entry} - ${description}"
   fi
+  
+  echo "$tree_entry" >> "$TREE_TEMP"
+
+  # 4. Write Body
+  local display_header
+  [[ -z "$path_string" ]] && display_header="rpk" || display_header="rpk $path_string"
 
   {
     echo "## \`${display_header}\`"
@@ -138,14 +151,20 @@ generate_help_recursive() {
     echo '```'
     echo ""
   } >> "$BODY_TEMP"
-  # -----------------------
 
-  local commands
-  mapfile -t commands < <(get_commands "$help_output")
+  # 5. Recurse
+  local child_cmds
+  mapfile -t child_cmds < <(get_child_commands "$help_output")
 
-  for cmd in "${commands[@]}"; do
-    echo "Recursing into: ${display_header} ${cmd}" >&2
-    generate_help_recursive "${current_path[@]}" "$cmd"
+  for child in "${child_cmds[@]}"; do
+    echo "Recursing into: ${display_header} ${child}" >&2
+    local next_path
+    if [[ -z "$path_string" ]]; then
+      next_path="$child"
+    else
+      next_path="$path_string $child"
+    fi
+    generate_help_recursive "$next_path"
   done
 }
 
@@ -155,22 +174,17 @@ generate_help_recursive() {
 
 echo "Generating documentation..."
 
-# Start recursion
-generate_help_recursive
+generate_help_recursive ""
 
-# Write command index
 {
-  echo "# CLI Command Index"
   echo ""
   cat "$TREE_TEMP"
 } > "CommandIndex.md"
 
-# Write full command documentation
 {
   echo "# CLI Commands"
   echo ""
   cat "$BODY_TEMP"
 } > "Commands.md"
 
-
-echo "Generated $OUTPUT_FILE successfully."
+echo "Generated Successfully."
