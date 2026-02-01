@@ -23,7 +23,7 @@ public static class Program
         var app = new CommandApp(registrar);
 
         CliBootstrap.BuildApp(app, services, configuration, "./config");
-
+        
         services.AddLogging(configure =>
             configure
                 .AddSimpleConsole(opts => { opts.TimestampFormat = "yyyy-MM-dd HH:mm:ss "; }));
