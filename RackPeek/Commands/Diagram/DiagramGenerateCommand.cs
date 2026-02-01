@@ -1,24 +1,22 @@
+using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 using RackPeek.Domain.Diagram;
+using RackPeek.Domain.Diagram.UseCases;
 
 namespace RackPeek.Commands.Diagram;
 
-public class DiagramGenerateCommand : AsyncCommand<DiagramGenerateSettings>
+public class DiagramGenerateCommand(IServiceProvider serviceProvider) : AsyncCommand<DiagramGenerateSettings>
 {
-    private readonly IGenerateDiagramUseCase _useCase;
-
-    public DiagramGenerateCommand(IGenerateDiagramUseCase useCase)
-    {
-        _useCase = useCase;
-    }
-
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DiagramGenerateSettings settings,
         CancellationToken cancellationToken)
     {
-        var xml = await _useCase.ExecuteAsync();
-        File.WriteAllText(settings.Output, xml);
+        using var scope = serviceProvider.CreateScope();
+        var useCase = scope.ServiceProvider.GetRequiredService<GenerateDiagramUseCase>();
+        
+        var xml = await useCase.ExecuteAsync();
+        await File.WriteAllTextAsync(settings.Output, xml, cancellationToken);
         return 0;
     }
 }

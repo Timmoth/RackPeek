@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 using RackPeek.Domain.Diagram;
 using RackPeek.Domain.Diagram.UseCases;
-using RackPeek.Diagram;
 
 namespace RackPeek;
 
@@ -19,13 +18,6 @@ public static class ServiceCollectionExtensions
 
         foreach (var type in commandTypes) services.AddScoped(type);
 
-        return services;
-    }
-
-    public static IServiceCollection AddDiagramServices(this IServiceCollection services)
-    {
-        services.AddScoped<IDiagramRenderer, DrawioDiagramRenderer>();
-        services.AddScoped<IGenerateDiagramUseCase, GenerateDiagramUseCase>();
         return services;
     }
 

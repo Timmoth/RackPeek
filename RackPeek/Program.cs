@@ -23,8 +23,6 @@ public static class Program
         var app = new CommandApp(registrar);
 
         CliBootstrap.BuildApp(app, services, configuration, "./config");
-
-        services.AddDiagramServices();
         
         services.AddLogging(configure =>
             configure

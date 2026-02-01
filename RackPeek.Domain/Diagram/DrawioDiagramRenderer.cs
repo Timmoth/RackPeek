@@ -1,14 +1,13 @@
 using System.Text;
-using RackPeek.Domain.Diagram;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 
-namespace RackPeek.Diagram;
+namespace RackPeek.Domain.Diagram;
 
-public class DrawioDiagramRenderer : IDiagramRenderer
+public static class DrawioDiagramRenderer
 {
-    public string Render(
+    public static string RenderPhysicalServerGrouping(
         IReadOnlyList<Hardware> hardware,
         IReadOnlyList<SystemResource> systems,
         IReadOnlyList<Service> services)
@@ -41,7 +40,6 @@ public class DrawioDiagramRenderer : IDiagramRenderer
         // Track tallest item in each row
         int rowMaxHeight = 0;
 
-        // VMs = SystemResource where Type == "vm"
         var vms = systems
             .Where(s => s.Type?.Equals("vm", StringComparison.OrdinalIgnoreCase) == true)
             .ToList();
