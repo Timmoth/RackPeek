@@ -7,6 +7,7 @@ using RackPeek.Commands.Desktops.Cpus;
 using RackPeek.Commands.Desktops.Drive;
 using RackPeek.Commands.Desktops.Gpus;
 using RackPeek.Commands.Desktops.Nics;
+using RackPeek.Commands.Diagram;
 using RackPeek.Commands.Firewalls;
 using RackPeek.Commands.Laptops;
 using RackPeek.Commands.Laptops.Cpus;
@@ -513,6 +514,14 @@ public static class CliBootstrap
                 service.AddCommand<ServiceSubnetsCommand>("subnets")
                     .WithDescription("List subnets associated with a service, optionally filtered by CIDR.");
             });
+            config.AddBranch("diagram", diagram =>
+            {
+                diagram.SetDescription("Generate infrastructure diagrams.");
+
+                diagram.AddCommand<DiagramGenerateCommand>("generate")
+                    .WithDescription("Generate a draw.io diagram from RackPeek data.");
+            });
+
         });
     }
 }

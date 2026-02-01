@@ -1,25 +1,31 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
+using RackPeek.Domain.Diagram;
+using RackPeek.Domain.Diagram.UseCases;
+using RackPeek.Diagram;
 
 namespace RackPeek;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCommands(
-        this IServiceCollection services)
+    public static IServiceCollection AddCommands(this IServiceCollection services)
     {
         var commandBaseType = typeof(AsyncCommand);
 
         var commandTypes = Assembly.GetAssembly(typeof(Program))
             ?.GetTypes()
-            .Where(t =>
-                t is { IsAbstract: false, IsInterface: false } &&
-                IsAsyncCommand(t)
-            );
+            .Where(t => t is { IsAbstract: false, IsInterface: false } && IsAsyncCommand(t));
 
         foreach (var type in commandTypes) services.AddScoped(type);
 
+        return services;
+    }
+
+    public static IServiceCollection AddDiagramServices(this IServiceCollection services)
+    {
+        services.AddScoped<IDiagramRenderer, DrawioDiagramRenderer>();
+        services.AddScoped<IGenerateDiagramUseCase, GenerateDiagramUseCase>();
         return services;
     }
 
@@ -27,12 +33,9 @@ public static class ServiceCollectionExtensions
     {
         while (type != null)
         {
-            if (type.IsGenericType &&
-                type.GetGenericTypeDefinition() == typeof(AsyncCommand<>))
-                return true;
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(AsyncCommand<>)) return true;
 
-            if (type == typeof(AsyncCommand))
-                return true;
+            if (type == typeof(AsyncCommand)) return true;
 
             type = type.BaseType!;
         }

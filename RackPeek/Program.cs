@@ -24,6 +24,8 @@ public static class Program
 
         CliBootstrap.BuildApp(app, services, configuration, "./config");
 
+        services.AddDiagramServices();
+        
         services.AddLogging(configure =>
             configure
                 .AddSimpleConsole(opts => { opts.TimestampFormat = "yyyy-MM-dd HH:mm:ss "; }));
