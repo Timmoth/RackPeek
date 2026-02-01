@@ -1,12 +1,17 @@
+using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Resources.Hardware.Models;
+
 namespace RackPeek.Domain.Resources.Hardware.Servers;
 
 public class DeleteServerUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {
-        var hardware = await repository.GetByNameAsync(name);
+        ThrowIfInvalid.ResourceName(name);
+
+        var hardware = await repository.GetByNameAsync(name) as Server;
         if (hardware == null)
-            throw new InvalidOperationException($"Server '{name}' not found.");
+            throw new NotFoundException($"Server '{name}' not found.");
 
         await repository.DeleteAsync(name);
     }

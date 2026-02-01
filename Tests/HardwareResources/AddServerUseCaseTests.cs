@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Servers;
@@ -37,14 +38,13 @@ public class AddServerUseCaseTests
         var sut = new AddServerUseCase(repo);
 
         // Act
-        var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var ex = await Assert.ThrowsAsync<ConflictException>(async () =>
             await sut.ExecuteAsync(
                 "node01"
             )
         );
 
         // Assert
-        Assert.Equal("Server 'node01' already exists.", ex.Message);
         await repo.DidNotReceive().AddAsync(Arg.Any<Server>());
     }
 }

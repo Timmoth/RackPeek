@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Servers.Nics;
@@ -26,7 +28,7 @@ public class UpdateNicUseCaseTests
 
         await sut.ExecuteAsync("node01", 0, "SFP+", 10000, 1);
 
-        Assert.Equal("SFP+", server.Nics[0].Type);
+        Assert.Equal("sfp+", server.Nics[0].Type);
         Assert.Equal(10000, server.Nics[0].Speed!.Value);
         Assert.Equal(1, server.Nics[0].Ports!.Value);
 
@@ -47,7 +49,7 @@ public class UpdateNicUseCaseTests
 
         var sut = new UpdateNicUseCase(repo);
 
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+        await Assert.ThrowsAsync<ValidationException>(() =>
             sut.ExecuteAsync("node01", 1, "SFP+", 10000, 1));
 
         await repo.DidNotReceive().UpdateAsync(Arg.Any<Server>());
@@ -63,7 +65,9 @@ public class UpdateNicUseCaseTests
 
         var sut = new UpdateNicUseCase(repo);
 
-        await sut.ExecuteAsync("node01", 0, "SFP+", 10000, 1);
+        var ex = await Assert.ThrowsAsync<NotFoundException>(() =>
+            sut.ExecuteAsync("node01", 0, "SFP+", 10000, 1)
+        );
 
         await repo.DidNotReceive().UpdateAsync(Arg.Any<Server>());
     }

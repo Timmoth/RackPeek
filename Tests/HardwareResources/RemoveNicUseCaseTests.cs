@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Servers.Nics;
@@ -47,14 +49,14 @@ public class RemoveNicUseCaseTests
 
         var sut = new RemoveNicUseCase(repo);
 
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+        await Assert.ThrowsAsync<ValidationException>(() =>
             sut.ExecuteAsync("node01", 1));
 
         await repo.DidNotReceive().UpdateAsync(Arg.Any<Server>());
     }
 
     [Fact]
-    public async Task ExecuteAsync_Does_nothing_when_server_not_found()
+    public async Task ExecuteAsync_throws_when_server_not_found()
     {
         var repo = Substitute.For<IHardwareRepository>();
 
@@ -63,7 +65,9 @@ public class RemoveNicUseCaseTests
 
         var sut = new RemoveNicUseCase(repo);
 
-        await sut.ExecuteAsync("node01", 0);
+        var ex = await Assert.ThrowsAsync<NotFoundException>(() =>
+            sut.ExecuteAsync("node01", 0)
+        );
 
         await repo.DidNotReceive().UpdateAsync(Arg.Any<Server>());
     }

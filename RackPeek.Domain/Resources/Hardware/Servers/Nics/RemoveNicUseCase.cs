@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers.Nics;
@@ -6,15 +8,16 @@ public class RemoveNicUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string serverName, int index)
     {
+        ThrowIfInvalid.ResourceName(serverName);
         var hardware = await repository.GetByNameAsync(serverName);
 
         if (hardware is not Server server)
-            return;
+            throw new NotFoundException($"Server: '{serverName}' not found.");
 
         server.Nics ??= [];
 
         if (index < 0 || index >= server.Nics.Count)
-            throw new ArgumentOutOfRangeException(nameof(index), "NIC index out of range.");
+            throw new ValidationException("NIC index out of range.");
 
         server.Nics.RemoveAt(index);
 

@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers;
@@ -10,13 +11,16 @@ public class UpdateServerUseCase(IHardwareRepository repository) : IUseCase
         bool? ipmi = null
     )
     {
+        ThrowIfInvalid.ResourceName(name);
+
         var server = await repository.GetByNameAsync(name) as Server;
         if (server == null)
-            throw new InvalidOperationException($"Server '{name}' not found.");
+            throw new NotFoundException($"Server '{name}' not found.");
 
         // ---- RAM ----
         if (ramGb.HasValue)
         {
+            ThrowIfInvalid.RamGb(ramGb);
             server.Ram ??= new Ram();
             server.Ram.Size = ramGb.Value;
         }

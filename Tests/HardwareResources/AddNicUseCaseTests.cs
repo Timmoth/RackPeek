@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Servers.Nics;
@@ -21,16 +22,16 @@ public class AddNicUseCaseTests
 
         var sut = new AddNicUseCase(repo);
 
-        await sut.ExecuteAsync("node01", "10GBase-T", 10000, 2);
+        await sut.ExecuteAsync("node01", "rj45", 10000, 2);
 
         Assert.Single(server.Nics);
-        Assert.Equal("10GBase-T", server.Nics[0].Type);
+        Assert.Equal("rj45", server.Nics[0].Type);
         Assert.Equal(10000, server.Nics[0].Speed!.Value);
         Assert.Equal(2, server.Nics[0].Ports!.Value);
 
         await repo.Received(1).UpdateAsync(Arg.Is<Server>(s =>
             s.Nics.Count == 1 &&
-            s.Nics[0].Type == "10GBase-T"
+            s.Nics[0].Type == "rj45"
         ));
     }
 
@@ -53,7 +54,7 @@ public class AddNicUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_Does_nothing_when_server_not_found()
+    public async Task ExecuteAsync_throws_when_server_not_found()
     {
         var repo = Substitute.For<IHardwareRepository>();
 
@@ -62,8 +63,11 @@ public class AddNicUseCaseTests
 
         var sut = new AddNicUseCase(repo);
 
-        await sut.ExecuteAsync("node01", "SFP+", 10000, 1);
+        var ex = await Assert.ThrowsAsync<NotFoundException>(async () =>
+            await sut.ExecuteAsync("node01", "SFP+", 10000, 1)
+        );
 
+        // Assert
         await repo.DidNotReceive().UpdateAsync(Arg.Any<Server>());
     }
 }

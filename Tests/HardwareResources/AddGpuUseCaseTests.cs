@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Servers.Gpus;
@@ -76,7 +77,7 @@ public class AddGpuUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_Does_nothing_when_server_does_not_exist()
+    public async Task ExecuteAsync_throws_when_server_does_not_exist()
     {
         // Arrange
         var repo = Substitute.For<IHardwareRepository>();
@@ -86,13 +87,15 @@ public class AddGpuUseCaseTests
         var sut = new AddGpuUseCase(repo);
 
         // Act
-        await sut.ExecuteAsync(
-            "node01",
-            "RTX 4090",
-            24
+        var ex = await Assert.ThrowsAsync<NotFoundException>(async () =>
+                await sut.ExecuteAsync(
+                    "node01",
+                    "RTX 4090",
+                    24
+                )
         );
 
         // Assert
-        await repo.DidNotReceive().UpdateAsync(Arg.Any<Server>());
+        await repo.DidNotReceive().AddAsync(Arg.Any<Server>());
     }
 }

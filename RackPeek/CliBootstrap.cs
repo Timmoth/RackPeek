@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Commands;
@@ -22,10 +23,12 @@ using RackPeek.Commands.Switches;
 using RackPeek.Commands.Systems;
 using RackPeek.Commands.Ups;
 using RackPeek.Domain;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 using RackPeek.Yaml;
+using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace RackPeek;
@@ -76,6 +79,8 @@ public static class CliBootstrap
         {
             config.SetApplicationName("rpk");
             config.ValidateExamples();
+
+            config.SetExceptionHandler(HandleException);
 
             // Global summary
             config.AddCommand<GetTotalSummaryCommand>("summary")
@@ -514,5 +519,28 @@ public static class CliBootstrap
                     .WithDescription("List subnets associated with a service, optionally filtered by CIDR.");
             });
         });
+    }
+
+    private static int HandleException(Exception ex, ITypeResolver? arg2)
+    {
+        switch (ex)
+        {
+            case ValidationException ve:
+                AnsiConsole.MarkupLine($"[yellow]Validation error:[/] {ve.Message}");
+                return 2;
+
+            case ConflictException ce:
+                AnsiConsole.MarkupLine($"[red]Conflict:[/] {ce.Message}");
+                return 3;
+
+            case NotFoundException ne:
+                AnsiConsole.MarkupLine($"[red]Not found:[/] {ne.Message}");
+                return 4;
+
+            default:
+                AnsiConsole.MarkupLine("[red]Unexpected error occurred.[/]");
+                AnsiConsole.WriteException(ex, ExceptionFormats.ShortenEverything);
+                return 99;
+        }
     }
 }

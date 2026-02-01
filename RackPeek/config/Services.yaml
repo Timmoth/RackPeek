@@ -1,585 +1,595 @@
 resources:
-  - kind: Service
-    name: immich
-    network:
-      ip: 192.168.0.4
-      port: 8080
-      protocol: TCP
-      url: http://immich.lan:8080
-    runsOn: proxmox-host
-
-  - kind: Service
-    name: jellyfin
-    network:
-      ip: 192.168.0.10
-      port: 8096
-      protocol: TCP
-      url: http://jellyfin.lan:8096
-    runsOn: docker-host
-
-  - kind: Service
-    name: plex
-    network:
-      ip: 192.168.0.11
-      port: 32400
-      protocol: TCP
-      url: http://plex.lan:32400
-    runsOn: proxmox-host
-
-  - kind: Service
-    name: home-assistant
-    network:
-      ip: 192.168.1.20
-      port: 8123
-      protocol: TCP
-      url: http://ha.lan:8123
-    runsOn: k8s-node-1
-
-  - kind: Service
-    name: pihole
-    network:
-      ip: 192.168.1.2
-      port: 53
-      protocol: UDP
-      url: http://pihole.lan/admin
-    runsOn: baremetal-rpi4
-
-  - kind: Service
-    name: unifi-controller
-    network:
-      ip: 192.168.1.5
-      port: 8443
-      protocol: TCP
-      url: https://unifi.lan:8443
-    runsOn: vm-cluster-1
-
-  - kind: Service
-    name: syncthing
-    network:
-      ip: 10.0.0.15
-      port: 8384
-      protocol: TCP
-      url: http://sync.internal:8384
-    runsOn: docker-host
-
-  - kind: Service
-    name: grafana
-    network:
-      ip: 10.0.0.20
-      port: 3000
-      protocol: TCP
-      url: http://grafana.internal:3000
-    runsOn: monitoring-node
-
-  - kind: Service
-    name: prometheus
-    network:
-      ip: 10.0.0.21
-      port: 9090
-      protocol: TCP
-      url: http://prometheus.internal:9090
-    runsOn: monitoring-node
-
-  - kind: Service
-    name: loki
-    network:
-      ip: 10.0.0.22
-      port: 3100
-      protocol: TCP
-      url: http://loki.internal:3100
-    runsOn: monitoring-node
-
-  - kind: Service
-    name: minio
-    network:
-      ip: 172.16.0.10
-      port: 9000
-      protocol: TCP
-      url: http://minio.storage:9000
-    runsOn: storage-node-1
-
-  - kind: Service
-    name: nextcloud
-    network:
-      ip: 172.16.0.11
-      port: 443
-      protocol: TCP
-      url: https://nextcloud.storage
-    runsOn: storage-node-2
-
-  - kind: Service
-    name: vaultwarden
-    network:
-      ip: 192.168.0.30
-      port: 8081
-      protocol: TCP
-      url: http://vault.lan:8081
-    runsOn: docker-host
-
-  - kind: Service
-    name: traefik
-    network:
-      ip: 192.168.0.2
-      port: 80
-      protocol: TCP
-      url: http://traefik.lan
-    runsOn: k8s-node-1
-
-  - kind: Service
-    name: nginx-reverse-proxy
-    network:
-      ip: 192.168.0.3
-      port: 443
-      protocol: TCP
-      url: https://proxy.lan
-    runsOn: docker-host
-
-  - kind: Service
-    name: qbittorrent
-    network:
-      ip: 192.168.0.40
-      port: 8080
-      protocol: TCP
-      url: http://torrent.lan:8080
-    runsOn: proxmox-host
-
-  - kind: Service
-    name: radarr
-    network:
-      ip: 192.168.0.41
-      port: 7878
-      protocol: TCP
-      url: http://radarr.lan:7878
-    runsOn: docker-host
-
-  - kind: Service
-    name: sonarr
-    network:
-      ip: 192.168.0.42
-      port: 8989
-      protocol: TCP
-      url: http://sonarr.lan:8989
-    runsOn: docker-host
-
-  - kind: Service
-    name: prowlarr
-    network:
-      ip: 192.168.0.43
-      port: 9696
-      protocol: TCP
-      url: http://prowlarr.lan:9696
-    runsOn: docker-host
-
-  - kind: Service
-    name: sabnzbd
-    network:
-      ip: 192.168.0.44
-      port: 8085
-      protocol: TCP
-      url: http://sabnzbd.lan:8085
-    runsOn: docker-host
-
-  - kind: Service
-    name: frigate
-    network:
-      ip: 192.168.1.30
-      port: 5000
-      protocol: TCP
-      url: http://frigate.lan:5000
-    runsOn: k8s-node-2
-
-  - kind: Service
-    name: mosquitto-mqtt
-    network:
-      ip: 192.168.1.31
-      port: 1883
-      protocol: TCP
-      url: mqtt://mqtt.lan:1883
-    runsOn: docker-host
-
-  - kind: Service
-    name: zigbee2mqtt
-    network:
-      ip: 192.168.1.32
-      port: 8080
-      protocol: TCP
-      url: http://z2m.lan:8080
-    runsOn: docker-host
-
-  - kind: Service
-    name: postgres-main
-    network:
-      ip: 10.0.1.10
-      port: 5432
-      protocol: TCP
-      url: postgres://db.internal:5432
-    runsOn: db-node-1
-
-  - kind: Service
-    name: mariadb
-    network:
-      ip: 10.0.1.11
-      port: 3306
-      protocol: TCP
-      url: mysql://mariadb.internal:3306
-    runsOn: db-node-2
-
-  - kind: Service
-    name: redis-cache
-    network:
-      ip: 10.0.1.12
-      port: 6379
-      protocol: TCP
-      url: redis://redis.internal:6379
-    runsOn: cache-node
-
-  - kind: Service
-    name: elasticsearch
-    network:
-      ip: 10.0.2.10
-      port: 9200
-      protocol: TCP
-      url: http://es.internal:9200
-    runsOn: search-node
-
-  - kind: Service
-    name: kibana
-    network:
-      ip: 10.0.2.11
-      port: 5601
-      protocol: TCP
-      url: http://kibana.internal:5601
-    runsOn: search-node
-
-  - kind: Service
-    name: uptime-kuma
-    network:
-      ip: 192.168.0.50
-      port: 3001
-      protocol: TCP
-      url: http://uptime.lan:3001
-    runsOn: docker-host
-
-  - kind: Service
-    name: wireguard-vpn
-    network:
-      ip: 192.168.1.100
-      port: 51820
-      protocol: UDP
-      url: wg://vpn.lan
-    runsOn: baremetal-rpi4
-
-  - kind: Service
-    name: openvpn
-    network:
-      ip: 192.168.1.101
-      port: 1194
-      protocol: UDP
-      url: ovpn://openvpn.lan
-    runsOn: vm-cluster-2
-
-  - kind: Service
-    name: adguard-home
-    network:
-      ip: 192.168.1.3
-      port: 3000
-      protocol: TCP
-      url: http://adguard.lan:3000
-    runsOn: docker-host
-
-  - kind: Service
-    name: gitlab
-    network:
-      ip: 10.0.3.10
-      port: 443
-      protocol: TCP
-      url: https://gitlab.internal
-    runsOn: dev-node-1
-
-  - kind: Service
-    name: gitea
-    network:
-      ip: 10.0.3.11
-      port: 3000
-      protocol: TCP
-      url: http://gitea.internal:3000
-    runsOn: dev-node-2
-
-  - kind: Service
-    name: drone-ci
-    network:
-      ip: 10.0.3.12
-      port: 8080
-      protocol: TCP
-      url: http://drone.internal:8080
-    runsOn: dev-node-2
-
-  - kind: Service
-    name: harbor-registry
-    network:
-      ip: 10.0.3.13
-      port: 5000
-      protocol: TCP
-      url: http://harbor.internal:5000
-    runsOn: dev-node-3
-
-  - kind: Service
-    name: kubernetes-api
-    network:
-      ip: 10.0.4.1
-      port: 6443
-      protocol: TCP
-      url: https://k8s-api.internal:6443
-    runsOn: k8s-control-plane
-
-  - kind: Service
-    name: longhorn-ui
-    network:
-      ip: 10.0.4.20
-      port: 9500
-      protocol: TCP
-      url: http://longhorn.internal:9500
-    runsOn: k8s-node-3
-
-  - kind: Service
-    name: rook-ceph-dashboard
-    network:
-      ip: 10.0.4.21
-      port: 8443
-      protocol: TCP
-      url: https://ceph.internal:8443
-    runsOn: k8s-node-3
-
-  - kind: Service
-    name: samba-fileserver
-    network:
-      ip: 192.168.0.60
-      port: 445
-      protocol: TCP
-      url: smb://fileserver.lan
-    runsOn: storage-node-1
-
-  - kind: Service
-    name: nfs-server
-    network:
-      ip: 192.168.0.61
-      port: 2049
-      protocol: TCP
-      url: nfs://nfs.lan
-    runsOn: dell-c6400-node01
-
-  - kind: Service
-    name: iscsi-target
-    network:
-      ip: 172.16.1.10
-      port: 3260
-      protocol: TCP
-      url: iscsi://iscsi.storage
-    runsOn: storage-node-3
-
-  - kind: Service
-    name: calibre-web
-    network:
-      ip: 192.168.0.70
-      port: 8083
-      protocol: TCP
-      url: http://books.lan:8083
-    runsOn: docker-host
-
-  - kind: Service
-    name: paperless-ngx
-    network:
-      ip: 192.168.0.71
-      port: 8000
-      protocol: TCP
-      url: http://docs.lan:8000
-    runsOn: dell-c6400-node01
-
-  - kind: Service
-    name: openldap
-    network:
-      ip: 10.0.5.10
-      port: 389
-      protocol: TCP
-      url: ldap://ldap.internal:389
-    runsOn: dell-c6400-node01
-
-  - kind: Service
-    name: keycloak
-    network:
-      ip: 10.0.5.11
-      port: 8080
-      protocol: TCP
-      url: http://keycloak.internal:8080
-    runsOn: dell-c6400-node01
-
-  - kind: Service
-    name: ntp-server
-    network:
-      ip: 192.168.1.50
-      port: 123
-      protocol: UDP
-      url: ntp://ntp.lan
-    runsOn: baremetal-rpi3
-
-  - kind: Service
-    name: syslog-server
-    network:
-      ip: 10.0.6.10
-      port: 514
-      protocol: UDP
-      url: syslog://syslog.internal
-    runsOn: monitoring-node
-
-  - kind: Service
-    name: dhcp-server
-    network:
-      ip: 192.168.1.1
-      port: 67
-      protocol: UDP
-      url: dhcp://dhcp.lan
-    runsOn: router-appliance
-
-  - kind: Service
-    name: bind-dns
-    network:
-      ip: 10.0.7.10
-      port: 53
-      protocol: UDP
-      url: dns://dns.internal
-    runsOn: infra-node
-
-  - kind: Service
-    name: vault
-    network:
-      ip: 10.0.7.11
-      port: 8200
-      protocol: TCP
-      url: http://vault.internal:8200
-    runsOn: infra-node
-
-  - kind: Service
-    name: consul
-    network:
-      ip: 10.0.7.12
-      port: 8500
-      protocol: TCP
-      url: http://consul.internal:8500
-    runsOn: infra-node
-
-  - kind: Service
-    name: nomad
-    network:
-      ip: 10.0.7.13
-      port: 4646
-      protocol: TCP
-      url: http://nomad.internal:4646
-    runsOn: infra-node
-
-  - kind: Service
-    name: openhab
-    network:
-      ip: 192.168.1.40
-      port: 8080
-      protocol: TCP
-      url: http://openhab.lan:8080
-    runsOn: k8s-node-2
-
-  - kind: Service
-    name: mqtt-explorer
-    network:
-      ip: 192.168.1.41
-      port: 4000
-      protocol: TCP
-      url: http://mqtt-explorer.lan:4000
-    runsOn: docker-host
-
-  - kind: Service
-    name: influxdb
-    network:
-      ip: 10.0.8.10
-      port: 8086
-      protocol: TCP
-      url: http://influx.internal:8086
-    runsOn: monitoring-node
-
-  - kind: Service
-    name: telegraf
-    network:
-      ip: 10.0.8.11
-      port: 8125
-      protocol: UDP
-      url: statsd://telegraf.internal
-    runsOn: monitoring-node
-
-  - kind: Service
-    name: speedtest-tracker
-    network:
-      ip: 192.168.0.80
-      port: 8080
-      protocol: TCP
-      url: http://speedtest.lan:8080
-    runsOn: docker-host
-
-  - kind: Service
-    name: navidrome
-    network:
-      ip: 192.168.0.81
-      port: 4533
-      protocol: TCP
-      url: http://music.lan:4533
-    runsOn: docker-host
-
-  - kind: Service
-    name: photoprism
-    network:
-      ip: 192.168.0.82
-      port: 2342
-      protocol: TCP
-      url: http://photos.lan:2342
-    runsOn: docker-host
-
-  - kind: Service
-    name: dnsdist
-    network:
-      ip: 10.0.9.10
-      port: 53
-      protocol: UDP
-      url: dns://dnsdist.internal
-    runsOn: infra-node
-
-  - kind: Service
-    name: powerdns
-    network:
-      ip: 10.0.9.11
-      port: 8081
-      protocol: TCP
-      url: http://pdns.internal:8081
-    runsOn: infra-node
-
-  - kind: Service
-    name: openproject
-    network:
-      ip: 10.0.10.10
-      port: 8080
-      protocol: TCP
-      url: http://openproject.internal:8080
-    runsOn: dev-node-3
-
-  - kind: Service
-    name: mattermost
-    network:
-      ip: 10.0.10.11
-      port: 8065
-      protocol: TCP
-      url: http://chat.internal:8065
-    runsOn: dev-node-3
-
-  - kind: Service
-    name: rocket-chat
-    network:
-      ip: 10.0.10.12
-      port: 3000
-      protocol: TCP
-      url: http://rocket.internal:3000
-    runsOn: dev-node-3
+- kind: Service
+  network:
+    ip: 192.168.0.4
+    port: 8080
+    protocol: TCP
+    url: http://immich.lan:8080
+  runsOn: proxmox-host
+  name: immich
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.10
+    port: 8096
+    protocol: TCP
+    url: http://jellyfin.lan:8096
+  runsOn: docker-host
+  name: jellyfin
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.11
+    port: 32400
+    protocol: TCP
+    url: http://plex.lan:32400
+  runsOn: proxmox-host
+  name: plex
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.20
+    port: 8123
+    protocol: TCP
+    url: http://ha.lan:8123
+  runsOn: k8s-node-1
+  name: home-assistant
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.2
+    port: 53
+    protocol: UDP
+    url: http://pihole.lan/admin
+  runsOn: baremetal-rpi4
+  name: pihole
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.5
+    port: 8443
+    protocol: TCP
+    url: https://unifi.lan:8443
+  runsOn: vm-cluster-1
+  name: unifi-controller
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.0.15
+    port: 8384
+    protocol: TCP
+    url: http://sync.internal:8384
+  runsOn: docker-host
+  name: syncthing
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.0.20
+    port: 3000
+    protocol: TCP
+    url: http://grafana.internal:3000
+  runsOn: monitoring-node
+  name: grafana
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.0.21
+    port: 9090
+    protocol: TCP
+    url: http://prometheus.internal:9090
+  runsOn: monitoring-node
+  name: prometheus
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.0.22
+    port: 3100
+    protocol: TCP
+    url: http://loki.internal:3100
+  runsOn: monitoring-node
+  name: loki
+  tags: 
+- kind: Service
+  network:
+    ip: 172.16.0.10
+    port: 9000
+    protocol: TCP
+    url: http://minio.storage:9000
+  runsOn: storage-node-1
+  name: minio
+  tags: 
+- kind: Service
+  network:
+    ip: 172.16.0.11
+    port: 443
+    protocol: TCP
+    url: https://nextcloud.storage
+  runsOn: storage-node-2
+  name: nextcloud
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.30
+    port: 8081
+    protocol: TCP
+    url: http://vault.lan:8081
+  runsOn: docker-host
+  name: vaultwarden
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.2
+    port: 80
+    protocol: TCP
+    url: http://traefik.lan
+  runsOn: k8s-node-1
+  name: traefik
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.3
+    port: 443
+    protocol: TCP
+    url: https://proxy.lan
+  runsOn: docker-host
+  name: nginx-reverse-proxy
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.40
+    port: 8080
+    protocol: TCP
+    url: http://torrent.lan:8080
+  runsOn: proxmox-host
+  name: qbittorrent
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.41
+    port: 7878
+    protocol: TCP
+    url: http://radarr.lan:7878
+  runsOn: docker-host
+  name: radarr
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.42
+    port: 8989
+    protocol: TCP
+    url: http://sonarr.lan:8989
+  runsOn: docker-host
+  name: sonarr
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.43
+    port: 9696
+    protocol: TCP
+    url: http://prowlarr.lan:9696
+  runsOn: docker-host
+  name: prowlarr
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.44
+    port: 8085
+    protocol: TCP
+    url: http://sabnzbd.lan:8085
+  runsOn: docker-host
+  name: sabnzbd
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.30
+    port: 5000
+    protocol: TCP
+    url: http://frigate.lan:5000
+  runsOn: k8s-node-2
+  name: frigate
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.31
+    port: 1883
+    protocol: TCP
+    url: mqtt://mqtt.lan:1883
+  runsOn: docker-host
+  name: mosquitto-mqtt
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.32
+    port: 8080
+    protocol: TCP
+    url: http://z2m.lan:8080
+  runsOn: docker-host
+  name: zigbee2mqtt
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.1.10
+    port: 5432
+    protocol: TCP
+    url: postgres://db.internal:5432
+  runsOn: db-node-1
+  name: postgres-main
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.1.11
+    port: 3306
+    protocol: TCP
+    url: mysql://mariadb.internal:3306
+  runsOn: db-node-2
+  name: mariadb
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.1.12
+    port: 6379
+    protocol: TCP
+    url: redis://redis.internal:6379
+  runsOn: cache-node
+  name: redis-cache
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.2.10
+    port: 9200
+    protocol: TCP
+    url: http://es.internal:9200
+  runsOn: search-node
+  name: elasticsearch
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.2.11
+    port: 5601
+    protocol: TCP
+    url: http://kibana.internal:5601
+  runsOn: search-node
+  name: kibana
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.50
+    port: 3001
+    protocol: TCP
+    url: http://uptime.lan:3001
+  runsOn: docker-host
+  name: uptime-kuma
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.100
+    port: 51820
+    protocol: UDP
+    url: wg://vpn.lan
+  runsOn: baremetal-rpi4
+  name: wireguard-vpn
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.101
+    port: 1194
+    protocol: UDP
+    url: ovpn://openvpn.lan
+  runsOn: vm-cluster-2
+  name: openvpn
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.3
+    port: 3000
+    protocol: TCP
+    url: http://adguard.lan:3000
+  runsOn: docker-host
+  name: adguard-home
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.3.10
+    port: 443
+    protocol: TCP
+    url: https://gitlab.internal
+  runsOn: dev-node-1
+  name: gitlab
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.3.11
+    port: 3000
+    protocol: TCP
+    url: http://gitea.internal:3000
+  runsOn: dev-node-2
+  name: gitea
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.3.12
+    port: 8080
+    protocol: TCP
+    url: http://drone.internal:8080
+  runsOn: dev-node-2
+  name: drone-ci
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.3.13
+    port: 5000
+    protocol: TCP
+    url: http://harbor.internal:5000
+  runsOn: dev-node-3
+  name: harbor-registry
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.4.1
+    port: 6443
+    protocol: TCP
+    url: https://k8s-api.internal:6443
+  runsOn: k8s-control-plane
+  name: kubernetes-api
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.4.20
+    port: 9500
+    protocol: TCP
+    url: http://longhorn.internal:9500
+  runsOn: k8s-node-3
+  name: longhorn-ui
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.4.21
+    port: 8443
+    protocol: TCP
+    url: https://ceph.internal:8443
+  runsOn: k8s-node-3
+  name: rook-ceph-dashboard
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.60
+    port: 445
+    protocol: TCP
+    url: smb://fileserver.lan
+  runsOn: storage-node-1
+  name: samba-fileserver
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.61
+    port: 2049
+    protocol: TCP
+    url: nfs://nfs.lan
+  runsOn: dell-c6400-node01
+  name: nfs-server
+  tags: 
+- kind: Service
+  network:
+    ip: 172.16.1.10
+    port: 3260
+    protocol: TCP
+    url: iscsi://iscsi.storage
+  runsOn: storage-node-3
+  name: iscsi-target
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.70
+    port: 8083
+    protocol: TCP
+    url: http://books.lan:8083
+  runsOn: docker-host
+  name: calibre-web
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.71
+    port: 8000
+    protocol: TCP
+    url: http://docs.lan:8000
+  runsOn: dell-c6400-node01
+  name: paperless-ngx
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.5.10
+    port: 389
+    protocol: TCP
+    url: ldap://ldap.internal:389
+  runsOn: dell-c6400-node01
+  name: openldap
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.5.11
+    port: 8080
+    protocol: TCP
+    url: http://keycloak.internal:8080
+  runsOn: dell-c6400-node01
+  name: keycloak
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.50
+    port: 123
+    protocol: UDP
+    url: ntp://ntp.lan
+  runsOn: baremetal-rpi3
+  name: ntp-server
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.6.10
+    port: 514
+    protocol: UDP
+    url: syslog://syslog.internal
+  runsOn: monitoring-node
+  name: syslog-server
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.1
+    port: 67
+    protocol: UDP
+    url: dhcp://dhcp.lan
+  runsOn: router-appliance
+  name: dhcp-server
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.7.10
+    port: 53
+    protocol: UDP
+    url: dns://dns.internal
+  runsOn: infra-node
+  name: bind-dns
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.7.11
+    port: 8200
+    protocol: TCP
+    url: http://vault.internal:8200
+  runsOn: infra-node
+  name: vault
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.7.12
+    port: 8500
+    protocol: TCP
+    url: http://consul.internal:8500
+  runsOn: infra-node
+  name: consul
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.7.13
+    port: 4646
+    protocol: TCP
+    url: http://nomad.internal:4646
+  runsOn: infra-node
+  name: nomad
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.40
+    port: 8080
+    protocol: TCP
+    url: http://openhab.lan:8080
+  runsOn: k8s-node-2
+  name: openhab
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.1.41
+    port: 4000
+    protocol: TCP
+    url: http://mqtt-explorer.lan:4000
+  runsOn: docker-host
+  name: mqtt-explorer
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.8.10
+    port: 8086
+    protocol: TCP
+    url: http://influx.internal:8086
+  runsOn: monitoring-node
+  name: influxdb
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.8.11
+    port: 8125
+    protocol: UDP
+    url: statsd://telegraf.internal
+  runsOn: monitoring-node
+  name: telegraf
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.80
+    port: 8080
+    protocol: TCP
+    url: http://speedtest.lan:8080
+  runsOn: docker-host
+  name: speedtest-tracker
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.81
+    port: 4533
+    protocol: TCP
+    url: http://music.lan:4533
+  runsOn: docker-host
+  name: navidrome
+  tags: 
+- kind: Service
+  network:
+    ip: 192.168.0.82
+    port: 2342
+    protocol: TCP
+    url: http://photos.lan:2342
+  runsOn: docker-host
+  name: photoprism
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.9.10
+    port: 53
+    protocol: UDP
+    url: dns://dnsdist.internal
+  runsOn: infra-node
+  name: dnsdist
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.9.11
+    port: 8081
+    protocol: TCP
+    url: http://pdns.internal:8081
+  runsOn: infra-node
+  name: powerdns
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.10.10
+    port: 8080
+    protocol: TCP
+    url: http://openproject.internal:8080
+  runsOn: dev-node-3
+  name: openproject
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.10.11
+    port: 8065
+    protocol: TCP
+    url: http://chat.internal:8065
+  runsOn: dev-node-3
+  name: mattermost
+  tags: 
+- kind: Service
+  network:
+    ip: 10.0.10.12
+    port: 3000
+    protocol: TCP
+    url: http://rocket.internal:3000
+  runsOn: dev-node-3
+  name: rocket-chat
+  tags: 
+- kind: Server
+  cpus: 
+  ram: 
+  drives: 
+  nics: 
+  gpus: 
+  ipmi: 
+  name: node01
+  tags: 

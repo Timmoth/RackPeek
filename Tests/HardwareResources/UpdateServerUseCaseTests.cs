@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Servers;
@@ -50,7 +51,7 @@ public class UpdateServerUseCaseTests
         var sut = new UpdateServerUseCase(repo);
 
         // Act
-        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        var ex = await Assert.ThrowsAsync<NotFoundException>(() =>
             sut.ExecuteAsync("node01", 64)
         );
 
