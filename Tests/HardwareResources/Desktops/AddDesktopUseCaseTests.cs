@@ -11,12 +11,13 @@ public class AddDesktopUseCaseTests
     [Fact]
     public async Task Adds_New_Desktop()
     {
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("desk1").Returns((Hardware?)null);
 
-        var useCase = new AddDesktopUseCase(repo);
+        var sut = host.Get<AddDesktopUseCase>();
 
-        await useCase.ExecuteAsync("desk1");
+        await sut.ExecuteAsync("desk1");
 
         await repo.Received().AddAsync(Arg.Is<Desktop>(d => d.Name == "desk1"));
     }
@@ -24,11 +25,11 @@ public class AddDesktopUseCaseTests
     [Fact]
     public async Task Throws_If_Desktop_Exists()
     {
-        var repo = Substitute.For<IHardwareRepository>();
-        repo.GetByNameAsync("desk1").Returns(new Desktop { Name = "desk1" });
+        var host = new UsecaseTestHost();
+        host.ResourceRepo.GetResourceKindAsync("desk1").Returns("Server");
 
-        var useCase = new AddDesktopUseCase(repo);
+        var sut = host.Get<AddDesktopUseCase>();
 
-        await Assert.ThrowsAsync<ConflictException>(() => useCase.ExecuteAsync("desk1"));
+        await Assert.ThrowsAsync<ConflictException>(() => sut.ExecuteAsync("desk1"));
     }
 }

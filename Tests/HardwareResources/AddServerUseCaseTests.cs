@@ -12,10 +12,11 @@ public class AddServerUseCaseTests
     public async Task ExecuteAsync_Adds_new_server_when_not_exists()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("node01").Returns((Hardware?)null);
 
-        var sut = new AddServerUseCase(repo);
+        var sut = host.Get<AddServerUseCase>();
 
         // Act
         await sut.ExecuteAsync(
@@ -32,11 +33,12 @@ public class AddServerUseCaseTests
     public async Task ExecuteAsync_Throws_if_server_already_exists()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
-        repo.GetByNameAsync("node01").Returns(new Server { Name = "node01" });
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
+        host.ResourceRepo.GetResourceKindAsync("node01").Returns("Server");
 
-        var sut = new AddServerUseCase(repo);
-
+        var sut = host.Get<AddServerUseCase>();
+        
         // Act
         var ex = await Assert.ThrowsAsync<ConflictException>(async () =>
             await sut.ExecuteAsync(

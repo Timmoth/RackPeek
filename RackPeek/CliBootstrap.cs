@@ -24,6 +24,7 @@ using RackPeek.Commands.Systems;
 using RackPeek.Commands.Ups;
 using RackPeek.Domain;
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
@@ -69,7 +70,8 @@ public static class CliBootstrap
         services.AddScoped<IHardwareRepository>(_ => new YamlHardwareRepository(collection));
         services.AddScoped<ISystemRepository>(_ => new YamlSystemRepository(collection));
         services.AddScoped<IServiceRepository>(_ => new YamlServiceRepository(collection));
-
+        services.AddScoped<IResourceRepository>(_ => new YamlResourceRepository(collection));
+        
         // Application
         services.AddUseCases();
         services.AddCommands();
