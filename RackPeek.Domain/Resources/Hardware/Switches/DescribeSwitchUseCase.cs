@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Switches;
@@ -16,6 +17,8 @@ public class DescribeSwitchUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<SwitchDescription?> ExecuteAsync(string name)
     {
+        ThrowIfInvalid.ResourceName(name);
+
         var switchResource = await repository.GetByNameAsync(name) as Switch;
         if (switchResource == null)
             return null;

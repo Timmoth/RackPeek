@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Switches;
@@ -11,10 +12,11 @@ public class DeleteSwitchUseCaseTests
     public async Task ExecuteAsync_Deletes_switch_when_exists()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("sw01").Returns(new Switch { Name = "sw01" });
 
-        var sut = new DeleteSwitchUseCase(repo);
+        var sut = host.Get<DeleteSwitchUseCase>();
 
         // Act
         await sut.ExecuteAsync(
@@ -29,13 +31,14 @@ public class DeleteSwitchUseCaseTests
     public async Task ExecuteAsync_Throws_if_switch_not_found()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("sw01").Returns((Hardware?)null);
 
-        var sut = new DeleteSwitchUseCase(repo);
+        var sut = host.Get<DeleteSwitchUseCase>();
 
         // Act
-        var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var ex = await Assert.ThrowsAsync<NotFoundException>(async () =>
             await sut.ExecuteAsync(
                 "sw01"
             )

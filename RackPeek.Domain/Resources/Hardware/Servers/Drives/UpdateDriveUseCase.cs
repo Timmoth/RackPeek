@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers.Drives;
@@ -6,6 +7,8 @@ public class UpdateDriveUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string serverName, int index, string type, int size)
     {
+        ThrowIfInvalid.ResourceName(serverName);
+
         var hardware = await repository.GetByNameAsync(serverName);
         if (hardware is not Server server) return;
 

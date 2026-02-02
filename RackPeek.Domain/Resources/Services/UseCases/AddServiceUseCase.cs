@@ -1,9 +1,12 @@
+using RackPeek.Domain.Helpers;
+
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
 public class AddServiceUseCase(IServiceRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {
+        ThrowIfInvalid.ResourceName(name);
         // basic guard rails
         var existing = await repository.GetByNameAsync(name);
         if (existing != null)

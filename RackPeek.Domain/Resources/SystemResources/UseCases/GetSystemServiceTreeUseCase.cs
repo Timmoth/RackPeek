@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 
@@ -9,6 +10,7 @@ public class GetSystemServiceTreeUseCase(
 {
     public async Task<SystemDependencyTree?> ExecuteAsync(string systemName)
     {
+        ThrowIfInvalid.ResourceName(systemName);
         var system = await systemRepository.GetByNameAsync(systemName);
         if (system is null) return null;
 

@@ -1,3 +1,5 @@
+using RackPeek.Domain.Helpers;
+
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
 public class UpdateSystemUseCase(ISystemRepository repository) : IUseCase
@@ -11,6 +13,7 @@ public class UpdateSystemUseCase(ISystemRepository repository) : IUseCase
         string? runsOn = null
     )
     {
+        ThrowIfInvalid.ResourceName(name);
         var system = await repository.GetByNameAsync(name);
         if (system is null)
             throw new InvalidOperationException($"System '{name}' not found.");

@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops;
@@ -16,6 +17,8 @@ public class DescribeDesktopUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<DesktopDescription?> ExecuteAsync(string name)
     {
+        ThrowIfInvalid.ResourceName(name);
+
         var desktop = await repository.GetByNameAsync(name) as Desktop;
         if (desktop == null)
             return null;

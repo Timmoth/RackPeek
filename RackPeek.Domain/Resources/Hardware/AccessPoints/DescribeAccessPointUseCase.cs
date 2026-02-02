@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.AccessPoints;
@@ -12,6 +13,8 @@ public class DescribeAccessPointUseCase(IHardwareRepository repository) : IUseCa
 {
     public async Task<AccessPointDescription?> ExecuteAsync(string name)
     {
+        ThrowIfInvalid.ResourceName(name);
+
         var ap = await repository.GetByNameAsync(name) as AccessPoint;
         if (ap == null)
             return null;

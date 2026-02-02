@@ -1,19 +1,22 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Laptops.Gpus;
 
 public class UpdateLaptopGpuUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task ExecuteAsync(string LaptopName, int index, Gpu updated)
+    public async Task ExecuteAsync(string name, int index, Gpu updated)
     {
-        var Laptop = await repository.GetByNameAsync(LaptopName) as Laptop
-                     ?? throw new InvalidOperationException($"Laptop '{LaptopName}' not found.");
+        ThrowIfInvalid.ResourceName(name);
 
-        if (Laptop.Gpus == null || index < 0 || index >= Laptop.Gpus.Count)
-            throw new InvalidOperationException($"GPU index {index} not found on Laptop '{LaptopName}'.");
+        var laptop = await repository.GetByNameAsync(name) as Laptop
+                     ?? throw new InvalidOperationException($"Laptop '{name}' not found.");
 
-        Laptop.Gpus[index] = updated;
+        if (laptop.Gpus == null || index < 0 || index >= laptop.Gpus.Count)
+            throw new InvalidOperationException($"GPU index {index} not found on Laptop '{name}'.");
 
-        await repository.UpdateAsync(Laptop);
+        laptop.Gpus[index] = updated;
+
+        await repository.UpdateAsync(laptop);
     }
 }

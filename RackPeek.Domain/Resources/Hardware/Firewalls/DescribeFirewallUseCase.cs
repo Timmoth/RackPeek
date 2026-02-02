@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Firewalls;
@@ -16,6 +17,8 @@ public class DescribeFirewallUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<FirewallDescription?> ExecuteAsync(string name)
     {
+        ThrowIfInvalid.ResourceName(name);
+
         var firewallResource = await repository.GetByNameAsync(name) as Firewall;
         if (firewallResource == null)
             return null;

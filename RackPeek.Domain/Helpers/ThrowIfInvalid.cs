@@ -13,6 +13,15 @@ public static class ThrowIfInvalid
             throw new ValidationException("Name is too long.");
     }
 
+    public static void AccessPointModelName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ValidationException("Model name is required.");
+
+        if (name.Length > 50)
+            throw new ValidationException("Model name is too long.");
+    }
+
     public static void RamGb(int? value)
     {
         if (value is null)
@@ -103,6 +112,13 @@ public static class ThrowIfInvalid
         if (speed < 0)
             throw new ValidationException(
                 "NIC speed must be a non negative number of gigabits per second.");
+    }
+
+    public static void NetworkSpeed(double speed)
+    {
+        if (speed < 0)
+            throw new ValidationException(
+                "Network speed must be a non negative number of gigabits per second.");
     }
 
 

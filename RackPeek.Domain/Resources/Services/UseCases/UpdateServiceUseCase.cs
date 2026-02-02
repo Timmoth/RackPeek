@@ -1,3 +1,5 @@
+using RackPeek.Domain.Helpers;
+
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
 public class UpdateServiceUseCase(IServiceRepository repository) : IUseCase
@@ -11,6 +13,7 @@ public class UpdateServiceUseCase(IServiceRepository repository) : IUseCase
         string? runsOn = null
     )
     {
+        ThrowIfInvalid.ResourceName(name);
         var service = await repository.GetByNameAsync(name);
         if (service is null)
             throw new InvalidOperationException($"Service '{name}' not found.");

@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 
@@ -10,6 +11,8 @@ public class GetHardwareSystemTreeUseCase(
 {
     public async Task<HardwareDependencyTree?> ExecuteAsync(string hardwareName)
     {
+        ThrowIfInvalid.ResourceName(hardwareName);
+
         var server = await hardwareRepository.GetByNameAsync(hardwareName);
         if (server is null) return null;
 

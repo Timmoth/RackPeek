@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
@@ -12,6 +13,8 @@ public class DescribeUpsUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<UpsDescription?> ExecuteAsync(string name)
     {
+        ThrowIfInvalid.ResourceName(name);
+
         var ups = await repository.GetByNameAsync(name) as Ups;
         if (ups == null)
             return null;

@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
@@ -10,6 +11,8 @@ public class UpdateUpsUseCase(IHardwareRepository repository) : IUseCase
         int? va = null
     )
     {
+        ThrowIfInvalid.ResourceName(name);
+
         var ups = await repository.GetByNameAsync(name) as Ups;
         if (ups == null)
             throw new InvalidOperationException($"UPS '{name}' not found.");

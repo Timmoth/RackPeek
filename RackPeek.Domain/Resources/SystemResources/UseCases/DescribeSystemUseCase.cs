@@ -1,3 +1,5 @@
+using RackPeek.Domain.Helpers;
+
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
 public record SystemDescription(
@@ -14,6 +16,7 @@ public class DescribeSystemUseCase(ISystemRepository repository) : IUseCase
 {
     public async Task<SystemDescription?> ExecuteAsync(string name)
     {
+        ThrowIfInvalid.ResourceName(name);
         var system = await repository.GetByNameAsync(name);
         if (system is null)
             return null;

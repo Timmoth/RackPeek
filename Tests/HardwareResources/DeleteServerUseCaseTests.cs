@@ -1,10 +1,39 @@
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using NSubstitute.ClearExtensions;
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Services;
+using RackPeek.Domain.Resources.SystemResources;
 
 namespace Tests.HardwareResources;
+
+public class UsecaseTestHost
+{
+    public IHardwareRepository HardwareRepo { get; set; }
+    public ISystemRepository SystemRepo { get; set; }
+    public IServiceRepository ServiceRepo { get; set; }
+
+    private readonly ServiceCollection _sc;
+    public UsecaseTestHost()
+    {
+        HardwareRepo = Substitute.For<IHardwareRepository>();
+        SystemRepo = Substitute.For<ISystemRepository>();
+        ServiceRepo = Substitute.For<IServiceRepository>();
+        _sc = new ServiceCollection();
+        _sc.AddSingleton<IHardwareRepository>(HardwareRepo);
+        _sc.AddSingleton<ISystemRepository>(SystemRepo);
+        _sc.AddSingleton<IServiceRepository>(ServiceRepo);
+    }
+    public T Get<T>() where T : notnull
+    {
+        _sc.AddSingleton(typeof(T));
+        var sp = _sc.BuildServiceProvider();
+        return sp.GetRequiredService<T>();
+    }
+}
 
 public class DeleteServerUseCaseTests
 {
@@ -12,26 +41,27 @@ public class DeleteServerUseCaseTests
     public async Task ExecuteAsync_Deletes_server_when_exists()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
-        repo.GetByNameAsync("node01").Returns(new Server { Name = "node01" });
+        var host = new UsecaseTestHost();
+        host.HardwareRepo.GetByNameAsync("node01").Returns(new Server { Name = "node01" });
 
-        var sut = new DeleteServerUseCase(repo);
+        var sut = host.Get<DeleteServerUseCase>();
 
         // Act
         await sut.ExecuteAsync("node01");
 
         // Assert
-        await repo.Received(1).DeleteAsync("node01");
+        await host.HardwareRepo.Received(1).DeleteAsync("node01");
     }
 
     [Fact]
     public async Task ExecuteAsync_Throws_when_server_not_found()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("node01").Returns((Hardware?)null);
 
-        var sut = new DeleteServerUseCase(repo);
+        var sut = host.Get<DeleteServerUseCase>();
 
         // Act
         var ex = await Assert.ThrowsAsync<NotFoundException>(() =>

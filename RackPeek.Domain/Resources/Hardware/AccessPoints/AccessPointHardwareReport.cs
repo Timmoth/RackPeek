@@ -19,14 +19,11 @@ public class AccessPointHardwareReportUseCase(IHardwareRepository repository) : 
         var hardware = await repository.GetAllAsync();
         var aps = hardware.OfType<AccessPoint>();
 
-        var rows = aps.Select(ap =>
-        {
-            return new AccessPointHardwareRow(
-                ap.Name,
-                ap.Model ?? "Unknown",
-                ap.Speed ?? 0
-            );
-        }).ToList();
+        var rows = aps.Select(ap => new AccessPointHardwareRow(
+            ap.Name,
+            ap.Model ?? "Unknown",
+            ap.Speed ?? 0
+        )).ToList();
 
         return new AccessPointHardwareReport(rows);
     }

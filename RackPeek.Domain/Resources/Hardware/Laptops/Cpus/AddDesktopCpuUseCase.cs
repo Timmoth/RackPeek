@@ -1,17 +1,19 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Laptops.Cpus;
 
 public class AddLaptopCpuUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task ExecuteAsync(string LaptopName, Cpu cpu)
+    public async Task ExecuteAsync(string name, Cpu cpu)
     {
-        var Laptop = await repository.GetByNameAsync(LaptopName) as Laptop
-                     ?? throw new InvalidOperationException($"Laptop '{LaptopName}' not found.");
+        ThrowIfInvalid.ResourceName(name);
+        var laptop = await repository.GetByNameAsync(name) as Laptop
+                     ?? throw new InvalidOperationException($"Laptop '{name}' not found.");
 
-        Laptop.Cpus ??= new List<Cpu>();
-        Laptop.Cpus.Add(cpu);
+        laptop.Cpus ??= new List<Cpu>();
+        laptop.Cpus.Add(cpu);
 
-        await repository.UpdateAsync(Laptop);
+        await repository.UpdateAsync(laptop);
     }
 }

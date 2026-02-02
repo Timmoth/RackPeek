@@ -1,19 +1,22 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Laptops.Drives;
 
 public class UpdateLaptopDriveUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task ExecuteAsync(string LaptopName, int index, Drive updated)
+    public async Task ExecuteAsync(string name, int index, Drive updated)
     {
-        var Laptop = await repository.GetByNameAsync(LaptopName) as Laptop
-                     ?? throw new InvalidOperationException($"Laptop '{LaptopName}' not found.");
+        ThrowIfInvalid.ResourceName(name);
 
-        if (Laptop.Drives == null || index < 0 || index >= Laptop.Drives.Count)
-            throw new InvalidOperationException($"Drive index {index} not found on Laptop '{LaptopName}'.");
+        var laptop = await repository.GetByNameAsync(name) as Laptop
+                     ?? throw new InvalidOperationException($"Laptop '{name}' not found.");
 
-        Laptop.Drives[index] = updated;
+        if (laptop.Drives == null || index < 0 || index >= laptop.Drives.Count)
+            throw new InvalidOperationException($"Drive index {index} not found on Laptop '{name}'.");
 
-        await repository.UpdateAsync(Laptop);
+        laptop.Drives[index] = updated;
+
+        await repository.UpdateAsync(laptop);
     }
 }

@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Desktops;
 using RackPeek.Domain.Resources.Hardware.Models;
@@ -30,7 +31,7 @@ public class UpdateDesktopUseCaseTests
 
         var useCase = new UpdateDesktopUseCase(repo);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        await Assert.ThrowsAsync<NotFoundException>(() =>
             useCase.ExecuteAsync("desk1", "Optiplex"));
     }
 }

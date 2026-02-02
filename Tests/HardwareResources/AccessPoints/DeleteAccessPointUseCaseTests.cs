@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.AccessPoints;
 using RackPeek.Domain.Resources.Hardware.Models;
@@ -11,10 +12,11 @@ public class DeleteAccessPointUseCaseTests
     public async Task ExecuteAsync_Deletes_ap_when_exists()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("ap01").Returns(new AccessPoint { Name = "ap01" });
 
-        var sut = new DeleteAccessPointUseCase(repo);
+        var sut = host.Get<DeleteAccessPointUseCase>();
 
         // Act
         await sut.ExecuteAsync("ap01");
@@ -27,13 +29,14 @@ public class DeleteAccessPointUseCaseTests
     public async Task ExecuteAsync_Throws_if_ap_not_found()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("ap01").Returns((Hardware?)null);
 
-        var sut = new DeleteAccessPointUseCase(repo);
+        var sut = host.Get<DeleteAccessPointUseCase>();
 
         // Act
-        var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var ex = await Assert.ThrowsAsync<NotFoundException>(async () =>
             await sut.ExecuteAsync("ap01")
         );
 

@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Routers;
@@ -11,19 +12,21 @@ public class UpdateRouterUseCase(IHardwareRepository repository) : IUseCase
         bool? poe = null
     )
     {
-        var RouterResource = await repository.GetByNameAsync(name) as Router;
-        if (RouterResource == null)
-            throw new InvalidOperationException($"Router '{name}' not found.");
+        ThrowIfInvalid.ResourceName(name);
+
+        var routerResource = await repository.GetByNameAsync(name) as Router;
+        if (routerResource == null)
+            throw new NotFoundException($"Router '{name}' not found.");
 
         if (!string.IsNullOrWhiteSpace(model))
-            RouterResource.Model = model;
+            routerResource.Model = model;
 
         if (managed.HasValue)
-            RouterResource.Managed = managed.Value;
+            routerResource.Managed = managed.Value;
 
         if (poe.HasValue)
-            RouterResource.Poe = poe.Value;
+            routerResource.Poe = poe.Value;
 
-        await repository.UpdateAsync(RouterResource);
+        await repository.UpdateAsync(routerResource);
     }
 }
