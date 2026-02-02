@@ -1,31 +1,31 @@
 resources:
-- kind: AccessPoint
-  model: Unifi-Ap-Pro
-  speed: 1
-  name: lounge-ap
-  tags: 
-- kind: AccessPoint
-  model: Unifi-U6-Lite
-  speed: 1
-  name: office-ap
-  tags: 
-- kind: AccessPoint
-  model: TP-Link-EAP245
-  speed: 1
-  name: garage-ap
-  tags: 
-- kind: AccessPoint
-  model: Aruba-AP-515
-  speed: 2.5
-  name: upstairs-ap
-  tags: 
-- kind: AccessPoint
-  model: Unifi-U6-Mesh
-  speed: 1
-  name: guest-ap
-  tags: 
-- kind: AccessPoint
-  model: Cisco-Aironet-1832i
-  speed: 1
-  name: warehouse-ap
-  tags: 
+  - kind: AccessPoint
+    model: Unifi-Ap-Pro
+    speed: 1
+    name: lounge-ap
+    tags:
+  - kind: AccessPoint
+    model: Unifi-U6-Lite
+    speed: 1
+    name: office-ap
+    tags:
+  - kind: AccessPoint
+    model: TP-Link-EAP245
+    speed: 1
+    name: garage-ap
+    tags:
+  - kind: AccessPoint
+    model: Aruba-AP-515
+    speed: 2.5
+    name: upstairs-ap
+    tags:
+  - kind: AccessPoint
+    model: Unifi-U6-Mesh
+    speed: 1
+    name: guest-ap
+    tags:
+  - kind: AccessPoint
+    model: Cisco-Aironet-1832i
+    speed: 1
+    name: warehouse-ap
+    tags: 

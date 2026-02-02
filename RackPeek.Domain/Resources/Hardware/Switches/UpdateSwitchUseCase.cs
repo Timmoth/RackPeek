@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Switches;
@@ -11,6 +12,8 @@ public class UpdateSwitchUseCase(IHardwareRepository repository) : IUseCase
         bool? poe = null
     )
     {
+        ThrowIfInvalid.ResourceName(name);
+
         var switchResource = await repository.GetByNameAsync(name) as Switch;
         if (switchResource == null)
             throw new InvalidOperationException($"Switch '{name}' not found.");

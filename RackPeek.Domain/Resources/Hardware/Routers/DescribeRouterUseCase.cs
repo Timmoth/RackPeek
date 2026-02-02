@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Routers;
@@ -16,12 +17,14 @@ public class DescribeRouterUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<RouterDescription?> ExecuteAsync(string name)
     {
-        var RouterResource = await repository.GetByNameAsync(name) as Router;
-        if (RouterResource == null)
+        ThrowIfInvalid.ResourceName(name);
+
+        var routerResource = await repository.GetByNameAsync(name) as Router;
+        if (routerResource == null)
             return null;
 
         // If no ports exist, return defaults
-        var ports = RouterResource.Ports ?? new List<Port>();
+        var ports = routerResource.Ports ?? new List<Port>();
 
         // Total ports count
         var totalPorts = ports.Sum(p => p.Count ?? 0);
@@ -42,10 +45,10 @@ public class DescribeRouterUseCase(IHardwareRepository repository) : IUseCase
         var portSummary = string.Join(", ", portGroups);
 
         return new RouterDescription(
-            RouterResource.Name,
-            RouterResource.Model,
-            RouterResource.Managed,
-            RouterResource.Poe,
+            routerResource.Name,
+            routerResource.Model,
+            routerResource.Managed,
+            routerResource.Poe,
             totalPorts,
             totalSpeedGb,
             portSummary

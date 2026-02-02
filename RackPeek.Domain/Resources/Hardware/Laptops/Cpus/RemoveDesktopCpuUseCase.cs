@@ -1,19 +1,22 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Laptops.Cpus;
 
 public class RemoveLaptopCpuUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task ExecuteAsync(string LaptopName, int index)
+    public async Task ExecuteAsync(string name, int index)
     {
-        var Laptop = await repository.GetByNameAsync(LaptopName) as Laptop
-                     ?? throw new InvalidOperationException($"Laptop '{LaptopName}' not found.");
+        ThrowIfInvalid.ResourceName(name);
 
-        if (Laptop.Cpus == null || index < 0 || index >= Laptop.Cpus.Count)
-            throw new InvalidOperationException($"CPU index {index} not found on Laptop '{LaptopName}'.");
+        var laptop = await repository.GetByNameAsync(name) as Laptop
+                     ?? throw new InvalidOperationException($"Laptop '{name}' not found.");
 
-        Laptop.Cpus.RemoveAt(index);
+        if (laptop.Cpus == null || index < 0 || index >= laptop.Cpus.Count)
+            throw new InvalidOperationException($"CPU index {index} not found on Laptop '{name}'.");
 
-        await repository.UpdateAsync(Laptop);
+        laptop.Cpus.RemoveAt(index);
+
+        await repository.UpdateAsync(laptop);
     }
 }

@@ -21,9 +21,9 @@ public class RouterHardwareReportUseCase(IHardwareRepository repository) : IUseC
     public async Task<RouterHardwareReport> ExecuteAsync()
     {
         var hardware = await repository.GetAllAsync();
-        var Routers = hardware.OfType<Router>();
+        var routers = hardware.OfType<Router>();
 
-        var rows = Routers.Select(sw =>
+        var rows = routers.Select(sw =>
         {
             var totalPorts = sw.Ports?.Sum(p => p.Count ?? 0) ?? 0;
 

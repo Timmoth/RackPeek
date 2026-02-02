@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Laptops;
@@ -6,20 +7,22 @@ public class DescribeLaptopUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<LaptopDescription?> ExecuteAsync(string name)
     {
-        var Laptop = await repository.GetByNameAsync(name) as Laptop;
-        if (Laptop == null)
+        ThrowIfInvalid.ResourceName(name);
+
+        var laptop = await repository.GetByNameAsync(name) as Laptop;
+        if (laptop == null)
             return null;
 
-        var ramSummary = Laptop.Ram == null
+        var ramSummary = laptop.Ram == null
             ? "None"
-            : $"{Laptop.Ram.Size} GB @ {Laptop.Ram.Mts} MT/s";
+            : $"{laptop.Ram.Size} GB @ {laptop.Ram.Mts} MT/s";
 
         return new LaptopDescription(
-            Laptop.Name,
-            Laptop.Cpus?.Count ?? 0,
+            laptop.Name,
+            laptop.Cpus?.Count ?? 0,
             ramSummary,
-            Laptop.Drives?.Count ?? 0,
-            Laptop.Gpus?.Count ?? 0
+            laptop.Drives?.Count ?? 0,
+            laptop.Gpus?.Count ?? 0
         );
     }
 }

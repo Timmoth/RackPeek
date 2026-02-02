@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.AccessPoints;
 using RackPeek.Domain.Resources.Hardware.Models;
@@ -35,12 +36,11 @@ public class AddAccessPointUseCaseTests
         var sut = new AddAccessPointUseCase(repo);
 
         // Act
-        var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var ex = await Assert.ThrowsAsync<ConflictException>(async () =>
             await sut.ExecuteAsync("ap01")
         );
 
         // Assert
-        Assert.Equal("Access point 'ap01' already exists.", ex.Message);
         await repo.DidNotReceive().AddAsync(Arg.Any<AccessPoint>());
     }
 }

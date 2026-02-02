@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.AccessPoints;
@@ -10,15 +11,23 @@ public class UpdateAccessPointUseCase(IHardwareRepository repository) : IUseCase
         double? speed = null
     )
     {
+        ThrowIfInvalid.ResourceName(name);
+
         var ap = await repository.GetByNameAsync(name) as AccessPoint;
         if (ap == null)
-            throw new InvalidOperationException($"Access point '{name}' not found.");
+            throw new NotFoundException($"Access point '{name}' not found.");
 
         if (!string.IsNullOrWhiteSpace(model))
+        {
+            ThrowIfInvalid.AccessPointModelName(model);
             ap.Model = model;
+        }
 
         if (speed.HasValue)
+        {
+            ThrowIfInvalid.NetworkSpeed(speed.Value);
             ap.Speed = speed.Value;
+        }
 
         await repository.UpdateAsync(ap);
     }

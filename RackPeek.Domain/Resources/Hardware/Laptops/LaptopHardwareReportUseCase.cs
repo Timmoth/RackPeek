@@ -7,39 +7,39 @@ public class LaptopHardwareReportUseCase(IHardwareRepository repository) : IUseC
     public async Task<LaptopHardwareReport> ExecuteAsync()
     {
         var hardware = await repository.GetAllAsync();
-        var Laptops = hardware.OfType<Laptop>();
+        var laptops = hardware.OfType<Laptop>();
 
-        var rows = Laptops.Select(Laptop =>
+        var rows = laptops.Select(laptop =>
         {
-            var totalCores = Laptop.Cpus?.Sum(c => c.Cores) ?? 0;
-            var totalThreads = Laptop.Cpus?.Sum(c => c.Threads) ?? 0;
+            var totalCores = laptop.Cpus?.Sum(c => c.Cores) ?? 0;
+            var totalThreads = laptop.Cpus?.Sum(c => c.Threads) ?? 0;
 
-            var cpuSummary = Laptop.Cpus == null
+            var cpuSummary = laptop.Cpus == null
                 ? "Unknown"
                 : string.Join(", ",
-                    Laptop.Cpus
+                    laptop.Cpus
                         .GroupBy(c => c.Model)
                         .Select(g => $"{g.Count()}× {g.Key}"));
 
-            var ramGb = Laptop.Ram?.Size ?? 0;
+            var ramGb = laptop.Ram?.Size ?? 0;
 
-            var totalStorage = Laptop.Drives?.Sum(d => d.Size) ?? 0;
-            var ssdStorage = Laptop.Drives?
+            var totalStorage = laptop.Drives?.Sum(d => d.Size) ?? 0;
+            var ssdStorage = laptop.Drives?
                 .Where(d => d.Type == "ssd")
                 .Sum(d => d.Size) ?? 0;
-            var hddStorage = Laptop.Drives?
+            var hddStorage = laptop.Drives?
                 .Where(d => d.Type == "hdd")
                 .Sum(d => d.Size) ?? 0;
 
-            var gpuSummary = Laptop.Gpus == null
+            var gpuSummary = laptop.Gpus == null
                 ? "None"
                 : string.Join(", ",
-                    Laptop.Gpus
+                    laptop.Gpus
                         .GroupBy(g => g.Model)
                         .Select(g => $"{g.Count()}× {g.Key}"));
 
             return new LaptopHardwareRow(
-                Laptop.Name,
+                laptop.Name,
                 cpuSummary,
                 totalCores,
                 totalThreads,

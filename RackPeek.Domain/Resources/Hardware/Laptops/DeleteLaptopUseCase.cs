@@ -1,13 +1,26 @@
+using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Resources.SystemResources;
+
 namespace RackPeek.Domain.Resources.Hardware.Laptops;
 
-public class DeleteLaptopUseCase(IHardwareRepository repository) : IUseCase
+public class DeleteLaptopUseCase(IHardwareRepository repository, ISystemRepository systemsRepo) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {
+        ThrowIfInvalid.ResourceName(name);
+
         var hardware = await repository.GetByNameAsync(name);
         if (hardware == null)
-            throw new InvalidOperationException($"Laptop '{name}' not found.");
+            throw new NotFoundException($"Laptop '{name}' not found.");
 
+        // Break link to dependants
+        var dependants = await systemsRepo.GetByPhysicalHostAsync(name);
+        foreach (var systemResource in dependants)
+        {
+            systemResource.RunsOn = null;
+            await systemsRepo.UpdateAsync(systemResource);
+        }
+        
         await repository.DeleteAsync(name);
     }
 }

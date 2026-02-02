@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Desktops;
 using RackPeek.Domain.Resources.Hardware.Models;
@@ -28,6 +29,6 @@ public class AddDesktopUseCaseTests
 
         var useCase = new AddDesktopUseCase(repo);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync("desk1"));
+        await Assert.ThrowsAsync<ConflictException>(() => useCase.ExecuteAsync("desk1"));
     }
 }

@@ -88,11 +88,11 @@ public class AddGpuUseCaseTests
 
         // Act
         var ex = await Assert.ThrowsAsync<NotFoundException>(async () =>
-                await sut.ExecuteAsync(
-                    "node01",
-                    "RTX 4090",
-                    24
-                )
+            await sut.ExecuteAsync(
+                "node01",
+                "RTX 4090",
+                24
+            )
         );
 
         // Assert

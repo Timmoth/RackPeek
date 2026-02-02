@@ -1,3 +1,4 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
@@ -16,6 +17,7 @@ public class DescribeServiceUseCase(IServiceRepository repository, ISystemReposi
 {
     public async Task<ServiceDescription?> ExecuteAsync(string name)
     {
+        ThrowIfInvalid.ResourceName(name);
         var service = await repository.GetByNameAsync(name);
         if (service is null)
             return null;

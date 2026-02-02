@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Desktops;
 using RackPeek.Domain.Resources.Hardware.Models;
@@ -10,12 +11,13 @@ public class DeleteDesktopUseCaseTests
     [Fact]
     public async Task Deletes_Desktop()
     {
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("desk1").Returns(new Desktop { Name = "desk1" });
 
-        var useCase = new DeleteDesktopUseCase(repo);
+        var sut = host.Get<DeleteDesktopUseCase>();
 
-        await useCase.ExecuteAsync("desk1");
+        await sut.ExecuteAsync("desk1");
 
         await repo.Received().DeleteAsync("desk1");
     }
@@ -23,11 +25,12 @@ public class DeleteDesktopUseCaseTests
     [Fact]
     public async Task Throws_If_Not_Found()
     {
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("desk1").Returns((Hardware?)null);
 
-        var useCase = new DeleteDesktopUseCase(repo);
+        var sut = host.Get<DeleteDesktopUseCase>();
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync("desk1"));
+        await Assert.ThrowsAsync<NotFoundException>(() => sut.ExecuteAsync("desk1"));
     }
 }
