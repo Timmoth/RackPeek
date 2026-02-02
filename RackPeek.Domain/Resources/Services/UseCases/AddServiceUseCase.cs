@@ -6,6 +6,7 @@ public class AddServiceUseCase(IServiceRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {
+        name = Normalize.ServiceName(name);
         ThrowIfInvalid.ResourceName(name);
         // basic guard rails
         var existing = await repository.GetByNameAsync(name);

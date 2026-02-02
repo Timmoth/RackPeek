@@ -7,6 +7,7 @@ public class DeleteLaptopUseCase(IHardwareRepository repository, ISystemReposito
 {
     public async Task ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var hardware = await repository.GetByNameAsync(name);
@@ -20,7 +21,7 @@ public class DeleteLaptopUseCase(IHardwareRepository repository, ISystemReposito
             systemResource.RunsOn = null;
             await systemsRepo.UpdateAsync(systemResource);
         }
-        
+
         await repository.DeleteAsync(name);
     }
 }

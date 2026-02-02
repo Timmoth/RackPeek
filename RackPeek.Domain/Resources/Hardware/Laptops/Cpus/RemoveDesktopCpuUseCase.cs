@@ -7,6 +7,7 @@ public class RemoveLaptopCpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name, int index)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var laptop = await repository.GetByNameAsync(name) as Laptop

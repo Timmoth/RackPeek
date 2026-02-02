@@ -17,6 +17,7 @@ public class DescribeRouterUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<RouterDescription?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var routerResource = await repository.GetByNameAsync(name) as Router;

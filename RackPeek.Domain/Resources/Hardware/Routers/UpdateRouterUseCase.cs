@@ -12,6 +12,7 @@ public class UpdateRouterUseCase(IHardwareRepository repository) : IUseCase
         bool? poe = null
     )
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var routerResource = await repository.GetByNameAsync(name) as Router;

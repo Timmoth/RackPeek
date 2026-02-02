@@ -13,8 +13,8 @@ public class DescribeAccessPointUseCase(IHardwareRepository repository) : IUseCa
 {
     public async Task<AccessPointDescription?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
-
         var ap = await repository.GetByNameAsync(name) as AccessPoint;
         if (ap == null)
             return null;

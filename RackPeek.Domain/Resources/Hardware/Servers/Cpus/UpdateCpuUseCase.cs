@@ -6,15 +6,16 @@ namespace RackPeek.Domain.Resources.Hardware.Servers.Cpus;
 public class UpdateCpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(
-        string serverName,
+        string name,
         int index,
         string model,
         int cores,
         int threads)
     {
-        ThrowIfInvalid.ResourceName(serverName);
+        name = Normalize.HardwareName(name);
+        ThrowIfInvalid.ResourceName(name);
 
-        var hardware = await repository.GetByNameAsync(serverName);
+        var hardware = await repository.GetByNameAsync(name);
 
         if (hardware is not Server server) return;
 

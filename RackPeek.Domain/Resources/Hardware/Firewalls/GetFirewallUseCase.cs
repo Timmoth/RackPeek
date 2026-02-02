@@ -7,6 +7,7 @@ public class GetFirewallUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<Firewall?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var hardware = await repository.GetByNameAsync(name);

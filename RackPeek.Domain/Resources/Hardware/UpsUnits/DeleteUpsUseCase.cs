@@ -8,6 +8,7 @@ public class DeleteUpsUseCase(IHardwareRepository repository, ISystemRepository 
 {
     public async Task ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         if (await repository.GetByNameAsync(name) is not Ups ups)
@@ -20,7 +21,7 @@ public class DeleteUpsUseCase(IHardwareRepository repository, ISystemRepository 
             systemResource.RunsOn = null;
             await systemsRepo.UpdateAsync(systemResource);
         }
-        
+
         await repository.DeleteAsync(name);
     }
 }

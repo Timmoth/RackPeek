@@ -7,11 +7,12 @@ public class DeleteSystemUseCase(ISystemRepository repository, IServiceRepositor
 {
     public async Task ExecuteAsync(string name)
     {
+        name = Normalize.SystemName(name);
         ThrowIfInvalid.ResourceName(name);
-        
+
         if (await repository.GetByNameAsync(name) is not SystemResource)
             throw new NotFoundException($"System '{name}' not found.");
-        
+
         // Break link to dependants
         var dependants = await serviceRepo.GetBySystemHostAsync(name);
         foreach (var serviceResource in dependants)
@@ -19,7 +20,7 @@ public class DeleteSystemUseCase(ISystemRepository repository, IServiceRepositor
             serviceResource.RunsOn = null;
             await serviceRepo.UpdateAsync(serviceResource);
         }
-        
+
         await repository.DeleteAsync(name);
     }
 }

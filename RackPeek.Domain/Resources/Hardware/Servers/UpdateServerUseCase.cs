@@ -11,6 +11,7 @@ public class UpdateServerUseCase(IHardwareRepository repository) : IUseCase
         bool? ipmi = null
     )
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var server = await repository.GetByNameAsync(name) as Server;

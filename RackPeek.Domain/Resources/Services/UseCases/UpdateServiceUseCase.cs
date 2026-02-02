@@ -1,8 +1,9 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
-public class UpdateServiceUseCase(IServiceRepository repository) : IUseCase
+public class UpdateServiceUseCase(IServiceRepository repository, ISystemRepository systemRepo) : IUseCase
 {
     public async Task ExecuteAsync(
         string name,
@@ -13,10 +14,11 @@ public class UpdateServiceUseCase(IServiceRepository repository) : IUseCase
         string? runsOn = null
     )
     {
+        name = Normalize.ServiceName(name);
         ThrowIfInvalid.ResourceName(name);
         var service = await repository.GetByNameAsync(name);
         if (service is null)
-            throw new InvalidOperationException($"Service '{name}' not found.");
+            throw new NotFoundException($"Service '{name}' not found.");
 
         if (!string.IsNullOrWhiteSpace(ip))
         {
@@ -43,7 +45,12 @@ public class UpdateServiceUseCase(IServiceRepository repository) : IUseCase
         }
 
         if (!string.IsNullOrWhiteSpace(runsOn))
+        {
+            ThrowIfInvalid.ResourceName(runsOn);
+            var parentSystem = await systemRepo.GetByNameAsync(runsOn);
+            if (parentSystem == null) throw new NotFoundException($"Parent system '{runsOn}' not found.");
             service.RunsOn = runsOn;
+        }
 
         await repository.UpdateAsync(service);
     }

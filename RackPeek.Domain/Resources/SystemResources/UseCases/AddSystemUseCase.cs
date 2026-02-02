@@ -6,6 +6,7 @@ public class AddSystemUseCase(ISystemRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {
+        name = Normalize.SystemName(name);
         ThrowIfInvalid.ResourceName(name);
         // basic guard rails
         var existing = await repository.GetByNameAsync(name);

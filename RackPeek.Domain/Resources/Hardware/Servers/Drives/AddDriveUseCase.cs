@@ -6,13 +6,14 @@ namespace RackPeek.Domain.Resources.Hardware.Servers.Drives;
 public class AddDrivesUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(
-        string serverName,
+        string name,
         string type,
         int size)
     {
-        ThrowIfInvalid.ResourceName(serverName);
+        name = Normalize.HardwareName(name);
+        ThrowIfInvalid.ResourceName(name);
 
-        var hardware = await repository.GetByNameAsync(serverName);
+        var hardware = await repository.GetByNameAsync(name);
 
         if (hardware is not Server server) return;
 

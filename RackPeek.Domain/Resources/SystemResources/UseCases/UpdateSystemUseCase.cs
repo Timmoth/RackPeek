@@ -1,8 +1,9 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Resources.Hardware;
 
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
-public class UpdateSystemUseCase(ISystemRepository repository) : IUseCase
+public class UpdateSystemUseCase(ISystemRepository repository, IHardwareRepository hardwareRepo) : IUseCase
 {
     public async Task ExecuteAsync(
         string name,
@@ -13,6 +14,7 @@ public class UpdateSystemUseCase(ISystemRepository repository) : IUseCase
         string? runsOn = null
     )
     {
+        name = Normalize.SystemName(name);
         ThrowIfInvalid.ResourceName(name);
         var system = await repository.GetByNameAsync(name);
         if (system is null)
@@ -31,7 +33,13 @@ public class UpdateSystemUseCase(ISystemRepository repository) : IUseCase
             system.Ram = ram.Value;
 
         if (!string.IsNullOrWhiteSpace(runsOn))
+        {
+            ThrowIfInvalid.ResourceName(runsOn);
+            var parentHardware = await hardwareRepo.GetByNameAsync(runsOn);
+            if (parentHardware == null) throw new NotFoundException($"Parent hardware '{runsOn}' not found.");
             system.RunsOn = runsOn;
+        }
+
 
         await repository.UpdateAsync(system);
     }

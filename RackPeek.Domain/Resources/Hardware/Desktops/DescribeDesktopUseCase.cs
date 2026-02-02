@@ -17,6 +17,7 @@ public class DescribeDesktopUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<DesktopDescription?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var desktop = await repository.GetByNameAsync(name) as Desktop;

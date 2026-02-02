@@ -17,6 +17,7 @@ public class DescribeServiceUseCase(IServiceRepository repository, ISystemReposi
 {
     public async Task<ServiceDescription?> ExecuteAsync(string name)
     {
+        name = Normalize.ServiceName(name);
         ThrowIfInvalid.ResourceName(name);
         var service = await repository.GetByNameAsync(name);
         if (service is null)

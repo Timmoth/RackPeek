@@ -7,6 +7,7 @@ public class GetSwitchUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<Switch?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var hardware = await repository.GetByNameAsync(name);

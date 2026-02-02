@@ -8,10 +8,11 @@ public class GetSystemServiceTreeUseCase(
     ISystemRepository systemRepository,
     IServiceRepository serviceRepository) : IUseCase
 {
-    public async Task<SystemDependencyTree?> ExecuteAsync(string systemName)
+    public async Task<SystemDependencyTree?> ExecuteAsync(string name)
     {
-        ThrowIfInvalid.ResourceName(systemName);
-        var system = await systemRepository.GetByNameAsync(systemName);
+        name = Normalize.SystemName(name);
+        ThrowIfInvalid.ResourceName(name);
+        var system = await systemRepository.GetByNameAsync(name);
         if (system is null) return null;
 
         var services = await serviceRepository.GetBySystemHostAsync(system.Name);

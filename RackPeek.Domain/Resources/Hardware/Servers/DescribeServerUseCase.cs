@@ -18,6 +18,7 @@ public class DescribeServerUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<ServerDescription?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var server = await repository.GetByNameAsync(name) as Server;

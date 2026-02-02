@@ -7,6 +7,7 @@ public class AddLaptopUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var existing = await repository.GetByNameAsync(name);

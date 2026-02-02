@@ -7,6 +7,7 @@ public class DescribeLaptopUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<LaptopDescription?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var laptop = await repository.GetByNameAsync(name) as Laptop;

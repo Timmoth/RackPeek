@@ -17,6 +17,7 @@ public class DescribeFirewallUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<FirewallDescription?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var firewallResource = await repository.GetByNameAsync(name) as Firewall;

@@ -7,6 +7,7 @@ public class GetRouterUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<Router?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var hardware = await repository.GetByNameAsync(name);

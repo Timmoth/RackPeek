@@ -11,8 +11,8 @@ public class UpdateAccessPointUseCase(IHardwareRepository repository) : IUseCase
         double? speed = null
     )
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
-
         var ap = await repository.GetByNameAsync(name) as AccessPoint;
         if (ap == null)
             throw new NotFoundException($"Access point '{name}' not found.");

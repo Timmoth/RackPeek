@@ -16,6 +16,7 @@ public class DescribeSystemUseCase(ISystemRepository repository) : IUseCase
 {
     public async Task<SystemDescription?> ExecuteAsync(string name)
     {
+        name = Normalize.SystemName(name);
         ThrowIfInvalid.ResourceName(name);
         var system = await repository.GetByNameAsync(name);
         if (system is null)

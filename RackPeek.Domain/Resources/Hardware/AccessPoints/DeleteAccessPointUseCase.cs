@@ -8,8 +8,8 @@ public class DeleteAccessPointUseCase(IHardwareRepository repository, ISystemRep
 {
     public async Task ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
-
         var ap = await repository.GetByNameAsync(name);
         if (ap is not AccessPoint)
             throw new NotFoundException($"Access point '{name}' not found.");
@@ -21,7 +21,7 @@ public class DeleteAccessPointUseCase(IHardwareRepository repository, ISystemRep
             systemResource.RunsOn = null;
             await systemsRepo.UpdateAsync(systemResource);
         }
-        
+
         await repository.DeleteAsync(name);
     }
 }

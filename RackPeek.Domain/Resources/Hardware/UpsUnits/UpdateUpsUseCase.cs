@@ -11,6 +11,7 @@ public class UpdateUpsUseCase(IHardwareRepository repository) : IUseCase
         int? va = null
     )
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var ups = await repository.GetByNameAsync(name) as Ups;

@@ -1,16 +1,20 @@
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops.Cpus;
 
 public class RemoveDesktopCpuUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task ExecuteAsync(string desktopName, int index)
+    public async Task ExecuteAsync(string name, int index)
     {
-        var desktop = await repository.GetByNameAsync(desktopName) as Desktop
-                      ?? throw new InvalidOperationException($"Desktop '{desktopName}' not found.");
+        name = Normalize.HardwareName(name);
+        ThrowIfInvalid.ResourceName(name);
+
+        var desktop = await repository.GetByNameAsync(name) as Desktop
+                      ?? throw new InvalidOperationException($"Desktop '{name}' not found.");
 
         if (desktop.Cpus == null || index < 0 || index >= desktop.Cpus.Count)
-            throw new InvalidOperationException($"CPU index {index} not found on desktop '{desktopName}'.");
+            throw new InvalidOperationException($"CPU index {index} not found on desktop '{name}'.");
 
         desktop.Cpus.RemoveAt(index);
 

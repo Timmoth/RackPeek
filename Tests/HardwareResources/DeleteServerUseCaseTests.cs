@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using NSubstitute.ClearExtensions;
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
@@ -12,11 +11,8 @@ namespace Tests.HardwareResources;
 
 public class UsecaseTestHost
 {
-    public IHardwareRepository HardwareRepo { get; set; }
-    public ISystemRepository SystemRepo { get; set; }
-    public IServiceRepository ServiceRepo { get; set; }
-
     private readonly ServiceCollection _sc;
+
     public UsecaseTestHost()
     {
         HardwareRepo = Substitute.For<IHardwareRepository>();
@@ -27,6 +23,11 @@ public class UsecaseTestHost
         _sc.AddSingleton<ISystemRepository>(SystemRepo);
         _sc.AddSingleton<IServiceRepository>(ServiceRepo);
     }
+
+    public IHardwareRepository HardwareRepo { get; set; }
+    public ISystemRepository SystemRepo { get; set; }
+    public IServiceRepository ServiceRepo { get; set; }
+
     public T Get<T>() where T : notnull
     {
         _sc.AddSingleton(typeof(T));

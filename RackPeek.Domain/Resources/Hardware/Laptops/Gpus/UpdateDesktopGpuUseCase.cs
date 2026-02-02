@@ -7,6 +7,7 @@ public class UpdateLaptopGpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name, int index, Gpu updated)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var laptop = await repository.GetByNameAsync(name) as Laptop

@@ -7,6 +7,7 @@ public class GetDesktopUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<Desktop?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var hardware = await repository.GetByNameAsync(name);

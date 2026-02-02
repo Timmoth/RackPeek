@@ -28,11 +28,20 @@ public class SystemYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
     {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
-        // Add system
-        var (output, yaml) = await ExecuteAsync("systems", "add", "host01");
+        var (output, yaml) = await ExecuteAsync("servers", "add", "hypervisor01");
+        (output, yaml) = await ExecuteAsync("systems", "add", "host01");
         Assert.Equal("System 'host01' added.\n", output);
         Assert.Equal("""
                      resources:
+                     - kind: Server
+                       cpus: 
+                       ram: 
+                       drives: 
+                       nics: 
+                       gpus: 
+                       ipmi: 
+                       name: hypervisor01
+                       tags: 
                      - kind: System
                        type: 
                        os: 
@@ -56,8 +65,18 @@ public class SystemYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
         );
 
         Assert.Equal("System 'host01' updated.\n", output);
+
         Assert.Equal("""
                      resources:
+                     - kind: Server
+                       cpus: 
+                       ram: 
+                       drives: 
+                       nics: 
+                       gpus: 
+                       ipmi: 
+                       name: hypervisor01
+                       tags: 
                      - kind: System
                        type: server
                        os: ubuntu-22.04

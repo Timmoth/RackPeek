@@ -7,6 +7,7 @@ public class GetUpsUnitUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task<Ups?> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var hardware = await repository.GetByNameAsync(name);
