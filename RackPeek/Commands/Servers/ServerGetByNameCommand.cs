@@ -19,12 +19,6 @@ public class ServerGetByNameCommand(
 
         var server = await useCase.ExecuteAsync(settings.Name);
 
-        if (server == null)
-        {
-            AnsiConsole.MarkupLine($"[red]Server '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
         AnsiConsole.MarkupLine(
             $"[green]{server.Name}[/]  RAM: {server.Ram?.Size} GB, IPMI: {(server.Ipmi == true ? "yes" : "no")}");
 

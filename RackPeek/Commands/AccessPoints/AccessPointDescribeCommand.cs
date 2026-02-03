@@ -18,13 +18,7 @@ public class AccessPointDescribeCommand(
         var useCase = scope.ServiceProvider.GetRequiredService<DescribeAccessPointUseCase>();
 
         var ap = await useCase.ExecuteAsync(settings.Name);
-
-        if (ap == null)
-        {
-            AnsiConsole.MarkupLine($"[red]Access Point '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
+        
         var grid = new Grid()
             .AddColumn(new GridColumn().NoWrap())
             .AddColumn(new GridColumn().NoWrap());

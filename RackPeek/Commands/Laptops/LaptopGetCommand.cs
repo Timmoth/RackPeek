@@ -15,9 +15,9 @@ public class LaptopGetCommand(IServiceProvider provider)
         using var scope = provider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<GetLaptopsUseCase>();
 
-        var Laptops = await useCase.ExecuteAsync();
+        var laptops = await useCase.ExecuteAsync();
 
-        if (Laptops.Count == 0)
+        if (laptops.Count == 0)
         {
             AnsiConsole.MarkupLine("[yellow]No Laptops found.[/]");
             return 0;
@@ -31,7 +31,7 @@ public class LaptopGetCommand(IServiceProvider provider)
             .AddColumn("Drives")
             .AddColumn("GPUs");
 
-        foreach (var d in Laptops)
+        foreach (var d in laptops)
             table.AddRow(
                 d.Name,
                 (d.Cpus?.Count ?? 0).ToString(),

@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.UpsUnits;
@@ -10,10 +11,11 @@ public class AddUpsUseCaseTests
     [Fact]
     public async Task ExecuteAsync_Adds_new_ups_when_not_exists()
     {
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("ups01").Returns((Hardware?)null);
 
-        var sut = new AddUpsUseCase(repo);
+        var sut = host.Get<AddUpsUseCase>();
 
         await sut.ExecuteAsync("ups01");
 
@@ -25,16 +27,16 @@ public class AddUpsUseCaseTests
     [Fact]
     public async Task ExecuteAsync_Throws_if_ups_already_exists()
     {
-        var repo = Substitute.For<IHardwareRepository>();
-        repo.GetByNameAsync("ups01").Returns(new RackPeek.Domain.Resources.Hardware.Models.Ups { Name = "ups01" });
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
+        host.ResourceRepo.GetResourceKindAsync("ups01").Returns("Server");
 
-        var sut = new AddUpsUseCase(repo);
-
-        var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var sut = host.Get<AddUpsUseCase>();
+        
+        var ex = await Assert.ThrowsAsync<ConflictException>(async () =>
             await sut.ExecuteAsync("ups01")
         );
 
-        Assert.Equal("UPS 'ups01' already exists.", ex.Message);
         await repo.DidNotReceive().AddAsync(Arg.Any<RackPeek.Domain.Resources.Hardware.Models.Ups>());
     }
 }

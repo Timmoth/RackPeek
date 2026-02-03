@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Desktops;
 using RackPeek.Domain.Resources.Hardware.Models;
@@ -29,8 +30,7 @@ public class GetDesktopUseCaseTests
 
         var useCase = new GetDesktopUseCase(repo);
 
-        var result = await useCase.ExecuteAsync("desk1");
+        await Assert.ThrowsAsync<NotFoundException>(() => useCase.ExecuteAsync("desk1"));
 
-        Assert.Null(result);
     }
 }

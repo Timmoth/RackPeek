@@ -1,6 +1,5 @@
 using NSubstitute;
 using RackPeek.Domain.Helpers;
-using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Switches;
 

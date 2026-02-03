@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.AccessPoints;
 using RackPeek.Domain.Resources.Hardware.Models;
@@ -35,9 +36,7 @@ public class GetAccessPointUseCaseTests
         var sut = new GetAccessPointUseCase(repo);
 
         // Act
-        var result = await sut.ExecuteAsync("node01");
+        await Assert.ThrowsAsync<NotFoundException>(() => sut.ExecuteAsync("node01"));
 
-        // Assert
-        Assert.Null(result);
     }
 }

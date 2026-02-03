@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Servers;
@@ -35,10 +36,8 @@ public class GetServerUseCaseTests
         var sut = new GetServerUseCase(repo);
 
         // Act
-        var server = await sut.ExecuteAsync("node01");
+        await Assert.ThrowsAsync<NotFoundException>(() => sut.ExecuteAsync("node01"));
 
-        // Assert
-        Assert.Null(server);
     }
 
     [Fact]
@@ -51,9 +50,7 @@ public class GetServerUseCaseTests
         var sut = new GetServerUseCase(repo);
 
         // Act
-        var server = await sut.ExecuteAsync("node01");
+        await Assert.ThrowsAsync<NotFoundException>(() => sut.ExecuteAsync("node01"));
 
-        // Assert
-        Assert.Null(server);
     }
 }

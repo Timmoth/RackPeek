@@ -7,12 +7,13 @@ public class UpdateLaptopCpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name, int index, Cpu updated)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
         var laptop = await repository.GetByNameAsync(name) as Laptop
-                     ?? throw new InvalidOperationException($"Laptop '{name}' not found.");
+                     ?? throw new NotFoundException($"Laptop '{name}' not found.");
 
         if (laptop.Cpus == null || index < 0 || index >= laptop.Cpus.Count)
-            throw new InvalidOperationException($"CPU index {index} not found on Laptop '{name}'.");
+            throw new NotFoundException($"CPU index {index} not found on Laptop '{name}'.");
 
         laptop.Cpus[index] = updated;
 

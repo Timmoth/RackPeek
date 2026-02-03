@@ -17,13 +17,7 @@ public class UpsGetByNameCommand(IServiceProvider provider)
         var useCase = scope.ServiceProvider.GetRequiredService<DescribeUpsUseCase>();
 
         var ups = await useCase.ExecuteAsync(settings.Name);
-
-        if (ups == null)
-        {
-            AnsiConsole.MarkupLine($"[red]UPS '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
+        
         AnsiConsole.MarkupLine(
             $"[green]{ups.Name}[/]  Model: {ups.Model ?? "Unknown"}, VA: {ups.Va?.ToString() ?? "Unknown"}");
 

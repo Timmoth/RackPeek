@@ -15,14 +15,15 @@ public record SwitchDescription(
 
 public class DescribeSwitchUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<SwitchDescription?> ExecuteAsync(string name)
+    public async Task<SwitchDescription> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var switchResource = await repository.GetByNameAsync(name) as Switch;
         if (switchResource == null)
-            return null;
-
+            throw new NotFoundException($"Switch '{name}' not found.");
+        
         // If no ports exist, return defaults
         var ports = switchResource.Ports ?? new List<Port>();
 

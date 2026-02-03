@@ -5,13 +5,14 @@ namespace RackPeek.Domain.Resources.Hardware.Laptops;
 
 public class DescribeLaptopUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<LaptopDescription?> ExecuteAsync(string name)
+    public async Task<LaptopDescription> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var laptop = await repository.GetByNameAsync(name) as Laptop;
         if (laptop == null)
-            return null;
+            throw new NotFoundException($"Laptop '{name}' not found.");
 
         var ramSummary = laptop.Ram == null
             ? "None"

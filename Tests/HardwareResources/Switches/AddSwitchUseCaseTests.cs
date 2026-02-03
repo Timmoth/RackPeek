@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Switches;
@@ -11,10 +12,11 @@ public class AddSwitchUseCaseTests
     public async Task ExecuteAsync_Adds_new_switch_when_not_exists()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("sw01").Returns((Hardware?)null);
 
-        var sut = new AddSwitchUseCase(repo);
+        var sut = host.Get<AddSwitchUseCase>();
 
         // Act
         await sut.ExecuteAsync(
@@ -31,20 +33,19 @@ public class AddSwitchUseCaseTests
     public async Task ExecuteAsync_Throws_if_switch_already_exists()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
-        repo.GetByNameAsync("sw01").Returns(new Switch { Name = "sw01" });
+        var host = new UsecaseTestHost();
+        host.ResourceRepo.GetResourceKindAsync("sw01").Returns("Server");
 
-        var sut = new AddSwitchUseCase(repo);
+        var sut = host.Get<AddSwitchUseCase>();
 
         // Act
-        var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var ex = await Assert.ThrowsAsync<ConflictException>(async () =>
             await sut.ExecuteAsync(
                 "sw01"
             )
         );
 
         // Assert
-        Assert.Equal("Switch 'sw01' already exists.", ex.Message);
-        await repo.DidNotReceive().AddAsync(Arg.Any<Switch>());
+        await host.HardwareRepo.DidNotReceive().AddAsync(Arg.Any<Switch>());
     }
 }

@@ -19,12 +19,6 @@ public class ServiceDescribeCommand(
 
         var service = await useCase.ExecuteAsync(settings.Name);
 
-        if (service == null)
-        {
-            AnsiConsole.MarkupLine($"[red]Service '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
         var grid = new Grid()
             .AddColumn(new GridColumn().NoWrap())
             .AddColumn(new GridColumn().NoWrap())

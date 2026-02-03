@@ -14,12 +14,6 @@ public sealed class LaptopTreeCommand(GetHardwareSystemTreeUseCase useCase)
     {
         var tree = await useCase.ExecuteAsync(settings.Name);
 
-        if (tree is null)
-        {
-            AnsiConsole.MarkupLine($"[red]Error:[/] Laptop '{settings.Name}' not found.");
-            return -1;
-        }
-
         var root = new Tree($"[bold]{tree.Hardware.Name}[/]");
 
         foreach (var system in tree.Systems)

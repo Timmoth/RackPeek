@@ -20,7 +20,7 @@ public class FirewallGetCommand(
 
         if (report.Firewalls.Count == 0)
         {
-            AnsiConsole.MarkupLine("[yellow]No Firewalles found.[/]");
+            AnsiConsole.MarkupLine("[yellow]No Firewalls found.[/]");
             return 0;
         }
 

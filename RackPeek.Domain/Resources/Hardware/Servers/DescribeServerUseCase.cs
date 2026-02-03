@@ -16,13 +16,14 @@ public record ServerDescription(
 
 public class DescribeServerUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<ServerDescription?> ExecuteAsync(string name)
+    public async Task<ServerDescription> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var server = await repository.GetByNameAsync(name) as Server;
         if (server == null)
-            return null;
+            throw new NotFoundException($"Server '{name}' not found.");
 
         var cpuSummary = server.Cpus == null
             ? "Unknown"

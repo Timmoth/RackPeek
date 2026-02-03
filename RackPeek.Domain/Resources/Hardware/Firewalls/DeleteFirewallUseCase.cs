@@ -8,6 +8,7 @@ public class DeleteFirewallUseCase(IHardwareRepository repository, ISystemReposi
 {
     public async Task ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         if (await repository.GetByNameAsync(name) is not Firewall hardware)
@@ -20,7 +21,7 @@ public class DeleteFirewallUseCase(IHardwareRepository repository, ISystemReposi
             systemResource.RunsOn = null;
             await systemsRepo.UpdateAsync(systemResource);
         }
-        
+
         await repository.DeleteAsync(name);
     }
 }

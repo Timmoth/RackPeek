@@ -7,6 +7,7 @@ public class AddLaptopGpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(string name, Gpu gpu)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
         var laptop = await repository.GetByNameAsync(name) as Laptop
                      ?? throw new InvalidOperationException($"Laptop '{name}' not found.");

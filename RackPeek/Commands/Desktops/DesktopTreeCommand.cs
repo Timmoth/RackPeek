@@ -14,12 +14,6 @@ public sealed class DesktopTreeCommand(GetHardwareSystemTreeUseCase useCase)
     {
         var tree = await useCase.ExecuteAsync(settings.Name);
 
-        if (tree is null)
-        {
-            AnsiConsole.MarkupLine($"[red]Error:[/] Desktop '{settings.Name}' not found.");
-            return -1;
-        }
-
         var root = new Tree($"[bold]{tree.Hardware.Name}[/]");
 
         foreach (var system in tree.Systems)

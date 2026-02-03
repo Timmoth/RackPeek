@@ -19,12 +19,6 @@ public class SystemDescribeCommand(
 
         var system = await useCase.ExecuteAsync(settings.Name);
 
-        if (system == null)
-        {
-            AnsiConsole.MarkupLine($"[red]System '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
         var grid = new Grid()
             .AddColumn(new GridColumn().NoWrap())
             .AddColumn(new GridColumn().NoWrap());

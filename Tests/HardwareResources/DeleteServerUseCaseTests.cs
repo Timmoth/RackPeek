@@ -1,39 +1,9 @@
-using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using NSubstitute.ClearExtensions;
 using RackPeek.Domain.Helpers;
-using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Servers;
-using RackPeek.Domain.Resources.Services;
-using RackPeek.Domain.Resources.SystemResources;
 
 namespace Tests.HardwareResources;
-
-public class UsecaseTestHost
-{
-    public IHardwareRepository HardwareRepo { get; set; }
-    public ISystemRepository SystemRepo { get; set; }
-    public IServiceRepository ServiceRepo { get; set; }
-
-    private readonly ServiceCollection _sc;
-    public UsecaseTestHost()
-    {
-        HardwareRepo = Substitute.For<IHardwareRepository>();
-        SystemRepo = Substitute.For<ISystemRepository>();
-        ServiceRepo = Substitute.For<IServiceRepository>();
-        _sc = new ServiceCollection();
-        _sc.AddSingleton<IHardwareRepository>(HardwareRepo);
-        _sc.AddSingleton<ISystemRepository>(SystemRepo);
-        _sc.AddSingleton<IServiceRepository>(ServiceRepo);
-    }
-    public T Get<T>() where T : notnull
-    {
-        _sc.AddSingleton(typeof(T));
-        var sp = _sc.BuildServiceProvider();
-        return sp.GetRequiredService<T>();
-    }
-}
 
 public class DeleteServerUseCaseTests
 {

@@ -5,11 +5,17 @@ namespace RackPeek.Domain.Resources.Hardware.Routers;
 
 public class GetRouterUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<Router?> ExecuteAsync(string name)
+    public async Task<Router> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var hardware = await repository.GetByNameAsync(name);
-        return hardware as Router;
+        if (hardware is not Router router)
+        {
+            throw new NotFoundException($"Router '{name}' not found.");
+        }
+        
+        return router;
     }
 }

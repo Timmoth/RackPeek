@@ -3,15 +3,16 @@ using RackPeek.Domain.Resources.Hardware.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Laptops;
 
-public class AddLaptopUseCase(IHardwareRepository repository) : IUseCase
+public class AddLaptopUseCase(IHardwareRepository repository, IResourceRepository resourceRepo) : IUseCase
 {
     public async Task ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
-        var existing = await repository.GetByNameAsync(name);
-        if (existing != null)
-            throw new InvalidOperationException($"Laptop '{name}' already exists.");
+        var existingResourceKind = await resourceRepo.GetResourceKindAsync(name);
+        if (!string.IsNullOrEmpty(existingResourceKind))
+            throw new ConflictException($"{existingResourceKind} resource '{name}' already exists.");
 
         var laptop = new Laptop
         {

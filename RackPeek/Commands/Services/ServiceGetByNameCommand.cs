@@ -17,16 +17,10 @@ public class ServiceGetByNameCommand(
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<DescribeServiceUseCase>();
 
-        var Service = await useCase.ExecuteAsync(settings.Name);
-
-        if (Service == null)
-        {
-            AnsiConsole.MarkupLine($"[red]Service '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
+        var service = await useCase.ExecuteAsync(settings.Name);
+        
         AnsiConsole.MarkupLine(
-            $"[green]{Service.Name}[/]  Ip: {Service.Ip ?? "Unknown"}, Port: {Service.Port.ToString() ?? "Unknown"}, Protocol: {Service.Protocol ?? "Unknown"}, Url: {Service.Url ?? "Unknown"}, RunsOn: {ServicesFormatExtensions.FormatRunsOn(Service.RunsOnSystemHost, Service.RunsOnPhysicalHost)}");
+            $"[green]{service.Name}[/]  Ip: {service.Ip ?? "Unknown"}, Port: {service.Port.ToString() ?? "Unknown"}, Protocol: {service.Protocol ?? "Unknown"}, Url: {service.Url ?? "Unknown"}, RunsOn: {ServicesFormatExtensions.FormatRunsOn(service.RunsOnSystemHost, service.RunsOnPhysicalHost)}");
         return 0;
     }
 }

@@ -19,12 +19,6 @@ public class SwitchDescribeCommand(
 
         var sw = await useCase.ExecuteAsync(settings.Name);
 
-        if (sw == null)
-        {
-            AnsiConsole.MarkupLine($"[red]Switch '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
         var grid = new Grid()
             .AddColumn(new GridColumn().NoWrap())
             .AddColumn(new GridColumn().NoWrap());

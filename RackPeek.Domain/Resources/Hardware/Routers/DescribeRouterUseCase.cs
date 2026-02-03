@@ -15,13 +15,14 @@ public record RouterDescription(
 
 public class DescribeRouterUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<RouterDescription?> ExecuteAsync(string name)
+    public async Task<RouterDescription> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var routerResource = await repository.GetByNameAsync(name) as Router;
         if (routerResource == null)
-            return null;
+            throw new NotFoundException($"Router '{name}' not found.");
 
         // If no ports exist, return defaults
         var ports = routerResource.Ports ?? new List<Port>();

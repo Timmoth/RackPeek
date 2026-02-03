@@ -12,6 +12,7 @@ public class UpdateSwitchUseCase(IHardwareRepository repository) : IUseCase
         bool? poe = null
     )
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var switchResource = await repository.GetByNameAsync(name) as Switch;

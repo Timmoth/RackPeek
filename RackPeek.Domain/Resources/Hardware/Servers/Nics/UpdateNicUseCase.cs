@@ -7,23 +7,24 @@ namespace RackPeek.Domain.Resources.Hardware.Servers.Nics;
 public class UpdateNicUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(
-        string serverName,
+        string name,
         int index,
         string type,
         int speed,
         int ports)
     {
-        ThrowIfInvalid.ResourceName(serverName);
+        name = Normalize.HardwareName(name);
+        ThrowIfInvalid.ResourceName(name);
         ThrowIfInvalid.NicSpeed(speed);
         ThrowIfInvalid.NicPorts(ports);
 
         var nicType = Normalize.NicType(type);
         ThrowIfInvalid.NicType(nicType);
 
-        var hardware = await repository.GetByNameAsync(serverName);
+        var hardware = await repository.GetByNameAsync(name);
 
         if (hardware is not Server server)
-            throw new NotFoundException($"Server: '{serverName}' not found.");
+            throw new NotFoundException($"Server: '{name}' not found.");
 
         server.Nics ??= [];
 

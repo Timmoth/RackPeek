@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.Switches;
@@ -17,10 +18,8 @@ public class DescribeSwitchUseCaseTests
         var sut = new DescribeSwitchUseCase(repo);
 
         // Act
-        var result = await sut.ExecuteAsync("sw01");
+        await Assert.ThrowsAsync<NotFoundException>(() => sut.ExecuteAsync("sw01"));
 
-        // Assert
-        Assert.Null(result);
     }
 
     [Fact]

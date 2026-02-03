@@ -8,6 +8,7 @@ public class DeleteSwitchUseCase(IHardwareRepository repository, ISystemReposito
 {
     public async Task ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         if (await repository.GetByNameAsync(name) is not Switch hardware)
@@ -20,7 +21,7 @@ public class DeleteSwitchUseCase(IHardwareRepository repository, ISystemReposito
             systemResource.RunsOn = null;
             await systemsRepo.UpdateAsync(systemResource);
         }
-        
+
         await repository.DeleteAsync(name);
     }
 }

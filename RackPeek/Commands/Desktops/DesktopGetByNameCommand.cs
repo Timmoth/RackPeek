@@ -18,12 +18,6 @@ public class DesktopGetByNameCommand(IServiceProvider provider)
 
         var desktop = await useCase.ExecuteAsync(settings.Name);
 
-        if (desktop == null)
-        {
-            AnsiConsole.MarkupLine($"[red]Desktop '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
         AnsiConsole.MarkupLine($"[green]{desktop.Name}[/] (Model: {desktop.Model ?? "Unknown"})");
         return 0;
     }

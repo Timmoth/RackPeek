@@ -9,12 +9,13 @@ public class GetHardwareSystemTreeUseCase(
     ISystemRepository systemRepository,
     IServiceRepository serviceRepository) : IUseCase
 {
-    public async Task<HardwareDependencyTree?> ExecuteAsync(string hardwareName)
+    public async Task<HardwareDependencyTree> ExecuteAsync(string hardwareName)
     {
         ThrowIfInvalid.ResourceName(hardwareName);
 
         var server = await hardwareRepository.GetByNameAsync(hardwareName);
-        if (server is null) return null;
+        if (server is null) 
+            throw new NotFoundException($"Hardware '{hardwareName}' not found.");
 
         return await BuildDependencyTreeAsync(server);
     }

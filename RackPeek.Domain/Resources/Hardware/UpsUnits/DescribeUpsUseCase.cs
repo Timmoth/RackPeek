@@ -11,13 +11,14 @@ public record UpsDescription(
 
 public class DescribeUpsUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<UpsDescription?> ExecuteAsync(string name)
+    public async Task<UpsDescription> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var ups = await repository.GetByNameAsync(name) as Ups;
         if (ups == null)
-            return null;
+            throw new NotFoundException($"Ups '{name}' not found.");
 
         return new UpsDescription(
             ups.Name,

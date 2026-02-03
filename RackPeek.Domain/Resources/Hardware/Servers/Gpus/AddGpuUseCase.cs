@@ -6,16 +6,17 @@ namespace RackPeek.Domain.Resources.Hardware.Servers.Gpus;
 public class AddGpuUseCase(IHardwareRepository repository) : IUseCase
 {
     public async Task ExecuteAsync(
-        string serverName,
+        string name,
         string model,
         int vram)
     {
-        ThrowIfInvalid.ResourceName(serverName);
+        name = Normalize.HardwareName(name);
+        ThrowIfInvalid.ResourceName(name);
 
-        var hardware = await repository.GetByNameAsync(serverName);
+        var hardware = await repository.GetByNameAsync(name);
 
         if (hardware is not Server server)
-            throw new NotFoundException($"Server '{serverName}' not found.");
+            throw new NotFoundException($"Server '{name}' not found.");
 
         server.Gpus ??= [];
 

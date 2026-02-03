@@ -18,12 +18,6 @@ public class UpsDescribeCommand(IServiceProvider provider)
 
         var ups = await useCase.ExecuteAsync(settings.Name);
 
-        if (ups == null)
-        {
-            AnsiConsole.MarkupLine($"[red]UPS '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
         var grid = new Grid()
             .AddColumn()
             .AddColumn();

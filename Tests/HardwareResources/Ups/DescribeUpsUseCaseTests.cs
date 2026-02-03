@@ -1,4 +1,5 @@
 using NSubstitute;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Models;
 using RackPeek.Domain.Resources.Hardware.UpsUnits;
@@ -15,9 +16,8 @@ public class DescribeUpsUseCaseTests
 
         var sut = new DescribeUpsUseCase(repo);
 
-        var result = await sut.ExecuteAsync("ups01");
+        await Assert.ThrowsAsync<NotFoundException>(() => sut.ExecuteAsync("ups01"));
 
-        Assert.Null(result);
     }
 
     [Fact]

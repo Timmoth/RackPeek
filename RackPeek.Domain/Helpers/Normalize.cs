@@ -10,4 +10,19 @@ public static class Normalize
     {
         return value.Trim().ToLowerInvariant();
     }
+
+    public static string SystemName(string name)
+    {
+        return name.Trim();
+    }
+
+    public static string ServiceName(string name)
+    {
+        return name.Trim();
+    }
+
+    public static string HardwareName(string name)
+    {
+        return name.Trim();
+    }
 }

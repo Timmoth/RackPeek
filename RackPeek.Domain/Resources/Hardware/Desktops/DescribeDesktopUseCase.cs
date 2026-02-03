@@ -15,13 +15,14 @@ public record DesktopDescription(
 
 public class DescribeDesktopUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<DesktopDescription?> ExecuteAsync(string name)
+    public async Task<DesktopDescription> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var desktop = await repository.GetByNameAsync(name) as Desktop;
         if (desktop == null)
-            return null;
+            throw new NotFoundException($"Desktop '{name}' not found.");
 
         var ramSummary = desktop.Ram == null
             ? "None"

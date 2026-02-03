@@ -12,6 +12,7 @@ public class UpdateFirewallUseCase(IHardwareRepository repository) : IUseCase
         bool? poe = null
     )
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var firewallResource = await repository.GetByNameAsync(name) as Firewall;

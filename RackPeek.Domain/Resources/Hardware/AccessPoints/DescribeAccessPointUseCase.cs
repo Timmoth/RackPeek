@@ -11,13 +11,13 @@ public record AccessPointDescription(
 
 public class DescribeAccessPointUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<AccessPointDescription?> ExecuteAsync(string name)
+    public async Task<AccessPointDescription> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
-
         var ap = await repository.GetByNameAsync(name) as AccessPoint;
         if (ap == null)
-            return null;
+            throw new NotFoundException($"Access point '{name}' not found.");
 
         return new AccessPointDescription(
             ap.Name,

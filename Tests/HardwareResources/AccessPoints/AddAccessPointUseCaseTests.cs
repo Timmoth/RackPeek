@@ -12,10 +12,11 @@ public class AddAccessPointUseCaseTests
     public async Task ExecuteAsync_Adds_new_ap_when_not_exists()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
+        var host = new UsecaseTestHost();
+        var repo = host.HardwareRepo;
         repo.GetByNameAsync("ap01").Returns((Hardware?)null);
 
-        var sut = new AddAccessPointUseCase(repo);
+        var sut = host.Get<AddAccessPointUseCase>();
 
         // Act
         await sut.ExecuteAsync("ap01");
@@ -30,10 +31,10 @@ public class AddAccessPointUseCaseTests
     public async Task ExecuteAsync_Throws_if_ap_already_exists()
     {
         // Arrange
-        var repo = Substitute.For<IHardwareRepository>();
-        repo.GetByNameAsync("ap01").Returns(new AccessPoint { Name = "ap01" });
+        var host = new UsecaseTestHost();
+        host.ResourceRepo.GetResourceKindAsync("ap01").Returns("Server");
 
-        var sut = new AddAccessPointUseCase(repo);
+        var sut = host.Get<AddAccessPointUseCase>();
 
         // Act
         var ex = await Assert.ThrowsAsync<ConflictException>(async () =>
@@ -41,6 +42,6 @@ public class AddAccessPointUseCaseTests
         );
 
         // Assert
-        await repo.DidNotReceive().AddAsync(Arg.Any<AccessPoint>());
+        await host.HardwareRepo.DidNotReceive().AddAsync(Arg.Any<AccessPoint>());
     }
 }

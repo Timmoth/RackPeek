@@ -20,7 +20,7 @@ public class RouterReportCommand(
 
         if (report.Routers.Count == 0)
         {
-            AnsiConsole.MarkupLine("[yellow]No Routeres found.[/]");
+            AnsiConsole.MarkupLine("[yellow]No Routers found.[/]");
             return 0;
         }
 

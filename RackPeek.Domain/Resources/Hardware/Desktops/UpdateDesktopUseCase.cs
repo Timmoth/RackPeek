@@ -10,6 +10,7 @@ public class UpdateDesktopUseCase(IHardwareRepository repository) : IUseCase
         string? model = null
     )
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var desktop = await repository.GetByNameAsync(name) as Desktop;

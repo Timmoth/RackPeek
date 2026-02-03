@@ -16,15 +16,9 @@ public class LaptopGetByNameCommand(IServiceProvider provider)
         using var scope = provider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<GetLaptopUseCase>();
 
-        var Laptop = await useCase.ExecuteAsync(settings.Name);
+        var laptop = await useCase.ExecuteAsync(settings.Name);
 
-        if (Laptop == null)
-        {
-            AnsiConsole.MarkupLine($"[red]Laptop '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
-        AnsiConsole.MarkupLine($"[green]{Laptop.Name}[/]");
+        AnsiConsole.MarkupLine($"[green]{laptop.Name}[/]");
         return 0;
     }
 }

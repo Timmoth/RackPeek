@@ -15,14 +15,15 @@ public record FirewallDescription(
 
 public class DescribeFirewallUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<FirewallDescription?> ExecuteAsync(string name)
+    public async Task<FirewallDescription> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var firewallResource = await repository.GetByNameAsync(name) as Firewall;
         if (firewallResource == null)
-            return null;
-
+            throw new NotFoundException($"Firewall '{name}' not found.");
+        
         // If no ports exist, return defaults
         var ports = firewallResource.Ports ?? new List<Port>();
 

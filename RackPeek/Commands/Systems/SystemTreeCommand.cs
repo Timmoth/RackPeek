@@ -12,13 +12,7 @@ public sealed class SystemTreeCommand(GetSystemServiceTreeUseCase useCase) : Asy
         CancellationToken cancellationToken)
     {
         var tree = await useCase.ExecuteAsync(settings.Name);
-
-        if (tree is null)
-        {
-            AnsiConsole.MarkupLine($"[red]System '{settings.Name}' not found.[/]");
-            return -1;
-        }
-
+        
         var root = new Tree($"[bold]{tree.System.Name}[/]");
 
         foreach (var system in tree.Services)

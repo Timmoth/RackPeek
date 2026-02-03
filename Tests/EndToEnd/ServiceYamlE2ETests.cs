@@ -37,6 +37,7 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
                        tags: 
 
                      """, yaml);
+        (output, yaml) = await ExecuteAsync("systems", "add", "vm01");
 
         // Update system
         (output, yaml) = await ExecuteAsync("services", "set", "immich", "--ip", "192.168.10.14", "--port", "80",
@@ -46,6 +47,15 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
 
         Assert.Equal("""
                      resources:
+                     - kind: System
+                       type: 
+                       os: 
+                       cores: 
+                       ram: 
+                       drives: 
+                       runsOn: 
+                       name: vm01
+                       tags: 
                      - kind: Service
                        network:
                          ip: 192.168.10.14
@@ -66,7 +76,16 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
                      """, output);
 
         Assert.Equal("""
-                     resources: []
+                     resources:
+                     - kind: System
+                       type: 
+                       os: 
+                       cores: 
+                       ram: 
+                       drives: 
+                       runsOn: 
+                       name: vm01
+                       tags: 
 
                      """, yaml);
 
@@ -87,12 +106,13 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
         var (output, yaml) = await ExecuteAsync("services", "add", "immich");
         Assert.Equal("Service 'immich' added.\n", output);
 
+        (output, yaml) = await ExecuteAsync("servers", "add", "c6400");
+        Assert.Equal("Server 'c6400' added.\n", output);
+
         (output, yaml) = await ExecuteAsync("systems", "add", "vm01");
         Assert.Equal("System 'vm01' added.\n", output);
         (output, yaml) = await ExecuteAsync("systems", "set", "vm01", "--runs-on", "c6400");
 
-        (output, yaml) = await ExecuteAsync("servers", "add", "c6400");
-        Assert.Equal("Server 'c6400' added.\n", output);
 
         // Update system
         (output, yaml) = await ExecuteAsync("services", "set", "immich", "--ip", "192.168.10.14", "--port", "80",

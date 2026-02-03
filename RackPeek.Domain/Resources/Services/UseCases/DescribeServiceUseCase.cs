@@ -15,12 +15,13 @@ public record ServiceDescription(
 
 public class DescribeServiceUseCase(IServiceRepository repository, ISystemRepository systemRepo) : IUseCase
 {
-    public async Task<ServiceDescription?> ExecuteAsync(string name)
+    public async Task<ServiceDescription> ExecuteAsync(string name)
     {
+        name = Normalize.ServiceName(name);
         ThrowIfInvalid.ResourceName(name);
         var service = await repository.GetByNameAsync(name);
         if (service is null)
-            return null;
+            throw new NotFoundException($"Service '{name}' not found.");
 
         string? runsOnPhysicalHost = null;
         if (!string.IsNullOrEmpty(service.RunsOn))

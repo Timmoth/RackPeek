@@ -5,11 +5,16 @@ namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
 
 public class GetUpsUnitUseCase(IHardwareRepository repository) : IUseCase
 {
-    public async Task<Ups?> ExecuteAsync(string name)
+    public async Task<Ups> ExecuteAsync(string name)
     {
+        name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var hardware = await repository.GetByNameAsync(name);
-        return hardware as Ups;
+        if (hardware is not Ups ups)
+        {
+            throw new NotFoundException($"Ups '{name}' not found.");
+        }
+        return ups;
     }
 }

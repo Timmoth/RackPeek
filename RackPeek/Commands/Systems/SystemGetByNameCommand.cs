@@ -18,13 +18,6 @@ public class SystemGetByNameCommand(
         var useCase = scope.ServiceProvider.GetRequiredService<DescribeSystemUseCase>();
 
         var system = await useCase.ExecuteAsync(settings.Name);
-
-        if (system == null)
-        {
-            AnsiConsole.MarkupLine($"[red]System '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
         AnsiConsole.MarkupLine(
             $"[green]{system.Name}[/]  Type: {system.Type ?? "Unknown"}, OS: {system.Os ?? "Unknown"}, " +
             $"Cores: {system.Cores}, RAM: {system.RamGb}GB, Storage: {system.TotalStorageGb}GB, RunsOn: {system.RunsOn ?? "Unknown"}");

@@ -19,12 +19,6 @@ public class ServerDescribeCommand(
 
         var server = await useCase.ExecuteAsync(settings.Name);
 
-        if (server == null)
-        {
-            AnsiConsole.MarkupLine($"[red]Server '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
         var grid = new Grid()
             .AddColumn()
             .AddColumn();

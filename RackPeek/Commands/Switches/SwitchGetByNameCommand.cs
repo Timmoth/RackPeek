@@ -18,13 +18,7 @@ public class SwitchGetByNameCommand(
         var useCase = scope.ServiceProvider.GetRequiredService<DescribeSwitchUseCase>();
 
         var sw = await useCase.ExecuteAsync(settings.Name);
-
-        if (sw == null)
-        {
-            AnsiConsole.MarkupLine($"[red]Switch '{settings.Name}' not found.[/]");
-            return 1;
-        }
-
+        
         AnsiConsole.MarkupLine(
             $"[green]{sw.Name}[/]  Model: {sw.Model ?? "Unknown"}, Managed: {(sw.Managed == true ? "Yes" : "No")}, PoE: {(sw.Poe == true ? "Yes" : "No")}");
 
