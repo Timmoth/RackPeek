@@ -1,5 +1,15 @@
-﻿@typeparam TSystem where TSystem : RackPeek.Domain.Resources.SystemResources.SystemResource
+﻿@inject UpdateSystemUseCase UpdateSystemUseCase
+@inject GetSystemUseCase GetSystemUseCase
+@inject AddSystemDriveUseCase AddSystemDriveUseCase
+@inject RemoveSystemDriveUseCase RemoveSystemDriveUseCase
+@inject UpdateSystemDriveUseCase UpdateSystemDriveUseCase
 
+@using RackPeek.Domain.Resources.Hardware.Models
+@using RackPeek.Domain.Resources.Hardware.Servers
+@using RackPeek.Domain.Resources.Hardware.Servers.Drives
+@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.SystemResources.UseCases
+@using RackPeek.Web.Components.Modals
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
         <div class="text-zinc-100">
@@ -93,8 +103,21 @@
             <div class="text-zinc-400 mb-1">Runs On</div>
             @if (_isEditing)
             {
-                <input class="input"
-                       @bind="_edit.RunsOn"/>
+                <button
+                    class="hover:text-emerald-400"
+                    title="Edit Runs On"
+                    @onclick="() => _selectParentOpen = true">
+                    @if (!string.IsNullOrWhiteSpace(System.RunsOn))
+                    {
+                        @($"{System.RunsOn} +")
+                    }
+                    else
+                    {
+                        @("Edit parent")
+                    }
+                   
+                </button>
+
             }
             else if (!string.IsNullOrWhiteSpace(System.RunsOn))
             {
@@ -105,25 +128,56 @@
             }
         </div>
 
-        <!-- Drives (read-only) -->
-        @if (!_isEditing && System.Drives?.Any() == true)
-        {
-            <div>
-                <div class="text-zinc-400 mb-1">Drives</div>
+        <div>
+            <div class="flex items-center justify-between mb-1 group">
+                <div class="text-zinc-400">Drives
+                    <button
+                        class="hover:text-emerald-400 group-hover:opacity-100 transition"
+                        title="Add Drive"
+                        @onclick="OpenAddDrive">
+                        +
+                    </button>
+                </div>
+            </div>
+
+            @if (System.Drives?.Any() == true)
+            {
                 @foreach (var drive in System.Drives)
                 {
-                    <div class="text-zinc-300">
-                        @drive.Type — @drive.Size GB
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+
+                        <div class="flex gap-2 group-hover:opacity-100 transition">
+                            <button
+                                class="hover:text-emerald-400"
+                                title="Edit Drive"
+                                @onclick="() => OpenEditDrives(drive)">
+                                @drive.Type — @drive.Size GB
+                            </button>
+                        </div>
                     </div>
                 }
-            </div>
-        }
+            }
+        </div>
 
     </div>
 </div>
 
+<HardwareSelectionModal
+    IsOpen="@_selectParentOpen"
+    IsOpenChanged="v => _selectParentOpen = v"
+    Title="Select a parent"
+    Value="@SelectedParentName"
+    OnAccept="HandleParentSelected" />
+<DriveModal
+    IsOpen="@_driveModalOpen"
+    IsOpenChanged="v => _driveModalOpen = v"
+    Value="@_editingDrive"
+    OnSubmit="HandleDriveSubmit" 
+    OnDelete="HandleDriveDelete"/>
+
 @code {
-    [Parameter] [EditorRequired] public TSystem System { get; set; } = default!;
+    [Parameter] [EditorRequired] public SystemResource System { get; set; } = default!;
 
     [Parameter] public EventCallback<SystemEditModel> OnSave { get; set; }
 
@@ -146,5 +200,70 @@
     {
         _isEditing = false;
     }
+
+    bool _selectParentOpen;
+    string? SelectedParentName;
+
+    async Task HandleParentSelected(string? name)
+    {
+        SelectedParentName = name;
+        await UpdateSystemUseCase.ExecuteAsync(
+            System.Name, 
+            System.Type,
+            System.Os,
+            System.Cores,
+            System.Ram,
+            name);
+        System = await GetSystemUseCase.ExecuteAsync(System.Name);
+        _edit =  SystemEditModel.From(System);
+    }
+    
+       
+    #region Drives
+    bool _driveModalOpen;
+    int _editingDriveIndex;
+    Drive? _editingDrive;
+    
+    void OpenAddDrive()
+    {
+        _editingDriveIndex = -1;
+        _editingDrive = null;
+        _driveModalOpen = true;
+    }
+    
+    void OpenEditDrives(Drive drive)
+    {
+        _editingDrive = drive;
+        System.Drives ??= new();
+        _editingDriveIndex = System.Drives.IndexOf(drive);;
+        _driveModalOpen = true;
+    }
+    
+    async Task HandleDriveSubmit(Drive drive)
+    {
+        System.Drives ??= new();
+
+        if (_editingDriveIndex < 0)
+        {
+            await AddSystemDriveUseCase.ExecuteAsync(System.Name, drive.Type ?? "hdd", drive.Size ?? 0);
+        }
+        else
+        {
+            await UpdateSystemDriveUseCase.ExecuteAsync(System.Name, _editingDriveIndex,  drive.Type ?? "hdd", drive.Size ?? 0);
+        }
+        
+        System = await GetSystemUseCase.ExecuteAsync(System.Name);
+        StateHasChanged();
+    }
+
+    async Task HandleDriveDelete(Drive drive)
+    {
+        await RemoveSystemDriveUseCase.ExecuteAsync(System.Name, _editingDriveIndex);
+        System = await GetSystemUseCase.ExecuteAsync(System.Name);
+        StateHasChanged();
+    }
+    
+        
+    #endregion
 
 }

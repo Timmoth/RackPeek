@@ -2,6 +2,8 @@
 @using RackPeek.Domain.Resources.Hardware.Servers
 @using RackPeek.Domain.Resources.Hardware.Servers.Cpus
 @using RackPeek.Domain.Resources.Hardware.Servers.Drives
+@using RackPeek.Domain.Resources.Hardware.Servers.Gpus
+@using RackPeek.Domain.Resources.Hardware.Servers.Nics
 @using RackPeek.Web.Components.Modals
 @inject AddCpuUseCase AddCpuUseCase
 @inject RemoveCpuUseCase RemoveCpuUseCase
@@ -10,6 +12,15 @@
 @inject AddDrivesUseCase AddDriveUseCase
 @inject RemoveDriveUseCase RemoveDriveUseCase
 @inject UpdateDriveUseCase UpdateDriveUseCase
+
+@inject AddNicUseCase AddNicUseCase
+@inject UpdateNicUseCase UpdateNicUseCase
+@inject RemoveNicUseCase RemoveNicUseCase
+
+@inject AddGpuUseCase AddGpuUseCase
+@inject UpdateGpuUseCase UpdateGpuUseCase
+@inject RemoveGpuUseCase RemoveGpuUseCase
+
 
 @inject GetServerUseCase GetServerUseCase
 @inject UpdateServerUseCase UpdateServerUseCase
@@ -124,31 +135,67 @@
             }
         </div>
             
-        @if (Server.Nics?.Any() == true)
-        {
-            <div>
-                <div class="text-zinc-400 mb-1">NICs</div>
+        <div>
+            <div class="flex items-center justify-between mb-1 group">
+                <div class="text-zinc-400">
+                    NICs
+                    <button
+                        class="hover:text-emerald-400 group-hover:opacity-100 transition"
+                        title="Add NIC"
+                        @onclick="OpenAddNic">
+                        +
+                    </button>
+                </div>
+            </div>
+
+            @if (Server.Nics?.Any() == true)
+            {
                 @foreach (var nic in Server.Nics)
                 {
-                    <div class="text-zinc-300">
-                        @nic.Type — @nic.Speed Gbps (@nic.Ports ports)
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                        <button
+                            class="hover:text-emerald-400"
+                            title="Edit NIC"
+                            @onclick="() => OpenEditNic(nic)">
+                            @nic.Type — @nic.Speed Gbps (@nic.Ports ports)
+                        </button>
                     </div>
                 }
-            </div>
-        }
+            }
+        </div>
 
-        @if (Server.Gpus?.Any() == true)
-        {
-            <div>
-                <div class="text-zinc-400 mb-1">GPU</div>
+
+        <div>
+            <div class="flex items-center justify-between mb-1 group">
+                <div class="text-zinc-400">
+                    GPUs
+                    <button
+                        class="hover:text-emerald-400 group-hover:opacity-100 transition"
+                        title="Add GPU"
+                        @onclick="OpenAddGpu">
+                        +
+                    </button>
+                </div>
+            </div>
+
+            @if (Server.Gpus?.Any() == true)
+            {
                 @foreach (var gpu in Server.Gpus)
                 {
-                    <div class="text-zinc-300">
-                        @gpu.Model — @gpu.Vram GB VRAM
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                        <button
+                            class="hover:text-emerald-400"
+                            title="Edit GPU"
+                            @onclick="() => OpenEditGpu(gpu)">
+                            @gpu.Model — @gpu.Vram GB VRAM
+                        </button>
                     </div>
                 }
-            </div>
-        }
+            }
+        </div>
+
 
     </div>
 </div>
@@ -172,6 +219,21 @@
     Value="@_editingDrive"
     OnSubmit="HandleDriveSubmit" 
     OnDelete="HandleDriveDelete"/>
+
+<NicModal
+    IsOpen="@_nicModalOpen"
+    IsOpenChanged="v => _nicModalOpen = v"
+    Value="@_editingNic"
+    OnSubmit="HandleNicSubmit"
+    OnDelete="HandleNicDelete" />
+
+<GpuModal
+    IsOpen="@_gpuModalOpen"
+    IsOpenChanged="v => _gpuModalOpen = v"
+    Value="@_editingGpu"
+    OnSubmit="HandleGpuSubmit"
+    OnDelete="HandleGpuDelete" />
+
 
 @code {
     [Parameter] [EditorRequired]
@@ -284,4 +346,107 @@
     
         
     #endregion
+    
+    #region NICs
+    bool _nicModalOpen;
+    int _editingNicIndex;
+    Nic? _editingNic;
+
+    void OpenAddNic()
+    {
+        _editingNicIndex = -1;
+        _editingNic = null;
+        _nicModalOpen = true;
+    }
+
+    void OpenEditNic(Nic nic)
+    {
+        Server.Nics ??= new();
+        _editingNicIndex = Server.Nics.IndexOf(nic);
+        _editingNic = nic;
+        _nicModalOpen = true;
+    }
+
+    async Task HandleNicSubmit(Nic nic)
+    {
+        Server.Nics ??= new();
+
+        if (_editingNicIndex < 0)
+        {
+            await AddNicUseCase.ExecuteAsync(
+                Server.Name,
+                nic.Type,
+                nic.Speed,
+                nic.Ports);
+        }
+        else
+        {
+            await UpdateNicUseCase.ExecuteAsync(
+                Server.Name,
+                _editingNicIndex,
+                nic.Type,
+                nic.Speed,
+                nic.Ports);
+        }
+
+        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+    }
+
+    async Task HandleNicDelete(Nic nic)
+    {
+        await RemoveNicUseCase.ExecuteAsync(Server.Name, _editingNicIndex);
+        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+    }
+    #endregion
+
+    #region GPUs
+    bool _gpuModalOpen;
+    int _editingGpuIndex;
+    Gpu? _editingGpu;
+
+    void OpenAddGpu()
+    {
+        _editingGpuIndex = -1;
+        _editingGpu = null;
+        _gpuModalOpen = true;
+    }
+
+    void OpenEditGpu(Gpu gpu)
+    {
+        Server.Gpus ??= new();
+        _editingGpuIndex = Server.Gpus.IndexOf(gpu);
+        _editingGpu = gpu;
+        _gpuModalOpen = true;
+    }
+
+    async Task HandleGpuSubmit(Gpu gpu)
+    {
+        Server.Gpus ??= new();
+
+        if (_editingGpuIndex < 0)
+        {
+            await AddGpuUseCase.ExecuteAsync(
+                Server.Name,
+                gpu.Model,
+                gpu.Vram);
+        }
+        else
+        {
+            await UpdateGpuUseCase.ExecuteAsync(
+                Server.Name,
+                _editingGpuIndex,
+                gpu.Model,
+                gpu.Vram);
+        }
+
+        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+    }
+
+    async Task HandleGpuDelete(Gpu gpu)
+    {
+        await RemoveGpuUseCase.ExecuteAsync(Server.Name, _editingGpuIndex);
+        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+    }
+    #endregion
+
 }

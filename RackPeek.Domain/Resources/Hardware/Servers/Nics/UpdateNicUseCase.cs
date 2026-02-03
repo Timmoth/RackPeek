@@ -9,17 +9,23 @@ public class UpdateNicUseCase(IHardwareRepository repository) : IUseCase
     public async Task ExecuteAsync(
         string name,
         int index,
-        string type,
-        int speed,
-        int ports)
+        string? type,
+        int? speed,
+        int? ports)
     {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
         // ToDo validate / normalize all inputs
         
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
-        ThrowIfInvalid.NicSpeed(speed);
-        ThrowIfInvalid.NicPorts(ports);
+        if (speed.HasValue)
+        {
+            ThrowIfInvalid.NicSpeed(speed.Value);
+        }
+        if (ports.HasValue)
+        {
+            ThrowIfInvalid.NicPorts(ports.Value);
+        }
 
         var nicType = Normalize.NicType(type);
         ThrowIfInvalid.NicType(nicType);

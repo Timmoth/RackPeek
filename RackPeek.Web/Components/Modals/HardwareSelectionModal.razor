@@ -1,0 +1,197 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using RackPeek.Domain.Resources.Hardware
+@using RackPeek.Domain.Resources.Hardware.Models
+@inject IHardwareRepository HardwareRepository
+
+@if (IsOpen)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/70" @onclick="Cancel"></div>
+
+        <!-- Modal -->
+        <div class="relative bg-zinc-900 border border-zinc-800 rounded w-full max-w-lg p-4">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-zinc-100 text-sm font-medium">
+                    @Title
+                </div>
+
+                <button
+                    class="text-zinc-400 hover:text-zinc-200"
+                    @onclick="Cancel">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Form -->
+            <EditForm Model="_model" OnValidSubmit="HandleAccept">
+                <DataAnnotationsValidator />
+
+                <div class="space-y-3 text-sm">
+                    <!-- Search -->
+                    <div>
+                        <InputText
+                            class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                            placeholder="Search hardware…"
+                            Value="@_search"
+                            ValueChanged="OnSearchChanged"
+                            ValueExpression="() => _search"
+                            @oninput="OnSearchInput" />
+
+                        
+                    </div>
+
+                    <!-- Selection -->
+                    <div>
+                        <InputSelect
+                            class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                            @bind-Value="_model.Value">
+                            <option value="">Select hardware…</option>
+
+                            @foreach (var group in FilteredHardware)
+                            {
+                                <optgroup label="@group.Key">
+                                    @foreach (var hw in group.Value)
+                                    {
+                                        <option value="@hw.Name">@hw.Name</option>
+                                    }
+                                </optgroup>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end items-center mt-5 gap-2">
+                    <button
+                        type="button"
+                        class="px-3 py-1 rounded border border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                        @onclick="Cancel">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="px-3 py-1 rounded bg-emerald-600 text-black hover:bg-emerald-500"
+                        disabled="@(!CanAccept)">
+                        Accept
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    /* ---------- Parameters ---------- */
+
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = "Select hardware";
+
+    /// <summary>
+    /// Default / pre-selected hardware name (may be null)
+    /// </summary>
+    [Parameter]
+    public string? Value { get; set; }
+
+    /// <summary>
+    /// Called with the selected hardware name
+    /// </summary>
+    [Parameter]
+    public EventCallback<string?> OnAccept { get; set; }
+
+    /* ---------- State ---------- */
+
+    private SelectionFormModel _model = new();
+    private string _search = string.Empty;
+
+    private List<Hardware> _hardware = new();
+
+    private bool CanAccept => !string.IsNullOrWhiteSpace(_model.Value);
+
+    /* ---------- Lifecycle ---------- */
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsOpen)
+        {
+            _hardware = (await HardwareRepository.GetAllAsync())
+                .OrderBy(h => h.Kind)
+                .ThenBy(h => h.Name)
+                .ToList();
+
+            _model = new SelectionFormModel
+            {
+                Value = Value
+            };
+
+            _search = string.Empty;
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        
+    }
+
+
+    
+    /* ---------- Computed ---------- */
+
+    private IReadOnlyDictionary<string, List<Hardware>> FilteredHardware =>
+        _hardware
+            .Where(h =>
+                string.IsNullOrWhiteSpace(_search) ||
+                h.Name.Contains(_search.Trim(), StringComparison.OrdinalIgnoreCase))
+            .GroupBy(h => h.Kind)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderBy(h => h.Name).ToList());
+
+
+    /* ---------- Actions ---------- */
+
+    private async Task HandleAccept()
+    {
+        await OnAccept.InvokeAsync(_model.Value);
+        await Close();
+    }
+
+    private async Task Cancel()
+    {
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        _model = new();
+        _search = string.Empty;
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    /* ---------- Model ---------- */
+
+    private sealed class SelectionFormModel
+    {
+        [Required]
+        public string? Value { get; set; }
+    }
+    
+    private void OnSearchChanged(string? value)
+    {
+        _search = value ?? string.Empty;
+    }
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        _search = e.Value?.ToString() ?? string.Empty;
+
+        if (FilteredHardware.SelectMany(g => g.Value).All(h => h.Name != _model.Value))
+        {
+            _model.Value = null;
+        }
+    }
+}

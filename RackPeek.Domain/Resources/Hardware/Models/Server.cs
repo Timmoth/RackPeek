@@ -8,4 +8,7 @@ public class Server : Hardware
     public List<Nic>? Nics { get; set; }
     public List<Gpu>? Gpus { get; set; }
     public bool? Ipmi { get; set; }
+    
+    public const string KindLabel = "Server";
+
 }

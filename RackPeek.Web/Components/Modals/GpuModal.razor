@@ -1,0 +1,157 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using RackPeek.Domain.Resources.Hardware.Models
+
+@if (IsOpen)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/70" @onclick="Cancel"></div>
+
+        <!-- Modal -->
+        <div class="relative bg-zinc-900 border border-zinc-800 rounded w-full max-w-md p-4">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-zinc-100 text-sm font-medium">
+                    @(IsEdit ? "Modify GPU" : "Add GPU")
+                </div>
+
+                <button
+                    class="text-zinc-400 hover:text-zinc-200"
+                    @onclick="Cancel">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Form -->
+            <EditForm Model="_model" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-xs text-red-400 mb-3" />
+
+                <div class="space-y-3 text-sm">
+                    <!-- Model -->
+                    <div>
+                        <label class="block text-zinc-400 mb-1">
+                            Model
+                        </label>
+
+                        <InputText
+                            class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                            @bind-Value="_model.Model" />
+                    </div>
+
+                    <!-- VRAM -->
+                    <div>
+                        <label class="block text-zinc-400 mb-1">
+                            VRAM (GB)
+                        </label>
+
+                        <InputNumber
+                            class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                            @bind-Value="_model.Vram" />
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-between items-center mt-5">
+                    @if (IsEdit)
+                    {
+                        <button
+                            type="button"
+                            class="text-red-400 hover:text-red-300 text-sm"
+                            @onclick="HandleDelete">
+                            Delete GPU
+                        </button>
+                    }
+                    else
+                    {
+                        <span></span>
+                    }
+
+                    <div class="flex gap-2">
+                        <button
+                            type="button"
+                            class="px-3 py-1 rounded border border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                            @onclick="Cancel">
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="px-3 py-1 rounded bg-emerald-600 text-black hover:bg-emerald-500">
+                            @(IsEdit ? "Update" : "Add")
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public Gpu? Value { get; set; }
+
+    [Parameter] public EventCallback<Gpu> OnSubmit { get; set; }
+    [Parameter] public EventCallback<Gpu> OnDelete { get; set; }
+
+    private GpuFormModel _model = new();
+
+    private bool IsEdit => Value is not null;
+
+    protected override void OnParametersSet()
+    {
+        if (IsOpen)
+        {
+            _model = Value is null
+                ? new GpuFormModel()
+                : new GpuFormModel
+                {
+                    Model = Value.Model,
+                    Vram = Value.Vram
+                };
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var gpu = new Gpu
+        {
+            Model = _model.Model,
+            Vram = _model.Vram
+        };
+
+        await OnSubmit.InvokeAsync(gpu);
+        await Close();
+    }
+
+    private async Task HandleDelete()
+    {
+        if (Value is not null)
+        {
+            await OnDelete.InvokeAsync(Value);
+            await Close();
+        }
+    }
+
+    private async Task Cancel()
+    {
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        _model = new();
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private class GpuFormModel
+    {
+        [Required]
+        public string? Model { get; set; }
+
+        [Range(1, 256)]
+        public int? Vram { get; set; }
+    }
+}

@@ -12,7 +12,7 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var inputArgs = args.ToArray();
-        var output = await YamlCliTestHost.RunAsync(inputArgs, fs.Root, outputHelper);
+        var output = await YamlCliTestHost.RunAsync(inputArgs, fs.Root, outputHelper, "config.yaml");
 
         outputHelper.WriteLine(output);
 
@@ -48,15 +48,6 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
         outputHelper.WriteLine(yaml);
         Assert.Equal("""
                      resources:
-                     - kind: System
-                       type: 
-                       os: 
-                       cores: 
-                       ram: 
-                       drives: 
-                       runsOn: 
-                       name: vm01
-                       tags: 
                      - kind: Service
                        network:
                          ip: 192.168.10.14
@@ -65,6 +56,15 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
                          url: http://timmoth.lan:80
                        runsOn: vm01
                        name: immich
+                       tags: 
+                     - kind: System
+                       type: 
+                       os: 
+                       cores: 
+                       ram: 
+                       drives: 
+                       runsOn: 
+                       name: vm01
                        tags: 
 
                      """, yaml);

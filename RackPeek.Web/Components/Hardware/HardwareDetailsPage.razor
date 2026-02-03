@@ -6,8 +6,10 @@
 @using RackPeek.Web.Components.Desktops
 @using RackPeek.Web.Components.Switches
 @using RackPeek.Web.Components.Servers
+@using RackPeek.Web.Components.Systems
 @inject IHardwareRepository HardwareRepository
 @inject GetHardwareSystemTreeUseCase GetHardwareSystemTreeUseCase
+
 <PageTitle>Hardware Details</PageTitle>
 
 <ResourceBreadCrumbComponent
@@ -62,6 +64,10 @@
                 No child systems / services
             </div>
         }
+        
+        <div class="m-4">
+            <AddSystemComponent RunsOn="@HardwareName"/>
+        </div>
     }
 </div>
 

@@ -21,8 +21,6 @@ public class Program
         );
 
         var yamlDir = "./config";
-
-        var collection = new YamlResourceCollection(false);
         var basePath = Directory.GetCurrentDirectory();
 
         // Resolve yamlDir as relative to basePath
@@ -34,19 +32,15 @@ public class Program
             throw new DirectoryNotFoundException(
                 $"YAML directory not found: {yamlPath}"
             );
+        
+        var collection = new YamlResourceCollection(Path.Combine(yamlDir, "config.yaml"));
 
-        // Load all .yml and .yaml files
-        var yamlFiles = Directory.EnumerateFiles(yamlPath, "*.yml")
-            .Concat(Directory.EnumerateFiles(yamlPath, "*.yaml"))
-            .ToArray();
-
-        collection.LoadFiles(yamlFiles.Select(f => Path.Combine(basePath, f)));
 
         // Infrastructure
-        builder.Services.AddScoped<IHardwareRepository>(_ => new YamlHardwareRepository(collection));
-        builder.Services.AddScoped<ISystemRepository>(_ => new YamlSystemRepository(collection));
-        builder.Services.AddScoped<IServiceRepository>(_ => new YamlServiceRepository(collection));
-        builder.Services.AddScoped<IResourceRepository>(_ => new YamlResourceRepository(collection));
+        builder.Services.AddSingleton<IHardwareRepository>(_ => new YamlHardwareRepository(collection));
+        builder.Services.AddSingleton<ISystemRepository>(_ => new YamlSystemRepository(collection));
+        builder.Services.AddSingleton<IServiceRepository>(_ => new YamlServiceRepository(collection));
+        builder.Services.AddSingleton<IResourceRepository>(_ => new YamlResourceRepository(collection));
 
 
         builder.Services.AddUseCases();

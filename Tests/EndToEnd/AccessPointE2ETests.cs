@@ -15,7 +15,8 @@ public class AccessPointYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper ou
         var output = await YamlCliTestHost.RunAsync(
             inputArgs,
             fs.Root,
-            outputHelper);
+            outputHelper,
+            "config.yaml");
 
         outputHelper.WriteLine(output);
 

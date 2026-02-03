@@ -1,4 +1,10 @@
-﻿@typeparam TService where TService : RackPeek.Domain.Resources.Services.Service
+﻿@using RackPeek.Domain.Resources.Services
+@using RackPeek.Domain.Resources.Services.UseCases
+@using RackPeek.Domain.Resources.SystemResources.UseCases
+@using RackPeek.Web.Components.Systems
+@using RackPeek.Web.Components.Modals
+@inject UpdateServiceUseCase UpdateServiceUseCase
+@inject GetServiceUseCase GetServiceUseCase
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
@@ -97,8 +103,21 @@
             <div class="text-zinc-400 mb-1">Runs On</div>
             @if (_isEditing)
             {
-                <input class="input"
-                       @bind="_edit.RunsOn"/>
+                <button
+                    class="hover:text-emerald-400"
+                    title="Edit Runs On"
+                    @onclick="() => _selectParentOpen = true">
+                    @if (!string.IsNullOrWhiteSpace(Service.RunsOn))
+                    {
+                        @($"{Service.RunsOn} +")
+                    }
+                    else
+                    {
+                        @("Edit parent")
+                    }
+                   
+                </button>
+
             }
             else if (!string.IsNullOrWhiteSpace(Service.RunsOn))
             {
@@ -112,8 +131,15 @@
     </div>
 </div>
 
+<SystemSelectionModal
+    IsOpen="@_selectParentOpen"
+    IsOpenChanged="v => _selectParentOpen = v"
+    Title="Select a parent"
+    Value="@SelectedParentName"
+    OnAccept="HandleParentSelected" />
+
 @code {
-    [Parameter] [EditorRequired] public TService Service { get; set; } = default!;
+    [Parameter] [EditorRequired] public Service Service { get; set; } = default!;
 
     [Parameter] public EventCallback<ServiceEditModel> OnSave { get; set; }
 
@@ -135,6 +161,23 @@
     void Cancel()
     {
         _isEditing = false;
+    }
+    
+    bool _selectParentOpen;
+    string? SelectedParentName;
+
+    async Task HandleParentSelected(string? name)
+    {
+        SelectedParentName = name;
+        await UpdateServiceUseCase.ExecuteAsync(
+            Service.Name, 
+            Service.Network?.Ip,
+            Service.Network?.Port,
+            Service.Network?.Protocol,
+            Service.Network?.Url,
+            name);
+        Service = await GetServiceUseCase.ExecuteAsync(Service.Name);
+        _edit = ServiceEditModel.From(Service);
     }
 
 }

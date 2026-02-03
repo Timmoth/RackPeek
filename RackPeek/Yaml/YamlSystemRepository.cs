@@ -50,12 +50,7 @@ public class YamlSystemRepository(YamlResourceCollection resources) : ISystemRep
             throw new InvalidOperationException(
                 $"System with name '{systemResource.Name}' already exists.");
 
-        // Use first file as default for new resources
-        var targetFile = resources.SourceFiles.FirstOrDefault()
-                         ?? throw new InvalidOperationException("No YAML file loaded.");
-
-        resources.Add(systemResource, targetFile);
-        resources.SaveAll();
+        resources.Add(systemResource);
 
         return Task.CompletedTask;
     }
@@ -69,7 +64,6 @@ public class YamlSystemRepository(YamlResourceCollection resources) : ISystemRep
             throw new InvalidOperationException($"System '{systemResource.Name}' not found.");
 
         resources.Update(systemResource);
-        resources.SaveAll();
 
         return Task.CompletedTask;
     }
@@ -83,7 +77,6 @@ public class YamlSystemRepository(YamlResourceCollection resources) : ISystemRep
             throw new InvalidOperationException($"System '{name}' not found.");
 
         resources.Delete(name);
-        resources.SaveAll();
 
         return Task.CompletedTask;
     }

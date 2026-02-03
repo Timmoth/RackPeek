@@ -25,7 +25,7 @@
                 foreach (var svc in group)
                 {
                     <NavLink href="@($"/resources/services/{svc.Name}")" class="block">
-                        <ServiceCardComponent TService="Service" Service="svc" OnSave="UpdateService"/>
+                        <ServiceCardComponent Service="svc" OnSave="UpdateService"/>
                     </NavLink>
                 }
             }

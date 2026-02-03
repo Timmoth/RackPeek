@@ -6,4 +6,7 @@ public class Router : Hardware
     public bool? Managed { get; set; }
     public bool? Poe { get; set; }
     public List<Port>? Ports { get; set; }
+    
+    public const string KindLabel = "Router";
+
 }

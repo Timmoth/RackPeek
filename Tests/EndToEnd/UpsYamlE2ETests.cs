@@ -15,7 +15,8 @@ public class UpsYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputHelp
         var output = await YamlCliTestHost.RunAsync(
             inputArgs,
             fs.Root,
-            outputHelper);
+            outputHelper,
+            "config.yaml");
 
         outputHelper.WriteLine(output);
 

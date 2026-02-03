@@ -1,6 +1,8 @@
 ﻿@using RackPeek.Domain.Resources.Services.UseCases
 @inject AddServiceUseCase AddService
 
+@inject NavigationManager Nav
+
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="text-zinc-100 mb-3">
         Add service
@@ -31,6 +33,7 @@
 
 @code {
     [Parameter] public EventCallback<string> OnCreated { get; set; }
+    [Parameter] public string? RunsOn { get; set; }
 
     private string _name = string.Empty;
     private string? _error;
@@ -39,6 +42,7 @@
     private async Task CreateAsync()
     {
         _error = null;
+        var name = _name.Trim();
 
         if (string.IsNullOrWhiteSpace(_name))
         {
@@ -49,11 +53,11 @@
         try
         {
             _isSubmitting = true;
-            var name = _name.Trim();
-            await AddService.ExecuteAsync(name);
+            await AddService.ExecuteAsync(name, RunsOn);
             _name = string.Empty;
 
             await OnCreated.InvokeAsync(name);
+            Nav.NavigateTo($"/resources/services/{name}");
         }
         catch (Exception ex)
         {

@@ -11,4 +11,6 @@ public class SystemResource : Resource
     public List<Drive>? Drives { get; set; }
 
     public string? RunsOn { get; set; }
+
+    public const string KindLabel = "System";
 }

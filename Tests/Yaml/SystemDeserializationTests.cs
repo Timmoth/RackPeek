@@ -5,10 +5,20 @@ namespace Tests.Yaml;
 
 public class SystemDeserializationTests
 {
+    
     public static ISystemRepository CreateSut(string yaml)
     {
-        var yamlResourceCollection = new YamlResourceCollection(false);
-        yamlResourceCollection.Load(yaml, "test.yaml");
+        var tempDir = Path.Combine(
+            Path.GetTempPath(),
+            "RackPeekTests",
+            Guid.NewGuid().ToString("N"));
+
+        Directory.CreateDirectory(tempDir);
+
+        var filePath = Path.Combine(tempDir, "config.yaml");
+        File.WriteAllText(filePath, yaml);
+
+        var yamlResourceCollection = new YamlResourceCollection(filePath);
         return new YamlSystemRepository(yamlResourceCollection);
     }
 

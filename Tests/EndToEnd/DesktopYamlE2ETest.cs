@@ -15,7 +15,8 @@ public class DesktopYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
         var output = await YamlCliTestHost.RunAsync(
             inputArgs,
             fs.Root,
-            outputHelper
+            outputHelper,
+            "config.yaml"
         );
 
         outputHelper.WriteLine(output);

@@ -1,0 +1,180 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using RackPeek.Domain.Resources.Hardware.Models
+
+@if (IsOpen)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/70" @onclick="Cancel"></div>
+
+        <!-- Modal -->
+        <div class="relative bg-zinc-900 border border-zinc-800 rounded w-full max-w-md p-4">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-zinc-100 text-sm font-medium">
+                    @(IsEdit ? "Modify NIC" : "Add NIC")
+                </div>
+
+                <button
+                    class="text-zinc-400 hover:text-zinc-200"
+                    @onclick="Cancel">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Form -->
+            <EditForm Model="_model" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-xs text-red-400 mb-3" />
+
+                <div class="space-y-3 text-sm">
+                    <!-- Type -->
+                    <div>
+                        <label class="block text-zinc-400 mb-1">
+                            Type
+                        </label>
+
+                        <InputSelect
+                            class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                            @bind-Value="_model.Type">
+                            <option value="">Select type</option>
+
+                            @foreach (var type in Nic.ValidNicTypes)
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <!-- Speed -->
+                    <div>
+                        <label class="block text-zinc-400 mb-1">
+                            Speed (Gbps)
+                        </label>
+
+                        <InputNumber
+                            class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                            @bind-Value="_model.Speed" />
+                    </div>
+
+                    <!-- Ports -->
+                    <div>
+                        <label class="block text-zinc-400 mb-1">
+                            Ports
+                        </label>
+
+                        <InputNumber
+                            class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                            @bind-Value="_model.Ports" />
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-between items-center mt-5">
+                    @if (IsEdit)
+                    {
+                        <button
+                            type="button"
+                            class="text-red-400 hover:text-red-300 text-sm"
+                            @onclick="HandleDelete">
+                            Delete NIC
+                        </button>
+                    }
+                    else
+                    {
+                        <span></span>
+                    }
+
+                    <div class="flex gap-2">
+                        <button
+                            type="button"
+                            class="px-3 py-1 rounded border border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                            @onclick="Cancel">
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="px-3 py-1 rounded bg-emerald-600 text-black hover:bg-emerald-500">
+                            @(IsEdit ? "Update" : "Add")
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public Nic? Value { get; set; }
+
+    [Parameter] public EventCallback<Nic> OnSubmit { get; set; }
+    [Parameter] public EventCallback<Nic> OnDelete { get; set; }
+
+    private NicFormModel _model = new();
+
+    private bool IsEdit => Value is not null;
+
+    protected override void OnParametersSet()
+    {
+        if (IsOpen)
+        {
+            _model = Value is null
+                ? new NicFormModel()
+                : new NicFormModel
+                {
+                    Type = Value.Type,
+                    Speed = Value.Speed,
+                    Ports = Value.Ports
+                };
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var nic = new Nic
+        {
+            Type = _model.Type,
+            Speed = _model.Speed,
+            Ports = _model.Ports
+        };
+
+        await OnSubmit.InvokeAsync(nic);
+        await Close();
+    }
+
+    private async Task HandleDelete()
+    {
+        if (Value is not null)
+        {
+            await OnDelete.InvokeAsync(Value);
+            await Close();
+        }
+    }
+
+    private async Task Cancel()
+    {
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        _model = new();
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private class NicFormModel
+    {
+        [Required]
+        public string? Type { get; set; }
+
+        [Range(1, 400)]
+        public int? Speed { get; set; }
+
+        [Range(1, 128)]
+        public int? Ports { get; set; }
+    }
+}

@@ -3,6 +3,7 @@
 @using RackPeek.Domain.Resources.SystemResources
 @using RackPeek.Domain.Resources.SystemResources.UseCases
 @using RackPeek.Web.Components.Components
+@using RackPeek.Web.Components.Services
 @inject ISystemRepository SystemRepository
 @inject UpdateSystemUseCase UpdateSystemUseCase
 @inject GetSystemServiceTreeUseCase GetSystemServiceTreeUseCase
@@ -39,6 +40,11 @@
                 No child systems / services
             </div>
         }
+        
+        <div class="m-4">
+            <AddServiceComponent RunsOn="@SystemName"/>
+        </div>
+        
     }
 </div>
 

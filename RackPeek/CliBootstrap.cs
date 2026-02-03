@@ -41,12 +41,11 @@ public static class CliBootstrap
         IServiceCollection services,
         IConfiguration configuration,
         string yamlDir,
-        bool watch = false
+        string yamlFile
     )
     {
         services.AddSingleton(configuration);
 
-        var collection = new YamlResourceCollection(watch);
         var basePath = configuration["HardwarePath"] ?? Directory.GetCurrentDirectory();
 
         // Resolve yamlDir as relative to basePath
@@ -58,19 +57,14 @@ public static class CliBootstrap
             throw new DirectoryNotFoundException(
                 $"YAML directory not found: {yamlPath}"
             );
-
-        // Load all .yml and .yaml files
-        var yamlFiles = Directory.EnumerateFiles(yamlPath, "*.yml")
-            .Concat(Directory.EnumerateFiles(yamlPath, "*.yaml"))
-            .ToArray();
-
-        collection.LoadFiles(yamlFiles.Select(f => Path.Combine(basePath, f)));
+        
+        services.AddSingleton(new YamlResourceCollection(Path.Combine(yamlDir, yamlFile)));
 
         // Infrastructure
-        services.AddScoped<IHardwareRepository>(_ => new YamlHardwareRepository(collection));
-        services.AddScoped<ISystemRepository>(_ => new YamlSystemRepository(collection));
-        services.AddScoped<IServiceRepository>(_ => new YamlServiceRepository(collection));
-        services.AddScoped<IResourceRepository>(_ => new YamlResourceRepository(collection));
+        services.AddScoped<IHardwareRepository, YamlHardwareRepository>();
+        services.AddScoped<ISystemRepository, YamlSystemRepository>();
+        services.AddScoped<IServiceRepository, YamlServiceRepository>();
+        services.AddScoped<IResourceRepository, YamlResourceRepository>();
         
         // Application
         services.AddUseCases();

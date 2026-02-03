@@ -81,12 +81,7 @@ public class YamlHardwareRepository(YamlResourceCollection resources) : IHardwar
             throw new InvalidOperationException(
                 $"Hardware with name '{hardware.Name}' already exists.");
 
-        // Use first file as default for new resources
-        var targetFile = resources.SourceFiles.FirstOrDefault()
-                         ?? throw new InvalidOperationException("No YAML file loaded.");
-
-        resources.Add(hardware, targetFile);
-        resources.SaveAll();
+        resources.Add(hardware);
 
         return Task.CompletedTask;
     }
@@ -100,7 +95,6 @@ public class YamlHardwareRepository(YamlResourceCollection resources) : IHardwar
             throw new InvalidOperationException($"Hardware '{hardware.Name}' not found.");
 
         resources.Update(hardware);
-        resources.SaveAll();
 
         return Task.CompletedTask;
     }
@@ -114,7 +108,6 @@ public class YamlHardwareRepository(YamlResourceCollection resources) : IHardwar
             throw new InvalidOperationException($"Hardware '{name}' not found.");
 
         resources.Delete(name);
-        resources.SaveAll();
 
         return Task.CompletedTask;
     }

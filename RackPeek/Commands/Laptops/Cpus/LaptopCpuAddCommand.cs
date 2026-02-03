@@ -16,15 +16,8 @@ public class LaptopCpuAddCommand(IServiceProvider provider)
     {
         using var scope = provider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<AddLaptopCpuUseCase>();
-
-        var cpu = new Cpu
-        {
-            Model = settings.Model,
-            Cores = settings.Cores,
-            Threads = settings.Threads
-        };
-
-        await useCase.ExecuteAsync(settings.LaptopName, cpu);
+        
+        await useCase.ExecuteAsync(settings.LaptopName, settings.Model, settings.Cores, settings.Threads);
 
         AnsiConsole.MarkupLine($"[green]CPU added to Laptop '{settings.LaptopName}'.[/]");
         return 0;

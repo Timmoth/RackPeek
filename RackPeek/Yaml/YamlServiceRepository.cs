@@ -43,12 +43,7 @@ public class YamlServiceRepository(YamlResourceCollection resources) : IServiceR
             throw new InvalidOperationException(
                 $"Service with name '{service.Name}' already exists.");
 
-        // Use first file as default for new resources
-        var targetFile = resources.SourceFiles.FirstOrDefault()
-                         ?? throw new InvalidOperationException("No YAML file loaded.");
-
-        resources.Add(service, targetFile);
-        resources.SaveAll();
+        resources.Add(service);
 
         return Task.CompletedTask;
     }
@@ -62,7 +57,6 @@ public class YamlServiceRepository(YamlResourceCollection resources) : IServiceR
             throw new InvalidOperationException($"Service '{service.Name}' not found.");
 
         resources.Update(service);
-        resources.SaveAll();
 
         return Task.CompletedTask;
     }
@@ -76,7 +70,6 @@ public class YamlServiceRepository(YamlResourceCollection resources) : IServiceR
             throw new InvalidOperationException($"Service '{name}' not found.");
 
         resources.Delete(name);
-        resources.SaveAll();
 
         return Task.CompletedTask;
     }

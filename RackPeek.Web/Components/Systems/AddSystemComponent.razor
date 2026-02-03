@@ -1,5 +1,6 @@
 ﻿@using RackPeek.Domain.Resources.SystemResources.UseCases
 @inject AddSystemUseCase AddSystemResource
+@inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="text-zinc-100 mb-3">
@@ -31,6 +32,7 @@
 
 @code {
     [Parameter] public EventCallback<string> OnCreated { get; set; }
+    [Parameter] public string? RunsOn { get; set; }
 
     private string _name = string.Empty;
     private string? _error;
@@ -50,10 +52,11 @@
         {
             _isSubmitting = true;
             var name = _name.Trim();
-            await AddSystemResource.ExecuteAsync(name);
+            await AddSystemResource.ExecuteAsync(name, RunsOn);
             _name = string.Empty;
 
             await OnCreated.InvokeAsync(name);
+            Nav.NavigateTo($"/resources/systems/{name}");
         }
         catch (Exception ex)
         {
@@ -63,6 +66,8 @@
         {
             _isSubmitting = false;
         }
+        
+
     }
 
 }
