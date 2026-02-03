@@ -3,7 +3,7 @@
 @inject AddSystemDriveUseCase AddSystemDriveUseCase
 @inject RemoveSystemDriveUseCase RemoveSystemDriveUseCase
 @inject UpdateSystemDriveUseCase UpdateSystemDriveUseCase
-
+@inject DeleteSystemUseCase DeleteSystemUseCase
 @using RackPeek.Domain.Resources.Hardware.Models
 @using RackPeek.Domain.Resources.Hardware.Servers
 @using RackPeek.Domain.Resources.Hardware.Servers.Drives
@@ -12,9 +12,12 @@
 @using RackPeek.Web.Components.Modals
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
+        <NavLink href="@($"/resources/systems/{System.Name}")" class="block">
+
         <div class="text-zinc-100">
             @System.Name
         </div>
+        </NavLink>
 
         <div class="flex gap-3 text-xs">
             @if (!_isEditing)
@@ -22,6 +25,13 @@
                 <button class="text-zinc-400 hover:text-zinc-200"
                         @onclick="BeginEdit">
                     Edit
+                </button>
+                
+                <button
+                    class="text-xs text-red-400 hover:text-red-300 transition"
+                    title="Delete server"
+                    @onclick="ConfirmDelete">
+                    Delete
                 </button>
             }
             else
@@ -176,6 +186,17 @@
     OnSubmit="HandleDriveSubmit" 
     OnDelete="HandleDriveDelete"/>
 
+<ConfirmModal
+    IsOpen="_confirmDeleteOpen"
+    IsOpenChanged="v => _confirmDeleteOpen = v"
+    Title="Delete service"
+    ConfirmText="Delete"
+    ConfirmClass="bg-red-600 hover:bg-red-500"
+    OnConfirm="DeleteServer">
+    Are you sure you want to delete <strong>@System.Name</strong>?
+    <br />
+    This will detach all dependent systems.
+</ConfirmModal>
 @code {
     [Parameter] [EditorRequired] public SystemResource System { get; set; } = default!;
 
@@ -265,5 +286,28 @@
     
         
     #endregion
+    
 
+}
+
+
+@code {
+    private bool _confirmDeleteOpen;
+    [Parameter]
+    public EventCallback<string> OnDeleted { get; set; }
+    
+    void ConfirmDelete()
+    {
+        _confirmDeleteOpen = true;
+    }
+
+    async Task DeleteServer()
+    {
+        _confirmDeleteOpen = false;
+
+        await DeleteSystemUseCase.ExecuteAsync(System.Name);
+
+        if (OnDeleted.HasDelegate)
+            await OnDeleted.InvokeAsync(System.Name);
+    }
 }

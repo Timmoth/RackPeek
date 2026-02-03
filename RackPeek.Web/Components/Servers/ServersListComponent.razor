@@ -22,9 +22,7 @@
         <div class="space-y-4">
             @foreach (var server in _servers.OrderBy(s => s.Name))
             {
-                <NavLink href="@($"/resources/hardware/{server.Name}")" class="block">
-                    <ServerCardComponent Server="server"/>
-                </NavLink>
+                    <ServerCardComponent Server="server" OnDeleted="Callback"/>
             }
         </div>
     }
@@ -42,6 +40,11 @@
     {
         Nav.NavigateTo($"/resources/hardware/{serverName}");
         return Task.CompletedTask;
+    }
+
+    private async Task Callback(string obj)
+    {
+        _servers = await GetServers.ExecuteAsync();
     }
 
 }

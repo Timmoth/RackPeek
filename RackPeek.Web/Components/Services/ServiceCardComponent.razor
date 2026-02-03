@@ -5,12 +5,15 @@
 @using RackPeek.Web.Components.Modals
 @inject UpdateServiceUseCase UpdateServiceUseCase
 @inject GetServiceUseCase GetServiceUseCase
-
+@inject DeleteServiceUseCase DeleteServiceUseCase
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
+        <NavLink href="@($"/resources/services/{Service.Name}")" class="block">
+
         <div class="text-zinc-100">
             @Service.Name
         </div>
+        </NavLink>
 
         <div class="flex gap-3 text-xs">
             @if (!_isEditing)
@@ -18,6 +21,13 @@
                 <button class="text-zinc-400 hover:text-zinc-200"
                         @onclick="BeginEdit">
                     Edit
+                </button>
+                
+                <button
+                    class="text-xs text-red-400 hover:text-red-300 transition"
+                    title="Delete server"
+                    @onclick="ConfirmDelete">
+                    Delete
                 </button>
             }
             else
@@ -180,4 +190,36 @@
         _edit = ServiceEditModel.From(Service);
     }
 
+}
+
+<ConfirmModal
+    IsOpen="_confirmDeleteOpen"
+    IsOpenChanged="v => _confirmDeleteOpen = v"
+    Title="Delete service"
+    ConfirmText="Delete"
+    ConfirmClass="bg-red-600 hover:bg-red-500"
+    OnConfirm="DeleteServer">
+    Are you sure you want to delete <strong>@Service.Name</strong>?
+    <br />
+</ConfirmModal>
+
+@code {
+    private bool _confirmDeleteOpen;
+    [Parameter]
+    public EventCallback<string> OnDeleted { get; set; }
+    
+    void ConfirmDelete()
+    {
+        _confirmDeleteOpen = true;
+    }
+
+    async Task DeleteServer()
+    {
+        _confirmDeleteOpen = false;
+
+        await DeleteServiceUseCase.ExecuteAsync(Service.Name);
+
+        if (OnDeleted.HasDelegate)
+            await OnDeleted.InvokeAsync(Service.Name);
+    }
 }

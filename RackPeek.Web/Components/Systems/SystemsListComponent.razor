@@ -23,9 +23,7 @@
             {
                 foreach (var systemResource in group)
                 {
-                    <NavLink href="@($"/resources/systems/{systemResource.Name}")" class="block">
-                        <SystemCardComponent System="systemResource" OnSave="UpdateSystem"/>
-                    </NavLink>
+                        <SystemCardComponent System="systemResource" OnSave="UpdateSystem" OnDeleted="Callback"/>
                 }
             }
         </div>
@@ -56,6 +54,11 @@
     {
         Nav.NavigateTo($"/resources/systems/{serverName}");
         return Task.CompletedTask;
+    }
+
+    private async Task Callback(string obj)
+    {
+        _systems = await SystemRepository.GetAllAsync();
     }
 
 }

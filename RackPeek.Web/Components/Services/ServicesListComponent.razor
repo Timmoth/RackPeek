@@ -24,9 +24,7 @@
             {
                 foreach (var svc in group)
                 {
-                    <NavLink href="@($"/resources/services/{svc.Name}")" class="block">
-                        <ServiceCardComponent Service="svc" OnSave="UpdateService"/>
-                    </NavLink>
+                        <ServiceCardComponent Service="svc" OnSave="UpdateService" OnDeleted="Callback"/>
                 }
             }
         </div>
@@ -57,6 +55,11 @@
     {
         Nav.NavigateTo($"/resources/services/{serverName}");
         return Task.CompletedTask;
+    }
+
+    private async Task Callback(string obj)
+    {
+        _services = await ServiceRepository.GetAllAsync();
     }
 
 }
