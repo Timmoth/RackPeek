@@ -22,3 +22,15 @@ chmod +x webui_capture.sh
 
 
 ```
+
+```bash
+# Manually build / push
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -f ./Dockerfile \
+  -t aptacode/rackpeek:v0.0.1 \
+  -t aptacode/rackpeek:latest \
+  --push ..
+
+
+```

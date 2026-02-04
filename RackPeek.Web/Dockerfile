@@ -21,5 +21,9 @@ RUN dotnet publish "./RackPeek.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 
 FROM base AS final
 WORKDIR /app
+
+# Directory expected to be mounted by the user
+VOLUME ["/app/config"]
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "RackPeek.Web.dll"]

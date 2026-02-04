@@ -21,6 +21,30 @@ RackPeek is not a CMDB replacement. It’s a clean framework for understanding a
 [![RackPeek demo](./vhs/rpk-demo.gif)](./rpk-demo.gif)
 [![RackPeek demo](./vhs/webui_screenshots/output.gif)](./rpk-webui-demo.gif)
 
+
+## Running RackPeek with Docker
+```text
+
+# Named volume
+docker volume create rackpeek-config
+docker run -d \
+  --name rackpeek \
+  -p 8080:8080 \
+  -v rackpeek-config:/app/config \
+  aptacode/rackpeek:latest
+
+# Bind mount
+docker run -d \
+  --name rackpeek \
+  -p 8080:8080 \
+  -v $(pwd)/config:/app/config \
+  aptacode/rackpeek:latest
+
+# Note - RackPeek stores its state in YAML
+config/
+└── config.yaml
+```
+
 ## Core Values
 
 **Simplicity**  
