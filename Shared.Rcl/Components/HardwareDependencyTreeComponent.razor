@@ -17,7 +17,7 @@ else
                 <div class="space-y-2">
 
                     <!-- System -->
-                    <NavLink href="@($"/resources/systems/{systemTree.System.Name}")" class="block">
+                    <NavLink href="@($"resources/systems/{systemTree.System.Name}")" class="block">
                         <div class="border border-zinc-800 rounded bg-zinc-900 p-3">
                             <div class="text-zinc-100">
                                 @systemTree.System.Name
@@ -35,7 +35,7 @@ else
                             @foreach (var service in systemTree.Services)
                             {
                                 var url = service.NetworkString();
-                                <NavLink href="@($"/resources/services/{service.Name}")" class="block">
+                                <NavLink href="@($"resources/services/{service.Name}")" class="block">
                                     <div class="border border-zinc-800 rounded bg-zinc-900 p-2 hover:border-zinc-700">
 
                                         <div class="text-zinc-200 text-sm">

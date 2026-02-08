@@ -8,7 +8,7 @@
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
-        <NavLink href="@($"/resources/services/{Service.Name}")" class="block">
+        <NavLink href="@($"resources/services/{Service.Name}")" class="block">
 
             <div class="text-zinc-100 hover:text-emerald-300">
                 @Service.Name
@@ -138,7 +138,7 @@
             }
             else if (!string.IsNullOrWhiteSpace(Service.RunsOn))
             {
-                <NavLink href="@($"/resources/systems/{Service.RunsOn}")"
+                <NavLink href="@($"resources/systems/{Service.RunsOn}")"
                          class="text-emerald-400">
                     @Service.RunsOn
                 </NavLink>
@@ -188,7 +188,7 @@
     {
         await CloneServiceUseCase.ExecuteAsync(Service.Name, newName);
 
-        Nav.NavigateTo($"/resources/services/{newName}");
+        Nav.NavigateTo($"resources/services/{newName}");
     }
 
 }
