@@ -33,6 +33,10 @@
     - [describe](Commands.md#rpk-switches-describe) - Show detailed information about a switch
     - [set](Commands.md#rpk-switches-set) - Update properties of a switch
     - [del](Commands.md#rpk-switches-del) - Delete a switch from the inventory
+    - [port](Commands.md#rpk-switches-port) - Manage ports on a network switch
+      - [add](Commands.md#rpk-switches-port-add) - Add a port to a switch
+      - [set](Commands.md#rpk-switches-port-set) - Update a switch port
+      - [del](Commands.md#rpk-switches-port-del) - Remove a port from a switch
   - [routers](Commands.md#rpk-routers) - Manage network routers
     - [summary](Commands.md#rpk-routers-summary) - Show a hardware report for all routers
     - [add](Commands.md#rpk-routers-add) - Add a new network router to the inventory
@@ -41,6 +45,10 @@
     - [describe](Commands.md#rpk-routers-describe) - Show detailed information about a router
     - [set](Commands.md#rpk-routers-set) - Update properties of a router
     - [del](Commands.md#rpk-routers-del) - Delete a router from the inventory
+    - [port](Commands.md#rpk-routers-port) - Manage ports on a router
+      - [add](Commands.md#rpk-routers-port-add) - Add a port to a router
+      - [set](Commands.md#rpk-routers-port-set) - Update a router port
+      - [del](Commands.md#rpk-routers-port-del) - Remove a port from a router
   - [firewalls](Commands.md#rpk-firewalls) - Manage firewalls
     - [summary](Commands.md#rpk-firewalls-summary) - Show a hardware report for all firewalls
     - [add](Commands.md#rpk-firewalls-add) - Add a new firewall to the inventory
@@ -49,6 +57,10 @@
     - [describe](Commands.md#rpk-firewalls-describe) - Show detailed information about a firewall
     - [set](Commands.md#rpk-firewalls-set) - Update properties of a firewall
     - [del](Commands.md#rpk-firewalls-del) - Delete a firewall from the inventory
+    - [port](Commands.md#rpk-firewalls-port) - Manage ports on a firewall
+      - [add](Commands.md#rpk-firewalls-port-add) - Add a port to a firewall
+      - [set](Commands.md#rpk-firewalls-port-set) - Update a firewall port
+      - [del](Commands.md#rpk-firewalls-port-del) - Remove a port from a firewall
   - [systems](Commands.md#rpk-systems) - Manage systems and their dependencies
     - [summary](Commands.md#rpk-systems-summary) - Show a summary report for all systems
     - [add](Commands.md#rpk-systems-add) - Add a new system to the inventory
