@@ -28,6 +28,8 @@ using RackPeek.Commands.Systems;
 using RackPeek.Commands.Ups;
 using RackPeek.Domain;
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
+using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
@@ -40,7 +42,7 @@ namespace RackPeek;
 
 public static class CliBootstrap
 {
-    public static void BuildApp(CommandApp app, IServiceCollection services, IConfiguration configuration,
+    public static async Task BuildApp(CommandApp app, IServiceCollection services, IConfiguration configuration,
         string yamlDir, string yamlFile)
     {
         services.AddSingleton(configuration);
@@ -52,7 +54,9 @@ public static class CliBootstrap
 
         if (!Directory.Exists(yamlPath)) throw new DirectoryNotFoundException($"YAML directory not found: {yamlPath}");
 
-        services.AddSingleton(new YamlResourceCollection(Path.Combine(yamlDir, yamlFile)));
+        var collection = new YamlResourceCollection(Path.Combine(yamlDir, yamlFile), new PhysicalTextFileStore());
+        await collection.LoadAsync();
+        services.AddSingleton<IResourceCollection>(collection);
 
         // Infrastructure
         services.AddScoped<IHardwareRepository, YamlHardwareRepository>();

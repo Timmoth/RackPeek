@@ -22,7 +22,7 @@ public static class Program
         var registrar = new TypeRegistrar(services);
         var app = new CommandApp(registrar);
 
-        CliBootstrap.BuildApp(app, services, configuration, "./config", "config.yaml");
+        await CliBootstrap.BuildApp(app, services, configuration, "./config", "config.yaml");
 
         services.AddLogging(configure =>
             configure

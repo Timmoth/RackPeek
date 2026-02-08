@@ -1,0 +1,400 @@
+﻿@using RackPeek.Domain.Resources.Hardware.Laptops
+@using RackPeek.Domain.Resources.Hardware.Laptops.Cpus
+@using RackPeek.Domain.Resources.Hardware.Laptops.Drives
+@using RackPeek.Domain.Resources.Hardware.Laptops.Gpus
+@using RackPeek.Domain.Resources.Models
+@inject GetLaptopUseCase GetLaptopUseCase
+@inject UpdateLaptopUseCase UpdateLaptopUseCase
+@inject DeleteLaptopUseCase DeleteLaptopUseCase
+
+@inject AddLaptopCpuUseCase AddCpuUseCase
+@inject UpdateLaptopCpuUseCase UpdateCpuUseCase
+@inject RemoveLaptopCpuUseCase RemoveCpuUseCase
+
+@inject AddLaptopDriveUseCase AddDriveUseCase
+@inject UpdateLaptopDriveUseCase UpdateDriveUseCase
+@inject RemoveLaptopDriveUseCase RemoveDriveUseCase
+
+@inject AddLaptopGpuUseCase AddGpuUseCase
+@inject UpdateLaptopGpuUseCase UpdateGpuUseCase
+@inject RemoveLaptopGpuUseCase RemoveGpuUseCase
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+    <div class="flex justify-between items-center mb-3">
+        <div class="text-zinc-100 hover:text-emerald-300">
+            <NavLink href="@($"/resources/hardware/{Laptop.Name}")" class="block">
+
+                @Laptop.Name
+            </NavLink>
+        </div>
+
+
+        <div class="flex justify-between items-center mb-3">
+            @if (!string.IsNullOrWhiteSpace(Laptop.Model))
+            {
+                <span class="text-xs text-zinc-400">
+                    @Laptop.Model
+                </span>
+            }
+            <div class="flex items-center gap-2">
+
+                <button
+                    class="text-xs text-red-400 hover:text-red-300 transition"
+                    title="Delete server"
+                    @onclick="ConfirmDelete">
+                    Delete
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+        <!-- CPU -->
+        <div>
+            <div class="flex items-center justify-between mb-1 group">
+                <div class="text-zinc-400">
+                    CPU
+                    <button
+                        class="hover:text-emerald-400 transition"
+                        title="Add CPU"
+                        @onclick="OpenAddCpu">
+                        +
+                    </button>
+                </div>
+            </div>
+
+            @if (Laptop.Cpus?.Any() == true)
+            {
+                @foreach (var cpu in Laptop.Cpus)
+                {
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                        <button
+                            class="hover:text-emerald-400"
+                            title="Edit CPU"
+                            @onclick="() => OpenEditCpu(cpu)">
+                            @cpu.Model — @cpu.Cores cores / @cpu.Threads threads
+                        </button>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- RAM -->
+        <div>
+            <div class="text-zinc-400 mb-1">
+                RAM
+                <button
+                    class="hover:text-emerald-400 transition"
+                    title="Edit RAM"
+                    @onclick="EditRam">
+                    +
+                </button>
+            </div>
+
+            @if (Laptop.Ram is not null)
+            {
+                <div
+                    class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                    <button
+                        class="hover:text-emerald-400"
+                        @onclick="EditRam">
+                        @($"{Laptop.Ram.Size} GB {Laptop.Ram.Mts} MT/s")
+                    </button>
+                </div>
+            }
+        </div>
+
+        <!-- Drives -->
+        <div>
+            <div class="flex items-center justify-between mb-1 group">
+                <div class="text-zinc-400">
+                    Drives
+                    <button
+                        class="hover:text-emerald-400 transition"
+                        title="Add Drive"
+                        @onclick="OpenAddDrive">
+                        +
+                    </button>
+                </div>
+            </div>
+
+            @if (Laptop.Drives?.Any() == true)
+            {
+                @foreach (var drive in Laptop.Drives)
+                {
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                        <button
+                            class="hover:text-emerald-400"
+                            @onclick="() => OpenEditDrive(drive)">
+                            @drive.Type — @drive.Size GB
+                        </button>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- GPUs -->
+        <div>
+            <div class="flex items-center justify-between mb-1 group">
+                <div class="text-zinc-400">
+                    GPUs
+                    <button
+                        class="hover:text-emerald-400 transition"
+                        title="Add GPU"
+                        @onclick="OpenAddGpu">
+                        +
+                    </button>
+                </div>
+            </div>
+
+            @if (Laptop.Gpus?.Any() == true)
+            {
+                @foreach (var gpu in Laptop.Gpus)
+                {
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                        <button
+                            class="hover:text-emerald-400"
+                            @onclick="() => OpenEditGpu(gpu)">
+                            @gpu.Model — @gpu.Vram GB VRAM
+                        </button>
+                    </div>
+                }
+            }
+        </div>
+
+    </div>
+</div>
+<CpuModal
+    IsOpen="@_cpuModalOpen"
+    IsOpenChanged="v => _cpuModalOpen = v"
+    Value="@_editingCpu"
+    OnSubmit="HandleCpuSubmit"
+    OnDelete="HandleCpuDelete"/>
+
+<RamModal
+    IsOpen="@_isRamModalOpen"
+    IsOpenChanged="v => _isRamModalOpen = v"
+    Value="@Laptop.Ram"
+    OnSubmit="HandleRamSubmit"/>
+
+<DriveModal
+    IsOpen="@_driveModalOpen"
+    IsOpenChanged="v => _driveModalOpen = v"
+    Value="@_editingDrive"
+    OnSubmit="HandleDriveSubmit"
+    OnDelete="HandleDriveDelete"/>
+
+<GpuModal
+    IsOpen="@_gpuModalOpen"
+    IsOpenChanged="v => _gpuModalOpen = v"
+    Value="@_editingGpu"
+    OnSubmit="HandleGpuSubmit"
+    OnDelete="HandleGpuDelete"/>
+
+<ConfirmModal
+    IsOpen="_confirmDeleteOpen"
+    IsOpenChanged="v => _confirmDeleteOpen = v"
+    Title="Delete server"
+    ConfirmText="Delete"
+    ConfirmClass="bg-red-600 hover:bg-red-500"
+    OnConfirm="DeleteServer">
+    Are you sure you want to delete <strong>@Laptop.Name</strong>?
+    <br/>
+    This will detach all dependent systems.
+</ConfirmModal>
+
+@code {
+    [Parameter] [EditorRequired] public Laptop Laptop { get; set; } = default!;
+
+    #region RAM
+
+    private bool _isRamModalOpen;
+
+    private void EditRam()
+    {
+        _isRamModalOpen = true;
+    }
+
+    private async Task HandleRamSubmit(Ram value)
+    {
+        _isRamModalOpen = false;
+        await UpdateLaptopUseCase.ExecuteAsync(Laptop.Name, Laptop.Model, value.Size, value.Mts);
+        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+    }
+
+    #endregion
+
+    #region CPU
+
+    bool _cpuModalOpen;
+    int _editingCpuIndex;
+    Cpu? _editingCpu;
+
+    void OpenAddCpu()
+    {
+        _editingCpuIndex = -1;
+        _editingCpu = null;
+        _cpuModalOpen = true;
+    }
+
+    void OpenEditCpu(Cpu cpu)
+    {
+        _editingCpu = cpu;
+        Laptop.Cpus ??= new List<Cpu>();
+        _editingCpuIndex = Laptop.Cpus.IndexOf(cpu);
+        ;
+        _cpuModalOpen = true;
+    }
+
+    async Task HandleCpuSubmit(Cpu cpu)
+    {
+        Laptop.Cpus ??= new List<Cpu>();
+
+        if (_editingCpuIndex < 0)
+        {
+            await AddCpuUseCase.ExecuteAsync(Laptop.Name, cpu.Model, cpu.Cores, cpu.Threads);
+        }
+        else
+        {
+            await UpdateCpuUseCase.ExecuteAsync(Laptop.Name, _editingCpuIndex, cpu.Model, cpu.Cores, cpu.Threads);
+        }
+
+        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+    }
+
+    async Task HandleCpuDelete(Cpu cpu)
+    {
+        await RemoveCpuUseCase.ExecuteAsync(Laptop.Name, _editingCpuIndex);
+        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+    }
+
+    #endregion
+
+    #region Drives
+
+    bool _driveModalOpen;
+    int _editingDriveIndex;
+    Drive? _editingDrive;
+
+    void OpenAddDrive()
+    {
+        _editingDriveIndex = -1;
+        _editingDrive = null;
+        _driveModalOpen = true;
+    }
+
+    void OpenEditDrive(Drive drive)
+    {
+        _editingDrive = drive;
+        Laptop.Drives ??= new List<Drive>();
+        _editingDriveIndex = Laptop.Drives.IndexOf(drive);
+        ;
+        _driveModalOpen = true;
+    }
+
+    async Task HandleDriveSubmit(Drive drive)
+    {
+        Laptop.Drives ??= new List<Drive>();
+
+        if (_editingDriveIndex < 0)
+        {
+            await AddDriveUseCase.ExecuteAsync(Laptop.Name, drive.Type, drive.Size);
+        }
+        else
+        {
+            await UpdateDriveUseCase.ExecuteAsync(Laptop.Name, _editingDriveIndex, drive.Type, drive.Size);
+        }
+
+        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        StateHasChanged();
+    }
+
+    async Task HandleDriveDelete(Drive drive)
+    {
+        await RemoveDriveUseCase.ExecuteAsync(Laptop.Name, _editingDriveIndex);
+        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region GPUs
+
+    bool _gpuModalOpen;
+    int _editingGpuIndex;
+    Gpu? _editingGpu;
+
+    void OpenAddGpu()
+    {
+        _editingGpuIndex = -1;
+        _editingGpu = null;
+        _gpuModalOpen = true;
+    }
+
+    void OpenEditGpu(Gpu gpu)
+    {
+        Laptop.Gpus ??= new List<Gpu>();
+        _editingGpuIndex = Laptop.Gpus.IndexOf(gpu);
+        _editingGpu = gpu;
+        _gpuModalOpen = true;
+    }
+
+    async Task HandleGpuSubmit(Gpu gpu)
+    {
+        Laptop.Gpus ??= new List<Gpu>();
+
+        if (_editingGpuIndex < 0)
+        {
+            await AddGpuUseCase.ExecuteAsync(
+                Laptop.Name,
+                gpu.Model,
+                gpu.Vram);
+        }
+        else
+        {
+            await UpdateGpuUseCase.ExecuteAsync(
+                Laptop.Name,
+                _editingGpuIndex,
+                gpu.Model,
+                gpu.Vram);
+        }
+
+        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+    }
+
+    async Task HandleGpuDelete(Gpu gpu)
+    {
+        await RemoveGpuUseCase.ExecuteAsync(Laptop.Name, _editingGpuIndex);
+        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+    }
+
+    #endregion
+
+}
+
+@code {
+    private bool _confirmDeleteOpen;
+    [Parameter] public EventCallback<string> OnDeleted { get; set; }
+
+    void ConfirmDelete()
+    {
+        _confirmDeleteOpen = true;
+    }
+
+    async Task DeleteServer()
+    {
+        _confirmDeleteOpen = false;
+
+        await DeleteLaptopUseCase.ExecuteAsync(Laptop.Name);
+
+        if (OnDeleted.HasDelegate)
+            await OnDeleted.InvokeAsync(Laptop.Name);
+    }
+
+}
+

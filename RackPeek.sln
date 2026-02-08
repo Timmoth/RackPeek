@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RackPeek.Domain", "RackPeek
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RackPeek.Web", "RackPeek.Web\RackPeek.Web.csproj", "{7E5A9ABE-B350-4D1B-86E5-03D9CDF44F84}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Rcl", "Shared.Rcl\Shared.Rcl.csproj", "{5064A98A-A918-46A8-B44C-DB2720994643}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RackPeek.Web.Viewer", "RackPeek.Web.Viewer\RackPeek.Web.Viewer.csproj", "{C8A622F1-0B7C-43DF-86E0-8FE25A5A5E0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{7E5A9ABE-B350-4D1B-86E5-03D9CDF44F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E5A9ABE-B350-4D1B-86E5-03D9CDF44F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E5A9ABE-B350-4D1B-86E5-03D9CDF44F84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5064A98A-A918-46A8-B44C-DB2720994643}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5064A98A-A918-46A8-B44C-DB2720994643}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5064A98A-A918-46A8-B44C-DB2720994643}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5064A98A-A918-46A8-B44C-DB2720994643}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8A622F1-0B7C-43DF-86E0-8FE25A5A5E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8A622F1-0B7C-43DF-86E0-8FE25A5A5E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8A622F1-0B7C-43DF-86E0-8FE25A5A5E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8A622F1-0B7C-43DF-86E0-8FE25A5A5E0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

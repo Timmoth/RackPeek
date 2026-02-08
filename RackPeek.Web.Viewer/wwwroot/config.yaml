@@ -1,0 +1,513 @@
+resources:
+  # ------------------------
+  # Servers
+  # ------------------------
+  - kind: Server
+    name: proxmox-node01
+    cpus:
+      - model: AMD EPYC 7302P
+        cores: 16
+        threads: 32
+    ram:
+      size: 128gb
+      mts: 3200
+    drives:
+      - type: ssd
+        size: 1tb
+      - type: ssd
+        size: 1tb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 2
+      - type: sfp+
+        speed: 10gb
+        ports: 2
+    ipmi: true
+
+  - kind: Server
+    name: proxmox-node02
+    cpus:
+      - model: Intel Xeon Silver 4210
+        cores: 10
+        threads: 20
+    ram:
+      size: 96gb
+      mts: 2666
+    drives:
+      - type: ssd
+        size: 1tb
+      - type: hdd
+        size: 4tb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 2
+      - type: sfp+
+        speed: 10gb
+        ports: 1
+    ipmi: true
+
+  - kind: Server
+    name: truenas-storage
+    cpus:
+      - model: Intel Xeon E-2236
+        cores: 6
+        threads: 12
+    ram:
+      size: 64gb
+      mts: 2666
+    drives:
+      - type: hdd
+        size: 8tb
+      - type: hdd
+        size: 8tb
+      - type: hdd
+        size: 8tb
+      - type: hdd
+        size: 8tb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 1
+      - type: sfp+
+        speed: 10gb
+        ports: 1
+    ipmi: true
+
+  # ------------------------
+  # Network
+  # ------------------------
+  - kind: Firewall
+    name: pfsense-fw
+    model: Netgate-6100
+    ports:
+      - type: rj45
+        speed: 1gb
+        count: 4
+      - type: sfp+
+        speed: 10gb
+        count: 2
+    managed: true
+    poe: false
+
+  - kind: Router
+    name: core-router
+    model: Ubiquiti-ER-4
+    ports:
+      - type: rj45
+        speed: 1gb
+        count: 4
+      - type: sfp
+        speed: 10gb
+        count: 1
+    managed: true
+    poe: false
+
+  - kind: Switch
+    name: core-switch
+    model: UniFi-USW-Enterprise-24
+    ports:
+      - type: rj45
+        speed: 1gb
+        count: 12
+      - type: rj45
+        speed: 2.5gb
+        count: 8
+      - type: sfp+
+        speed: 10gb
+        count: 4
+    managed: true
+    poe: true
+
+  - kind: Switch
+    name: access-switch
+    model: UniFi-USW-16-PoE
+    ports:
+      - type: rj45
+        speed: 1gb
+        count: 16
+      - type: sfp
+        speed: 1gb
+        count: 2
+    managed: true
+    poe: true
+
+  - kind: AccessPoint
+    name: lounge-ap
+    model: UniFi-U6-Pro
+    speed: 2.5gb
+
+  # ------------------------
+  # Power
+  # ------------------------
+  - kind: Ups
+    name: rack-ups
+    model: APC-SmartUPS-2200
+    va: 2200
+
+  # ------------------------
+  # Desktops
+  # ------------------------
+  - kind: Desktop
+    name: workstation-linux
+    cpus:
+      - model: AMD Ryzen 9 5900X
+        cores: 12
+        threads: 24
+    ram:
+      size: 64gb
+      mts: 3600
+    drives:
+      - type: ssd
+        size: 1tb
+      - type: ssd
+        size: 2tb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 1
+    gpus:
+      - model: NVIDIA RTX 3080
+        vram: 10gb
+
+  - kind: Desktop
+    name: gaming-pc
+    cpus:
+      - model: Intel Core i7-12700K
+        cores: 12
+        threads: 20
+    ram:
+      size: 32gb
+      mts: 3200
+    drives:
+      - type: ssd
+        size: 1tb
+    nics:
+      - type: rj45
+        speed: 1gb
+        ports: 1
+    gpus:
+      - model: NVIDIA RTX 3070
+        vram: 8gb
+
+  # ------------------------
+  # Laptop
+  # ------------------------
+  - kind: Laptop
+    name: dev-laptop
+    cpus:
+      - model: Intel Core i7-1260P
+        cores: 12
+        threads: 16
+    ram:
+      size: 32gb
+      mts: 5200
+    drives:
+      - type: ssd
+        size: 1tb
+  # --------------------------------------------------
+  # Smart Home
+  # --------------------------------------------------
+  - kind: Service
+    name: home-assistant
+    network:
+      ip: 192.168.0.10
+      port: 8123
+      protocol: TCP
+      url: http://homeassistant.lan:8123
+    runsOn: vm-home-assistant
+
+  # --------------------------------------------------
+  # Media & Photos
+  # --------------------------------------------------
+  - kind: Service
+    name: plex
+    network:
+      ip: 192.168.0.20
+      port: 32400
+      protocol: TCP
+      url: http://plex.lan:32400
+    runsOn: vm-media-server
+
+  - kind: Service
+    name: jellyfin
+    network:
+      ip: 192.168.0.21
+      port: 8096
+      protocol: TCP
+      url: http://jellyfin.lan:8096
+    runsOn: vm-media-server
+
+  - kind: Service
+    name: immich
+    network:
+      ip: 192.168.0.22
+      port: 8080
+      protocol: TCP
+      url: http://immich.lan:8080
+    runsOn: vm-media-server
+
+  # --------------------------------------------------
+  # Storage & Backup
+  # --------------------------------------------------
+  - kind: Service
+    name: truenas-webui
+    network:
+      ip: 192.168.0.30
+      port: 443
+      protocol: TCP
+      url: https://truenas.lan
+    runsOn: truenas-core-os
+
+  - kind: Service
+    name: minio
+    network:
+      ip: 192.168.0.31
+      port: 9000
+      protocol: TCP
+      url: http://minio.lan:9000
+    runsOn: vm-media-server
+
+  # --------------------------------------------------
+  # Monitoring & Ops
+  # --------------------------------------------------
+  - kind: Service
+    name: prometheus
+    network:
+      ip: 192.168.0.40
+      port: 9090
+      protocol: TCP
+      url: http://prometheus.lan:9090
+    runsOn: vm-monitoring
+
+  - kind: Service
+    name: grafana
+    network:
+      ip: 192.168.0.41
+      port: 3000
+      protocol: TCP
+      url: http://grafana.lan:3000
+    runsOn: vm-monitoring
+
+  - kind: Service
+    name: alertmanager
+    network:
+      ip: 192.168.0.42
+      port: 9093
+      protocol: TCP
+      url: http://alertmanager.lan:9093
+    runsOn: vm-monitoring
+
+  # --------------------------------------------------
+  # Dev & Internal Tools
+  # --------------------------------------------------
+  - kind: Service
+    name: gitea
+    network:
+      ip: 192.168.0.50
+      port: 3001
+      protocol: TCP
+      url: http://git.lan:3001
+    runsOn: vm-monitoring
+
+  - kind: Service
+    name: docker-registry
+    network:
+      ip: 192.168.0.51
+      port: 5000
+      protocol: TCP
+      url: http://registry.lan:5000
+    runsOn: vm-monitoring
+
+  - kind: Service
+    name: portainer
+    network:
+      ip: 192.168.0.52
+      port: 9000
+      protocol: TCP
+      url: http://portainer.lan:9000
+    runsOn: vm-monitoring
+
+  # --------------------------------------------------
+  # Network Services
+  # --------------------------------------------------
+  - kind: Service
+    name: pihole
+    network:
+      ip: 192.168.0.53
+      port: 80
+      protocol: TCP
+      url: http://pihole.lan
+    runsOn: vm-monitoring
+
+  - kind: Service
+    name: firewall-webui
+    network:
+      ip: 192.168.0.1
+      port: 443
+      protocol: TCP
+      url: https://firewall.lan
+    runsOn: firewall-os
+
+  - kind: Service
+    name: router-webui
+    network:
+      ip: 192.168.0.254
+      port: 443
+      protocol: TCP
+      url: https://router.lan
+    runsOn: router-os
+  # --------------------------------------------------
+  # Hypervisors (Bare Metal)
+  # --------------------------------------------------
+  - kind: System
+    type: Hypervisor
+    name: proxmox-cluster-node01
+    os: proxmox
+    cores: 16
+    ram: 128gb
+    drives:
+      - size: 1tb
+      - size: 1tb
+    runsOn: proxmox-node01
+
+  - kind: System
+    type: Hypervisor
+    name: proxmox-cluster-node02
+    os: proxmox
+    cores: 10
+    ram: 96gb
+    drives:
+      - size: 1tb
+      - size: 4tb
+    runsOn: proxmox-node02
+
+  # --------------------------------------------------
+  # Storage OS (Bare Metal)
+  # --------------------------------------------------
+  - kind: System
+    type: Baremetal
+    name: truenas-core-os
+    os: truenas
+    cores: 6
+    ram: 64gb
+    drives:
+      - size: 8tb
+      - size: 8tb
+      - size: 8tb
+      - size: 8tb
+    runsOn: truenas-storage
+
+  # --------------------------------------------------
+  # IPMI / BMC Management
+  # --------------------------------------------------
+  - kind: System
+    type: Baremetal
+    name: ipmi-proxmox-node01
+    os: idrac
+    cores: 1
+    ram: 1gb
+    runsOn: proxmox-node01
+
+  - kind: System
+    type: Baremetal
+    name: ipmi-proxmox-node02
+    os: ipmi
+    cores: 1
+    ram: 1gb
+    runsOn: proxmox-node02
+
+  - kind: System
+    type: Baremetal
+    name: ipmi-truenas-storage
+    os: ipmi
+    cores: 1
+    ram: 1gb
+    runsOn: truenas-storage
+
+  # --------------------------------------------------
+  # Core Network Systems
+  # --------------------------------------------------
+  - kind: System
+    type: Baremetal
+    name: firewall-os
+    os: pfsense
+    cores: 4
+    ram: 8gb
+    drives:
+      - size: 32gb
+    runsOn: pfsense-fw
+
+  - kind: System
+    type: Baremetal
+    name: router-os
+    os: edgeos
+    cores: 4
+    ram: 4gb
+    drives:
+      - size: 4gb
+    runsOn: core-router
+
+  - kind: System
+    type: Baremetal
+    name: unifi-core-switch-os
+    os: unifi-os
+    cores: 2
+    ram: 2gb
+    drives:
+      - size: 8gb
+    runsOn: core-switch
+
+  - kind: System
+    type: Baremetal
+    name: unifi-access-switch-os
+    os: unifi-os
+    cores: 2
+    ram: 2gb
+    drives:
+      - size: 8gb
+    runsOn: access-switch
+
+  - kind: System
+    type: Baremetal
+    name: unifi-lounge-ap-os
+    os: unifi-firmware
+    cores: 2
+    ram: 1gb
+    drives:
+      - size: 4gb
+    runsOn: lounge-ap
+
+  # --------------------------------------------------
+  # Virtual Machines
+  # --------------------------------------------------
+  - kind: System
+    type: VM
+    name: vm-home-assistant
+    os: hassos
+    cores: 2
+    ram: 4gb
+    drives:
+      - size: 64gb
+    runsOn: proxmox-node01
+
+  - kind: System
+    type: VM
+    name: vm-media-server
+    os: ubuntu-22.04
+    cores: 4
+    ram: 8gb
+    drives:
+      - size: 500gb
+    runsOn: proxmox-node02
+
+  - kind: System
+    type: VM
+    name: vm-monitoring
+    os: debian-12
+    cores: 2
+    ram: 4gb
+    drives:
+      - size: 64gb
+    runsOn: proxmox-node01

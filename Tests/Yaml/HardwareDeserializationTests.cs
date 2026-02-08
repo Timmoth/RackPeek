@@ -1,4 +1,6 @@
-﻿using RackPeek.Domain.Resources.Hardware;
+﻿using RackPeek.Domain.Persistence;
+using RackPeek.Domain.Persistence.Yaml;
+using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Models;
 using RackPeek.Yaml;
 
@@ -6,7 +8,7 @@ namespace Tests.Yaml;
 
 public class HardwareDeserializationTests
 {
-    public static IHardwareRepository CreateSut(string yaml)
+    public async Task<IHardwareRepository> CreateSut(string yaml)
     {
         var tempDir = Path.Combine(
             Path.GetTempPath(),
@@ -18,7 +20,8 @@ public class HardwareDeserializationTests
         var filePath = Path.Combine(tempDir, "config.yaml");
         File.WriteAllText(filePath, yaml);
 
-        var yamlResourceCollection = new YamlResourceCollection(filePath);
+        var yamlResourceCollection = new YamlResourceCollection(filePath, new PhysicalTextFileStore());
+        await yamlResourceCollection.LoadAsync();
         return new YamlHardwareRepository(yamlResourceCollection);
     }
 
@@ -40,7 +43,7 @@ resources:
   - kind: {kind}
 ";
 
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();
@@ -82,7 +85,7 @@ resources:
           ports: 2
     ipmi: true
 ";
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();
@@ -156,7 +159,7 @@ resources:
     poe: true
 ";
 
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();
@@ -206,7 +209,7 @@ resources:
     poe: true
 ";
 
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();
@@ -256,7 +259,7 @@ resources:
     poe: true
 ";
 
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();
@@ -313,7 +316,7 @@ resources:
          vram: 12gb
 ";
 
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();
@@ -374,7 +377,7 @@ resources:
          vram: 12gb
 ";
 
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();
@@ -418,7 +421,7 @@ resources:
     speed: 2.5Gb
 ";
 
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();
@@ -448,7 +451,7 @@ resources:
     va: 2200
 ";
 
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();

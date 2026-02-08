@@ -1,0 +1,86 @@
+﻿@page "/resources/systems/{SystemName}"
+@using RackPeek.Domain.Resources.Hardware
+@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.SystemResources.UseCases
+@inject ISystemRepository SystemRepository
+@inject UpdateSystemUseCase UpdateSystemUseCase
+@inject GetSystemServiceTreeUseCase GetSystemServiceTreeUseCase
+@inject NavigationManager NavigationManager
+
+<PageTitle>System Details</PageTitle>
+
+<ResourceBreadCrumbComponent
+    ResourceType="ResourceType.System"
+    ResourceName="@SystemName"/>
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
+    @if (_system is null && !_loading)
+    {
+        <div class="text-zinc-500">System not found</div>
+    }
+    else if (_loading)
+    {
+        <div class="text-zinc-500">loading system…</div>
+    }
+    else
+    {
+        <h1 class="text-lg text-zinc-100 mb-6">
+            @_system.Name (@_system.Kind)
+        </h1>
+
+        <SystemCardComponent System="_system" OnSave="UpdateSystem" OnDeleted="OnDeleted"/>
+
+        @if (_tree is not null && _tree.Services.Any())
+        {
+            <SystemDependencyTreeComponent Tree="_tree"/>
+        }
+        else
+        {
+            <div class="text-zinc-400 m-2">
+                No child systems / services
+            </div>
+        }
+
+        <div class="m-4">
+            <AddServiceComponent RunsOn="@SystemName"/>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string SystemName { get; set; } = string.Empty;
+
+    private SystemResource? _system;
+    private bool _loading = true;
+    SystemDependencyTree? _tree;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _system = await SystemRepository.GetByNameAsync(SystemName);
+        _tree = null;
+        if (!string.IsNullOrEmpty(_system?.Name))
+        {
+            _tree = await GetSystemServiceTreeUseCase.ExecuteAsync(_system?.Name!);
+        }
+
+        _loading = false;
+    }
+
+    async Task UpdateSystem(SystemEditModel edit)
+    {
+        await UpdateSystemUseCase.ExecuteAsync(
+            edit.Name,
+            edit.Type,
+            edit.Os,
+            edit.Cores,
+            edit.Ram,
+            edit.RunsOn
+        );
+    }
+
+    private async Task OnDeleted()
+    {
+        NavigationManager.NavigateTo("/systems/list");
+    }
+
+}

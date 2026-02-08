@@ -1,3 +1,5 @@
+using RackPeek.Domain.Persistence;
+using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Yaml;
 
@@ -5,7 +7,7 @@ namespace Tests.Yaml;
 
 public class ServiceDeserializationTests
 {
-    public static IServiceRepository CreateSut(string yaml)
+    public static async Task<IServiceRepository> CreateSut(string yaml)
     {
         var tempDir = Path.Combine(
             Path.GetTempPath(),
@@ -17,7 +19,9 @@ public class ServiceDeserializationTests
         var filePath = Path.Combine(tempDir, "config.yaml");
         File.WriteAllText(filePath, yaml);
 
-        var yamlResourceCollection = new YamlResourceCollection(filePath);
+        var yamlResourceCollection = new YamlResourceCollection(filePath, new PhysicalTextFileStore());
+        await yamlResourceCollection.LoadAsync();
+
         return new YamlServiceRepository(yamlResourceCollection);
     }
 
@@ -38,7 +42,7 @@ resources:
     runsOn: proxmox-host
 ";
 
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();

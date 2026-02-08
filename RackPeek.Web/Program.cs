@@ -1,17 +1,20 @@
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using RackPeek.Domain;
+using RackPeek.Domain.Persistence;
+using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 using RackPeek.Web.Components;
 using RackPeek.Yaml;
+using Shared.Rcl;
 
 namespace RackPeek.Web;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -33,16 +36,15 @@ public class Program
                 $"YAML directory not found: {yamlPath}"
             );
 
-        var collection = new YamlResourceCollection(Path.Combine(yamlDir, "config.yaml"));
-
+        var collection = new YamlResourceCollection(Path.Combine(yamlDir, "config.yaml"), new PhysicalTextFileStore());
+        await collection.LoadAsync();
 
         // Infrastructure
         builder.Services.AddSingleton<IHardwareRepository>(_ => new YamlHardwareRepository(collection));
         builder.Services.AddSingleton<ISystemRepository>(_ => new YamlSystemRepository(collection));
         builder.Services.AddSingleton<IServiceRepository>(_ => new YamlServiceRepository(collection));
         builder.Services.AddSingleton<IResourceRepository>(_ => new YamlResourceRepository(collection));
-
-
+        
         builder.Services.AddUseCases();
 
         // Add services to the container.
@@ -69,6 +71,6 @@ public class Program
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 
-        app.Run();
+        await app.RunAsync();
     }
 }

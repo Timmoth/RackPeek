@@ -1,11 +1,13 @@
-﻿using RackPeek.Domain.Resources.SystemResources;
+﻿using RackPeek.Domain.Persistence;
+using RackPeek.Domain.Persistence.Yaml;
+using RackPeek.Domain.Resources.SystemResources;
 using RackPeek.Yaml;
 
 namespace Tests.Yaml;
 
 public class SystemDeserializationTests
 {
-    public static ISystemRepository CreateSut(string yaml)
+    public static async Task<ISystemRepository> CreateSut(string yaml)
     {
         var tempDir = Path.Combine(
             Path.GetTempPath(),
@@ -17,7 +19,9 @@ public class SystemDeserializationTests
         var filePath = Path.Combine(tempDir, "config.yaml");
         File.WriteAllText(filePath, yaml);
 
-        var yamlResourceCollection = new YamlResourceCollection(filePath);
+        var yamlResourceCollection = new YamlResourceCollection(filePath, new PhysicalTextFileStore());
+        await yamlResourceCollection.LoadAsync();
+
         return new YamlSystemRepository(yamlResourceCollection);
     }
 
@@ -40,7 +44,7 @@ resources:
         - size: 1tb   
     runsOn: dell-c6400-node-01
 ";
-        var sut = CreateSut(yaml);
+        var sut = await CreateSut(yaml);
 
         // When
         var resources = await sut.GetAllAsync();

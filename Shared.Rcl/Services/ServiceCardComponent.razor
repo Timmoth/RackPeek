@@ -1,0 +1,270 @@
+﻿@using RackPeek.Domain.Resources.Services
+@using RackPeek.Domain.Resources.Services.UseCases
+@inject UpdateServiceUseCase UpdateServiceUseCase
+@inject GetServiceUseCase GetServiceUseCase
+@inject DeleteServiceUseCase DeleteServiceUseCase
+@inject CloneServiceUseCase CloneServiceUseCase
+@inject NavigationManager Nav
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+    <div class="flex justify-between items-center mb-3">
+        <NavLink href="@($"/resources/services/{Service.Name}")" class="block">
+
+            <div class="text-zinc-100 hover:text-emerald-300">
+                @Service.Name
+            </div>
+        </NavLink>
+
+        <div class="flex gap-3 text-xs">
+            @if (!_isEditing)
+            {
+                <button class="text-zinc-400 hover:text-zinc-200"
+                        @onclick="BeginEdit">
+                    Edit
+                </button>
+
+                <button
+                    class="text-xs text-emerald-400 hover:text-emerald-300 transition"
+                    title="Clone service"
+                    @onclick="OpenClone">
+                    Clone
+                </button>
+
+                
+                <button
+                    class="text-xs text-red-400 hover:text-red-300 transition"
+                    title="Delete server"
+                    @onclick="ConfirmDelete">
+                    Delete
+                </button>
+            }
+            else
+            {
+                <button class="text-emerald-400 hover:text-emerald-300"
+                        @onclick="Save">
+                    Save
+                </button>
+                <button class="text-zinc-500 hover:text-zinc-300"
+                        @onclick="Cancel">
+                    Cancel
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+        <!-- IP -->
+        <div>
+            <div class="text-zinc-400 mb-1">IP</div>
+            @if (_isEditing)
+            {
+                <input class="input"
+                       @bind="_edit.Ip"/>
+            }
+            else if (!string.IsNullOrWhiteSpace(Service.Network?.Ip))
+            {
+                <div class="text-zinc-300">@Service.Network!.Ip</div>
+            }
+        </div>
+
+        <!-- Port -->
+        <div>
+            <div class="text-zinc-400 mb-1">Port</div>
+            @if (_isEditing)
+            {
+                <input type="number"
+                       class="input"
+                       @bind="_edit.Port"/>
+            }
+            else if (Service.Network?.Port.HasValue == true)
+            {
+                <div class="text-zinc-300">@Service.Network.Port</div>
+            }
+        </div>
+
+        <!-- Protocol -->
+        <div>
+            <div class="text-zinc-400 mb-1">Protocol</div>
+            @if (_isEditing)
+            {
+                <input class="input"
+                       @bind="_edit.Protocol"/>
+            }
+            else if (!string.IsNullOrWhiteSpace(Service.Network?.Protocol))
+            {
+                <div class="text-zinc-300">@Service.Network!.Protocol</div>
+            }
+        </div>
+
+        <!-- URL -->
+        <div>
+            <div class="text-zinc-400 mb-1">URL</div>
+            @if (_isEditing)
+            {
+                <input class="input"
+                       @bind="_edit.Url"/>
+            }
+            else if (!string.IsNullOrWhiteSpace(Service.Network?.Url))
+            {
+                <a href="@Service.Network!.Url"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="text-emerald-400 hover:underline break-all">
+                    @Service.Network.Url
+                </a>
+            }
+        </div>
+
+        <!-- Runs On -->
+        <div>
+            <div class="text-zinc-400 mb-1">Runs On</div>
+            @if (_isEditing)
+            {
+                <button
+                    class="hover:text-emerald-400"
+                    title="Edit Runs On"
+                    @onclick="() => _selectParentOpen = true">
+                    @if (!string.IsNullOrWhiteSpace(Service.RunsOn))
+                    {
+                        @($"{Service.RunsOn} +")
+                    }
+                    else
+                    {
+                        @("Edit parent")
+                    }
+
+                </button>
+            }
+            else if (!string.IsNullOrWhiteSpace(Service.RunsOn))
+            {
+                <NavLink href="@($"/resources/systems/{Service.RunsOn}")"
+                         class="text-emerald-400">
+                    @Service.RunsOn
+                </NavLink>
+            }
+        </div>
+
+    </div>
+</div>
+
+<SystemSelectionModal
+    IsOpen="@_selectParentOpen"
+    IsOpenChanged="v => _selectParentOpen = v"
+    Title="Select a parent"
+    Value="@SelectedParentName"
+    OnAccept="HandleParentSelected"/>
+
+<ConfirmModal
+    IsOpen="_confirmDeleteOpen"
+    IsOpenChanged="v => _confirmDeleteOpen = v"
+    Title="Delete server"
+    ConfirmText="Delete"
+    ConfirmClass="bg-red-600 hover:bg-red-500"
+    OnConfirm="DeleteServer">
+    Are you sure you want to delete <strong>@Service.Name</strong>?
+</ConfirmModal>
+
+<StringValueModal
+    IsOpen="_cloneOpen"
+    IsOpenChanged="v => _cloneOpen = v"
+    Title="Clone service"
+    Description="Enter a name for the cloned service"
+    Label="New service name"
+    Value="@($"{Service.Name}-copy")"
+    OnSubmit="HandleCloneSubmit" />
+
+
+@code
+{
+    bool _cloneOpen;
+
+    void OpenClone()
+    {
+        _cloneOpen = true;
+    }
+
+    async Task HandleCloneSubmit(string newName)
+    {
+        await CloneServiceUseCase.ExecuteAsync(Service.Name, newName);
+
+        Nav.NavigateTo($"/resources/services/{newName}");
+    }
+
+}
+
+@code {
+    [Parameter] [EditorRequired] public Service Service { get; set; } = default!;
+
+    [Parameter] public EventCallback<ServiceEditModel> OnSave { get; set; }
+
+    private bool _isEditing;
+    private ServiceEditModel _edit = new();
+
+    void BeginEdit()
+    {
+        _edit = ServiceEditModel.From(Service);
+        _isEditing = true;
+    }
+
+    async Task Save()
+    {
+        _isEditing = false;
+        await OnSave.InvokeAsync(_edit);
+    }
+
+    void Cancel()
+    {
+        _isEditing = false;
+    }
+
+    bool _selectParentOpen;
+    string? SelectedParentName;
+
+    async Task HandleParentSelected(string? name)
+    {
+        SelectedParentName = name;
+        await UpdateServiceUseCase.ExecuteAsync(
+            Service.Name,
+            Service.Network?.Ip,
+            Service.Network?.Port,
+            Service.Network?.Protocol,
+            Service.Network?.Url,
+            name);
+        Service = await GetServiceUseCase.ExecuteAsync(Service.Name);
+        _edit = ServiceEditModel.From(Service);
+    }
+
+}
+
+<ConfirmModal
+    IsOpen="_confirmDeleteOpen"
+    IsOpenChanged="v => _confirmDeleteOpen = v"
+    Title="Delete service"
+    ConfirmText="Delete"
+    ConfirmClass="bg-red-600 hover:bg-red-500"
+    OnConfirm="DeleteServer">
+    Are you sure you want to delete <strong>@Service.Name</strong>?
+    <br/>
+</ConfirmModal>
+
+@code {
+    private bool _confirmDeleteOpen;
+    [Parameter] public EventCallback<string> OnDeleted { get; set; }
+
+    void ConfirmDelete()
+    {
+        _confirmDeleteOpen = true;
+    }
+
+    async Task DeleteServer()
+    {
+        _confirmDeleteOpen = false;
+
+        await DeleteServiceUseCase.ExecuteAsync(Service.Name);
+
+        if (OnDeleted.HasDelegate)
+            await OnDeleted.InvokeAsync(Service.Name);
+    }
+
+}

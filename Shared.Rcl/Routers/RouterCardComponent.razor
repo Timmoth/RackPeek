@@ -1,0 +1,276 @@
+﻿@inject UpdateRouterUseCase UpdateRouterUseCase
+@inject GetRouterUseCase GetRouterUseCase
+@inject AddRouterPortUseCase AddRouterPortUseCase
+@inject UpdateRouterPortUseCase UpdateRouterPortUseCase
+@inject RemoveRouterPortUseCase RemoveRouterPortUseCase
+@inject DeleteRouterUseCase DeleteUseCase
+@using RackPeek.Domain.Resources.Hardware.Routers
+@using RackPeek.Domain.Resources.Hardware.Routers.Ports
+@using RackPeek.Domain.Resources.Models
+@using Router = RackPeek.Domain.Resources.Models.Router
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+    <div class="flex justify-between items-center mb-3">
+        <div class="text-zinc-100 hover:text-emerald-300">
+            <NavLink href="@($"/resources/hardware/{Router.Name}")" class="block">
+                @Router.Name
+            </NavLink>
+        </div>
+
+        <div class="flex gap-3 text-xs">
+            @if (!_isEditing)
+            {
+                <button class="text-zinc-400 hover:text-zinc-200"
+                        @onclick="BeginEdit">
+                    Edit
+                </button>
+                <button
+                    class="text-xs text-red-400 hover:text-red-300 transition"
+                    title="Delete server"
+                    @onclick="ConfirmDelete">
+                    Delete
+                </button>
+            }
+            else
+            {
+                <button class="text-emerald-400 hover:text-emerald-300"
+                        @onclick="Save">
+                    Save
+                </button>
+                <button class="text-zinc-500 hover:text-zinc-300"
+                        @onclick="Cancel">
+                    Cancel
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+        <!-- Model -->
+        <div>
+            <div class="text-zinc-400 mb-1">Model</div>
+            @if (_isEditing)
+            {
+                <input class="input"
+                       @bind="_edit.Model"/>
+            }
+            else if (!string.IsNullOrWhiteSpace(Router.Model))
+            {
+                <div class="text-zinc-300">@Router.Model</div>
+            }
+        </div>
+
+        <!-- Features -->
+        <div>
+            <div class="text-zinc-400 mb-1">Features</div>
+
+            @if (_isEditing)
+            {
+                <div class="flex gap-4">
+                    <label class="flex items-center gap-2 text-zinc-300">
+                        <input type="checkbox" @bind="_edit.Managed"/>
+                        Managed
+                    </label>
+
+                    <label class="flex items-center gap-2 text-zinc-300">
+                        <input type="checkbox" @bind="_edit.Poe"/>
+                        PoE
+                    </label>
+                </div>
+            }
+            else
+            {
+                <div class="flex gap-2 flex-wrap">
+                    @if (Router.Managed == true)
+                    {
+                        <span class="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
+                            Managed
+                        </span>
+                    }
+                    @if (Router.Poe == true)
+                    {
+                        <span class="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
+                            PoE
+                        </span>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Ports -->
+        <div class="md:col-span-2">
+            <div class="flex items-center justify-between mb-1 group">
+                <div class="text-zinc-400">
+                    Ports
+                    <button class="hover:text-emerald-400 ml-1"
+                            title="Add Port"
+                            @onclick="OpenAddPort">
+                        +
+                    </button>
+                </div>
+            </div>
+
+            @if (Router.Ports?.Any() == true)
+            {
+                @foreach (var port in Router.Ports)
+                {
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                        <button class="hover:text-emerald-400"
+                                title="Edit Port"
+                                @onclick="() => OpenEditPort(port)">
+                            @port.Count× @port.Type — @port.Speed Gbps
+                        </button>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<PortModal
+    IsOpen="@_portModalOpen"
+    IsOpenChanged="v => _portModalOpen = v"
+    Value="@_editingPort"
+    OnSubmit="HandlePortSubmit"
+    OnDelete="HandlePortDelete"/>
+
+<ConfirmModal
+    IsOpen="_confirmDeleteOpen"
+    IsOpenChanged="v => _confirmDeleteOpen = v"
+    Title="Delete server"
+    ConfirmText="Delete"
+    ConfirmClass="bg-red-600 hover:bg-red-500"
+    OnConfirm="DeleteServer">
+    Are you sure you want to delete <strong>@Router.Name</strong>?
+</ConfirmModal>
+
+@code {
+    [Parameter][EditorRequired] public Router Router { get; set; } = default!;
+
+    bool _isEditing;
+    RouterEditModel _edit = new();
+
+    void BeginEdit()
+    {
+        _edit = RouterEditModel.From(Router);
+        _isEditing = true;
+    }
+
+    async Task Save()
+    {
+        _isEditing = false;
+
+        await UpdateRouterUseCase.ExecuteAsync(
+            Router.Name,
+            _edit.Model,
+            _edit.Managed,
+            _edit.Poe);
+
+        Router = await GetRouterUseCase.ExecuteAsync(Router.Name);
+    }
+
+    void Cancel()
+    {
+        _isEditing = false;
+    }
+
+    #region Ports
+
+    bool _portModalOpen;
+    int _editingPortIndex;
+    Port? _editingPort;
+
+    void OpenAddPort()
+    {
+        _editingPortIndex = -1;
+        _editingPort = null;
+        _portModalOpen = true;
+    }
+
+    void OpenEditPort(Port port)
+    {
+        Router.Ports ??= new List<Port>();
+        _editingPortIndex = Router.Ports.IndexOf(port);
+        _editingPort = port;
+        _portModalOpen = true;
+    }
+
+    async Task HandlePortSubmit(Port port)
+    {
+        if (_editingPortIndex < 0)
+        {
+            await AddRouterPortUseCase.ExecuteAsync(
+                Router.Name,
+                port.Type,
+                port.Speed,
+                port.Count);
+        }
+        else
+        {
+            await UpdateRouterPortUseCase.ExecuteAsync(
+                Router.Name,
+                _editingPortIndex,
+                port.Type,
+                port.Speed,
+                port.Count);
+        }
+
+        Router = await GetRouterUseCase.ExecuteAsync(Router.Name);
+        StateHasChanged();
+    }
+
+    async Task HandlePortDelete(Port _)
+    {
+        await RemoveRouterPortUseCase.ExecuteAsync(
+            Router.Name,
+            _editingPortIndex);
+
+        Router = await GetRouterUseCase.ExecuteAsync(Router.Name);
+        StateHasChanged();
+    }
+
+    #endregion
+
+    public class RouterEditModel
+    {
+        public string? Model { get; set; }
+        public bool? Managed { get; set; }
+        public bool? Poe { get; set; }
+
+        public static RouterEditModel From(Router Router)
+        {
+            return new RouterEditModel
+            {
+                Model = Router.Model,
+                Managed = Router.Managed,
+                Poe = Router.Poe
+            };
+        }
+    }
+
+
+}
+
+@code {
+    private bool _confirmDeleteOpen;
+    [Parameter] public EventCallback<string> OnDeleted { get; set; }
+
+    void ConfirmDelete()
+    {
+        _confirmDeleteOpen = true;
+    }
+
+    async Task DeleteServer()
+    {
+        _confirmDeleteOpen = false;
+
+        await DeleteUseCase.ExecuteAsync(Router.Name);
+
+        if (OnDeleted.HasDelegate)
+            await OnDeleted.InvokeAsync(Router.Name);
+    }
+
+}
+

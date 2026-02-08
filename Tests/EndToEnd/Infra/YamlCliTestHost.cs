@@ -35,7 +35,7 @@ public static class YamlCliTestHost
         AnsiConsole.Console = console;
         app.Configure(c => c.Settings.Console = console);
 
-        CliBootstrap.BuildApp(app, services, config, hardwarePath, yamlFile);
+        await CliBootstrap.BuildApp(app, services, config, hardwarePath, yamlFile);
 
         services.AddLogging(builder =>
         {

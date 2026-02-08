@@ -1,0 +1,355 @@
+﻿@using RackPeek.Domain.Resources.Models
+@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.SystemResources.UseCases
+@inject UpdateSystemUseCase UpdateSystemUseCase
+@inject GetSystemUseCase GetSystemUseCase
+@inject AddSystemDriveUseCase AddSystemDriveUseCase
+@inject RemoveSystemDriveUseCase RemoveSystemDriveUseCase
+@inject UpdateSystemDriveUseCase UpdateSystemDriveUseCase
+@inject DeleteSystemUseCase DeleteSystemUseCase
+@inject CloneSystemUseCase CloneSystemUseCase
+@inject NavigationManager Nav
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+    <div class="flex justify-between items-center mb-3">
+        <NavLink href="@($"/resources/systems/{System.Name}")" class="block">
+
+            <div class="text-zinc-100 hover:text-emerald-300">
+                @System.Name
+            </div>
+        </NavLink>
+
+        <div class="flex gap-3 text-xs">
+            @if (!_isEditing)
+            {
+                <button class="text-zinc-400 hover:text-zinc-200"
+                        @onclick="BeginEdit">
+                    Edit
+                </button>
+
+                <button
+                    class="text-xs text-emerald-400 hover:text-emerald-300 transition"
+                    title="Clone service"
+                    @onclick="OpenClone">
+                    Clone
+                </button>
+                
+                <button
+                    class="text-xs text-red-400 hover:text-red-300 transition"
+                    title="Delete server"
+                    @onclick="ConfirmDelete">
+                    Delete
+                </button>
+            }
+            else
+            {
+                <button class="text-emerald-400 hover:text-emerald-300"
+                        @onclick="Save">
+                    Save
+                </button>
+                <button class="text-zinc-500 hover:text-zinc-300"
+                        @onclick="Cancel">
+                    Cancel
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+        <!-- Type -->
+        <!-- Type -->
+        <div>
+            <div class="text-zinc-400 mb-1">Type</div>
+
+            @if (_isEditing)
+            {
+                <select class="input"
+                        @bind="_edit.Type">
+                    @foreach (var type in SystemResource.ValidSystemTypes)
+                    {
+                        <option value="@type">@type</option>
+                    }
+                </select>
+            }
+            else if (!string.IsNullOrWhiteSpace(System.Type))
+            {
+                <div class="text-zinc-300">@System.Type</div>
+            }
+        </div>
+
+
+        <!-- OS -->
+        <div>
+            <div class="text-zinc-400 mb-1">OS</div>
+            @if (_isEditing)
+            {
+                <input class="input"
+                       @bind="_edit.Os"/>
+            }
+            else if (!string.IsNullOrWhiteSpace(System.Os))
+            {
+                <div class="text-zinc-300">@System.Os</div>
+            }
+        </div>
+
+        <!-- Cores -->
+        <div>
+            <div class="text-zinc-400 mb-1">Cores</div>
+            @if (_isEditing)
+            {
+                <input type="number"
+                       class="input"
+                       @bind="_edit.Cores"/>
+            }
+            else if (System.Cores.HasValue)
+            {
+                <div class="text-zinc-300">@System.Cores</div>
+            }
+        </div>
+
+        <!-- RAM -->
+        <div>
+            <div class="text-zinc-400 mb-1">RAM (GB)</div>
+            @if (_isEditing)
+            {
+                <input type="number"
+                       class="input"
+                       @bind="_edit.Ram"/>
+            }
+            else if (System.Ram.HasValue)
+            {
+                <div class="text-zinc-300">@System.Ram GB</div>
+            }
+        </div>
+
+        <!-- Runs On -->
+        <div>
+            <div class="text-zinc-400 mb-1">Runs On</div>
+            @if (_isEditing)
+            {
+                <button
+                    class="hover:text-emerald-400"
+                    title="Edit Runs On"
+                    @onclick="() => _selectParentOpen = true">
+                    @if (!string.IsNullOrWhiteSpace(System.RunsOn))
+                    {
+                        @($"{System.RunsOn} +")
+                    }
+                    else
+                    {
+                        @("Edit parent")
+                    }
+
+                </button>
+            }
+            else if (!string.IsNullOrWhiteSpace(System.RunsOn))
+            {
+                <NavLink href="@($"/resources/hardware/{System.RunsOn}")"
+                         class="text-emerald-400 text-sm">
+                    @System.RunsOn
+                </NavLink>
+            }
+        </div>
+
+        <div>
+            <div class="flex items-center justify-between mb-1 group">
+                <div class="text-zinc-400">Drives
+                    <button
+                        class="hover:text-emerald-400 group-hover:opacity-100 transition"
+                        title="Add Drive"
+                        @onclick="OpenAddDrive">
+                        +
+                    </button>
+                </div>
+            </div>
+
+            @if (System.Drives?.Any() == true)
+            {
+                @foreach (var drive in System.Drives)
+                {
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+
+                        <div class="flex gap-2 group-hover:opacity-100 transition">
+                            <button
+                                class="hover:text-emerald-400"
+                                title="Edit Drive"
+                                @onclick="() => OpenEditDrives(drive)">
+                                @drive.Type — @drive.Size GB
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+    </div>
+</div>
+
+<HardwareSelectionModal
+    IsOpen="@_selectParentOpen"
+    IsOpenChanged="v => _selectParentOpen = v"
+    Title="Select a parent"
+    Value="@SelectedParentName"
+    OnAccept="HandleParentSelected"/>
+<DriveModal
+    IsOpen="@_driveModalOpen"
+    IsOpenChanged="v => _driveModalOpen = v"
+    Value="@_editingDrive"
+    OnSubmit="HandleDriveSubmit"
+    OnDelete="HandleDriveDelete"/>
+
+<ConfirmModal
+    IsOpen="_confirmDeleteOpen"
+    IsOpenChanged="v => _confirmDeleteOpen = v"
+    Title="Delete service"
+    ConfirmText="Delete"
+    ConfirmClass="bg-red-600 hover:bg-red-500"
+    OnConfirm="DeleteServer">
+    Are you sure you want to delete <strong>@System.Name</strong>?
+    <br/>
+    This will detach all dependent systems.
+</ConfirmModal>
+
+<StringValueModal
+    IsOpen="_cloneOpen"
+    IsOpenChanged="v => _cloneOpen = v"
+    Title="Clone system"
+    Description="Enter a name for the cloned system"
+    Label="New system name"
+    Value="@($"{System.Name}-copy")"
+    OnSubmit="HandleCloneSubmit" />
+
+@code {
+    [Parameter] [EditorRequired] public SystemResource System { get; set; } = default!;
+
+    [Parameter] public EventCallback<SystemEditModel> OnSave { get; set; }
+
+    private bool _isEditing;
+    private SystemEditModel _edit = new();
+
+    void BeginEdit()
+    {
+        _edit = SystemEditModel.From(System);
+        _isEditing = true;
+    }
+
+    async Task Save()
+    {
+        _isEditing = false;
+        await OnSave.InvokeAsync(_edit);
+    }
+
+    void Cancel()
+    {
+        _isEditing = false;
+    }
+
+    bool _selectParentOpen;
+    string? SelectedParentName;
+
+    async Task HandleParentSelected(string? name)
+    {
+        SelectedParentName = name;
+        await UpdateSystemUseCase.ExecuteAsync(
+            System.Name,
+            System.Type,
+            System.Os,
+            System.Cores,
+            System.Ram,
+            name);
+        System = await GetSystemUseCase.ExecuteAsync(System.Name);
+        _edit = SystemEditModel.From(System);
+    }
+
+
+    #region Drives
+
+    bool _driveModalOpen;
+    int _editingDriveIndex;
+    Drive? _editingDrive;
+
+    void OpenAddDrive()
+    {
+        _editingDriveIndex = -1;
+        _editingDrive = null;
+        _driveModalOpen = true;
+    }
+
+    void OpenEditDrives(Drive drive)
+    {
+        _editingDrive = drive;
+        System.Drives ??= new List<Drive>();
+        _editingDriveIndex = System.Drives.IndexOf(drive);
+        ;
+        _driveModalOpen = true;
+    }
+
+    async Task HandleDriveSubmit(Drive drive)
+    {
+        System.Drives ??= new List<Drive>();
+
+        if (_editingDriveIndex < 0)
+        {
+            await AddSystemDriveUseCase.ExecuteAsync(System.Name, drive.Type ?? "hdd", drive.Size ?? 0);
+        }
+        else
+        {
+            await UpdateSystemDriveUseCase.ExecuteAsync(System.Name, _editingDriveIndex, drive.Type ?? "hdd", drive.Size ?? 0);
+        }
+
+        System = await GetSystemUseCase.ExecuteAsync(System.Name);
+        StateHasChanged();
+    }
+
+    async Task HandleDriveDelete(Drive drive)
+    {
+        await RemoveSystemDriveUseCase.ExecuteAsync(System.Name, _editingDriveIndex);
+        System = await GetSystemUseCase.ExecuteAsync(System.Name);
+        StateHasChanged();
+    }
+
+    #endregion
+
+
+}
+
+
+@code {
+    private bool _confirmDeleteOpen;
+    [Parameter] public EventCallback<string> OnDeleted { get; set; }
+
+    void ConfirmDelete()
+    {
+        _confirmDeleteOpen = true;
+    }
+
+    async Task DeleteServer()
+    {
+        _confirmDeleteOpen = false;
+
+        await DeleteSystemUseCase.ExecuteAsync(System.Name);
+
+        if (OnDeleted.HasDelegate)
+            await OnDeleted.InvokeAsync(System.Name);
+    }
+
+}
+
+@code
+{
+    bool _cloneOpen;
+
+    void OpenClone()
+    {
+        _cloneOpen = true;
+    }
+
+    async Task HandleCloneSubmit(string newName)
+    {
+        await CloneSystemUseCase.ExecuteAsync(System.Name, newName);
+
+        Nav.NavigateTo($"/resources/systems/{newName}");
+    }
+
+}

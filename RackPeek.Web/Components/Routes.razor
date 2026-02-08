@@ -1,6 +1,13 @@
 ﻿@using RackPeek.Web.Components.Pages
-<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(NotFound)">
-    <Found Context="routeData">
+@using Shared.Rcl
+@using Shared.Rcl.AccessPoints
+@using Shared.Rcl.Layout
+@using Shared.Rcl.Servers
+
+<Router AppAssembly="@typeof(App).Assembly"
+        AdditionalAssemblies="new[] { typeof(ServersListPage).Assembly }" 
+        NotFoundPage="typeof(NotFound)">
+<Found Context="routeData">
         <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)"/>
     </Found>
 </Router>

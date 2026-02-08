@@ -1,0 +1,161 @@
+﻿@page "/"
+@using RackPeek.Domain.Resources
+@using RackPeek.Domain.Resources.Hardware
+@using RackPeek.Domain.Resources.Services.UseCases
+@using RackPeek.Domain.Resources.SystemResources.UseCases
+@inject GetSystemSummaryUseCase SystemSummaryUseCase
+@inject GetServiceSummaryUseCase ServiceSummaryUseCase
+@inject GetHardwareUseCaseSummary HardwareSummaryUseCase
+
+<PageTitle>Home</PageTitle>
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
+
+    @if (_loading)
+    {
+        <div class="text-zinc-500">loading summary…</div>
+    }
+    else
+    {
+        <!-- Totals -->
+        <div class="mb-10 max-w-md">
+            <div class="border border-zinc-800 rounded-md p-4">
+                <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
+                    Totals
+                </div>
+
+                <div class="grid grid-cols-2 gap-y-2 ">
+
+                    <div class="hover:text-emerald-300">
+                        <NavLink href="@("/hardware/tree")">Hardware</NavLink>
+                    </div>
+                    <div class="text-right">@_hardware!.TotalHardware</div>
+
+                    <div class="hover:text-emerald-300">
+                        <NavLink href="@("/systems/list")">Systems</NavLink>
+                    </div>
+                    <div class="text-right">@_system!.TotalSystems</div>
+
+                    <div class="hover:text-emerald-300">
+                        <NavLink href="@("/servers/list")">Services</NavLink>
+                    </div>
+                    <div class="text-right">@_service!.TotalServices</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tree -->
+        <div class="space-y-10">
+
+            <!-- Hardware -->
+            <div>
+                <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
+                    Hardware
+                </div>
+
+                <ul class="space-y-2">
+                    <li class="text-zinc-100">
+                        ├─ Total (@_hardware!.TotalHardware)
+                    </li>
+
+                    @if (_hardware.HardwareByKind.Any())
+                    {
+                        <ul class="ml-4 mt-2 border-l border-zinc-800 pl-4 space-y-1">
+                            @foreach (var (kind, count) in _hardware.HardwareByKind.OrderByDescending(x => x.Value))
+                            {
+                                var pluralKind = Resource.KindToPlural(kind);
+                                <NavLink href="@($"/{pluralKind}/list")" class="block">
+                                    <li class="text-zinc-500 hover:text-emerald-300">
+                                        └─ @pluralKind (@count)
+                                    </li>
+                                </NavLink>
+                            }
+                        </ul>
+                    }
+                </ul>
+            </div>
+
+
+            <!-- Systems -->
+            <div>
+                <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
+                    Systems
+                </div>
+
+                <ul class="space-y-3">
+                    <li>
+                        <div class="text-zinc-100">
+                            ├─ Total (@_system!.TotalSystems)
+                        </div>
+
+                        @if (_system.SystemsByType.Any())
+                        {
+                            <ul class="ml-4 mt-2 border-l border-zinc-800 pl-4 space-y-1">
+                                <li class="text-zinc-400">Types</li>
+                                @foreach (var (type, count) in _system.SystemsByType.OrderByDescending(x => x.Value))
+                                {
+                                    <li class="text-zinc-500">
+                                        └─ @type (@count)
+                                    </li>
+                                }
+                            </ul>
+                        }
+
+                        @if (_system.SystemsByOs.Any())
+                        {
+                            <ul class="ml-4 mt-2 border-l border-zinc-800 pl-4 space-y-1">
+                                <li class="text-zinc-400">Operating Systems</li>
+                                @foreach (var (os, count) in _system.SystemsByOs.OrderByDescending(x => x.Value))
+                                {
+                                    <li class="text-zinc-500">
+                                        └─ @os (@count)
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Services -->
+            <div>
+                <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
+                    Services
+                </div>
+
+                <ul>
+                    <li class="text-zinc-100">
+                        └─ Total (@_service!.TotalServices)
+                    </li>
+                    <li class="ml-4 text-zinc-500">
+                        └─ IP Addresses (@_service!.TotalIpAddresses)
+                    </li>
+                </ul>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool _loading = true;
+
+    private SystemSummary? _system;
+    private AllServicesSummary? _service;
+    private HardwareSummary? _hardware;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var systemTask = SystemSummaryUseCase.ExecuteAsync();
+        var serviceTask = ServiceSummaryUseCase.ExecuteAsync();
+        var hardwareTask = HardwareSummaryUseCase.ExecuteAsync();
+
+        await Task.WhenAll(systemTask, serviceTask, hardwareTask);
+
+        _system = systemTask.Result;
+        _service = serviceTask.Result;
+        _hardware = hardwareTask.Result;
+
+        _loading = false;
+    }
+
+}
