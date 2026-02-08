@@ -22,24 +22,8 @@ public class CloneServiceUseCase(IServiceRepository repository, IResourceReposit
             throw new NotFoundException($"Resource '{originalName}' not found.");
         }
 
-        Network? clonedNetwork = null;
-        if (original.Network != null)
-        {
-            clonedNetwork = new Network()
-            {
-                Ip = original.Network.Ip,
-                Port = original.Network.Port,
-                Protocol = original.Network.Protocol,
-                Url = original.Network.Url,
-            };
-        }
-        
-        var clone = new Service()
-        {
-            Name = cloneName,
-            Network = clonedNetwork,
-            RunsOn = original.RunsOn,
-        };
+        var clone = Clone.DeepClone(original);
+        clone.Name = cloneName;
         
         await repository.AddAsync(clone);
     }

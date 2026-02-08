@@ -128,9 +128,10 @@ ARGUMENTS:
     <name>     
 
 OPTIONS:
-    -h, --help        Prints help information
-        --ram <GB>                           
-        --ipmi                               
+    -h, --help             Prints help information
+        --ram <GB>                                
+        --ram_mts <MTS>                           
+        --ipmi                                    
 ```
 
 ## `rpk servers del`
@@ -458,6 +459,7 @@ COMMANDS:
     describe <name>    Show detailed information about a switch     
     set <name>         Update properties of a switch                
     del <name>         Delete a switch from the inventory           
+    port               Manage ports on a network switch             
 ```
 
 ## `rpk switches summary`
@@ -562,6 +564,76 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
+## `rpk switches port`
+```
+DESCRIPTION:
+Manage ports on a network switch
+
+USAGE:
+    rpk switches port [OPTIONS] <COMMAND>
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    add <name>    Add a port to a switch     
+    set <name>    Update a switch port       
+    del <name>    Remove a port from a switch
+```
+
+## `rpk switches port add`
+```
+DESCRIPTION:
+Add a port to a switch
+
+USAGE:
+    rpk switches port add <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help     Prints help information          
+        --type     The port type (e.g., rj45, sfp+) 
+        --speed    The port speed (e.g., 1, 2.5, 10)
+        --count    Number of ports of this type     
+```
+
+## `rpk switches port set`
+```
+DESCRIPTION:
+Update a switch port
+
+USAGE:
+    rpk switches port set <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information
+        --index <INDEX>                           
+        --type                                    
+        --speed                                   
+        --count                                   
+```
+
+## `rpk switches port del`
+```
+DESCRIPTION:
+Remove a port from a switch
+
+USAGE:
+    rpk switches port del <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information
+        --index <INDEX>                           
+```
+
 ## `rpk routers`
 ```
 DESCRIPTION:
@@ -581,6 +653,7 @@ COMMANDS:
     describe <name>    Show detailed information about a router     
     set <name>         Update properties of a router                
     del <name>         Delete a router from the inventory           
+    port               Manage ports on a router                     
 ```
 
 ## `rpk routers summary`
@@ -685,6 +758,76 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
+## `rpk routers port`
+```
+DESCRIPTION:
+Manage ports on a router
+
+USAGE:
+    rpk routers port [OPTIONS] <COMMAND>
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    add <name>    Add a port to a router     
+    set <name>    Update a router port       
+    del <name>    Remove a port from a router
+```
+
+## `rpk routers port add`
+```
+DESCRIPTION:
+Add a port to a router
+
+USAGE:
+    rpk routers port add <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help     Prints help information
+        --type                            
+        --speed                           
+        --count                           
+```
+
+## `rpk routers port set`
+```
+DESCRIPTION:
+Update a router port
+
+USAGE:
+    rpk routers port set <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information
+        --index <INDEX>                           
+        --type                                    
+        --speed                                   
+        --count                                   
+```
+
+## `rpk routers port del`
+```
+DESCRIPTION:
+Remove a port from a router
+
+USAGE:
+    rpk routers port del <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information
+        --index <INDEX>                           
+```
+
 ## `rpk firewalls`
 ```
 DESCRIPTION:
@@ -704,6 +847,7 @@ COMMANDS:
     describe <name>    Show detailed information about a firewall     
     set <name>         Update properties of a firewall                
     del <name>         Delete a firewall from the inventory           
+    port               Manage ports on a firewall                     
 ```
 
 ## `rpk firewalls summary`
@@ -806,6 +950,76 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help    Prints help information
+```
+
+## `rpk firewalls port`
+```
+DESCRIPTION:
+Manage ports on a firewall
+
+USAGE:
+    rpk firewalls port [OPTIONS] <COMMAND>
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    add <name>    Add a port to a firewall     
+    set <name>    Update a firewall port       
+    del <name>    Remove a port from a firewall
+```
+
+## `rpk firewalls port add`
+```
+DESCRIPTION:
+Add a port to a firewall
+
+USAGE:
+    rpk firewalls port add <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help     Prints help information
+        --type                            
+        --speed                           
+        --count                           
+```
+
+## `rpk firewalls port set`
+```
+DESCRIPTION:
+Update a firewall port
+
+USAGE:
+    rpk firewalls port set <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information
+        --index <INDEX>                           
+        --type                                    
+        --speed                                   
+        --count                                   
+```
+
+## `rpk firewalls port del`
+```
+DESCRIPTION:
+Remove a port from a firewall
+
+USAGE:
+    rpk firewalls port del <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information
+        --index <INDEX>                           
 ```
 
 ## `rpk systems`
