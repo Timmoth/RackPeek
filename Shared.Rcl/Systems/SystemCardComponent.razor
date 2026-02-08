@@ -11,7 +11,7 @@
 @inject NavigationManager Nav
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
-        <NavLink href="@($"/resources/systems/{System.Name}")" class="block">
+        <NavLink href="@($"resources/systems/{System.Name}")" class="block">
 
             <div class="text-zinc-100 hover:text-emerald-300">
                 @System.Name
@@ -144,7 +144,7 @@
             }
             else if (!string.IsNullOrWhiteSpace(System.RunsOn))
             {
-                <NavLink href="@($"/resources/hardware/{System.RunsOn}")"
+                <NavLink href="@($"resources/hardware/{System.RunsOn}")"
                          class="text-emerald-400 text-sm">
                     @System.RunsOn
                 </NavLink>
@@ -349,7 +349,7 @@
     {
         await CloneSystemUseCase.ExecuteAsync(System.Name, newName);
 
-        Nav.NavigateTo($"/resources/systems/{newName}");
+        Nav.NavigateTo($"resources/systems/{newName}");
     }
 
 }

@@ -9,28 +9,28 @@
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
 
     <nav class="space-x-6 text-sm mb-4">
-        <NavLink href="/servers/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
+        <NavLink href="servers/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
             Servers
         </NavLink>
-        <NavLink href="/switches/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
+        <NavLink href="switches/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
             Switches
         </NavLink>
-        <NavLink href="/firewalls/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
+        <NavLink href="firewalls/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
             Firewalls
         </NavLink>
-        <NavLink href="/routers/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
+        <NavLink href="routers/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
             Routers
         </NavLink>
-        <NavLink href="/accesspoints/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
+        <NavLink href="accesspoints/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
             AccessPoints
         </NavLink>
-        <NavLink href="/ups/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
+        <NavLink href="ups/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
             Ups
         </NavLink>
-        <NavLink href="/desktops/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
+        <NavLink href="desktops/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
             Desktops
         </NavLink>
-        <NavLink href="/laptops/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
+        <NavLink href="laptops/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
             Laptops
         </NavLink>
     </nav>
@@ -62,7 +62,7 @@
                     {
                         <li>
                             <!-- Hardware -->
-                            <NavLink href="@($"/resources/hardware/{hardware.HardwareName}")" class="block">
+                            <NavLink href="@($"resources/hardware/{hardware.HardwareName}")" class="block">
 
                                 @if (hardware.Systems.Any())
                                 {
@@ -86,7 +86,7 @@
                                     {
                                         <li>
                                             <!-- System -->
-                                            <NavLink href="@($"/resources/systems/{system.SystemName}")" class="block">
+                                            <NavLink href="@($"resources/systems/{system.SystemName}")" class="block">
                                                 @if (system.Services.Any())
                                                 {
                                                     <div class="text-zinc-300 hover:text-emerald-300">
@@ -107,7 +107,7 @@
                                                 <ul class="ml-4 mt-1 space-y-1">
                                                     @foreach (var service in system.Services.OrderBy(s => s))
                                                     {
-                                                        <NavLink href="@($"/resources/services/{service}")"
+                                                        <NavLink href="@($"resources/services/{service}")"
                                                                  class="block hover:text-emerald-300">
 
                                                             <li class="text-zinc-500 hover:text-emerald-300">

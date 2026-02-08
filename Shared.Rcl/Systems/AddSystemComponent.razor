@@ -56,7 +56,7 @@
             _name = string.Empty;
 
             await OnCreated.InvokeAsync(name);
-            Nav.NavigateTo($"/resources/systems/{name}");
+            Nav.NavigateTo($"resources/systems/{name}");
         }
         catch (Exception ex)
         {
