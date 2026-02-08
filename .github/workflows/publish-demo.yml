@@ -33,6 +33,11 @@ jobs:
       - name: Publish Blazor WASM
         run: dotnet publish ./RackPeek.Web.Viewer/RackPeek.Web.Viewer.csproj -c Release -o publish
 
+      - name: Fix base href for GitHub Pages
+        run: |
+          sed -i 's|<base href="/" />|<base href="/RackPeek/" />|g' publish/wwwroot/index.html
+
+
       # Optional but recommended for GitHub Pages routing
       - name: Add SPA fallback
         run: cp publish/wwwroot/index.html publish/wwwroot/404.html
