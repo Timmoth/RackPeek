@@ -1,0 +1,244 @@
+﻿@using System.Collections.Specialized
+@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Persistence.Yaml
+@using RackPeek.Domain.Resources
+@using RackPeek.Domain.Resources.Models
+@using RackPeek.Domain.Resources.Services
+@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Yaml
+@using YamlDotNet.RepresentationModel
+@using YamlDotNet.Serialization
+@using YamlDotNet.Serialization.NamingConventions
+@using Router = RackPeek.Domain.Resources.Models.Router
+@inject ITextFileStore FileStore
+@inject IResourceCollection Resources
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+    <div class="flex justify-between items-center mb-3">
+
+        <div class="text-zinc-100">
+            @Title
+        </div>
+
+        <div class="flex gap-3 text-xs">
+            @if (!_isEditing)
+            {
+                <button class="text-zinc-400 hover:text-zinc-200"
+                        @onclick="BeginEdit">
+                    Edit
+                </button>
+            }
+            else
+            {
+                <button class="text-emerald-400 hover:text-emerald-300"
+                        @onclick="Save">
+                    Save
+                </button>
+
+                <button class="text-zinc-500 hover:text-zinc-300"
+                        @onclick="Cancel">
+                    Cancel
+                </button>
+            }
+        </div>
+    </div>
+
+    @if (!_exists)
+    {
+        <div class="text-red-400 text-sm">
+            File does not exist.
+        </div>
+    }
+    else if (_isEditing)
+    {
+        <textarea class="w-full input font-mono text-xs"
+          style="min-height: 40rem"
+          @bind="_editText">
+        </textarea>
+
+
+        @if (!string.IsNullOrEmpty(_validationError))
+        {
+            <div class="mt-2 text-red-400 text-xs">
+                @_validationError
+            </div>
+        }
+    }
+    else
+    {
+        <pre class="text-zinc-300 text-xs whitespace-pre-wrap">@_currentText</pre>
+    }
+</div>
+
+<ConfirmModal
+    IsOpen="_confirmDeleteOpen"
+    IsOpenChanged="v => _confirmDeleteOpen = v"
+    Title="Delete File"
+    ConfirmText="Delete"
+    ConfirmClass="bg-red-600 hover:bg-red-500"
+    OnConfirm="DeleteFile">
+    Are you sure you want to delete <strong>@Path</strong>?
+</ConfirmModal>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public string Path { get; set; } = default!;
+
+    [Parameter]
+    public string Title { get; set; } = "Edit YAML";
+
+    [Parameter]
+    public EventCallback<string> OnDeleted { get; set; }
+
+    bool _isEditing;
+    bool _exists;
+    bool _confirmDeleteOpen;
+
+    string _currentText = "";
+    string _editText = "";
+    string? _validationError;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await Load();
+    }
+
+    async Task Load()
+    {
+        _exists = await FileStore.ExistsAsync(Path);
+
+        if (!_exists)
+            return;
+
+        _currentText = await FileStore.ReadAllTextAsync(Path);
+    }
+
+    void BeginEdit()
+    {
+        _editText = _currentText;
+        _validationError = null;
+        _isEditing = true;
+    }
+
+    void Cancel()
+    {
+        _isEditing = false;
+        _validationError = null;
+    }
+    async Task Save()
+    {
+        if (!ValidateYamlRoundTrip(_editText, out var error))
+        {
+            _validationError = error;
+            return;
+        }
+
+        await FileStore.WriteAllTextAsync(Path, _editText);
+
+        await Resources.LoadAsync();
+
+        _currentText = _editText;
+        _isEditing = false;
+    }
+
+
+    void ConfirmDelete()
+    {
+        _confirmDeleteOpen = true;
+    }
+
+    async Task DeleteFile()
+    {
+        _confirmDeleteOpen = false;
+
+        // if your store supports delete, call it here
+        await FileStore.WriteAllTextAsync(Path, "");
+
+        if (OnDeleted.HasDelegate)
+            await OnDeleted.InvokeAsync(Path);
+    }
+private bool ValidateYamlRoundTrip(string yaml, out string? error)
+{
+    try
+    {
+        if (string.IsNullOrWhiteSpace(yaml))
+        {
+            error = "YAML is empty.";
+            return false;
+        }
+
+        // ---------- DESERIALIZER (same as resource loader) ----------
+        var deserializer = new DeserializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .WithCaseInsensitivePropertyMatching()
+            .WithTypeConverter(new StorageSizeYamlConverter())
+            .WithTypeDiscriminatingNodeDeserializer(options =>
+            {
+                options.AddKeyValueTypeDiscriminator<Resource>("kind", new Dictionary<string, Type>
+                {
+                    { Server.KindLabel, typeof(Server) },
+                    { Switch.KindLabel, typeof(Switch) },
+                    { Firewall.KindLabel, typeof(Firewall) },
+                    { Router.KindLabel, typeof(Router) },
+                    { Desktop.KindLabel, typeof(Desktop) },
+                    { Laptop.KindLabel, typeof(Laptop) },
+                    { AccessPoint.KindLabel, typeof(AccessPoint) },
+                    { RackPeek.Domain.Resources.Models.Ups.KindLabel, typeof(RackPeek.Domain.Resources.Models.Ups) },
+                    { SystemResource.KindLabel, typeof(SystemResource) },
+                    { Service.KindLabel, typeof(Service) }
+                });
+            })
+            .Build();
+
+        var root = deserializer.Deserialize<YamlRoot>(yaml);
+
+        if (root?.Resources == null)
+        {
+            error = "No resources section found.";
+            return false;
+        }
+
+        // ---------- SERIALIZE AGAIN ----------
+        var serializer = new SerializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .Build();
+
+        var payload = new OrderedDictionary
+        {
+            ["resources"] = root.Resources
+        };
+
+        var roundTripYaml = serializer.Serialize(payload);
+
+        // ---------- DESERIALIZE AGAIN ----------
+        var root2 = deserializer.Deserialize<YamlRoot>(roundTripYaml);
+
+        if (root2?.Resources == null)
+        {
+            error = "Round-trip serialization failed.";
+            return false;
+        }
+
+        // ---------- DUPLICATE NAME CHECK ----------
+        var dup = root2.Resources
+            .GroupBy(r => r.Name, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault(g => g.Count() > 1);
+
+        if (dup != null)
+        {
+            error = $"Duplicate resource name: '{dup.Key}'";
+            return false;
+        }
+
+        error = null;
+        return true;
+    }
+    catch (Exception ex)
+    {
+        error = $"YAML validation failed: {ex.Message}";
+        return false;
+    }
+}
+
+}

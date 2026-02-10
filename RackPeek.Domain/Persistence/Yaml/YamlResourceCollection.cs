@@ -170,8 +170,9 @@ public sealed class YamlResourceCollection(
         return map;
     }
 
-    private class YamlRoot
-    {
-        public List<Resource>? Resources { get; set; }
-    }
+
+}
+public class YamlRoot
+{
+    public List<Resource>? Resources { get; set; }
 }
