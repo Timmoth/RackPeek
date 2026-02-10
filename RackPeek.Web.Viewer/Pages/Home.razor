@@ -94,8 +94,10 @@
                                 <li class="text-zinc-400">Types</li>
                                 @foreach (var (type, count) in _system.SystemsByType.OrderByDescending(x => x.Value))
                                 {
-                                    <li class="text-zinc-500">
-                                        └─ @type (@count)
+                                    <li class="text-zinc-500 hover:text-emerald-300">
+                                        <NavLink href="@($"systems/list?type={type}")" class="block">
+                                            └─ @type (@count)
+                                        </NavLink>
                                     </li>
                                 }
                             </ul>
@@ -107,8 +109,10 @@
                                 <li class="text-zinc-400">Operating Systems</li>
                                 @foreach (var (os, count) in _system.SystemsByOs.OrderByDescending(x => x.Value))
                                 {
-                                    <li class="text-zinc-500">
-                                        └─ @os (@count)
+                                    <li class="text-zinc-500 hover:text-emerald-300">
+                                        <NavLink href="@($"systems/list?os={os}")" class="block">
+                                            └─ @os (@count)
+                                        </NavLink>
                                     </li>
                                 }
                             </ul>

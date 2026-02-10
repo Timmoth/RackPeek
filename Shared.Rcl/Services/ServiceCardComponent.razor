@@ -5,6 +5,7 @@
 @inject DeleteServiceUseCase DeleteServiceUseCase
 @inject CloneServiceUseCase CloneServiceUseCase
 @inject NavigationManager Nav
+@inject RenameServiceUseCase RenameServiceUseCase
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
@@ -23,6 +24,12 @@
                     Edit
                 </button>
 
+                <button class="text-xs text-blue-400 hover:text-blue-300 transition"
+                        title="Rename service"
+                        @onclick="OpenRename">
+                    Rename
+                </button>
+                
                 <button
                     class="text-xs text-emerald-400 hover:text-emerald-300 transition"
                     title="Clone service"
@@ -174,6 +181,15 @@
     Value="@($"{Service.Name}-copy")"
     OnSubmit="HandleCloneSubmit" />
 
+<StringValueModal
+    IsOpen="_renameOpen"
+    IsOpenChanged="v => _renameOpen = v"
+    Title="Rename service"
+    Description="Enter a new name for this service"
+    Label="New service name"
+    Value="@Service.Name"
+    OnSubmit="HandleRenameSubmit" />
+
 
 @code
 {
@@ -265,6 +281,23 @@
 
         if (OnDeleted.HasDelegate)
             await OnDeleted.InvokeAsync(Service.Name);
+    }
+
+}
+
+@code
+{
+    bool _renameOpen;
+
+    void OpenRename()
+    {
+        _renameOpen = true;
+    }
+
+    async Task HandleRenameSubmit(string newName)
+    {
+        await RenameServiceUseCase.ExecuteAsync(Service.Name, newName);
+        Nav.NavigateTo($"resources/services/{newName}");
     }
 
 }

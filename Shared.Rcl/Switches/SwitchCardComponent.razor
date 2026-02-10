@@ -7,6 +7,10 @@
 @inject UpdateSwitchPortUseCase UpdateSwitchPortUseCase
 @inject RemoveSwitchPortUseCase RemoveSwitchPortUseCase
 @inject DeleteSwitchUseCase DeleteUseCase
+@inject CloneSwitchUseCase CloneUseCase
+
+@inject RenameSwitchUseCase RenameUseCase
+@inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
@@ -23,6 +27,17 @@
                 <button class="text-zinc-400 hover:text-zinc-200"
                         @onclick="BeginEdit">
                     Edit
+                </button>
+                <button class="text-xs text-blue-400 hover:text-blue-300 transition"
+                        title="Rename service"
+                        @onclick="OpenRename">
+                    Rename
+                </button>
+                <button
+                    class="text-xs text-emerald-400 hover:text-emerald-300 transition"
+                    title="Clone service"
+                    @onclick="OpenClone">
+                    Clone
                 </button>
                 <button
                     class="text-xs text-red-400 hover:text-red-300 transition"
@@ -145,6 +160,23 @@
     OnConfirm="DeleteServer">
     Are you sure you want to delete <strong>@Switch.Name</strong>?
 </ConfirmModal>
+<StringValueModal
+    IsOpen="_renameOpen"
+    IsOpenChanged="v => _renameOpen = v"
+    Title="Rename switch"
+    Description="Enter a new name for this switch"
+    Label="New switch name"
+    Value="@Switch.Name"
+    OnSubmit="HandleRenameSubmit" />
+
+<StringValueModal
+    IsOpen="_cloneOpen"
+    IsOpenChanged="v => _cloneOpen = v"
+    Title="Clone resource"
+    Description="Enter a name for the cloned resource"
+    Label="New resource name"
+    Value="@($"{Switch.Name}-copy")"
+    OnSubmit="HandleCloneSubmit" />
 
 @code {
     [Parameter][EditorRequired] public Switch Switch { get; set; } = default!;
@@ -270,6 +302,41 @@
 
         if (OnDeleted.HasDelegate)
             await OnDeleted.InvokeAsync(Switch.Name);
+    }
+
+}
+
+@code
+{
+    bool _renameOpen;
+
+    void OpenRename()
+    {
+        _renameOpen = true;
+    }
+
+    async Task HandleRenameSubmit(string newName)
+    {
+        await RenameUseCase.ExecuteAsync(Switch.Name, newName);
+        Nav.NavigateTo($"resources/hardware/{newName}");
+    }
+
+}
+
+@code
+{
+    bool _cloneOpen;
+
+    void OpenClone()
+    {
+        _cloneOpen = true;
+    }
+
+    async Task HandleCloneSubmit(string newName)
+    {
+        await CloneUseCase.ExecuteAsync(Switch.Name, newName);
+
+        Nav.NavigateTo($"resources/hardware/{newName}");
     }
 
 }

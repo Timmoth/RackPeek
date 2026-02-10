@@ -2,7 +2,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RackPeek;
-using RackPeek.Spectre;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Testing;
@@ -27,23 +26,23 @@ public static class YamlCliTestHost
             })
             .Build();
 
-        var console = new TestConsole();
-
-        var registrar = new TypeRegistrar(services);
-        var app = new CommandApp(registrar);
-
-        AnsiConsole.Console = console;
-        app.Configure(c => c.Settings.Console = console);
-
-        await CliBootstrap.BuildApp(app, services, config, hardwarePath, yamlFile);
-
+        await CliBootstrap.RegisterInternals(services, config, hardwarePath, yamlFile);
         services.AddLogging(builder =>
         {
             builder.ClearProviders();
             builder.AddProvider(new XUnitLoggerProvider(output));
         });
+        
+        var console = new TestConsole();
 
+        var registrar = new TypeRegistrar(services.BuildServiceProvider());
+        var app = new CommandApp(registrar);
 
+        AnsiConsole.Console = console;
+        app.Configure(c => c.Settings.Console = console);
+
+        CliBootstrap.BuildApp(app);
+        
         await app.RunAsync(args);
 
         return console.Output;

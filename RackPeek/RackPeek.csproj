@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RackPeek.Domain\RackPeek.Domain.csproj"/>
+        <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj" />
     </ItemGroup>
 
 </Project>

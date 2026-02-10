@@ -19,24 +19,52 @@
     else
     {
         <div class="space-y-4">
-            @foreach (var group in _systems.OrderBy(s => s.Name).GroupBy(s => s.RunsOn).OrderByDescending(g => g.Count()))
+            @foreach (var group in _systems
+                .OrderBy(s => s.Name)
+                .GroupBy(s => s.RunsOn)
+                .OrderByDescending(g => g.Count()))
             {
                 foreach (var systemResource in group)
                 {
-                    <SystemCardComponent System="systemResource" OnSave="UpdateSystem" OnDeleted="Callback"/>
+                    <SystemCardComponent System="systemResource"
+                                         OnSave="UpdateSystem"
+                                         OnDeleted="Callback"/>
                 }
             }
         </div>
     }
 </div>
-
 @code {
+    [Parameter] public string? TypeFilter { get; set; }
+    [Parameter] public string? OsFilter { get; set; }
+
     private IReadOnlyList<SystemResource>? _systems;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        _systems = await SystemRepository.GetAllAsync();
+        await Reload();
     }
+
+    private async Task Reload()
+    {
+        var type = Normalize(TypeFilter);
+        var os = Normalize(OsFilter);
+
+        if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(os))
+        {
+            _systems = await SystemRepository.GetAllAsync();
+        }
+        else
+        {
+            _systems = await SystemRepository.GetFilteredAsync(
+            type,
+            os
+            );
+        }
+    }
+
+    private static string? Normalize(string? s)
+        => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
 
     async Task UpdateSystem(SystemEditModel edit)
     {
@@ -48,6 +76,8 @@
             edit.Ram,
             edit.RunsOn
         );
+
+        await Reload();
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -58,7 +88,6 @@
 
     private async Task Callback(string obj)
     {
-        _systems = await SystemRepository.GetAllAsync();
+        await Reload();
     }
-
 }

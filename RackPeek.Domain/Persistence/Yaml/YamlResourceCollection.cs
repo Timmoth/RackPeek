@@ -25,7 +25,15 @@ public sealed class YamlResourceCollection(
     public async Task LoadAsync()
     {
         var loaded = await LoadFromFileAsync();
-        resourceCollection.Resources.Clear();
+        try
+        {
+            resourceCollection.Resources.Clear();
+        }
+        catch
+        {
+            // ignore
+        }
+
         resourceCollection.Resources.AddRange(loaded);
     }
 

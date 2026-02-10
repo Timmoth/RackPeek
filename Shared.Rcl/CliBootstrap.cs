@@ -42,7 +42,7 @@ namespace RackPeek;
 
 public static class CliBootstrap
 {
-    public static async Task BuildApp(CommandApp app, IServiceCollection services, IConfiguration configuration,
+    public static async Task RegisterInternals(IServiceCollection services, IConfiguration configuration,
         string yamlDir, string yamlFile)
     {
         services.AddSingleton(configuration);
@@ -67,7 +67,10 @@ public static class CliBootstrap
         // Application
         services.AddUseCases();
         services.AddCommands();
-
+    }
+    
+    public static void BuildApp(CommandApp app)
+    {
         // Spectre bootstrap
         app.Configure(config =>
         {

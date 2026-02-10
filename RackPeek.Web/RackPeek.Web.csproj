@@ -9,7 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RackPeek\RackPeek.csproj"/>
         <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj" />
     </ItemGroup>
 

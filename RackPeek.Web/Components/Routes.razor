@@ -3,11 +3,33 @@
 @using Shared.Rcl.AccessPoints
 @using Shared.Rcl.Layout
 @using Shared.Rcl.Servers
+@using RackPeek.Domain.Persistence
 
-<Router AppAssembly="@typeof(App).Assembly"
-        AdditionalAssemblies="new[] { typeof(ServersListPage).Assembly }" 
-        NotFoundPage="typeof(NotFound)">
-<Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)"/>
-    </Found>
-</Router>
+@inject IResourceCollection Resources
+
+@if (!_ready)
+{
+    <p>Loading…</p>
+}
+else
+{
+    <Router AppAssembly="@typeof(App).Assembly"
+            AdditionalAssemblies="new[] { typeof(ServersListPage).Assembly }" 
+            NotFoundPage="typeof(NotFound)">
+        <Found Context="routeData">
+            <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)"/>
+        </Found>
+    </Router>
+}
+
+@code {
+    private bool _ready;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Resources.LoadAsync();
+        
+        _ready = true;
+    }
+}
+

@@ -9,6 +9,8 @@
 @inject DeleteSystemUseCase DeleteSystemUseCase
 @inject CloneSystemUseCase CloneSystemUseCase
 @inject NavigationManager Nav
+@inject RenameSystemUseCase RenameSystemUseCase
+
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
         <NavLink href="@($"resources/systems/{System.Name}")" class="block">
@@ -26,6 +28,12 @@
                     Edit
                 </button>
 
+                <button class="text-xs text-blue-400 hover:text-blue-300 transition"
+                        title="Rename service"
+                        @onclick="OpenRename">
+                    Rename
+                </button>
+                
                 <button
                     class="text-xs text-emerald-400 hover:text-emerald-300 transition"
                     title="Clone service"
@@ -314,6 +322,14 @@
 
 }
 
+<StringValueModal
+    IsOpen="_renameOpen"
+    IsOpenChanged="v => _renameOpen = v"
+    Title="Rename system"
+    Description="Enter a new name for this system"
+    Label="New system name"
+    Value="@System.Name"
+    OnSubmit="HandleRenameSubmit" />
 
 @code {
     private bool _confirmDeleteOpen;
@@ -349,6 +365,23 @@
     {
         await CloneSystemUseCase.ExecuteAsync(System.Name, newName);
 
+        Nav.NavigateTo($"resources/systems/{newName}");
+    }
+
+}
+
+@code
+{
+    bool _renameOpen;
+
+    void OpenRename()
+    {
+        _renameOpen = true;
+    }
+
+    async Task HandleRenameSubmit(string newName)
+    {
+        await RenameSystemUseCase.ExecuteAsync(System.Name, newName);
         Nav.NavigateTo($"resources/systems/{newName}");
     }
 

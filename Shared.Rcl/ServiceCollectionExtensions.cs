@@ -9,9 +9,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCommands(
         this IServiceCollection services)
     {
-        var commandBaseType = typeof(AsyncCommand);
-
-        var commandTypes = Assembly.GetAssembly(typeof(Program))
+        var commandTypes = Assembly.GetAssembly(typeof(ServiceCollectionExtensions))
             ?.GetTypes()
             .Where(t =>
                 t is { IsAbstract: false, IsInterface: false } &&

@@ -15,6 +15,7 @@
 @using Shared.Rcl.Systems
 @inject IHardwareRepository HardwareRepository
 @inject GetHardwareSystemTreeUseCase GetHardwareSystemTreeUseCase
+@inject NavigationManager Nav
 
 <PageTitle>Hardware Details</PageTitle>
 
@@ -39,35 +40,35 @@
 
         @if (_hardware is Server server)
         {
-            <ServerCardComponent Server="server" OnDeleted="Callback"/>
+            <ServerCardComponent Server="server" OnDeleted="DeleteCallback"/>
         }
         else if (_hardware is Desktop desktop)
         {
-            <DesktopCardComponent Desktop="desktop" OnDeleted="Callback"/>
+            <DesktopCardComponent Desktop="desktop" OnDeleted="DeleteCallback"/>
         }
         else if (_hardware is AccessPoint accessPoint)
         {
-            <AccessPointCardComponent AccessPoint="accessPoint" OnDeleted="Callback"/>
+            <AccessPointCardComponent AccessPoint="accessPoint" OnDeleted="DeleteCallback"/>
         }
         else if (_hardware is Switch _switch)
         {
-            <SwitchCardComponent Switch="_switch" OnDeleted="Callback"/>
+            <SwitchCardComponent Switch="_switch" OnDeleted="DeleteCallback"/>
         }
         else if (_hardware is Laptop laptop)
         {
-            <LaptopCardComponent Laptop="laptop" OnDeleted="Callback"/>
+            <LaptopCardComponent Laptop="laptop" OnDeleted="DeleteCallback"/>
         }
         else if (_hardware is Firewall firewall)
         {
-            <FirewallCardComponent Firewall="firewall" OnDeleted="Callback"/>
+            <FirewallCardComponent Firewall="firewall" OnDeleted="DeleteCallback"/>
         }
         else if (_hardware is Router router)
         {
-            <RouterCardComponent Router="router" OnDeleted="Callback"/>
+            <RouterCardComponent Router="router" OnDeleted="DeleteCallback"/>
         }
         else if (_hardware is Ups ups)
         {
-            <UpsCardComponent Ups="ups" OnDeleted="Callback"/>
+            <UpsCardComponent Ups="ups" OnDeleted="DeleteCallback"/>
         }
         else
         {
@@ -113,17 +114,9 @@
     }
 
 
-    private async Task Callback(string obj)
+    private async Task DeleteCallback(string obj)
     {
-        _loading = true;
-        _hardware = await HardwareRepository.GetByNameAsync(HardwareName);
-        _tree = null;
-        if (!string.IsNullOrEmpty(_hardware?.Name))
-        {
-            _tree = await GetHardwareSystemTreeUseCase.ExecuteAsync(_hardware?.Name!);
-        }
-
-        _loading = false;
+        Nav.NavigateTo($"/hardware/tree");
     }
 
 }

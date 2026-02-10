@@ -3,7 +3,7 @@ using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops;
 
-public class CloneDesktopUseCase(IHardwareRepository repository, IResourceRepository resourceRepo) : IUseCase
+public class CloneAccessPointUseCase(IHardwareRepository repository, IResourceRepository resourceRepo) : IUseCase
 {
     public async Task ExecuteAsync(string originalName, string cloneName)
     {
@@ -17,7 +17,7 @@ public class CloneDesktopUseCase(IHardwareRepository repository, IResourceReposi
         if (!string.IsNullOrEmpty(existingResourceKind))
             throw new ConflictException($"{existingResourceKind} resource '{cloneName}' already exists.");
 
-        var original = await repository.GetByNameAsync(originalName) as Desktop;
+        var original = await repository.GetByNameAsync(originalName) as AccessPoint;
         if (original == null)
         {
             throw new NotFoundException($"Resource '{originalName}' not found.");

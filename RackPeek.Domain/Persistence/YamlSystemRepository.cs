@@ -30,6 +30,31 @@ public class YamlSystemRepository(IResourceCollection resources) : ISystemReposi
         return Task.FromResult(resources.SystemResources);
     }
 
+    public Task<IReadOnlyList<SystemResource>> GetFilteredAsync(
+        string? typeFilter,
+        string? osFilter)
+    {
+        var query = resources.SystemResources.AsQueryable();
+
+        var type = Normalize(typeFilter);
+        var os = Normalize(osFilter);
+
+        if (type != null)
+            query = query.Where(x => x.Type != null && x.Type.Equals(type, StringComparison.CurrentCultureIgnoreCase));
+
+        if (os != null)
+            query = query.Where(x => x.Os != null && x.Os.Equals(os, StringComparison.CurrentCultureIgnoreCase));
+
+        var results = query.ToList();
+        return Task.FromResult<IReadOnlyList<SystemResource>>(results);
+    }
+
+    private static string? Normalize(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? null : value.Trim().ToLower();
+    }
+
+
     public Task<SystemResource?> GetByNameAsync(string name)
     {
         return Task.FromResult(resources.GetByName(name) as SystemResource);

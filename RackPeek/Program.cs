@@ -18,16 +18,16 @@ public static class Program
 
         // DI
         var services = new ServiceCollection();
-
-        var registrar = new TypeRegistrar(services);
-        var app = new CommandApp(registrar);
-
-        await CliBootstrap.BuildApp(app, services, configuration, "./config", "config.yaml");
-
+        await CliBootstrap.RegisterInternals(services, configuration, "./config", "config.yaml");
         services.AddLogging(configure =>
             configure
                 .AddSimpleConsole(opts => { opts.TimestampFormat = "yyyy-MM-dd HH:mm:ss "; }));
 
+        var registrar = new TypeRegistrar(services.BuildServiceProvider());
+        var app = new CommandApp(registrar);
+
+        CliBootstrap.BuildApp(app);
+        
         return await app.RunAsync(args);
     }
 }

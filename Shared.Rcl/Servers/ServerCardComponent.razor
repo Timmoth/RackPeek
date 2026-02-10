@@ -24,6 +24,10 @@
 @inject GetServerUseCase GetServerUseCase
 @inject UpdateServerUseCase UpdateServerUseCase
 @inject DeleteServerUseCase DeleteServerUseCase
+@inject CloneServerUseCase CloneUseCase
+
+@inject RenameServerUseCase RenameServerUseCase
+@inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
@@ -39,6 +43,17 @@
 
             <div class="flex items-center gap-2">
 
+                <button class="text-xs text-blue-400 hover:text-blue-300 transition"
+                        title="Rename service"
+                        @onclick="OpenRename">
+                    Rename
+                </button>
+                <button
+                    class="text-xs text-emerald-400 hover:text-emerald-300 transition"
+                    title="Clone service"
+                    @onclick="OpenClone">
+                    Clone
+                </button>
                 <button
                     class="text-xs text-red-400 hover:text-red-300 transition"
                     title="Delete server"
@@ -258,6 +273,22 @@
     This will detach all dependent systems.
 </ConfirmModal>
 
+<StringValueModal
+    IsOpen="_renameOpen"
+    IsOpenChanged="v => _renameOpen = v"
+    Title="Rename server"
+    Description="Enter a new name for this server"
+    Label="New server name"
+    Value="@Server.Name"
+    OnSubmit="HandleRenameSubmit" />
+<StringValueModal
+    IsOpen="_cloneOpen"
+    IsOpenChanged="v => _cloneOpen = v"
+    Title="Clone resource"
+    Description="Enter a name for the cloned resource"
+    Label="New resource name"
+    Value="@($"{Server.Name}-copy")"
+    OnSubmit="HandleCloneSubmit" />
 @code {
     [Parameter] [EditorRequired] public Server Server { get; set; } = default!;
 
@@ -498,6 +529,41 @@
 
         if (OnDeleted.HasDelegate)
             await OnDeleted.InvokeAsync(Server.Name);
+    }
+
+}
+
+@code
+{
+    bool _renameOpen;
+
+    void OpenRename()
+    {
+        _renameOpen = true;
+    }
+
+    async Task HandleRenameSubmit(string newName)
+    {
+        await RenameServerUseCase.ExecuteAsync(Server.Name, newName);
+        Nav.NavigateTo($"resources/hardware/{newName}");
+    }
+
+}
+
+@code
+{
+    bool _cloneOpen;
+
+    void OpenClone()
+    {
+        _cloneOpen = true;
+    }
+
+    async Task HandleCloneSubmit(string newName)
+    {
+        await CloneUseCase.ExecuteAsync(Server.Name, newName);
+
+        Nav.NavigateTo($"resources/hardware/{newName}");
     }
 
 }

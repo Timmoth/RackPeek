@@ -6,4 +6,17 @@
     Systems
 </h1>
 
-<SystemsListComponent/>
+<SystemsListComponent 
+    TypeFilter="@Type"
+    OsFilter="@Os" />
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "type")]
+    public string? Type { get; set; } = null;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "os")]
+    public string? Os { get; set; }= null;
+}

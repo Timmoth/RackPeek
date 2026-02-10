@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -7,17 +8,17 @@ namespace RackPeek;
 
 public class ConsoleEmulator : IConsoleEmulator
 {
-    public CommandApp App { get; set; }
-    public ConsoleEmulator(IServiceCollection services)
+    public CommandApp App { get; }
+
+    public ConsoleEmulator(IServiceProvider provider)
     {
-        var registrar = new TypeRegistrar(services);
+        var registrar = new TypeRegistrar(provider);
         App = new CommandApp(registrar);
         CliBootstrap.BuildApp(App);
     }
 
     public async Task<string> Execute(string input)
     {
-        // create fresh console every run
         var testConsole = new TestConsole();
         testConsole.Width(120);
 
@@ -28,41 +29,48 @@ public class ConsoleEmulator : IConsoleEmulator
 
         return testConsole.Output;
     }
-
 }
 
-public sealed class TypeRegistrar(IServiceCollection services) : ITypeRegistrar
+public sealed class TypeRegistrar : ITypeRegistrar
 {
+    private readonly IServiceProvider _provider;
+
+    public TypeRegistrar(IServiceProvider provider)
+    {
+        _provider = provider;
+    }
+
     public void Register(Type service, Type implementation)
     {
-        services.AddSingleton(service, implementation);
+        // DO NOTHING — services must already be registered
     }
 
     public void RegisterInstance(Type service, object implementation)
     {
-        services.AddSingleton(service, implementation);
+        // DO NOTHING
     }
 
     public void RegisterLazy(Type service, Func<object> factory)
     {
-        services.AddSingleton(service, _ => factory());
+        // DO NOTHING
     }
 
     public ITypeResolver Build()
     {
-        return new TypeResolver(services.BuildServiceProvider());
+        return new TypeResolver(_provider);
     }
 }
 
-public sealed class TypeResolver(ServiceProvider provider) : ITypeResolver, IDisposable
+
+public sealed class TypeResolver : ITypeResolver
 {
-    public void Dispose()
+    private readonly IServiceProvider _provider;
+
+    public TypeResolver(IServiceProvider provider)
     {
-        provider.Dispose();
+        _provider = provider;
     }
 
     public object? Resolve(Type? type)
-    {
-        return type == null ? null : provider.GetService(type);
-    }
+        => type == null ? null : _provider.GetService(type);
 }

@@ -36,16 +36,29 @@ public class Program
                 $"YAML directory not found: {yamlPath}"
             );
 
-        var collection = new YamlResourceCollection(Path.Combine(yamlDir, "config.yaml"), new PhysicalTextFileStore(), new ResourceCollection());
-        await collection.LoadAsync();
+        builder.Services.AddScoped<ITextFileStore, PhysicalTextFileStore>();
 
+        var resources = new ResourceCollection();
+        builder.Services.AddSingleton(resources);
+        
+        builder.Services.AddScoped<IResourceCollection>(sp =>
+            new YamlResourceCollection(
+                "./config/config.yaml",
+                sp.GetRequiredService<ITextFileStore>(),
+                sp.GetRequiredService<ResourceCollection>()));
+        
+        
         // Infrastructure
-        builder.Services.AddSingleton<IHardwareRepository>(_ => new YamlHardwareRepository(collection));
-        builder.Services.AddSingleton<ISystemRepository>(_ => new YamlSystemRepository(collection));
-        builder.Services.AddSingleton<IServiceRepository>(_ => new YamlServiceRepository(collection));
-        builder.Services.AddSingleton<IResourceRepository>(_ => new YamlResourceRepository(collection));
+        builder.Services.AddScoped<IHardwareRepository, YamlHardwareRepository>();
+        builder.Services.AddScoped<ISystemRepository, YamlSystemRepository>();
+        builder.Services.AddScoped<IServiceRepository, YamlServiceRepository>();
+        builder.Services.AddScoped<IResourceRepository, YamlResourceRepository>();
         
         builder.Services.AddUseCases();
+        builder.Services.AddCommands();
+        builder.Services.AddScoped<IConsoleEmulator, ConsoleEmulator>();
+
+        
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
