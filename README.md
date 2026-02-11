@@ -48,7 +48,28 @@ docker run -d \
 config/
 └── config.yaml
 ```
+Or Docker compose
+```yaml
+version: "3.9"
 
+services:
+  rackpeek:
+    image: aptacode/rackpeek:latest
+    container_name: rackpeek
+    ports:
+      - "8080:8080"
+    volumes:
+      - rackpeek-config:/app/config
+    restart: unless-stopped
+
+volumes:
+  rackpeek-config:
+
+```
+
+```bash
+docker compose up -d
+```
 ## Core Values
 
 **Simplicity**  
