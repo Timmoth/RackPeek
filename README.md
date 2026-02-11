@@ -73,8 +73,8 @@ The project is optimized for home labs and self-hosted environments, not enterpr
 ## Release Status
 ```
 [x] Ideation
-[~] Development
-[ ] Alpha Release
+[x] Development
+[~] Alpha Release
 [ ] Beta Release
 [ ] v1.0.0 Release
 ```
