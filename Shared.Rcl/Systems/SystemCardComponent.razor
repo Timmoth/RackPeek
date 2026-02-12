@@ -71,7 +71,14 @@
 
             @if (_isEditing)
             {
-                <select class="input"
+                <select                      class="w-full px-3 py-2 rounded-md
+                           bg-zinc-800 text-zinc-100
+                           border border-zinc-600
+                           placeholder-zinc-500
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                           hover:border-zinc-400
+                           transition-colors duration-150
+                           cursor-text"
                         @bind="_edit.Type">
                     @foreach (var type in SystemResource.ValidSystemTypes)
                     {
@@ -91,7 +98,15 @@
             <div class="text-zinc-400 mb-1">OS</div>
             @if (_isEditing)
             {
-                <input class="input"
+                <input
+                    class="w-full px-3 py-2 rounded-md
+                           bg-zinc-800 text-zinc-100
+                           border border-zinc-600
+                           placeholder-zinc-500
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                           hover:border-zinc-400
+                           transition-colors duration-150
+                           cursor-text"
                        @bind="_edit.Os"/>
             }
             else if (!string.IsNullOrWhiteSpace(System.Os))
@@ -106,7 +121,14 @@
             @if (_isEditing)
             {
                 <input type="number"
-                       class="input"
+                       class="w-full px-3 py-2 rounded-md
+                           bg-zinc-800 text-zinc-100
+                           border border-zinc-600
+                           placeholder-zinc-500
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                           hover:border-zinc-400
+                           transition-colors duration-150
+                           cursor-text"
                        @bind="_edit.Cores"/>
             }
             else if (System.Cores.HasValue)
@@ -121,7 +143,14 @@
             @if (_isEditing)
             {
                 <input type="number"
-                       class="input"
+                       class="w-full px-3 py-2 rounded-md
+                           bg-zinc-800 text-zinc-100
+                           border border-zinc-600
+                           placeholder-zinc-500
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                           hover:border-zinc-400
+                           transition-colors duration-150
+                           cursor-text"
                        @bind="_edit.Ram"/>
             }
             else if (System.Ram.HasValue)
