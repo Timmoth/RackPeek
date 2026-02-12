@@ -22,6 +22,7 @@ public abstract class Resource
     public required string Name { get; set; }
 
     public Dictionary<string, string>? Tags { get; set; }
+    public string? Notes { get; set; }
 
     public static string KindToPlural(string kind)
     {

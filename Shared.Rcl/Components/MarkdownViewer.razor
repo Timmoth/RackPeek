@@ -1,0 +1,53 @@
+@using Markdig
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+
+    @if (ShowEditButton)
+    {
+        <div class="flex justify-end mb-2 text-xs">
+            <button class="text-blue-400 hover:text-blue-300 transition"
+                    @onclick="HandleEdit">
+                Edit
+            </button>
+        </div>
+    }
+
+    @if (string.IsNullOrWhiteSpace(Value))
+    {
+        <div class="text-sm text-zinc-500 italic">
+            No notes
+        </div>
+    }
+    else
+    {
+        <div class="prose prose-invert max-w-none text-sm">
+            @((MarkupString)_html)
+        </div>
+    }
+
+</div>
+
+@code {
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public bool ShowEditButton { get; set; }
+    [Parameter] public EventCallback OnEdit { get; set; }
+
+    private string _html = "";
+
+    private static readonly MarkdownPipeline Pipeline =
+        new MarkdownPipelineBuilder()
+            .UseAdvancedExtensions()
+            
+            .Build();
+
+    protected override void OnParametersSet()
+    {
+        _html = Markdown.ToHtml(Value ?? "", Pipeline);
+    }
+
+    private async Task HandleEdit()
+    {
+        if (OnEdit.HasDelegate)
+            await OnEdit.InvokeAsync();
+    }
+}

@@ -33,7 +33,6 @@
     <div class="flex justify-between items-center mb-3">
         <div class="text-zinc-100 hover:text-emerald-300">
             <NavLink href="@($"resources/hardware/{Desktop.Name}")" class="block">
-
                 @Desktop.Name
             </NavLink>
         </div>
@@ -218,6 +217,27 @@
         </div>
 
     </div>
+    
+    <div class="md:col-span-2">
+        <div class="text-zinc-400 mb-1">Notes</div>
+
+        @if (!_editingNotes)
+        {
+            <MarkdownViewer
+                Value="@Desktop.Notes"
+                ShowEditButton="true"
+                OnEdit="BeginNotesEdit" />
+        }
+        else
+        {
+            <MarkdownEditor
+                @bind-Value="_notesDraft"
+                ShowActionButtons="true"
+                OnSave="SaveNotes"
+                OnCancel="CancelNotesEdit" />
+        }
+    </div>
+    
 </div>
 <CpuModal
     IsOpen="@_cpuModalOpen"
@@ -557,4 +577,39 @@
         Nav.NavigateTo($"resources/hardware/{newName}");
     }
 
+}
+
+@code
+{
+    bool _editingNotes;
+    string? _notesDraft;
+
+    void BeginNotesEdit()
+    {
+        _editingNotes = true;
+        _notesDraft = Desktop.Notes; // draft buffer
+    }
+
+    void CancelNotesEdit()
+    {
+        _editingNotes = false;
+        _notesDraft = null; // discard
+    }
+
+    async Task SaveNotes()
+    {
+        _editingNotes = false;
+
+        await UpdateDesktopUseCase.ExecuteAsync(
+            Desktop.Name,
+            Desktop.Model,
+            Desktop.Ram?.Size,
+            Desktop.Ram?.Mts,
+            _notesDraft);
+
+        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        _notesDraft = null;
+    }
+
+    
 }

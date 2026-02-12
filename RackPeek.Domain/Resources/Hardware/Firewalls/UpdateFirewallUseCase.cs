@@ -9,7 +9,8 @@ public class UpdateFirewallUseCase(IHardwareRepository repository) : IUseCase
         string name,
         string? model = null,
         bool? managed = null,
-        bool? poe = null
+        bool? poe = null,
+        string? notes = null
     )
     {
         // ToDo validate / normalize all inputs
@@ -29,7 +30,10 @@ public class UpdateFirewallUseCase(IHardwareRepository repository) : IUseCase
 
         if (poe.HasValue)
             firewallResource.Poe = poe.Value;
-
+        if (notes != null)
+        {
+            firewallResource.Notes = notes;
+        }
         await repository.UpdateAsync(firewallResource);
     }
 }

@@ -9,7 +9,8 @@ public class UpdateSwitchUseCase(IHardwareRepository repository) : IUseCase
         string name,
         string? model = null,
         bool? managed = null,
-        bool? poe = null
+        bool? poe = null,
+        string? notes = null
     )
     {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
@@ -30,7 +31,10 @@ public class UpdateSwitchUseCase(IHardwareRepository repository) : IUseCase
 
         if (poe.HasValue)
             switchResource.Poe = poe.Value;
-
+        if (notes != null)
+        {
+            switchResource.Notes = notes;
+        }
         await repository.UpdateAsync(switchResource);
     }
 }
