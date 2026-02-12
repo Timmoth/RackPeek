@@ -66,7 +66,15 @@
             <div class="text-zinc-400 mb-1">IP</div>
             @if (_isEditing)
             {
-                <input class="input"
+                <input
+                    class="w-full px-3 py-2 rounded-md
+                           bg-zinc-800 text-zinc-100
+                           border border-zinc-600
+                           placeholder-zinc-500
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                           hover:border-zinc-400
+                           transition-colors duration-150
+                           cursor-text"
                        @bind="_edit.Ip"/>
             }
             else if (!string.IsNullOrWhiteSpace(Service.Network?.Ip))
@@ -81,7 +89,6 @@
             @if (_isEditing)
             {
                 <input type="number"
-                       class="input"
                        @bind="_edit.Port"/>
             }
             else if (Service.Network?.Port.HasValue == true)
@@ -95,7 +102,15 @@
             <div class="text-zinc-400 mb-1">Protocol</div>
             @if (_isEditing)
             {
-                <input class="input"
+                <input
+                    class="w-full px-3 py-2 rounded-md
+                           bg-zinc-800 text-zinc-100
+                           border border-zinc-600
+                           placeholder-zinc-500
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                           hover:border-zinc-400
+                           transition-colors duration-150
+                           cursor-text"
                        @bind="_edit.Protocol"/>
             }
             else if (!string.IsNullOrWhiteSpace(Service.Network?.Protocol))
@@ -109,7 +124,15 @@
             <div class="text-zinc-400 mb-1">URL</div>
             @if (_isEditing)
             {
-                <input class="input"
+                <input
+                    class="w-full px-3 py-2 rounded-md
+                           bg-zinc-800 text-zinc-100
+                           border border-zinc-600
+                           placeholder-zinc-500
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                           hover:border-zinc-400
+                           transition-colors duration-150
+                           cursor-text"
                        @bind="_edit.Url"/>
             }
             else if (!string.IsNullOrWhiteSpace(Service.Network?.Url))
