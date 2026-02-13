@@ -1,6 +1,6 @@
 # RackPeek
 
-RackPeek is a lightweight, opinionated CLI tool for documenting and managing home lab and small-scale IT infrastructure.
+RackPeek is a lightweight, opinionated CLI tool / webui for documenting and managing home lab and small-scale IT infrastructure.
 
 It helps you track hardware, services, networks, and their relationships in a clear, scriptable, and reusable way without enterprise bloat or proprietary lock-in.
 
@@ -19,8 +19,6 @@ Answer whichever questions stand out to you, your input directly shapes the proj
 RackPeek treats infrastructure documentation as living reference data rather than static paperwork.
 
 You should be able to document your environment as you build it, explore relationships between systems, and quickly understand how everything fits together, without drowning in unnecessary metadata or process.
-
-RackPeek is not a CMDB replacement. It’s a clean framework for understanding and maintaining your lab.
 
 [![RackPeek demo](./vhs/rpk-demo.gif)](./rpk-demo.gif)
 [![RackPeek demo](./vhs/webui_screenshots/output.gif)](./rpk-webui-demo.gif)
