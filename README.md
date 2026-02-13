@@ -131,8 +131,8 @@ The project is optimized for home labs and self-hosted environments, not enterpr
 ```
 [x] Ideation
 [x] Development
-[~] Alpha Release
-[ ] Beta Release
+[x] Alpha Release
+[~] Beta Release
 [ ] v1.0.0 Release
 ```
 
