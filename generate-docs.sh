@@ -138,7 +138,7 @@ fi
   local anchor_link=$(echo "$anchor_text" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
   # Format: - [label](link) - Description
-  local tree_entry="${indent}- [${tree_label}](Commands.md#${anchor_link})"
+  local tree_entry="${indent}- [${tree_label}](docs/Commands.md#${anchor_link})"
   if [[ -n "$description" ]]; then
     tree_entry="${tree_entry} - ${description}"
   fi
