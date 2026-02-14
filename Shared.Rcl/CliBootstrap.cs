@@ -50,19 +50,29 @@ public static class CliBootstrap
         _lastArgs = args;
         _app = app;
     }
-    public static async Task RegisterInternals(IServiceCollection services, IConfiguration configuration,
-        string yamlDir, string yamlFile)
+    public static async Task RegisterInternals(
+        IServiceCollection services,
+        IConfiguration configuration,
+        string yamlDir,
+        string yamlFile)
     {
         services.AddSingleton(configuration);
+        var appBasePath = AppContext.BaseDirectory;
 
-        var basePath = configuration["HardwarePath"] ?? AppContext.BaseDirectory;
+        var resolvedYamlDir = Path.IsPathRooted(yamlDir)
+            ? yamlDir
+            : Path.Combine(appBasePath, yamlDir);
+        
+        if (!Directory.Exists(resolvedYamlDir))
+            throw new DirectoryNotFoundException(
+                $"YAML directory not found: {resolvedYamlDir}");
+        
+        var fullYamlPath = Path.Combine(resolvedYamlDir, yamlFile);
+        var collection = new YamlResourceCollection(
+            fullYamlPath,
+            new PhysicalTextFileStore(),
+            new ResourceCollection());
 
-        // Resolve yamlDir as relative to basePath
-        var yamlPath = Path.IsPathRooted(yamlDir) ? yamlDir : Path.Combine(basePath, yamlDir);
-
-        if (!Directory.Exists(yamlPath)) throw new DirectoryNotFoundException($"YAML directory not found: {yamlPath}");
-
-        var collection = new YamlResourceCollection(Path.Combine(yamlPath, yamlFile), new PhysicalTextFileStore(), new ResourceCollection());
         await collection.LoadAsync();
         services.AddSingleton<IResourceCollection>(collection);
 
