@@ -10,18 +10,17 @@ OPTIONS:
     -v, --version    Prints version information
 
 COMMANDS:
-    summary         Show a summarized report of all resources in   
-                    the system                                     
-    servers         Manage servers and their components            
-    switches        Manage network switches                        
-    routers         Manage network routers                         
-    firewalls       Manage firewalls                               
-    systems         Manage systems and their dependencies          
-    accesspoints    Manage access points                           
-    ups             Manage UPS units                               
-    desktops        Manage desktop computers and their components  
-    Laptops         Manage Laptop computers and their components   
-    services        Manage services and their configurations       
+    summary         Show a summarized report of all resources in the system
+    servers         Manage servers and their components                    
+    switches        Manage network switches                                
+    routers         Manage network routers                                 
+    firewalls       Manage firewalls                                       
+    systems         Manage systems and their dependencies                  
+    accesspoints    Manage access points                                   
+    ups             Manage UPS units                                       
+    desktops        Manage desktop computers and their components          
+    laptops         Manage Laptop computers and their components           
+    services        Manage services and their configurations               
 ```
 
 ## `rpk summary`
@@ -48,21 +47,17 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary            Show a summarized hardware report for all   
-                       servers                                     
-    add <name>         Add a new server to the inventory           
-    get <name>         List all servers or retrieve a specific     
-                       server by name                              
-    describe <name>    Display detailed information about a        
-                       specific server                             
-    set <name>         Update properties of an existing server     
-    del <name>         Delete a server from the inventory          
-    tree <name>        Display the dependency tree of a server     
-    cpu                Manage CPUs attached to a server            
-    drive              Manage drives attached to a server          
-    gpu                Manage GPUs attached to a server            
-    nic                Manage network interface cards (NICs) for a 
-                       server                                      
+    summary            Show a summarized hardware report for all servers     
+    add <name>         Add a new server to the inventory                     
+    get <name>         List all servers or retrieve a specific server by name
+    describe <name>    Display detailed information about a specific server  
+    set <name>         Update properties of an existing server               
+    del <name>         Delete a server from the inventory                    
+    tree <name>        Display the dependency tree of a server               
+    cpu                Manage CPUs attached to a server                      
+    drive              Manage drives attached to a server                    
+    gpu                Manage GPUs attached to a server                      
+    nic                Manage network interface cards (NICs) for a server    
 ```
 
 ## `rpk servers summary`
@@ -269,9 +264,9 @@ ARGUMENTS:
     <name>     
 
 OPTIONS:
-    -h, --help           Prints help information
-        --type <TYPE>                           
-        --size <SIZE>                           
+    -h, --help           Prints help information     
+        --type <TYPE>    The drive type e.g hdd / ssd
+        --size <SIZE>    The drive capacity in GB    
 ```
 
 ## `rpk servers drive set`
@@ -458,15 +453,14 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary            Show a hardware report for all switches     
-    add <name>         Add a new network switch to the inventory   
-    list               List all switches in the system             
-    get <name>         Retrieve details of a specific switch by    
-                       name                                        
-    describe <name>    Show detailed information about a switch    
-    set <name>         Update properties of a switch               
-    del <name>         Delete a switch from the inventory          
-    port               Manage ports on a network switch            
+    summary            Show a hardware report for all switches      
+    add <name>         Add a new network switch to the inventory    
+    list               List all switches in the system              
+    get <name>         Retrieve details of a specific switch by name
+    describe <name>    Show detailed information about a switch     
+    set <name>         Update properties of a switch                
+    del <name>         Delete a switch from the inventory           
+    port               Manage ports on a network switch             
 ```
 
 ## `rpk switches summary`
@@ -653,15 +647,14 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary            Show a hardware report for all routers      
-    add <name>         Add a new network router to the inventory   
-    list               List all routers in the system              
-    get <name>         Retrieve details of a specific router by    
-                       name                                        
-    describe <name>    Show detailed information about a router    
-    set <name>         Update properties of a router               
-    del <name>         Delete a router from the inventory          
-    port               Manage ports on a router                    
+    summary            Show a hardware report for all routers       
+    add <name>         Add a new network router to the inventory    
+    list               List all routers in the system               
+    get <name>         Retrieve details of a specific router by name
+    describe <name>    Show detailed information about a router     
+    set <name>         Update properties of a router                
+    del <name>         Delete a router from the inventory           
+    port               Manage ports on a router                     
 ```
 
 ## `rpk routers summary`
@@ -848,15 +841,14 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary            Show a hardware report for all firewalls    
-    add <name>         Add a new firewall to the inventory         
-    list               List all firewalls in the system            
-    get <name>         Retrieve details of a specific firewall by  
-                       name                                        
-    describe <name>    Show detailed information about a firewall  
-    set <name>         Update properties of a firewall             
-    del <name>         Delete a firewall from the inventory        
-    port               Manage ports on a firewall                  
+    summary            Show a hardware report for all firewalls       
+    add <name>         Add a new firewall to the inventory            
+    list               List all firewalls in the system               
+    get <name>         Retrieve details of a specific firewall by name
+    describe <name>    Show detailed information about a firewall     
+    set <name>         Update properties of a firewall                
+    del <name>         Delete a firewall from the inventory           
+    port               Manage ports on a firewall                     
 ```
 
 ## `rpk firewalls summary`
@@ -1184,14 +1176,13 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary            Show a hardware report for all access points
-    add <name>         Add a new access point                      
-    list               List all access points                      
-    get <name>         Retrieve an access point by name            
-    describe <name>    Show detailed information about an access   
-                       point                                       
-    set <name>         Update properties of an access point        
-    del <name>         Delete an access point                      
+    summary            Show a hardware report for all access points   
+    add <name>         Add a new access point                         
+    list               List all access points                         
+    get <name>         Retrieve an access point by name               
+    describe <name>    Show detailed information about an access point
+    set <name>         Update properties of an access point           
+    del <name>         Delete an access point                         
 ```
 
 ## `rpk accesspoints summary`
@@ -1429,20 +1420,18 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>         Add a new desktop                           
-    list               List all desktops                           
-    get <name>         Retrieve a desktop by name                  
-    describe <name>    Show detailed information about a desktop   
-    set <name>         Update properties of a desktop              
-    del <name>         Delete a desktop from the inventory         
-    summary            Show a summarized hardware report for all   
-                       desktops                                    
-    tree <name>        Display the dependency tree for a desktop   
-    cpu                Manage CPUs attached to desktops            
-    drive              Manage storage drives attached to desktops  
-    gpu                Manage GPUs attached to desktops            
-    nic                Manage network interface cards (NICs) for   
-                       desktops                                    
+    add <name>         Add a new desktop                                 
+    list               List all desktops                                 
+    get <name>         Retrieve a desktop by name                        
+    describe <name>    Show detailed information about a desktop         
+    set <name>         Update properties of a desktop                    
+    del <name>         Delete a desktop from the inventory               
+    summary            Show a summarized hardware report for all desktops
+    tree <name>        Display the dependency tree for a desktop         
+    cpu                Manage CPUs attached to desktops                  
+    drive              Manage storage drives attached to desktops        
+    gpu                Manage GPUs attached to desktops                  
+    nic                Manage network interface cards (NICs) for desktops
 ```
 
 ## `rpk desktops add`
@@ -1661,7 +1650,7 @@ ARGUMENTS:
 OPTIONS:
     -h, --help    Prints help information     
         --type    The drive type e.g hdd / ssd
-        --size    The drive capacity in Gb    
+        --size    The drive capacity in GB    
 ```
 
 ## `rpk desktops drive set`
@@ -1836,38 +1825,37 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
-## `rpk Laptops`
+## `rpk laptops`
 ```
 DESCRIPTION:
 Manage Laptop computers and their components
 
 USAGE:
-    rpk Laptops [OPTIONS] <COMMAND>
+    rpk laptops [OPTIONS] <COMMAND>
 
 OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>         Add a new Laptop                            
-    list               List all Laptops                            
-    get <name>         Retrieve a Laptop by name                   
-    describe <name>    Show detailed information about a Laptop    
-    del <name>         Delete a Laptop from the inventory          
-    summary            Show a summarized hardware report for all   
-                       Laptops                                     
-    tree <name>        Display the dependency tree for a Laptop    
-    cpu                Manage CPUs attached to Laptops             
-    drive              Manage storage drives attached to Laptops   
-    gpu                Manage GPUs attached to Laptops             
+    add <name>         Add a new Laptop                                 
+    list               List all Laptops                                 
+    get <name>         Retrieve a Laptop by name                        
+    describe <name>    Show detailed information about a Laptop         
+    del <name>         Delete a Laptop from the inventory               
+    summary            Show a summarized hardware report for all Laptops
+    tree <name>        Display the dependency tree for a Laptop         
+    cpu                Manage CPUs attached to Laptops                  
+    drives             Manage storage drives attached to Laptops        
+    gpu                Manage GPUs attached to Laptops                  
 ```
 
-## `rpk Laptops add`
+## `rpk laptops add`
 ```
 DESCRIPTION:
 Add a new Laptop
 
 USAGE:
-    rpk Laptops add <name> [OPTIONS]
+    rpk laptops add <name> [OPTIONS]
 
 ARGUMENTS:
     <name>     
@@ -1876,25 +1864,25 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
-## `rpk Laptops list`
+## `rpk laptops list`
 ```
 DESCRIPTION:
 List all Laptops
 
 USAGE:
-    rpk Laptops list [OPTIONS]
+    rpk laptops list [OPTIONS]
 
 OPTIONS:
     -h, --help    Prints help information
 ```
 
-## `rpk Laptops get`
+## `rpk laptops get`
 ```
 DESCRIPTION:
 Retrieve a Laptop by name
 
 USAGE:
-    rpk Laptops get <name> [OPTIONS]
+    rpk laptops get <name> [OPTIONS]
 
 ARGUMENTS:
     <name>     
@@ -1903,13 +1891,13 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
-## `rpk Laptops describe`
+## `rpk laptops describe`
 ```
 DESCRIPTION:
 Show detailed information about a Laptop
 
 USAGE:
-    rpk Laptops describe <name> [OPTIONS]
+    rpk laptops describe <name> [OPTIONS]
 
 ARGUMENTS:
     <name>     
@@ -1918,13 +1906,13 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
-## `rpk Laptops del`
+## `rpk laptops del`
 ```
 DESCRIPTION:
 Delete a Laptop from the inventory
 
 USAGE:
-    rpk Laptops del <name> [OPTIONS]
+    rpk laptops del <name> [OPTIONS]
 
 ARGUMENTS:
     <name>     
@@ -1933,25 +1921,25 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
-## `rpk Laptops summary`
+## `rpk laptops summary`
 ```
 DESCRIPTION:
 Show a summarized hardware report for all Laptops
 
 USAGE:
-    rpk Laptops summary [OPTIONS]
+    rpk laptops summary [OPTIONS]
 
 OPTIONS:
     -h, --help    Prints help information
 ```
 
-## `rpk Laptops tree`
+## `rpk laptops tree`
 ```
 DESCRIPTION:
 Display the dependency tree for a Laptop
 
 USAGE:
-    rpk Laptops tree <name> [OPTIONS]
+    rpk laptops tree <name> [OPTIONS]
 
 ARGUMENTS:
     <name>     
@@ -1960,13 +1948,13 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
-## `rpk Laptops cpu`
+## `rpk laptops cpu`
 ```
 DESCRIPTION:
 Manage CPUs attached to Laptops
 
 USAGE:
-    rpk Laptops cpu [OPTIONS] <COMMAND>
+    rpk laptops cpu [OPTIONS] <COMMAND>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1977,13 +1965,13 @@ COMMANDS:
     del <Laptop> <index>    Remove a CPU from a Laptop
 ```
 
-## `rpk Laptops cpu add`
+## `rpk laptops cpu add`
 ```
 DESCRIPTION:
 Add a CPU to a Laptop
 
 USAGE:
-    rpk Laptops cpu add <Laptop> [OPTIONS]
+    rpk laptops cpu add <Laptop> [OPTIONS]
 
 ARGUMENTS:
     <Laptop>    The Laptop name
@@ -1995,13 +1983,13 @@ OPTIONS:
         --threads    The number of cpu threads
 ```
 
-## `rpk Laptops cpu set`
+## `rpk laptops cpu set`
 ```
 DESCRIPTION:
 Update a Laptop CPU
 
 USAGE:
-    rpk Laptops cpu set <Laptop> <index> [OPTIONS]
+    rpk laptops cpu set <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
     <Laptop>    The Laptop name            
@@ -2014,13 +2002,13 @@ OPTIONS:
         --threads    The number of cpu threads
 ```
 
-## `rpk Laptops cpu del`
+## `rpk laptops cpu del`
 ```
 DESCRIPTION:
 Remove a CPU from a Laptop
 
 USAGE:
-    rpk Laptops cpu del <Laptop> <index> [OPTIONS]
+    rpk laptops cpu del <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
     <Laptop>    The name of the Laptop               
@@ -2030,47 +2018,47 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
-## `rpk Laptops drive`
+## `rpk laptops drives`
 ```
 DESCRIPTION:
 Manage storage drives attached to Laptops
 
 USAGE:
-    rpk Laptops drive [OPTIONS] <COMMAND>
+    rpk laptops drives [OPTIONS] <COMMAND>
 
 OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <Laptop>            Add a drive to a Laptop     
+    add <laptop>            Add a drive to a Laptop     
     set <Laptop> <index>    Update a Laptop drive       
     del <Laptop> <index>    Remove a drive from a Laptop
 ```
 
-## `rpk Laptops drive add`
+## `rpk laptops drives add`
 ```
 DESCRIPTION:
 Add a drive to a Laptop
 
 USAGE:
-    rpk Laptops drive add <Laptop> [OPTIONS]
+    rpk laptops drives add <laptop> [OPTIONS]
 
 ARGUMENTS:
-    <Laptop>    The name of the Laptop
+    <laptop>    The name of the Laptop
 
 OPTIONS:
     -h, --help    Prints help information     
         --type    The drive type e.g hdd / ssd
-        --size    The drive capacity in Gb    
+        --size    The drive capacity in GB:   
 ```
 
-## `rpk Laptops drive set`
+## `rpk laptops drives set`
 ```
 DESCRIPTION:
 Update a Laptop drive
 
 USAGE:
-    rpk Laptops drive set <Laptop> <index> [OPTIONS]
+    rpk laptops drives set <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
     <Laptop>    The Laptop name          
@@ -2082,13 +2070,13 @@ OPTIONS:
         --size    The drive capacity in Gb    
 ```
 
-## `rpk Laptops drive del`
+## `rpk laptops drives del`
 ```
 DESCRIPTION:
 Remove a drive from a Laptop
 
 USAGE:
-    rpk Laptops drive del <Laptop> <index> [OPTIONS]
+    rpk laptops drives del <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
     <Laptop>    The name of the Laptop          
@@ -2098,13 +2086,13 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
-## `rpk Laptops gpu`
+## `rpk laptops gpu`
 ```
 DESCRIPTION:
 Manage GPUs attached to Laptops
 
 USAGE:
-    rpk Laptops gpu [OPTIONS] <COMMAND>
+    rpk laptops gpu [OPTIONS] <COMMAND>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2115,13 +2103,13 @@ COMMANDS:
     del <Laptop> <index>    Remove a GPU from a Laptop
 ```
 
-## `rpk Laptops gpu add`
+## `rpk laptops gpu add`
 ```
 DESCRIPTION:
 Add a GPU to a Laptop
 
 USAGE:
-    rpk Laptops gpu add <Laptop> [OPTIONS]
+    rpk laptops gpu add <Laptop> [OPTIONS]
 
 ARGUMENTS:
     <Laptop>    The name of the Laptop
@@ -2132,13 +2120,13 @@ OPTIONS:
         --vram     The amount of gpu vram in Gb
 ```
 
-## `rpk Laptops gpu set`
+## `rpk laptops gpu set`
 ```
 DESCRIPTION:
 Update a Laptop GPU
 
 USAGE:
-    rpk Laptops gpu set <Laptop> <index> [OPTIONS]
+    rpk laptops gpu set <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
     <Laptop>    The Laptop name               
@@ -2150,13 +2138,13 @@ OPTIONS:
         --vram     The amount of gpu vram in Gb
 ```
 
-## `rpk Laptops gpu del`
+## `rpk laptops gpu del`
 ```
 DESCRIPTION:
 Remove a GPU from a Laptop
 
 USAGE:
-    rpk Laptops gpu del <Laptop> <index> [OPTIONS]
+    rpk laptops gpu del <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
     <Laptop>    The Laptop name               
@@ -2178,15 +2166,14 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary            Show a summary report for all services      
-    add <name>         Add a new service                           
-    list               List all services                           
-    get <name>         Retrieve a service by name                  
-    describe <name>    Show detailed information about a service   
-    set <name>         Update properties of a service              
-    del <name>         Delete a service                            
-    subnets            List subnets associated with a service,     
-                       optionally filtered by CIDR                 
+    summary            Show a summary report for all services                             
+    add <name>         Add a new service                                                  
+    list               List all services                                                  
+    get <name>         Retrieve a service by name                                         
+    describe <name>    Show detailed information about a service                          
+    set <name>         Update properties of a service                                     
+    del <name>         Delete a service                                                   
+    subnets            List subnets associated with a service, optionally filtered by CIDR
 ```
 
 ## `rpk services summary`

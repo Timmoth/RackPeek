@@ -197,12 +197,12 @@ generate_help_recursive ""
 {
   echo ""
   cat "$TREE_TEMP"
-} > "docs/CommandIndex.md"
+} > "Shared.Rcl/wwwroot/raw_docs/CommandIndex.md"
 
 {
   echo "# CLI Commands"
   echo ""
   cat "$BODY_TEMP"
-} > "docs/Commands.md"
+} > "Shared.Rcl/wwwroot/raw_docs/Commands.md"
 
 echo "Generated Successfully."
