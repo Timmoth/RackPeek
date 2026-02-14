@@ -1,0 +1,42 @@
+name: Generate CLI Docs
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Ensure publish directory exists
+        run: mkdir -p RackPeek/publish
+
+      - name: Copy config folder into publish directory
+        run: |
+          if [ -d RackPeek/config ]; then
+            cp -r RackPeek/config RackPeek/publish/config
+          fi
+
+      - name: Make script executable
+        run: chmod +x generate-docs.sh
+
+      - name: Run documentation generator
+        run: ./generate-docs.sh
+
+      - name: Commit and push generated docs
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add CommandIndex.md Commands.md
+          git commit -m "Update CLI docs" || echo "No changes to commit"
+          git push

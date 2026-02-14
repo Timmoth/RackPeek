@@ -15,19 +15,18 @@ trap 'rm -f "$TREE_TEMP" "$BODY_TEMP"' EXIT
 # ----------------------------
 
 strip_colors() {
-  sed -r "s/\x1B\[[0-9;]*[mK]//g"
+  sed -E "s/\x1B\[[0-9;]*[mK]//g"
 }
 
 run_help() {
-  local project="./RackPeek"
-  local runtime="osx-arm64"
-  local config="Release"
-  local publish_dir="$project/bin/$config/net10.0/$runtime/publish"
-  local exe="$publish_dir/RackPeek"
+ local project="./RackPeek" 
+ local config="Release" 
+ local publish_dir="$project/publish" 
+ local exe="$publish_dir/RackPeek"
 
   if [[ ! -x "$exe" ]]; then
     echo "Publishing RackPeek ($config)..." >&2
-    dotnet publish "$project" -c "$config" -r "$runtime" --self-contained false -p:PublishSingleFile=true >&2
+    dotnet publish "$project" -c "$config" -o "$publish_dir" --self-contained false -p:PublishSingleFile=true >&2
   fi
 
   local output

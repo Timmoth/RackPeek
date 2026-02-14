@@ -23,7 +23,7 @@ public class Program
             builder.Configuration
         );
 
-        var yamlDir = "./config";
+        var yamlDir = builder.Configuration.GetValue<string>("RPK_YAML_DIR") ?? "./config";
         var yamlFileName = "config.yaml";
 
         var basePath = Directory.GetCurrentDirectory();

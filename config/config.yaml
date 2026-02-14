@@ -1,0 +1,29 @@
+resources:
+- kind: System
+  type: 
+  os: 
+  cores: 
+  ram: 
+  drives: 
+  runsOn: 
+  name: xf
+  tags: 
+- kind: Service
+  network:
+    ip: dfdf
+    port: 6
+    protocol: 10.2.0.1
+    url: 
+  runsOn: xf
+  name: dfs
+  tags: 
+- kind: Switch
+  model: 
+  managed: 
+  poe: 
+  ports:
+  - type: rj45
+    speed: 1
+    count: 24
+  name: core-sw1
+  tags: 
