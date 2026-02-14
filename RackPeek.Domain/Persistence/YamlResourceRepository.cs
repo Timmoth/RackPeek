@@ -26,4 +26,14 @@ public class YamlResourceRepository(IResourceCollection resources) : IResourceRe
     {
         return Task.FromResult(resources.GetByName(name) != null);
     }
+
+    public Task<IReadOnlyList<Resource>> GetByTagAsync(string name)
+    {
+        return resources.GetByTagAsync(name);
+    }
+
+    public Task<Dictionary<string, int>> GetTagsAsync()
+    {
+        return resources.GetTagsAsync();
+    }
 }

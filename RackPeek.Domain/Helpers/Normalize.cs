@@ -31,4 +31,14 @@ public static class Normalize
     {
         return name.Trim();
     }
+    
+    public static string ResourceName(string name)
+    {
+        return name.Trim();
+    }
+    
+    public static string Tag(string name)
+    {
+        return name.Trim();
+    }
 }

@@ -16,6 +16,10 @@ public interface IResourceCollection
     Task DeleteAsync(string name);
 
     Resource? GetByName(string name);
+    Task<bool> Exists(string name);
 
     Task LoadAsync();   // required for WASM startup
+    Task<IReadOnlyList<Resource>> GetByTagAsync(string name);
+    public Task<Dictionary<string, int>> GetTagsAsync();
+
 }

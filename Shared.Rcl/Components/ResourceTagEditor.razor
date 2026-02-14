@@ -1,0 +1,105 @@
+﻿@using RackPeek.Domain.Resources.Models
+@typeparam TResource where TResource : RackPeek.Domain.Resources.Resource
+
+@using RackPeek.Domain.UseCases
+@using RackPeek.Domain.UseCases.Tags
+@inject NavigationManager Nav
+
+@inject IAddTagUseCase<TResource> AddTagUseCase
+@inject IRemoveTagUseCase<TResource> RemoveTagUseCase
+
+<div class="md:col-span-2">
+    <div class="flex items-center justify-between mb-1 group">
+        <div class="text-zinc-400">
+            Tags
+            <button class="hover:text-emerald-400 ml-1"
+                    title="Add Tag"
+                    @onclick="OpenAddTag">
+                +
+            </button>
+        </div>
+    </div>
+
+    @if (Resource.Tags?.Any() == true)
+    {
+        <div class="flex flex-wrap gap-2">
+            @foreach (var tag in Resource.Tags.OrderBy(t => t))
+            {
+                <div class="flex text-xs rounded overflow-hidden border border-zinc-700">
+
+                    <!-- LEFT SIDE (Navigate) -->
+                    <button type="button"
+                            class="px-2 py-0.5 bg-zinc-800 text-zinc-300 hover:bg-emerald-800 hover:text-emerald-200 transition"
+                            title="View tag"
+                            @onclick="() => NavigateToTag(tag)">
+                        @tag
+                    </button>
+
+                    <!-- RIGHT SIDE (Delete) -->
+                    <button type="button"
+                            class="px-1 py-0.5 bg-zinc-800 text-zinc-400 hover:bg-red-800 hover:text-red-200 transition border-l border-zinc-700"
+                            title="Remove tag"
+                            @onclick="() => RemoveTag(tag)">
+                        ✕
+                    </button>
+
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+<StringValueModal
+    IsOpen="_tagModalOpen"
+    IsOpenChanged="v => _tagModalOpen = v"
+    Title="Add Tag"
+    Description="Enter tag value"
+    Label="Tag"
+    Value=""
+    OnSubmit="HandleTagSubmit" />
+    
+@code {
+    [Parameter, EditorRequired]
+    public TResource Resource { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnTagsChanged { get; set; }
+
+    bool _tagModalOpen;
+
+    void OpenAddTag()
+    {
+        _tagModalOpen = true;
+    }
+
+    async Task HandleTagSubmit(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return;
+
+        await AddTagUseCase.ExecuteAsync(
+            Resource.Name,
+            value);
+
+        _tagModalOpen = false;
+
+        if (OnTagsChanged.HasDelegate)
+            await OnTagsChanged.InvokeAsync();
+    }
+
+    async Task RemoveTag(string tag)
+    {
+        await RemoveTagUseCase.ExecuteAsync(
+            Resource.Name,
+            tag);
+
+        if (OnTagsChanged.HasDelegate)
+            await OnTagsChanged.InvokeAsync();
+    }
+    
+    void NavigateToTag(string tag)
+    {
+        Nav.NavigateTo($"tags/{Uri.EscapeDataString(tag)}");
+    }
+}

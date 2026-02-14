@@ -22,6 +22,29 @@ public sealed class YamlResourceCollection(
     ResourceCollection resourceCollection)
     : IResourceCollection
 {
+    public Task<bool> Exists(string name)
+    {
+        return Task.FromResult(resourceCollection.Resources.Exists(r =>
+            r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
+    }
+    
+    public Task<Dictionary<string, int>> GetTagsAsync()
+    {
+        var result = resourceCollection.Resources
+            .Where(r => r.Tags != null)
+            .SelectMany(r => r.Tags!)      // flatten all tag arrays
+            .Where(t => !string.IsNullOrWhiteSpace(t))
+            .GroupBy(t => t)
+            .ToDictionary(g => g.Key, g => g.Count());
+        return Task.FromResult(result);
+    }
+
+
+    public Task<IReadOnlyList<Resource>> GetByTagAsync(string name)
+    {
+        return Task.FromResult<IReadOnlyList<Resource>>(resourceCollection.Resources.Where(r => r.Tags.Contains(name)).ToList());
+    }
+    
     public async Task LoadAsync()
     {
         var loaded = await LoadFromFileAsync();

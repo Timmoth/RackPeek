@@ -6,7 +6,9 @@
 <PageTitle>Access Points</PageTitle>
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6">
-    <AddAccessPointComponent OnCreated="NavigateToNewResource"/>
+    <AddResourceComponent TResource="AccessPoint"
+                        Placeholder="AP name"
+                        OnCreated="NavigateToNewResource" />
 
 
     @if (_AccessPoints is null)

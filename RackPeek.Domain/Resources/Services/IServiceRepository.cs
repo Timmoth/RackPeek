@@ -1,14 +1,19 @@
 namespace RackPeek.Domain.Resources.Services;
 
-public interface IServiceRepository
+public interface IServiceRepository : IResourceRepo<Service> 
 {
     Task<int> GetCountAsync();
     Task<int> GetIpAddressCountAsync();
 
-    Task<IReadOnlyList<Service>> GetAllAsync();
-    Task AddAsync(Service service);
-    Task UpdateAsync(Service service);
-    Task DeleteAsync(string name);
-    Task<Service?> GetByNameAsync(string name);
     Task<IReadOnlyList<Service>> GetBySystemHostAsync(string name);
+}
+
+
+public interface IResourceRepo<T> where T : Resource
+{
+    Task<IReadOnlyList<T>> GetAllAsync();
+    Task AddAsync(T service);
+    Task UpdateAsync(T service);
+    Task DeleteAsync(string name);
+    Task<T?> GetByNameAsync(string name);
 }

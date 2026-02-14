@@ -37,8 +37,38 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         }
     }
 
+    public Task<bool> Exists(string name)
+    {
+        lock (_lock)
+        {
+            return Task.FromResult(_resources.Exists(r =>
+                r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
+        }
+    }
+
     public Task LoadAsync()
         => Task.CompletedTask;
+
+    public Task<IReadOnlyList<Resource>> GetByTagAsync(string name)
+    {
+        lock (_lock)
+            return Task.FromResult<IReadOnlyList<Resource>>(_resources.Where(r => r.Tags.Contains(name)).ToList());
+    }
+
+    public Task<Dictionary<string, int>> GetTagsAsync()
+    {
+        lock (_lock)
+        {
+            var result = _resources
+                .Where(r => r.Tags != null)
+                .SelectMany(r => r.Tags!)      // flatten all tag arrays
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .GroupBy(t => t)
+                .ToDictionary(g => g.Key, g => g.Count());
+            return Task.FromResult(result);
+        }
+    }
+
 
     public Task AddAsync(Resource resource)
     {
