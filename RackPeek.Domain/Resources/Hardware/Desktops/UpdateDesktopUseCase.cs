@@ -9,7 +9,8 @@ public class UpdateDesktopUseCase(IHardwareRepository repository) : IUseCase
         string name,
         string? model = null,
         int? ramGb = null,
-        int? ramMts = null
+        int? ramMts = null,
+        string? notes = null
     )
     {
         // ToDo validate / normalize all inputs
@@ -37,7 +38,10 @@ public class UpdateDesktopUseCase(IHardwareRepository repository) : IUseCase
             desktop.Ram ??= new Ram();
             desktop.Ram.Mts = ramMts.Value;
         }
-
+        if (notes != null)
+        {
+            desktop.Notes = notes;
+        }
         await repository.UpdateAsync(desktop);
     }
 }

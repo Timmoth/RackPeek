@@ -64,8 +64,8 @@
             @if (_isEditing)
             {
                 <input class="w-full px-3 py-2 rounded-md
-                              bg-zinc-800 text-zinc-100
-                              border border-zinc-600"
+                          bg-zinc-800 text-zinc-100
+                          border border-zinc-600"
                        @bind="_edit.Model" />
             }
             else if (!string.IsNullOrWhiteSpace(AccessPoint.Model))
@@ -83,8 +83,8 @@
                 <input type="number"
                        step="0.1"
                        class="w-full px-3 py-2 rounded-md
-                              bg-zinc-800 text-zinc-100
-                              border border-zinc-600"
+                          bg-zinc-800 text-zinc-100
+                          border border-zinc-600"
                        @bind="_edit.Speed" />
             }
             else if (AccessPoint.Speed is not null)
@@ -95,7 +95,25 @@
             }
         </div>
 
+        <div class="md:col-span-2">
+            <div class="text-zinc-400 mb-1">Notes</div>
+
+            @if (_isEditing)
+            {
+                <MarkdownEditor
+                    @bind-Value="_edit.Notes"
+                    ShowActionButtons="false" />
+            }
+            else
+            {
+                <MarkdownViewer
+                    Value="@AccessPoint.Notes"
+                    ShowEditButton="false" />
+            }
+        </div>
+
     </div>
+
 </div>
 
 <ConfirmModal
@@ -145,7 +163,6 @@
         _edit = AccessPointEditModel.From(AccessPoint);
         _isEditing = true;
     }
-
     async Task Save()
     {
         _isEditing = false;
@@ -153,11 +170,13 @@
         await UpdateUseCase.ExecuteAsync(
             AccessPoint.Name,
             _edit.Model,
-            _edit.Speed);
+            _edit.Speed,
+            _edit.Notes);
 
-        // update local view model
         AccessPoint.Model = _edit.Model;
         AccessPoint.Speed = _edit.Speed;
+        AccessPoint.Notes = _edit.Notes; 
+        
     }
 
     void Cancel()
@@ -206,14 +225,17 @@
     {
         public string? Model { get; set; }
         public double? Speed { get; set; }
+        public string? Notes { get; set; }
 
         public static AccessPointEditModel From(AccessPoint ap)
         {
             return new AccessPointEditModel
             {
                 Model = ap.Model,
-                Speed = ap.Speed
+                Speed = ap.Speed,
+                Notes = ap.Notes
             };
         }
     }
+
 }

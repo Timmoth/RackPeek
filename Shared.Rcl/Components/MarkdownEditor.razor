@@ -1,0 +1,52 @@
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+
+    @if (ShowActionButtons)
+    {
+        <div class="flex justify-end gap-3 mb-2 text-xs">
+            <button class="text-emerald-400 hover:text-emerald-300 transition"
+                    @onclick="HandleSave">
+                Save
+            </button>
+
+            <button class="text-zinc-500 hover:text-zinc-300 transition"
+                    @onclick="HandleCancel">
+                Cancel
+            </button>
+        </div>
+    }
+
+    <textarea
+        class="w-full h-64 bg-zinc-950 text-zinc-200 border border-zinc-700 rounded p-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        value="@Value"
+        @oninput="HandleInput">
+    </textarea>
+
+</div>
+
+@code {
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    [Parameter] public bool ShowActionButtons { get; set; } = true;
+
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    async Task HandleInput(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString();
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    async Task HandleSave()
+    {
+        if (OnSave.HasDelegate)
+            await OnSave.InvokeAsync();
+    }
+
+    async Task HandleCancel()
+    {
+        if (OnCancel.HasDelegate)
+            await OnCancel.InvokeAsync();
+    }
+}

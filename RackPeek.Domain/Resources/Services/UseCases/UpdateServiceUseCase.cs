@@ -11,7 +11,8 @@ public class UpdateServiceUseCase(IServiceRepository repository, ISystemReposito
         int? port = null,
         string? protocol = null,
         string? url = null,
-        string? runsOn = null
+        string? runsOn = null,
+        string? notes = null
     )
     {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
@@ -53,6 +54,10 @@ public class UpdateServiceUseCase(IServiceRepository repository, ISystemReposito
             var parentSystem = await systemRepo.GetByNameAsync(runsOn);
             if (parentSystem == null) throw new NotFoundException($"Parent system '{runsOn}' not found.");
             service.RunsOn = runsOn;
+        }        
+        if (notes != null)
+        {
+            service.Notes = notes;
         }
 
         await repository.UpdateAsync(service);

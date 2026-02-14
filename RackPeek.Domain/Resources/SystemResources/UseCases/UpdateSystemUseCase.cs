@@ -11,7 +11,8 @@ public class UpdateSystemUseCase(ISystemRepository repository, IHardwareReposito
         string? os = null,
         int? cores = null,
         int? ram = null,
-        string? runsOn = null
+        string? runsOn = null,
+        string? notes = null
     )
     {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
@@ -41,6 +42,11 @@ public class UpdateSystemUseCase(ISystemRepository repository, IHardwareReposito
         if (ram.HasValue)
             system.Ram = ram.Value;
 
+        if (notes != null)
+        {
+            system.Notes = notes;
+        }
+        
         if (!string.IsNullOrWhiteSpace(runsOn))
         {
             ThrowIfInvalid.ResourceName(runsOn);

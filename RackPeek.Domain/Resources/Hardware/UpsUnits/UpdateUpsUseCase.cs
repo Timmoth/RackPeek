@@ -8,7 +8,8 @@ public class UpdateUpsUseCase(IHardwareRepository repository) : IUseCase
     public async Task ExecuteAsync(
         string name,
         string? model = null,
-        int? va = null
+        int? va = null,
+        string? notes = null
     )
     {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
@@ -26,7 +27,10 @@ public class UpdateUpsUseCase(IHardwareRepository repository) : IUseCase
 
         if (va.HasValue)
             ups.Va = va.Value;
-
+        if (notes != null)
+        {
+            ups.Notes = notes;
+        }
         await repository.UpdateAsync(ups);
     }
 }

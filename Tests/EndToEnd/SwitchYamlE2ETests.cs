@@ -43,9 +43,7 @@ public class SwitchYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
                        model: Netgear GS108
                        managed: true
                        poe: true
-                       ports: 
                        name: sw01
-                       tags: 
 
                      """, yaml);
 
@@ -63,16 +61,12 @@ public class SwitchYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
                        model: Netgear GS108
                        managed: true
                        poe: true
-                       ports: 
                        name: sw01
-                       tags: 
                      - kind: Switch
                        model: TP-Link TL-SG108E
                        managed: false
                        poe: false
-                       ports: 
                        name: sw02
-                       tags: 
 
                      """, yaml);
 

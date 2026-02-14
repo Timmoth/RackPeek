@@ -31,10 +31,7 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
         Assert.Equal("""
                      resources:
                      - kind: Service
-                       network: 
-                       runsOn: 
                        name: immich
-                       tags: 
 
                      """, yaml);
         (output, yaml) = await ExecuteAsync("systems", "add", "vm01");
@@ -56,16 +53,8 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
                          url: http://timmoth.lan:80
                        runsOn: vm01
                        name: immich
-                       tags: 
                      - kind: System
-                       type: 
-                       os: 
-                       cores: 
-                       ram: 
-                       drives: 
-                       runsOn: 
                        name: vm01
-                       tags: 
 
                      """, yaml);
 
@@ -79,14 +68,7 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
         Assert.Equal("""
                      resources:
                      - kind: System
-                       type: 
-                       os: 
-                       cores: 
-                       ram: 
-                       drives: 
-                       runsOn: 
                        name: vm01
-                       tags: 
 
                      """, yaml);
 
@@ -141,7 +123,7 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
 
                      """, output);
 
-        // Report systems
+        // Report systemså
         (output, yaml) = await ExecuteAsync("services", "summary");
         Assert.Equal("""
                      ╭────────┬───────────────┬──────┬──────────┬──────────────────────┬────────────╮

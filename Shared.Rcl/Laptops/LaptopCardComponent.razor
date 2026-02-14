@@ -182,6 +182,26 @@
         </div>
 
     </div>
+    <div class="md:col-span-2">
+        <div class="text-zinc-400 mb-1">Notes</div>
+
+        @if (!_editingNotes)
+        {
+            <MarkdownViewer
+                Value="@Laptop.Notes"
+                ShowEditButton="true"
+                OnEdit="BeginNotesEdit" />
+        }
+        else
+        {
+            <MarkdownEditor
+                @bind-Value="_notesDraft"
+                ShowActionButtons="true"
+                OnSave="SaveNotes"
+                OnCancel="CancelNotesEdit" />
+        }
+    </div>
+    
 </div>
 <CpuModal
     IsOpen="@_cpuModalOpen"
@@ -253,7 +273,7 @@
     private async Task HandleRamSubmit(Ram value)
     {
         _isRamModalOpen = false;
-        await UpdateLaptopUseCase.ExecuteAsync(Laptop.Name, Laptop.Model, value.Size, value.Mts);
+        await UpdateLaptopUseCase.ExecuteAsync(Laptop.Name, Laptop.Model, value.Size, value.Mts, Laptop.Notes);
         Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
     }
 
@@ -461,4 +481,40 @@
         Nav.NavigateTo($"resources/hardware/{newName}");
     }
 
+}
+
+
+@code
+{
+    bool _editingNotes;
+    string? _notesDraft;
+
+    void BeginNotesEdit()
+    {
+        _editingNotes = true;
+        _notesDraft = Laptop.Notes; // draft buffer
+    }
+
+    void CancelNotesEdit()
+    {
+        _editingNotes = false;
+        _notesDraft = null; // discard
+    }
+
+    async Task SaveNotes()
+    {
+        _editingNotes = false;
+
+        await UpdateLaptopUseCase.ExecuteAsync(
+            Laptop.Name,
+            Laptop.Model,
+            Laptop.Ram?.Size,
+            Laptop.Ram?.Mts,
+            _notesDraft);
+
+        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        _notesDraft = null;
+    }
+
+    
 }

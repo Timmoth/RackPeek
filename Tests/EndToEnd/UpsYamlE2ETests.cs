@@ -48,7 +48,6 @@ public class UpsYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputHelp
                        model: APC Smart-UPS 1500
                        va: 1500
                        name: ups01
-                       tags: 
 
                      """, yaml);
 
@@ -70,12 +69,10 @@ public class UpsYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputHelp
                        model: APC Smart-UPS 1500
                        va: 1500
                        name: ups01
-                       tags: 
                      - kind: Ups
                        model: CyberPower CP1500PFCLCD
                        va: 1500
                        name: ups02
-                       tags: 
 
                      """, yaml);
 

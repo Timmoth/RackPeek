@@ -148,6 +148,24 @@
                 }
             }
         </div>
+        
+        <div class="md:col-span-2">
+            <div class="text-zinc-400 mb-1">Notes</div>
+
+            @if (_isEditing)
+            {
+                <MarkdownEditor
+                    @bind-Value="_edit.Notes"
+                    ShowActionButtons="false" />
+            }
+            else
+            {
+                <MarkdownViewer
+                    Value="@Router.Notes"
+                    ShowEditButton="false" />
+            }
+        </div>
+        
     </div>
 </div>
 
@@ -204,7 +222,8 @@
             Router.Name,
             _edit.Model,
             _edit.Managed,
-            _edit.Poe);
+            _edit.Poe,
+            _edit.Notes);
 
         Router = await GetRouterUseCase.ExecuteAsync(Router.Name);
     }
@@ -276,6 +295,7 @@
         public string? Model { get; set; }
         public bool? Managed { get; set; }
         public bool? Poe { get; set; }
+        public string? Notes { get; set; }
 
         public static RouterEditModel From(Router Router)
         {
@@ -283,7 +303,8 @@
             {
                 Model = Router.Model,
                 Managed = Router.Managed,
-                Poe = Router.Poe
+                Poe = Router.Poe,
+                Notes = Router.Notes
             };
         }
     }

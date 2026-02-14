@@ -35,23 +35,9 @@ public class SystemYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
         Assert.Equal("""
                      resources:
                      - kind: Server
-                       cpus: 
-                       ram: 
-                       drives: 
-                       nics: 
-                       gpus: 
-                       ipmi: 
                        name: hypervisor01
-                       tags: 
                      - kind: System
-                       type: 
-                       os: 
-                       cores: 
-                       ram: 
-                       drives: 
-                       runsOn: 
                        name: host01
-                       tags: 
 
                      """, yaml);
 
@@ -70,23 +56,14 @@ public class SystemYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
         Assert.Equal("""
                      resources:
                      - kind: Server
-                       cpus: 
-                       ram: 
-                       drives: 
-                       nics: 
-                       gpus: 
-                       ipmi: 
                        name: hypervisor01
-                       tags: 
                      - kind: System
                        type: baremetal
                        os: ubuntu-22.04
                        cores: 4
                        ram: 8192
-                       drives: 
                        runsOn: hypervisor01
                        name: host01
-                       tags: 
 
                      """, yaml);
 

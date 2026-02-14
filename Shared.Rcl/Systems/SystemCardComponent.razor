@@ -220,6 +220,23 @@
             }
         </div>
 
+        <div class="md:col-span-2">
+            <div class="text-zinc-400 mb-1">Notes</div>
+
+            @if (_isEditing)
+            {
+                <MarkdownEditor
+                    @bind-Value="_edit.Notes"
+                    ShowActionButtons="false" />
+            }
+            else
+            {
+                <MarkdownViewer
+                    Value="@System.Notes"
+                    ShowEditButton="false" />
+            }
+        </div>
+        
     </div>
 </div>
 
@@ -294,7 +311,8 @@
             System.Os,
             System.Cores,
             System.Ram,
-            name);
+            name,
+            System.Notes);
         System = await GetSystemUseCase.ExecuteAsync(System.Name);
         _edit = SystemEditModel.From(System);
     }

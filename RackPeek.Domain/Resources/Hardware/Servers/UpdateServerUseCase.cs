@@ -9,7 +9,8 @@ public class UpdateServerUseCase(IHardwareRepository repository) : IUseCase
         string name,
         int? ramGb = null,
         int? ramMts = null,
-        bool? ipmi = null
+        bool? ipmi = null,
+        string? notes = null
     )
     {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
@@ -38,7 +39,10 @@ public class UpdateServerUseCase(IHardwareRepository repository) : IUseCase
 
         // ---- IPMI ----
         if (ipmi.HasValue) server.Ipmi = ipmi.Value;
-
+        if (notes != null)
+        {
+            server.Notes = notes;
+        }
         await repository.UpdateAsync(server);
     }
 }

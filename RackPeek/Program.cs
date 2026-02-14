@@ -11,23 +11,24 @@ public static class Program
     public static async Task<int> Main(string[] args)
     {
         // Configuration
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", true)
+        var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true)
             .Build();
 
-        // DI
+        var yamlDir = configuration.GetValue<string>("RPK_YAML_DIR") ?? "./config";
+
+// DI
         var services = new ServiceCollection();
-        await CliBootstrap.RegisterInternals(services, configuration, "./config", "config.yaml");
+        await CliBootstrap.RegisterInternals(services, configuration, yamlDir, "config.yaml");
+
         services.AddLogging(configure =>
-            configure
-                .AddSimpleConsole(opts => { opts.TimestampFormat = "yyyy-MM-dd HH:mm:ss "; }));
+            configure.AddSimpleConsole(opts => { opts.TimestampFormat = "yyyy-MM-dd HH:mm:ss "; }));
 
         var registrar = new TypeRegistrar(services.BuildServiceProvider());
         var app = new CommandApp(registrar);
 
         CliBootstrap.BuildApp(app);
-        
+
         return await app.RunAsync(args);
     }
 }

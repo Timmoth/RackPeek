@@ -101,6 +101,23 @@
                 <div class="text-zinc-300">@Ups.Va VA</div>
             }
         </div>
+        
+        <div class="md:col-span-2">
+            <div class="text-zinc-400 mb-1">Notes</div>
+
+            @if (_isEditing)
+            {
+                <MarkdownEditor
+                    @bind-Value="_edit.Notes"
+                    ShowActionButtons="false" />
+            }
+            else
+            {
+                <MarkdownViewer
+                    Value="@Ups.Notes"
+                    ShowEditButton="false" />
+            }
+        </div>
     </div>
 </div>
 
@@ -153,7 +170,8 @@
         await UpdateUpsUseCase.ExecuteAsync(
             Ups.Name,
             _edit.Model,
-            _edit.Va);
+            _edit.Va,
+            _edit.Notes);
 
         Ups = await GetUpsUseCase.ExecuteAsync(Ups.Name);
     }
@@ -182,13 +200,15 @@
     {
         public string? Model { get; set; }
         public int? Va { get; set; }
+        public string? Notes { get; set; }
 
         public static UpsEditModel From(Ups ups)
         {
             return new UpsEditModel
             {
                 Model = ups.Model,
-                Va = ups.Va
+                Va = ups.Va,
+                Notes = ups.Notes
             };
         }
     }

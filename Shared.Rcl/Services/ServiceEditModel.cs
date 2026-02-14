@@ -10,6 +10,7 @@ public sealed class ServiceEditModel
     public string? Protocol { get; set; }
     public string? Url { get; set; }
     public string? RunsOn { get; set; }
+    public string? Notes { get; set; }
 
     public static ServiceEditModel From(Service s)
     {
@@ -20,7 +21,8 @@ public sealed class ServiceEditModel
             Port = s.Network?.Port,
             Protocol = s.Network?.Protocol,
             Url = s.Network?.Url,
-            RunsOn = s.RunsOn
+            RunsOn = s.RunsOn,
+            Notes = s.Notes
         };
     }
 }

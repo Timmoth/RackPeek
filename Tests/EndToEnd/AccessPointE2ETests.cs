@@ -48,7 +48,6 @@ public class AccessPointYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper ou
                        model: Unifi-U6-Lite
                        speed: 1
                        name: ap01
-                       tags: 
 
                      """, yaml);
 
@@ -69,12 +68,10 @@ public class AccessPointYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper ou
                        model: Unifi-U6-Lite
                        speed: 1
                        name: ap01
-                       tags: 
                      - kind: AccessPoint
                        model: Aruba-AP-515
                        speed: 2.5
                        name: ap02
-                       tags: 
 
                      """, yaml);
 

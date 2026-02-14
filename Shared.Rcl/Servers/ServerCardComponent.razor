@@ -225,6 +225,26 @@
 
 
     </div>
+    <div class="md:col-span-2">
+        <div class="text-zinc-400 mb-1">Notes</div>
+
+        @if (!_editingNotes)
+        {
+            <MarkdownViewer
+                Value="@Server.Notes"
+                ShowEditButton="true"
+                OnEdit="BeginNotesEdit" />
+        }
+        else
+        {
+            <MarkdownEditor
+                @bind-Value="_notesDraft"
+                ShowActionButtons="true"
+                OnSave="SaveNotes"
+                OnCancel="CancelNotesEdit" />
+        }
+    </div>
+    
 </div>
 
 <CpuModal
@@ -566,4 +586,40 @@
         Nav.NavigateTo($"resources/hardware/{newName}");
     }
 
+}
+
+
+@code
+{
+    bool _editingNotes;
+    string? _notesDraft;
+
+    void BeginNotesEdit()
+    {
+        _editingNotes = true;
+        _notesDraft = Server.Notes; // draft buffer
+    }
+
+    void CancelNotesEdit()
+    {
+        _editingNotes = false;
+        _notesDraft = null; // discard
+    }
+
+    async Task SaveNotes()
+    {
+        _editingNotes = false;
+
+        await UpdateServerUseCase.ExecuteAsync(
+            Server.Name,
+            Server.Ram?.Size,
+            Server.Ram?.Mts,
+            Server.Ipmi,
+            _notesDraft);
+
+        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        _notesDraft = null;
+    }
+
+    
 }

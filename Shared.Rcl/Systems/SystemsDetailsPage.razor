@@ -2,6 +2,7 @@
 @using RackPeek.Domain.Resources.Hardware
 @using RackPeek.Domain.Resources.SystemResources
 @using RackPeek.Domain.Resources.SystemResources.UseCases
+@using Shared.Rcl.Services
 @inject ISystemRepository SystemRepository
 @inject UpdateSystemUseCase UpdateSystemUseCase
 @inject GetSystemServiceTreeUseCase GetSystemServiceTreeUseCase
@@ -74,7 +75,8 @@
             edit.Os,
             edit.Cores,
             edit.Ram,
-            edit.RunsOn
+            edit.RunsOn,
+                edit.Notes
         );
     }
 

@@ -151,6 +151,24 @@
                 }
             }
         </div>
+        
+        <div class="md:col-span-2">
+            <div class="text-zinc-400 mb-1">Notes</div>
+
+            @if (_isEditing)
+            {
+                <MarkdownEditor
+                    @bind-Value="_edit.Notes"
+                    ShowActionButtons="false" />
+            }
+            else
+            {
+                <MarkdownViewer
+                    Value="@Firewall.Notes"
+                    ShowEditButton="false" />
+            }
+        </div>
+        
     </div>
 </div>
 
@@ -207,7 +225,8 @@
             Firewall.Name,
             _edit.Model,
             _edit.Managed,
-            _edit.Poe);
+            _edit.Poe,
+            _edit.Notes);
 
         Firewall = await GetFirewallUseCase.ExecuteAsync(Firewall.Name);
     }
@@ -279,6 +298,7 @@
         public string? Model { get; set; }
         public bool? Managed { get; set; }
         public bool? Poe { get; set; }
+        public string? Notes { get; set; }
 
         public static FirewallEditModel From(Firewall firewall)
         {
@@ -286,7 +306,8 @@
             {
                 Model = firewall.Model,
                 Managed = firewall.Managed,
-                Poe = firewall.Poe
+                Poe = firewall.Poe,
+                Notes = firewall.Notes
             };
         }
     }

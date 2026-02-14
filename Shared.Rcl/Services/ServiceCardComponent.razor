@@ -174,7 +174,22 @@
                 </NavLink>
             }
         </div>
+        <div class="md:col-span-2">
+            <div class="text-zinc-400 mb-1">Notes</div>
 
+            @if (_isEditing)
+            {
+                <MarkdownEditor
+                    @bind-Value="_edit.Notes"
+                    ShowActionButtons="false" />
+            }
+            else
+            {
+                <MarkdownViewer
+                    Value="@Service.Notes"
+                    ShowEditButton="false" />
+            }
+        </div>
     </div>
 </div>
 
@@ -269,7 +284,8 @@
             Service.Network?.Port,
             Service.Network?.Protocol,
             Service.Network?.Url,
-            name);
+            name,
+            Service.Notes);
         Service = await GetServiceUseCase.ExecuteAsync(Service.Name);
         _edit = ServiceEditModel.From(Service);
     }
