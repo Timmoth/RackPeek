@@ -7,7 +7,6 @@ using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
-using RackPeek.Yaml;
 
 namespace RackPeek.Web.Viewer;
 
@@ -22,17 +21,22 @@ public class Program
         var services = builder.Services;
         builder.Services.AddScoped(sp =>
             new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-        
+
         builder.Services.AddScoped<ITextFileStore, WasmTextFileStore>();
 
         var resources = new ResourceCollection();
         builder.Services.AddSingleton(resources);
+
+        var yamlDir = builder.Configuration.GetValue<string>("RPK_YAML_DIR") ?? "config";
+        var yamlFilePath = $"{yamlDir}/config.yaml";
+
         builder.Services.AddScoped<IResourceCollection>(sp =>
             new YamlResourceCollection(
-                "config/config.yaml",
+                yamlFilePath,
                 sp.GetRequiredService<ITextFileStore>(),
                 sp.GetRequiredService<ResourceCollection>()));
-        
+
+
         services.AddScoped<IHardwareRepository, YamlHardwareRepository>();
         services.AddScoped<ISystemRepository, YamlSystemRepository>();
         services.AddScoped<IServiceRepository, YamlServiceRepository>();
@@ -40,9 +44,9 @@ public class Program
 
         builder.Services.AddCommands();
         builder.Services.AddScoped<IConsoleEmulator, ConsoleEmulator>();
-        
+
         builder.Services.AddUseCases();
-        
+
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
         await builder.Build().RunAsync();
