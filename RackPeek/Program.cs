@@ -11,13 +11,16 @@ public static class Program
     public static async Task<int> Main(string[] args)
     {
         // Configuration
-        var configuration = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory)
+        var appBasePath = AppContext.BaseDirectory;
+
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(appBasePath)
             .AddJsonFile("appsettings.json", optional: true)
             .Build();
 
-        var yamlDir = configuration.GetValue<string>("RPK_YAML_DIR") ?? "./config";
+        var yamlDir = configuration.GetValue<string>("RPK_YAML_DIR") ?? "config";
 
-// DI
+        // DI
         var services = new ServiceCollection();
         await CliBootstrap.RegisterInternals(services, configuration, yamlDir, "config.yaml");
 
