@@ -111,7 +111,7 @@
       - [add](Commands.md#rpk-desktops-nic-add) - Add a NIC to a desktop
       - [set](Commands.md#rpk-desktops-nic-set) - Update a desktop NIC
       - [del](Commands.md#rpk-desktops-nic-del) - Remove a NIC from a desktop
-  - [Laptops](Commands.md#rpk-laptops) - Manage Laptop computers and their components
+  - [laptops](Commands.md#rpk-laptops) - Manage Laptop computers and their components
     - [add](Commands.md#rpk-laptops-add) - Add a new Laptop
     - [list](Commands.md#rpk-laptops-list) - List all Laptops
     - [get](Commands.md#rpk-laptops-get) - Retrieve a Laptop by name
@@ -123,10 +123,10 @@
       - [add](Commands.md#rpk-laptops-cpu-add) - Add a CPU to a Laptop
       - [set](Commands.md#rpk-laptops-cpu-set) - Update a Laptop CPU
       - [del](Commands.md#rpk-laptops-cpu-del) - Remove a CPU from a Laptop
-    - [drive](Commands.md#rpk-laptops-drive) - Manage storage drives attached to Laptops
-      - [add](Commands.md#rpk-laptops-drive-add) - Add a drive to a Laptop
-      - [set](Commands.md#rpk-laptops-drive-set) - Update a Laptop drive
-      - [del](Commands.md#rpk-laptops-drive-del) - Remove a drive from a Laptop
+    - [drives](Commands.md#rpk-laptops-drives) - Manage storage drives attached to Laptops
+      - [add](Commands.md#rpk-laptops-drives-add) - Add a drive to a Laptop
+      - [set](Commands.md#rpk-laptops-drives-set) - Update a Laptop drive
+      - [del](Commands.md#rpk-laptops-drives-del) - Remove a drive from a Laptop
     - [gpu](Commands.md#rpk-laptops-gpu) - Manage GPUs attached to Laptops
       - [add](Commands.md#rpk-laptops-gpu-add) - Add a GPU to a Laptop
       - [set](Commands.md#rpk-laptops-gpu-set) - Update a Laptop GPU
