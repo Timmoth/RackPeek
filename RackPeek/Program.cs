@@ -11,7 +11,7 @@ public static class Program
     public static async Task<int> Main(string[] args)
     {
         // Configuration
-        var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+        var configuration = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: true)
             .Build();
 
@@ -28,6 +28,7 @@ public static class Program
         var app = new CommandApp(registrar);
 
         CliBootstrap.BuildApp(app);
+        CliBootstrap.SetContext(args, app);
 
         return await app.RunAsync(args);
     }

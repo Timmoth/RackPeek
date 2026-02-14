@@ -42,19 +42,27 @@ namespace RackPeek;
 
 public static class CliBootstrap
 {
+    private static string[]? _lastArgs;
+    private static CommandApp? _app;
+
+    public static void SetContext(string[] args, CommandApp app)
+    {
+        _lastArgs = args;
+        _app = app;
+    }
     public static async Task RegisterInternals(IServiceCollection services, IConfiguration configuration,
         string yamlDir, string yamlFile)
     {
         services.AddSingleton(configuration);
 
-        var basePath = configuration["HardwarePath"] ?? Directory.GetCurrentDirectory();
+        var basePath = configuration["HardwarePath"] ?? AppContext.BaseDirectory;
 
         // Resolve yamlDir as relative to basePath
         var yamlPath = Path.IsPathRooted(yamlDir) ? yamlDir : Path.Combine(basePath, yamlDir);
 
         if (!Directory.Exists(yamlPath)) throw new DirectoryNotFoundException($"YAML directory not found: {yamlPath}");
 
-        var collection = new YamlResourceCollection(Path.Combine(yamlDir, yamlFile), new PhysicalTextFileStore(), new ResourceCollection());
+        var collection = new YamlResourceCollection(Path.Combine(yamlPath, yamlFile), new PhysicalTextFileStore(), new ResourceCollection());
         await collection.LoadAsync();
         services.AddSingleton<IResourceCollection>(collection);
 
@@ -490,10 +498,52 @@ public static class CliBootstrap
                 AnsiConsole.MarkupLine($"[red]Not found:[/] {ne.Message}");
                 return 4;
 
+            case CommandParseException pe:
+                if (_showingHelp) return 1; // suppress errors during help lookup
+                AnsiConsole.MarkupLine($"[red]Invalid command:[/] {pe.Message}");
+                if (pe.Pretty != null) AnsiConsole.Write(pe.Pretty);
+                ShowContextualHelp();
+                return 1;
+
+            case CommandRuntimeException re:
+                if (_showingHelp) return 1;
+                AnsiConsole.MarkupLine($"[red]Error:[/] {re.Message}");
+                if (re.Pretty != null) AnsiConsole.Write(re.Pretty);
+                ShowContextualHelp();
+                return 1;
+
             default:
                 AnsiConsole.MarkupLine("[red]Unexpected error occurred.[/]");
                 AnsiConsole.WriteException(ex, ExceptionFormats.ShortenEverything);
                 return 99;
+        }
+    }
+
+    private static bool _showingHelp;
+
+    private static void ShowContextualHelp()
+    {
+        if (_lastArgs == null || _app == null || _showingHelp) return;
+
+        _showingHelp = true;
+        try
+        {
+            // Extract command path (args before any --flags)
+            var commandPath = _lastArgs.TakeWhile(a => !a.StartsWith("-")).ToList();
+
+            // Try progressively shorter command paths until --help succeeds
+            while (commandPath.Count > 0)
+            {
+                var helpArgs = commandPath.Append("--help").ToArray();
+                AnsiConsole.WriteLine();
+                var result = _app.Run(helpArgs);
+                if (result == 0) return;
+                commandPath.RemoveAt(commandPath.Count - 1);
+            }
+        }
+        finally
+        {
+            _showingHelp = false;
         }
     }
 }
