@@ -35,13 +35,8 @@ public class Program
                 yamlFilePath,
                 sp.GetRequiredService<ITextFileStore>(),
                 sp.GetRequiredService<ResourceCollection>()));
-
-
-        services.AddScoped<IHardwareRepository, YamlHardwareRepository>();
-        services.AddScoped<ISystemRepository, YamlSystemRepository>();
-        services.AddScoped<IServiceRepository, YamlServiceRepository>();
-        services.AddScoped<IResourceRepository, YamlResourceRepository>();
-
+     
+        builder.Services.AddYamlRepos();
         builder.Services.AddCommands();
         builder.Services.AddScoped<IConsoleEmulator, ConsoleEmulator>();
 

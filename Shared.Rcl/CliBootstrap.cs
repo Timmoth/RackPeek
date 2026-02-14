@@ -59,10 +59,7 @@ public static class CliBootstrap
         services.AddSingleton<IResourceCollection>(collection);
 
         // Infrastructure
-        services.AddScoped<IHardwareRepository, YamlHardwareRepository>();
-        services.AddScoped<ISystemRepository, YamlSystemRepository>();
-        services.AddScoped<IServiceRepository, YamlServiceRepository>();
-        services.AddScoped<IResourceRepository, YamlResourceRepository>();
+        services.AddYamlRepos();
 
         // Application
         services.AddUseCases();

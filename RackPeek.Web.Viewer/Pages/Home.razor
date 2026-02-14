@@ -4,6 +4,7 @@
 @using RackPeek.Domain.Resources.Services.UseCases
 @using RackPeek.Domain.Resources.SystemResources.UseCases
 @using Shared.Rcl
+@using Shared.Rcl.Components
 @inject GetSystemSummaryUseCase SystemSummaryUseCase
 @inject GetServiceSummaryUseCase ServiceSummaryUseCase
 @inject GetHardwareUseCaseSummary HardwareSummaryUseCase
@@ -44,7 +45,10 @@
             </div>
         </div>
 
-        <!-- Tree -->
+        <div class="space-y-10 mb-10">
+            <TagListComponent/>
+            </div>
+            <!-- Tree -->
         <div class="space-y-10">
 
             <!-- Hardware -->

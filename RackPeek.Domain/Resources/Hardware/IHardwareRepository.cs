@@ -1,15 +1,13 @@
+using RackPeek.Domain.Resources.Services;
+using RackPeek.Domain.Resources.SystemResources;
+
 namespace RackPeek.Domain.Resources.Hardware;
 
-public interface IHardwareRepository
+public interface IHardwareRepository : IResourceRepo<Models.Hardware> 
 {
     Task<int> GetCountAsync();
     Task<Dictionary<string, int>> GetKindCountAsync();
-
-    Task<IReadOnlyList<Models.Hardware>> GetAllAsync();
-    Task AddAsync(Models.Hardware hardware);
-    Task UpdateAsync(Models.Hardware hardware);
-    Task DeleteAsync(string name);
-    Task<Models.Hardware?> GetByNameAsync(string name);
+    
     public Task<List<HardwareTree>> GetTreeAsync();
 }
 

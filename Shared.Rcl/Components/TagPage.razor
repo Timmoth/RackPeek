@@ -1,0 +1,81 @@
+﻿@page "/tags/{TagName}"
+
+@using RackPeek.Domain.Resources
+@using RackPeek.Domain.Resources.SystemResources
+
+@inject IResourceRepository ResourceRepository
+@inject NavigationManager Nav
+
+<PageTitle>Tag: @TagName</PageTitle>
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6">
+
+    <!-- Header -->
+    <div class="space-y-2">
+        <h1 class="text-lg text-zinc-100">
+            Tag: <span class="text-emerald-400">@TagName</span>
+        </h1>
+    </div>
+
+    @if (_resources is null)
+    {
+        <div class="text-zinc-500">loading resources…</div>
+    }
+    else if (_resources.Count == 0)
+    {
+        <div class="text-zinc-500">no resources found for this tag</div>
+    }
+    else
+    {
+        <div class="space-y-3">
+            @foreach (var resource in _resources.OrderBy(r => r.Name))
+            {
+                <div class="border border-zinc-800 rounded p-3 bg-zinc-900 hover:border-emerald-700 transition">
+                    <NavLink href="@GetResourceUrl(resource)"
+                             class="block hover:text-emerald-300">
+
+                        <div class="flex justify-between items-center">
+                            <div class="text-zinc-100">
+                                @resource.Name
+                            </div>
+
+                            <div class="text-xs text-zinc-500 uppercase tracking-wide">
+                                @resource.Kind
+                            </div>
+                        </div>
+
+                    </NavLink>
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public string TagName { get; set; } = string.Empty;
+
+    private IReadOnlyList<Resource>? _resources;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var decoded = Uri.UnescapeDataString(TagName);
+        _resources = await ResourceRepository.GetByTagAsync(decoded);
+    }
+
+    private string GetResourceUrl(Resource resource)
+    {
+        if (resource.Kind == SystemResource.KindLabel)
+        {
+            return $"resources/systems/{resource.Name}";
+        }else if (resource.Kind == Service.KindLabel)
+        {
+            return $"resources/services/{resource.Name}";
+        }
+        else
+        {
+            return $"resources/hardware/{resource.Name}";
+        }
+    }
+}

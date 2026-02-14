@@ -61,11 +61,8 @@ public class Program
                 sp.GetRequiredService<ResourceCollection>()));
         
         // Infrastructure
-        builder.Services.AddScoped<IHardwareRepository, YamlHardwareRepository>();
-        builder.Services.AddScoped<ISystemRepository, YamlSystemRepository>();
-        builder.Services.AddScoped<IServiceRepository, YamlServiceRepository>();
-        builder.Services.AddScoped<IResourceRepository, YamlResourceRepository>();
-        
+        builder.Services.AddYamlRepos();
+
         builder.Services.AddUseCases();
         builder.Services.AddCommands();
         builder.Services.AddScoped<IConsoleEmulator, ConsoleEmulator>();

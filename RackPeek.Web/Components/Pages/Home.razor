@@ -3,6 +3,7 @@
 @using RackPeek.Domain.Resources.Hardware
 @using RackPeek.Domain.Resources.Services.UseCases
 @using RackPeek.Domain.Resources.SystemResources.UseCases
+@using Shared.Rcl.Components
 @inject GetSystemSummaryUseCase SystemSummaryUseCase
 @inject GetServiceSummaryUseCase ServiceSummaryUseCase
 @inject GetHardwareUseCaseSummary HardwareSummaryUseCase
@@ -43,7 +44,12 @@
                 </div>
             </div>
         </div>
-
+        
+        <div class="space-y-10 mb-10">
+            <TagListComponent/>
+        </div>
+        
+        
         <!-- Tree -->
         <div class="space-y-10">
 
@@ -55,7 +61,7 @@
 
                 <ul class="space-y-2">
                     <li class="text-zinc-100">
-                        ├─ Total (@_hardware!.TotalHardware)
+                        ├─ Hardware (@_hardware!.TotalHardware)
                     </li>
 
                     @if (_hardware.HardwareByKind.Any())

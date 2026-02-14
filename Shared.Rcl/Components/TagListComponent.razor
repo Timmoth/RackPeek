@@ -1,0 +1,50 @@
+﻿@using RackPeek.Domain.Resources
+@using RackPeek.Domain.UseCases.Tags
+@inject IResourceRepository TagRepository
+@inject NavigationManager Nav
+
+<div>
+    <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
+        Tags
+    </div>
+
+    @if (_tags is null)
+    {
+        <div class="text-zinc-500">loading tags…</div>
+    }
+    else if (_tags.Count == 0)
+    {
+        <div class="text-zinc-500">no tags found</div>
+    }
+    else
+    {
+        <ul class="space-y-3">
+            <li>
+                <div class="text-zinc-100">
+                    ├─ Tags (@_tags.Count)
+                </div>
+
+                <ul class="ml-4 mt-2 border-l border-zinc-800 pl-4 space-y-1">
+                    @foreach (var (tag, count) in _tags.OrderByDescending(x => x.Value).ThenBy(x => x.Key))
+                    {
+                        <li class="text-zinc-500 hover:text-emerald-300 transition">
+                            <NavLink href="@($"tags/{Uri.EscapeDataString(tag)}")"
+                                     class="block">
+                                └─ @tag (@count)
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+            </li>
+        </ul>
+    }
+</div>
+
+@code {
+    private Dictionary<string, int>? _tags;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _tags = await TagRepository.GetTagsAsync();
+    }
+}
