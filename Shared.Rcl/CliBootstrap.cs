@@ -409,24 +409,24 @@ public static class CliBootstrap
             // ----------------------------
             // Laptops
             // ----------------------------
-            config.AddBranch("Laptops", Laptops =>
+            config.AddBranch("laptops", laptops =>
             {
-                Laptops.SetDescription("Manage Laptop computers and their components.");
+                laptops.SetDescription("Manage Laptop computers and their components.");
 
                 // CRUD
-                Laptops.AddCommand<LaptopAddCommand>("add").WithDescription("Add a new Laptop.");
-                Laptops.AddCommand<LaptopGetCommand>("list").WithDescription("List all Laptops.");
-                Laptops.AddCommand<LaptopGetByNameCommand>("get").WithDescription("Retrieve a Laptop by name.");
-                Laptops.AddCommand<LaptopDescribeCommand>("describe")
+                laptops.AddCommand<LaptopAddCommand>("add").WithDescription("Add a new Laptop.");
+                laptops.AddCommand<LaptopGetCommand>("list").WithDescription("List all Laptops.");
+                laptops.AddCommand<LaptopGetByNameCommand>("get").WithDescription("Retrieve a Laptop by name.");
+                laptops.AddCommand<LaptopDescribeCommand>("describe")
                     .WithDescription("Show detailed information about a Laptop.");
-                Laptops.AddCommand<LaptopDeleteCommand>("del").WithDescription("Delete a Laptop from the inventory.");
-                Laptops.AddCommand<LaptopReportCommand>("summary")
+                laptops.AddCommand<LaptopDeleteCommand>("del").WithDescription("Delete a Laptop from the inventory.");
+                laptops.AddCommand<LaptopReportCommand>("summary")
                     .WithDescription("Show a summarized hardware report for all Laptops.");
-                Laptops.AddCommand<LaptopTreeCommand>("tree")
+                laptops.AddCommand<LaptopTreeCommand>("tree")
                     .WithDescription("Display the dependency tree for a Laptop.");
 
                 // CPU
-                Laptops.AddBranch("cpu", cpu =>
+                laptops.AddBranch("cpu", cpu =>
                 {
                     cpu.SetDescription("Manage CPUs attached to Laptops.");
                     cpu.AddCommand<LaptopCpuAddCommand>("add").WithDescription("Add a CPU to a Laptop.");
@@ -435,16 +435,16 @@ public static class CliBootstrap
                 });
 
                 // Drives
-                Laptops.AddBranch("drive", drive =>
+                laptops.AddBranch("drives", drives =>
                 {
-                    drive.SetDescription("Manage storage drives attached to Laptops.");
-                    drive.AddCommand<LaptopDriveAddCommand>("add").WithDescription("Add a drive to a Laptop.");
-                    drive.AddCommand<LaptopDriveSetCommand>("set").WithDescription("Update a Laptop drive.");
-                    drive.AddCommand<LaptopDriveRemoveCommand>("del").WithDescription("Remove a drive from a Laptop.");
+                    drives.SetDescription("Manage storage drives attached to Laptops.");
+                    drives.AddCommand<LaptopDriveAddCommand>("add").WithDescription("Add a drive to a Laptop.");
+                    drives.AddCommand<LaptopDriveSetCommand>("set").WithDescription("Update a Laptop drive.");
+                    drives.AddCommand<LaptopDriveRemoveCommand>("del").WithDescription("Remove a drive from a Laptop.");
                 });
 
                 // GPUs
-                Laptops.AddBranch("gpu", gpu =>
+                laptops.AddBranch("gpu", gpu =>
                 {
                     gpu.SetDescription("Manage GPUs attached to Laptops.");
                     gpu.AddCommand<LaptopGpuAddCommand>("add").WithDescription("Add a GPU to a Laptop.");

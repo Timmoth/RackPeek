@@ -14,6 +14,6 @@ public class DesktopDriveAddSettings : CommandSettings
     public string? Type { get; set; }
 
     [CommandOption("--size")]
-    [Description("The drive capacity in Gb.")]
+    [Description("The drive capacity in GB.")]
     public int? Size { get; set; }
 }

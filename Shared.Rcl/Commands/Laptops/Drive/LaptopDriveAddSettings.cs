@@ -5,7 +5,7 @@ namespace RackPeek.Commands.Laptops.Drive;
 
 public class LaptopDriveAddSettings : CommandSettings
 {
-    [CommandArgument(0, "<Laptop>")]
+    [CommandArgument(0, "<laptop>")]
     [Description("The name of the Laptop.")]
     public string LaptopName { get; set; } = default!;
 
@@ -14,6 +14,6 @@ public class LaptopDriveAddSettings : CommandSettings
     public string? Type { get; set; }
 
     [CommandOption("--size")]
-    [Description("The drive capacity in Gb.")]
+    [Description("The drive capacity in GB:.")]
     public int? Size { get; set; }
 }

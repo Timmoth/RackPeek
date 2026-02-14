@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Servers.Drives;
 using Spectre.Console;
@@ -7,9 +8,13 @@ namespace RackPeek.Commands.Servers.Drives;
 
 public class ServerDriveAddSettings : ServerNameSettings
 {
-    [CommandOption("--type <TYPE>")] public string Type { get; set; }
+    [CommandOption("--type <TYPE>")] 
+    [Description("The drive type e.g hdd / ssd.")]
+    public string Type { get; set; }
 
-    [CommandOption("--size <SIZE>")] public int Size { get; set; }
+    [CommandOption("--size <SIZE>")] 
+    [Description("The drive capacity in GB.")]
+    public int Size { get; set; }
 }
 
 public class ServerDriveAddCommand(IServiceProvider serviceProvider)
