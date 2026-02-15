@@ -2,6 +2,7 @@ using NSubstitute;
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Hardware.Servers.Ram;
 using RackPeek.Domain.Resources.Models;
 
 namespace Tests.HardwareResources;
@@ -9,7 +10,7 @@ namespace Tests.HardwareResources;
 public class UpdateServerUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_Updates_ram_ipmi_and_cpu_when_provided()
+    public async Task ExecuteAsync_Updates_ipmi_when_provided()
     {
         // Arrange
         var repo = Substitute.For<IHardwareRepository>();
@@ -29,16 +30,12 @@ public class UpdateServerUseCaseTests
         // Act
         await sut.ExecuteAsync(
             "node01",
-            64,
-            3200,
             true
         );
 
         // Assert
         await repo.Received(1).UpdateAsync(Arg.Is<Server>(s =>
             s.Name == "node01" &&
-            s.Ram.Size == 64 &&
-            s.Ram.Mts == 3200 &&
             s.Ipmi == true
         ));
     }
@@ -54,7 +51,7 @@ public class UpdateServerUseCaseTests
 
         // Act
         var ex = await Assert.ThrowsAsync<NotFoundException>(() =>
-            sut.ExecuteAsync("node01", 64)
+            sut.ExecuteAsync("node01", true)
         );
 
         // Assert
@@ -89,6 +86,29 @@ public class UpdateServerUseCaseTests
         await repo.Received(1).UpdateAsync(Arg.Is<Server>(s =>
             s.Ram.Size == 32 &&
             s.Ipmi == false
+        ));
+    }
+
+    [Fact]
+    public async Task SetServerRamUseCase_Updates_ram_when_provided()
+    {
+        // Arrange
+        var repo = Substitute.For<IHardwareRepository>();
+        repo.GetByNameAsync("node01").Returns(new Server
+        {
+            Name = "node01",
+            Ram = new Ram { Size = 32 }
+        });
+
+        var sut = new SetServerRamUseCase(repo);
+
+        // Act
+        await sut.ExecuteAsync("node01", 64, 3200);
+
+        // Assert
+        await repo.Received(1).UpdateAsync(Arg.Is<Server>(s =>
+            s.Ram.Size == 64 &&
+            s.Ram.Mts == 3200
         ));
     }
 }

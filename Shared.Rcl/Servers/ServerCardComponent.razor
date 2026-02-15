@@ -3,6 +3,7 @@
 @using RackPeek.Domain.Resources.Hardware.Servers.Drives
 @using RackPeek.Domain.Resources.Hardware.Servers.Gpus
 @using RackPeek.Domain.Resources.Hardware.Servers.Nics
+@using RackPeek.Domain.Resources.Hardware.Servers.Ram
 @using RackPeek.Domain.Resources.Models
 @inject AddCpuUseCase AddCpuUseCase
 @inject RemoveCpuUseCase RemoveCpuUseCase
@@ -23,6 +24,7 @@
 
 @inject GetServerUseCase GetServerUseCase
 @inject UpdateServerUseCase UpdateServerUseCase
+@inject SetServerRamUseCase SetServerRamUseCase
 @inject DeleteServerUseCase DeleteServerUseCase
 @inject CloneServerUseCase CloneUseCase
 
@@ -326,7 +328,7 @@
     private async Task HandleRamSubmit(Ram value)
     {
         _isRamModalOpen = false;
-        await UpdateServerUseCase.ExecuteAsync(Server.Name, value.Size, value.Mts, Server.Ipmi);
+        await SetServerRamUseCase.ExecuteAsync(Server.Name, value.Size, value.Mts);
         Server = await GetServerUseCase.ExecuteAsync(Server.Name);
     }
 
@@ -614,8 +616,6 @@
 
         await UpdateServerUseCase.ExecuteAsync(
             Server.Name,
-            Server.Ram?.Size,
-            Server.Ram?.Mts,
             Server.Ipmi,
             _notesDraft);
 

@@ -8,13 +8,9 @@ public class UpdateLaptopUseCase(IHardwareRepository repository) : IUseCase
     public async Task ExecuteAsync(
         string name,
         string? model = null,
-        int? ramGb = null,
-        int? ramMts = null,
         string? notes = null
     )
     {
-        // ToDo validate / normalize all inputs
-
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
@@ -25,19 +21,6 @@ public class UpdateLaptopUseCase(IHardwareRepository repository) : IUseCase
         if (!string.IsNullOrWhiteSpace(model))
             laptop.Model = model;
 
-        // ---- RAM ----
-        if (ramGb.HasValue)
-        {
-            ThrowIfInvalid.RamGb(ramGb);
-            laptop.Ram ??= new Ram();
-            laptop.Ram.Size = ramGb.Value;
-        }
-
-        if (ramMts.HasValue)
-        {
-            laptop.Ram ??= new Ram();
-            laptop.Ram.Mts = ramMts.Value;
-        }
         if (notes != null)
         {
             laptop.Notes = notes;

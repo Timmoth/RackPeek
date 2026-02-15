@@ -3,10 +3,12 @@
 @using RackPeek.Domain.Resources.Hardware.Desktops.Drives
 @using RackPeek.Domain.Resources.Hardware.Desktops.Gpus
 @using RackPeek.Domain.Resources.Hardware.Desktops.Nics
+@using RackPeek.Domain.Resources.Hardware.Desktops.Ram
 @using RackPeek.Domain.Resources.Models
 @using Shared.Rcl.Modals
 @inject GetDesktopUseCase GetDesktopUseCase
 @inject UpdateDesktopUseCase UpdateDesktopUseCase
+@inject SetDesktopRamUseCase SetDesktopRamUseCase
 @inject DeleteDesktopUseCase DeleteDesktopUseCase
 
 @inject AddDesktopCpuUseCase AddCpuUseCase
@@ -318,7 +320,7 @@
     private async Task HandleRamSubmit(Ram value)
     {
         _isRamModalOpen = false;
-        await UpdateDesktopUseCase.ExecuteAsync(Desktop.Name, Desktop.Model, value.Size, value.Mts);
+        await SetDesktopRamUseCase.ExecuteAsync(Desktop.Name, value.Size, value.Mts);
         Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
     }
 
@@ -605,8 +607,6 @@
         await UpdateDesktopUseCase.ExecuteAsync(
             Desktop.Name,
             Desktop.Model,
-            Desktop.Ram?.Size,
-            Desktop.Ram?.Mts,
             _notesDraft);
 
         Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);

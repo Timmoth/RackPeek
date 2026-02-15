@@ -2,9 +2,11 @@
 @using RackPeek.Domain.Resources.Hardware.Laptops.Cpus
 @using RackPeek.Domain.Resources.Hardware.Laptops.Drives
 @using RackPeek.Domain.Resources.Hardware.Laptops.Gpus
+@using RackPeek.Domain.Resources.Hardware.Laptops.Ram
 @using RackPeek.Domain.Resources.Models
 @inject GetLaptopUseCase GetLaptopUseCase
 @inject UpdateLaptopUseCase UpdateLaptopUseCase
+@inject SetLaptopRamUseCase SetLaptopRamUseCase
 @inject DeleteLaptopUseCase DeleteLaptopUseCase
 
 @inject AddLaptopCpuUseCase AddCpuUseCase
@@ -276,7 +278,7 @@
     private async Task HandleRamSubmit(Ram value)
     {
         _isRamModalOpen = false;
-        await UpdateLaptopUseCase.ExecuteAsync(Laptop.Name, Laptop.Model, value.Size, value.Mts, Laptop.Notes);
+        await SetLaptopRamUseCase.ExecuteAsync(Laptop.Name, value.Size, value.Mts);
         Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
     }
 
@@ -511,8 +513,6 @@
         await UpdateLaptopUseCase.ExecuteAsync(
             Laptop.Name,
             Laptop.Model,
-            Laptop.Ram?.Size,
-            Laptop.Ram?.Mts,
             _notesDraft);
 
         Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);

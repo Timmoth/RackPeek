@@ -8,12 +8,14 @@ using RackPeek.Commands.Desktops.Cpus;
 using RackPeek.Commands.Desktops.Drive;
 using RackPeek.Commands.Desktops.Gpus;
 using RackPeek.Commands.Desktops.Nics;
+using RackPeek.Commands.Desktops.Ram;
 using RackPeek.Commands.Firewalls;
 using RackPeek.Commands.Firewalls.Ports;
 using RackPeek.Commands.Laptops;
 using RackPeek.Commands.Laptops.Cpus;
 using RackPeek.Commands.Laptops.Drive;
 using RackPeek.Commands.Laptops.Gpus;
+using RackPeek.Commands.Laptops.Ram;
 using RackPeek.Commands.Routers;
 using RackPeek.Commands.Routers.Ports;
 using RackPeek.Commands.Servers;
@@ -21,6 +23,7 @@ using RackPeek.Commands.Servers.Cpus;
 using RackPeek.Commands.Servers.Drives;
 using RackPeek.Commands.Servers.Gpus;
 using RackPeek.Commands.Servers.Nics;
+using RackPeek.Commands.Servers.Ram;
 using RackPeek.Commands.Services;
 using RackPeek.Commands.Switches;
 using RackPeek.Commands.Switches.Ports;
@@ -161,6 +164,14 @@ public static class CliBootstrap
                     nic.AddCommand<ServerNicUpdateCommand>("set").WithDescription("Update properties of a server NIC.");
 
                     nic.AddCommand<ServerNicRemoveCommand>("del").WithDescription("Remove a NIC from a server.");
+                });
+
+                // Server RAM
+                server.AddBranch("ram", ram =>
+                {
+                    ram.SetDescription("Manage RAM for a server.");
+
+                    ram.AddCommand<ServerRamSetCommand>("set").WithDescription("Update RAM properties of a server.");
                 });
             });
 
@@ -404,6 +415,13 @@ public static class CliBootstrap
                     nic.AddCommand<DesktopNicSetCommand>("set").WithDescription("Update a desktop NIC.");
                     nic.AddCommand<DesktopNicRemoveCommand>("del").WithDescription("Remove a NIC from a desktop.");
                 });
+
+                // RAM
+                desktops.AddBranch("ram", ram =>
+                {
+                    ram.SetDescription("Manage RAM for a desktop.");
+                    ram.AddCommand<DesktopRamSetCommand>("set").WithDescription("Update RAM properties of a desktop.");
+                });
             });
 
             // ----------------------------
@@ -450,6 +468,13 @@ public static class CliBootstrap
                     gpu.AddCommand<LaptopGpuAddCommand>("add").WithDescription("Add a GPU to a Laptop.");
                     gpu.AddCommand<LaptopGpuSetCommand>("set").WithDescription("Update a Laptop GPU.");
                     gpu.AddCommand<LaptopGpuRemoveCommand>("del").WithDescription("Remove a GPU from a Laptop.");
+                });
+
+                // RAM
+                Laptops.AddBranch("ram", ram =>
+                {
+                    ram.SetDescription("Manage RAM for a Laptop.");
+                    ram.AddCommand<LaptopRamSetCommand>("set").WithDescription("Update RAM properties of a Laptop.");
                 });
             });
 
