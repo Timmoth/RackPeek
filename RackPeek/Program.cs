@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RackPeek.Spectre;
 using Spectre.Console.Cli;
+using System;
+using Xdg.Directories;
 
 namespace RackPeek;
 
@@ -11,14 +13,14 @@ public static class Program
     public static async Task<int> Main(string[] args)
     {
         // Configuration
-        var appBasePath = AppContext.BaseDirectory;
+        var configPath = BaseDirectory.ConfigHome + "/rackpeek";
 
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(appBasePath)
+            .SetBasePath(configPath)
             .AddJsonFile("appsettings.json", optional: true)
             .Build();
 
-        var yamlDir = configuration.GetValue<string>("RPK_YAML_DIR") ?? "config";
+        var yamlDir = configuration.GetValue<string>("RPK_YAML_DIR") ?? BaseDirectory.DataHome + "/rackpeek";
 
         // DI
         var services = new ServiceCollection();
