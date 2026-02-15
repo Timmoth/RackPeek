@@ -13,6 +13,7 @@ public abstract class Resource
         { "desktop", "desktops" },
         { "laptop", "laptops" },
         { "ups", "ups" },
+        { "device", "devices" },
         { "system", "systems" },
         { "service", "services" }
     };

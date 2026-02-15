@@ -1,0 +1,217 @@
+@using RackPeek.Domain.Resources.Hardware.Devices
+@using RackPeek.Domain.Resources.Models
+
+@inject UpdateDeviceUseCase UpdateUseCase
+@inject DeleteDeviceUseCase DeleteUseCase
+@inject RenameDeviceUseCase RenameUseCase
+@inject CloneDeviceUseCase CloneUseCase
+@inject NavigationManager Nav
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+    <div class="flex justify-between items-center mb-3">
+
+        <div class="text-zinc-100 hover:text-emerald-300">
+            <NavLink href="@($"resources/hardware/{Device.Name}")" class="block">
+                @Device.Name
+            </NavLink>
+        </div>
+
+        <div class="flex gap-3 text-xs">
+            @if (!_isEditing)
+            {
+                <button class="text-zinc-400 hover:text-zinc-200"
+                        @onclick="BeginEdit">
+                    Edit
+                </button>
+
+                <button class="text-blue-400 hover:text-blue-300"
+                        @onclick="OpenRename">
+                    Rename
+                </button>
+
+                <button class="text-emerald-400 hover:text-emerald-300"
+                        @onclick="OpenClone">
+                    Clone
+                </button>
+
+                <button class="text-red-400 hover:text-red-300"
+                        @onclick="ConfirmDelete">
+                    Delete
+                </button>
+            }
+            else
+            {
+                <button class="text-emerald-400 hover:text-emerald-300"
+                        @onclick="Save">
+                    Save
+                </button>
+
+                <button class="text-zinc-500 hover:text-zinc-300"
+                        @onclick="Cancel">
+                    Cancel
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+        <!-- Model -->
+        <div>
+            <div class="text-zinc-400 mb-1">Model</div>
+
+            @if (_isEditing)
+            {
+                <input class="w-full px-3 py-2 rounded-md
+                          bg-zinc-800 text-zinc-100
+                          border border-zinc-600"
+                       @bind="_edit.Model" />
+            }
+            else if (!string.IsNullOrWhiteSpace(Device.Model))
+            {
+                <div class="text-zinc-300">@Device.Model</div>
+            }
+        </div>
+
+        <ResourceTagEditor Resource="Device" />
+
+        <div class="md:col-span-2">
+            <div class="text-zinc-400 mb-1">Notes</div>
+
+            @if (_isEditing)
+            {
+                <MarkdownEditor
+                    @bind-Value="_edit.Notes"
+                    ShowActionButtons="false" />
+            }
+            else
+            {
+                <MarkdownViewer
+                    Value="@Device.Notes"
+                    ShowEditButton="false" />
+            }
+        </div>
+
+    </div>
+
+</div>
+
+<ConfirmModal
+    IsOpen="_confirmDeleteOpen"
+    IsOpenChanged="v => _confirmDeleteOpen = v"
+    Title="Delete device"
+    ConfirmText="Delete"
+    ConfirmClass="bg-red-600 hover:bg-red-500"
+    OnConfirm="DeleteDevice">
+    Are you sure you want to delete <strong>@Device.Name</strong>?
+</ConfirmModal>
+
+<StringValueModal
+    IsOpen="_renameOpen"
+    IsOpenChanged="v => _renameOpen = v"
+    Title="Rename device"
+    Description="Enter a new name for this device"
+    Label="New device name"
+    Value="@Device.Name"
+    OnSubmit="HandleRenameSubmit" />
+
+<StringValueModal
+    IsOpen="_cloneOpen"
+    IsOpenChanged="v => _cloneOpen = v"
+    Title="Clone resource"
+    Description="Enter a name for the cloned resource"
+    Label="New resource name"
+    Value="@($"{Device.Name}-copy")"
+    OnSubmit="HandleCloneSubmit" />
+
+@code {
+    [Parameter][EditorRequired]
+    public Device Device { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<string> OnDeleted { get; set; }
+
+    bool _isEditing;
+    bool _confirmDeleteOpen;
+    bool _renameOpen;
+    bool _cloneOpen;
+
+    DeviceEditModel _edit = new();
+
+    void BeginEdit()
+    {
+        _edit = DeviceEditModel.From(Device);
+        _isEditing = true;
+    }
+    async Task Save()
+    {
+        _isEditing = false;
+
+        await UpdateUseCase.ExecuteAsync(
+            Device.Name,
+            _edit.Model,
+            _edit.Notes);
+
+        Device.Model = _edit.Model;
+        Device.Notes = _edit.Notes;
+
+    }
+
+    void Cancel()
+    {
+        _isEditing = false;
+    }
+
+    void ConfirmDelete()
+    {
+        _confirmDeleteOpen = true;
+    }
+
+    async Task DeleteDevice()
+    {
+        _confirmDeleteOpen = false;
+
+        await DeleteUseCase.ExecuteAsync(Device.Name);
+
+        if (OnDeleted.HasDelegate)
+            await OnDeleted.InvokeAsync(Device.Name);
+    }
+
+    void OpenRename()
+    {
+        _renameOpen = true;
+    }
+
+    async Task HandleRenameSubmit(string newName)
+    {
+        await RenameUseCase.ExecuteAsync(Device.Name, newName);
+        Nav.NavigateTo($"resources/hardware/{newName}");
+    }
+
+    void OpenClone()
+    {
+        _cloneOpen = true;
+    }
+
+    async Task HandleCloneSubmit(string newName)
+    {
+        await CloneUseCase.ExecuteAsync(Device.Name, newName);
+        Nav.NavigateTo($"resources/hardware/{newName}");
+    }
+
+    public class DeviceEditModel
+    {
+        public string? Model { get; set; }
+        public string? Notes { get; set; }
+
+        public static DeviceEditModel From(Device d)
+        {
+            return new DeviceEditModel
+            {
+                Model = d.Model,
+                Notes = d.Notes
+            };
+        }
+    }
+
+}

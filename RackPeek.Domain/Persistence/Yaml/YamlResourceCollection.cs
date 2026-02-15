@@ -153,6 +153,7 @@ public sealed class YamlResourceCollection(
                     { Laptop.KindLabel, typeof(Laptop) },
                     { AccessPoint.KindLabel, typeof(AccessPoint) },
                     { Ups.KindLabel, typeof(Ups) },
+                    { Device.KindLabel, typeof(Device) },
                     { SystemResource.KindLabel, typeof(SystemResource) },
                     { Service.KindLabel, typeof(Service) }
                 });
@@ -180,6 +181,7 @@ public sealed class YamlResourceCollection(
         Laptop => "Laptop",
         AccessPoint => "AccessPoint",
         Ups => "Ups",
+        Device => "Device",
         SystemResource => "System",
         Service => "Service",
         _ => throw new InvalidOperationException($"Unknown resource type: {resource.GetType().Name}")

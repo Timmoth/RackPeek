@@ -28,6 +28,7 @@ using RackPeek.Commands.Services;
 using RackPeek.Commands.Switches;
 using RackPeek.Commands.Switches.Ports;
 using RackPeek.Commands.Systems;
+using RackPeek.Commands.Devices;
 using RackPeek.Commands.Ups;
 using RackPeek.Domain;
 using RackPeek.Domain.Helpers;
@@ -476,6 +477,30 @@ public static class CliBootstrap
                     ram.SetDescription("Manage RAM for a Laptop.");
                     ram.AddCommand<LaptopRamSetCommand>("set").WithDescription("Update RAM properties of a Laptop.");
                 });
+            });
+
+            // ----------------------------
+            // Devices
+            // ----------------------------
+            config.AddBranch("devices", devices =>
+            {
+                devices.SetDescription("Manage devices (printers, KVMs, and other networked appliances).");
+
+                devices.AddCommand<DeviceReportCommand>("summary")
+                    .WithDescription("Show a hardware report for all devices.");
+
+                devices.AddCommand<DeviceAddCommand>("add").WithDescription("Add a new device.");
+
+                devices.AddCommand<DeviceGetCommand>("list").WithDescription("List all devices.");
+
+                devices.AddCommand<DeviceGetByNameCommand>("get").WithDescription("Retrieve a device by name.");
+
+                devices.AddCommand<DeviceDescribeCommand>("describe")
+                    .WithDescription("Show detailed information about a device.");
+
+                devices.AddCommand<DeviceSetCommand>("set").WithDescription("Update properties of a device.");
+
+                devices.AddCommand<DeviceDeleteCommand>("del").WithDescription("Delete a device.");
             });
 
             // ----------------------------

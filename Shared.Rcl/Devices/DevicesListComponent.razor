@@ -1,0 +1,52 @@
+@using RackPeek.Domain.Resources.Hardware.Devices
+@using RackPeek.Domain.Resources.Models
+@inject GetDevicesUseCase GetDevices
+@inject NavigationManager Nav
+
+<PageTitle>Devices</PageTitle>
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6">
+    <AddResourceComponent TResource="Device"
+                        Placeholder="Device name"
+                        OnCreated="NavigateToNewResource" />
+
+
+    @if (_Devices is null)
+    {
+        <div class="text-zinc-500">loading Devices…</div>
+    }
+    else if (_Devices.Count == 0)
+    {
+        <div class="text-zinc-500">no Devices found</div>
+    }
+    else
+    {
+        <div class="space-y-4">
+            @foreach (var device in _Devices.OrderBy(s => s.Name))
+            {
+                <DeviceCardComponent Device="device" OnDeleted="Callback"/>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private IReadOnlyList<Device>? _Devices;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _Devices = await GetDevices.ExecuteAsync();
+    }
+
+    private Task NavigateToNewResource(string serverName)
+    {
+        Nav.NavigateTo($"resources/hardware/{serverName}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Callback(string obj)
+    {
+        _Devices = await GetDevices.ExecuteAsync();
+    }
+
+}

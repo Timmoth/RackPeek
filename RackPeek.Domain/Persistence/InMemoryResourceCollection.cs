@@ -132,6 +132,7 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         Laptop => "Laptop",
         AccessPoint => "AccessPoint",
         Ups => "Ups",
+        Device => "Device",
         SystemResource => "System",
         Service => "Service",
         _ => throw new InvalidOperationException(

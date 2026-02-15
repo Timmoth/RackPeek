@@ -79,6 +79,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IResourceRepo<Server>, YamlHardwareRepo<Server>>();
         services.AddScoped<IResourceRepo<Switch>, YamlHardwareRepo<Switch>>();
         services.AddScoped<IResourceRepo<Ups>, YamlHardwareRepo<Ups>>();
+        services.AddScoped<IResourceRepo<Device>, YamlHardwareRepo<Device>>();
         
         services.AddScoped<IResourceRepo<SystemResource>, YamlSystemRepository>();
         services.AddScoped<IResourceRepo<Service>, YamlServiceRepository>();
