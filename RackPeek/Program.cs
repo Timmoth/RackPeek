@@ -15,6 +15,7 @@ public static class Program
 
         var configuration = new ConfigurationBuilder()
             .SetBasePath(appBasePath)
+            .AddEnvironmentVariables()
             .AddJsonFile("appsettings.json", optional: true)
             .Build();
 
