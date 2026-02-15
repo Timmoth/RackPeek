@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Desktops;
 using Spectre.Console;
@@ -7,7 +8,9 @@ namespace RackPeek.Commands.Desktops;
 
 public class DesktopSetSettings : DesktopNameSettings
 {
-    [CommandOption("--model")] public string? Model { get; set; }
+    [CommandOption("--model")]
+    [Description("Desktop model name (max 50 chars).")]
+    public string? Model { get; set; }
 }
 
 public class DesktopSetCommand(IServiceProvider provider)

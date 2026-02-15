@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Servers.Gpus;
 using Spectre.Console;
@@ -7,9 +8,13 @@ namespace RackPeek.Commands.Servers.Gpus;
 
 public class ServerGpuAddSettings : ServerNameSettings
 {
-    [CommandOption("--model <MODEL>")] public string Model { get; set; }
+    [CommandOption("--model <MODEL>")]
+    [Description("GPU model name (max 50 chars).")]
+    public string Model { get; set; }
 
-    [CommandOption("--vram <VRAM>")] public int Vram { get; set; }
+    [CommandOption("--vram <VRAM>")]
+    [Description("GPU VRAM in GB.")]
+    public int Vram { get; set; }
 }
 
 public class ServerGpuAddCommand(IServiceProvider serviceProvider)

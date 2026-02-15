@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Commands.Servers;
 using RackPeek.Domain.Resources.Hardware.Switches;
@@ -8,11 +9,17 @@ namespace RackPeek.Commands.Switches;
 
 public class SwitchSetSettings : ServerNameSettings
 {
-    [CommandOption("--Model")] public string Model { get; set; } = default!;
+    [CommandOption("--Model")]
+    [Description("Switch model name.")]
+    public string Model { get; set; } = default!;
 
-    [CommandOption("--managed")] public bool Managed { get; set; }
+    [CommandOption("--managed")]
+    [Description("Whether the switch is managed.")]
+    public bool Managed { get; set; }
 
-    [CommandOption("--poe")] public bool Poe { get; set; }
+    [CommandOption("--poe")]
+    [Description("Whether the switch supports PoE.")]
+    public bool Poe { get; set; }
 }
 
 public class SwitchSetCommand(

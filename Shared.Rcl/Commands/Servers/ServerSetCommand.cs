@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Servers;
 using Spectre.Console;
@@ -7,10 +8,17 @@ namespace RackPeek.Commands.Servers;
 
 public class ServerSetSettings : ServerNameSettings
 {
-    [CommandOption("--ram <GB>")] public int RamGb { get; set; }
-    [CommandOption("--ram_mts <MTs>")] public int RamMts { get; set; }
+    [CommandOption("--ram <GB>")]
+    [Description("RAM capacity in GB.")]
+    public int RamGb { get; set; }
 
-    [CommandOption("--ipmi")] public bool Ipmi { get; set; }
+    [CommandOption("--ram_mts <MTs>")]
+    [Description("RAM speed in MT/s.")]
+    public int RamMts { get; set; }
+
+    [CommandOption("--ipmi")]
+    [Description("Whether the server has IPMI/BMC.")]
+    public bool Ipmi { get; set; }
 }
 
 public class ServerSetCommand(

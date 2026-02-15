@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Servers.Drives;
 using Spectre.Console;
@@ -7,11 +8,17 @@ namespace RackPeek.Commands.Servers.Drives;
 
 public class ServerDriveUpdateSettings : ServerNameSettings
 {
-    [CommandOption("--index <INDEX>")] public int Index { get; set; }
+    [CommandOption("--index <INDEX>")]
+    [Description("Index of the drive to update.")]
+    public int Index { get; set; }
 
-    [CommandOption("--type <TYPE>")] public string Type { get; set; }
+    [CommandOption("--type <TYPE>")]
+    [Description("Drive type: nvme, ssd, hdd, sas, sata, usb, sdcard, micro-sd.")]
+    public string Type { get; set; }
 
-    [CommandOption("--size <SIZE>")] public int Size { get; set; }
+    [CommandOption("--size <SIZE>")]
+    [Description("Drive capacity in GB.")]
+    public int Size { get; set; }
 }
 
 public class ServerDriveUpdateCommand(IServiceProvider serviceProvider)

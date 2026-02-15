@@ -14,7 +14,7 @@ public class DesktopDriveSetSettings : CommandSettings
     public int Index { get; set; }
 
     [CommandOption("--type")]
-    [Description("The drive type e.g hdd / ssd.")]
+    [Description("Drive type: nvme, ssd, hdd, sas, sata, usb, sdcard, micro-sd.")]
     public string? Type { get; set; }
 
     [CommandOption("--size")]

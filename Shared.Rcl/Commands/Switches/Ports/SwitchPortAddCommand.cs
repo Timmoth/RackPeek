@@ -9,11 +9,11 @@ namespace RackPeek.Commands.Switches.Ports;
 public class SwitchPortAddSettings : SwitchNameSettings
 {
     [CommandOption("--type")]
-    [Description("The port type (e.g., rj45, sfp+).")]
+    [Description("Port type: rj45, sfp, sfp+, sfp28, sfp56, qsfp+, qsfp28, qsfp56, qsfp-dd, osfp, xfp, cx4, mgmt.")]
     public string? Type { get; set; }
 
     [CommandOption("--speed")]
-    [Description("The port speed (e.g., 1, 2.5, 10).")]
+    [Description("Port speed in Gb/s (e.g. 1, 2.5, 10, 25).")]
     public double? Speed { get; set; }
 
     [CommandOption("--count")]

@@ -14,7 +14,7 @@ public class AccessPointSetSettings : ServerNameSettings
     public string? Model { get; set; }
 
     [CommandOption("--speed")]
-    [Description("The speed of the access point in Gb.")]
+    [Description("Speed in Gb/s (e.g. 1, 2.5, 10).")]
     public double? Speed { get; set; }
 }
 

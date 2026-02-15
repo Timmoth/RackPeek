@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Servers.Cpus;
 using Spectre.Console;
@@ -7,11 +8,17 @@ namespace RackPeek.Commands.Servers.Cpus;
 
 public class ServerCpuAddSettings : ServerNameSettings
 {
-    [CommandOption("--model <MODEL>")] public string Model { get; set; }
+    [CommandOption("--model <MODEL>")]
+    [Description("CPU model name (max 50 chars).")]
+    public string Model { get; set; }
 
-    [CommandOption("--cores <CORES>")] public int Cores { get; set; }
+    [CommandOption("--cores <CORES>")]
+    [Description("Number of CPU cores.")]
+    public int Cores { get; set; }
 
-    [CommandOption("--threads <THREADS>")] public int Threads { get; set; }
+    [CommandOption("--threads <THREADS>")]
+    [Description("Number of CPU threads.")]
+    public int Threads { get; set; }
 }
 
 public class ServerCpuAddCommand(

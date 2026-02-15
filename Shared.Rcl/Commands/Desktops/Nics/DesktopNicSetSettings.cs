@@ -14,12 +14,12 @@ public class DesktopNicSetSettings : CommandSettings
     public int Index { get; set; }
 
     [CommandOption("--type")]
-    [Description("The nic port type e.g rj45 / sfp+")]
+    [Description("NIC type: rj45, sfp, sfp+, sfp28, sfp56, qsfp+, qsfp28, qsfp56, qsfp-dd, osfp, xfp, cx4, mgmt.")]
     public string? Type { get; set; }
 
     [CommandOption("--speed")]
     [Description("The speed of the nic in Gb/s.")]
-    public int? Speed { get; set; }
+    public double? Speed { get; set; }
 
     [CommandOption("--ports")]
     [Description("The number of ports.")]
