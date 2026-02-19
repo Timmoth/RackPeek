@@ -1,5 +1,6 @@
-﻿@using RackPeek.Domain.Resources.SystemResources.UseCases
-@inject AddSystemUseCase AddSystemResource
+﻿@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.SystemResources.UseCases
+@inject IAddResourceUseCase<SystemResource> AddSystemResource
 @inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">

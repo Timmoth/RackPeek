@@ -1,9 +1,10 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops.Cpus;
 
-public class RemoveDesktopCpuUseCase(IHardwareRepository repository) : IUseCase
+public class RemoveDesktopCpuUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task ExecuteAsync(string name, int index)
     {

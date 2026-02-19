@@ -1,4 +1,5 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers;
@@ -14,7 +15,7 @@ public record ServerDescription(
     bool Ipmi
 );
 
-public class DescribeServerUseCase(IHardwareRepository repository) : IUseCase
+public class DescribeServerUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<ServerDescription> ExecuteAsync(string name)
     {

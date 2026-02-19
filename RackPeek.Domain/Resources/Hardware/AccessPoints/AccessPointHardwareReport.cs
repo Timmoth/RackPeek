@@ -1,3 +1,4 @@
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.AccessPoints;
@@ -12,13 +13,11 @@ public record AccessPointHardwareRow(
     double SpeedGb
 );
 
-public class AccessPointHardwareReportUseCase(IHardwareRepository repository) : IUseCase
+public class AccessPointHardwareReportUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<AccessPointHardwareReport> ExecuteAsync()
     {
-        var hardware = await repository.GetAllAsync();
-        var aps = hardware.OfType<AccessPoint>();
-
+        var aps = await repository.GetAllOfTypeAsync<AccessPoint>();
         var rows = aps.Select(ap => new AccessPointHardwareRow(
             ap.Name,
             ap.Model ?? "Unknown",

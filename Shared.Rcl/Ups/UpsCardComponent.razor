@@ -1,11 +1,13 @@
-﻿@using RackPeek.Domain.Resources.Hardware.UpsUnits
+﻿@using RackPeek.Domain.Resources.Hardware.Desktops
+@using RackPeek.Domain.Resources.Hardware.UpsUnits
 @using RackPeek.Domain.Resources.Models
 @using Shared.Rcl.Modals
 @inject UpdateUpsUseCase UpdateUpsUseCase
-@inject GetUpsUnitUseCase GetUpsUseCase
-@inject DeleteUpsUseCase DeleteUseCase
-@inject RenameUpsUseCase RenameUpsUseCase
-@inject CloneUpsUseCase CloneUseCase
+@inject IGetAllResourcesByKindUseCase<Ups> GetAllUseCase
+@inject IGetResourceByNameUseCase<Ups> GetByNameUseCase
+@inject IDeleteResourceUseCase<Ups> DeleteUseCase
+@inject IRenameResourceUseCase<Ups> RenameUseCase
+@inject ICloneResourceUseCase<Ups> CloneUseCase
 
 @inject NavigationManager Nav
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
@@ -174,7 +176,7 @@
             _edit.Va,
             _edit.Notes);
 
-        Ups = await GetUpsUseCase.ExecuteAsync(Ups.Name);
+        Ups = await GetByNameUseCase.ExecuteAsync(Ups.Name);
     }
 
     void Cancel()
@@ -227,7 +229,7 @@
 
     async Task HandleRenameSubmit(string newName)
     {
-        await RenameUpsUseCase.ExecuteAsync(Ups.Name, newName);
+        await RenameUseCase.ExecuteAsync(Ups.Name, newName);
         Nav.NavigateTo($"resources/hardware/{newName}");
     }
 

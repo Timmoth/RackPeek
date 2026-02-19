@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
+using RackPeek.Domain.Resources.Hardware.Desktops;
 using RackPeek.Domain.Resources.Models;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
@@ -47,10 +48,15 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddUseCases(
         this IServiceCollection services)
     {
-        services.AddScoped(typeof(IAddTagUseCase<>), typeof(AddTagUseCase<>));
-        services.AddScoped(typeof(IRemoveTagUseCase<>), typeof(RemoveTagUseCase<>));
         services.AddScoped(typeof(IAddResourceUseCase<>), typeof(AddResourceUseCase<>));
-        
+        services.AddScoped(typeof(IAddTagUseCase<>), typeof(AddTagUseCase<>));
+        services.AddScoped(typeof(ICloneResourceUseCase<>), typeof(CloneResourceUseCase<>));
+        services.AddScoped(typeof(IDeleteResourceUseCase<>), typeof(DeleteResourceUseCase<>));
+        services.AddScoped(typeof(IRemoveTagUseCase<>), typeof(RemoveTagUseCase<>));
+        services.AddScoped(typeof(IGetAllResourcesByKindUseCase<>), typeof(GetAllResourcesByKindUseCase<>));
+        services.AddScoped(typeof(IGetResourceByNameUseCase<>), typeof(GetResourceByNameUseCase<>));
+        services.AddScoped(typeof(IRenameResourceUseCase<>), typeof(RenameResourceUseCase<>));
+
         var usecases = Assembly.GetAssembly(typeof(IUseCase))
             ?.GetTypes()
             .Where(t =>

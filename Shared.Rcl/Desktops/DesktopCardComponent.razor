@@ -5,9 +5,11 @@
 @using RackPeek.Domain.Resources.Hardware.Desktops.Nics
 @using RackPeek.Domain.Resources.Models
 @using Shared.Rcl.Modals
-@inject GetDesktopUseCase GetDesktopUseCase
+@inject IGetAllResourcesByKindUseCase<Desktop> GetAllUseCase
+@inject IGetResourceByNameUseCase<Desktop> GetByNameUseCase
+
 @inject UpdateDesktopUseCase UpdateDesktopUseCase
-@inject DeleteDesktopUseCase DeleteDesktopUseCase
+@inject IDeleteResourceUseCase<Desktop> DeleteDesktopUseCase
 
 @inject AddDesktopCpuUseCase AddCpuUseCase
 @inject UpdateDesktopCpuUseCase UpdateCpuUseCase
@@ -24,9 +26,9 @@
 @inject AddDesktopGpuUseCase AddGpuUseCase
 @inject UpdateDesktopGpuUseCase UpdateGpuUseCase
 @inject RemoveDesktopGpuUseCase RemoveGpuUseCase
-@inject CloneDesktopUseCase CloneUseCase
+@inject ICloneResourceUseCase<Desktop> CloneUseCase
 
-@inject RenameDesktopUseCase RenameUseCase
+@inject IRenameResourceUseCase<Desktop> RenameUseCase
 @inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
@@ -319,7 +321,7 @@
     {
         _isRamModalOpen = false;
         await UpdateDesktopUseCase.ExecuteAsync(Desktop.Name, Desktop.Model, value.Size, value.Mts);
-        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
     }
 
     #endregion
@@ -359,13 +361,13 @@
             await UpdateCpuUseCase.ExecuteAsync(Desktop.Name, _editingCpuIndex, cpu.Model, cpu.Cores, cpu.Threads);
         }
 
-        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
     }
 
     async Task HandleCpuDelete(Cpu cpu)
     {
         await RemoveCpuUseCase.ExecuteAsync(Desktop.Name, _editingCpuIndex);
-        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
     }
 
     #endregion
@@ -405,14 +407,14 @@
             await UpdateDriveUseCase.ExecuteAsync(Desktop.Name, _editingDriveIndex, drive.Type, drive.Size);
         }
 
-        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
         StateHasChanged();
     }
 
     async Task HandleDriveDelete(Drive drive)
     {
         await RemoveDriveUseCase.ExecuteAsync(Desktop.Name, _editingDriveIndex);
-        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
         StateHasChanged();
     }
 
@@ -461,13 +463,13 @@
                 nic.Ports);
         }
 
-        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
     }
 
     async Task HandleNicDelete(Nic nic)
     {
         await RemoveNicUseCase.ExecuteAsync(Desktop.Name, _editingNicIndex);
-        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
     }
 
     #endregion
@@ -513,13 +515,13 @@
                 gpu.Vram);
         }
 
-        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
     }
 
     async Task HandleGpuDelete(Gpu gpu)
     {
         await RemoveGpuUseCase.ExecuteAsync(Desktop.Name, _editingGpuIndex);
-        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
     }
 
     #endregion
@@ -609,7 +611,7 @@
             Desktop.Ram?.Mts,
             _notesDraft);
 
-        Desktop = await GetDesktopUseCase.ExecuteAsync(Desktop.Name);
+        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
         _notesDraft = null;
     }
 

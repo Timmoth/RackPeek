@@ -1,3 +1,4 @@
+using System.Collections;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Models;
 using RackPeek.Domain.Resources.Services;
@@ -14,6 +15,7 @@ public interface IResourceCollection
     Task AddAsync(Resource resource);
     Task UpdateAsync(Resource resource);
     Task DeleteAsync(string name);
+    Task<Resource?> GetByNameAsync(string name);
 
     Resource? GetByName(string name);
     Task<bool> Exists(string name);
@@ -22,4 +24,6 @@ public interface IResourceCollection
     Task<IReadOnlyList<Resource>> GetByTagAsync(string name);
     public Task<Dictionary<string, int>> GetTagsAsync();
 
+    Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>();
+    Task<IReadOnlyList<Resource>>  GetDependantsAsync(string name);
 }

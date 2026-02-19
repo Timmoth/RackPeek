@@ -1,15 +1,18 @@
-﻿@using RackPeek.Domain.Resources.Models
+﻿@using RackPeek.Domain.Resources.Hardware.Desktops
+@using RackPeek.Domain.Resources.Models
 @using RackPeek.Domain.Resources.SystemResources
 @using RackPeek.Domain.Resources.SystemResources.UseCases
+@using RackPeek.Domain.UseCases
 @inject UpdateSystemUseCase UpdateSystemUseCase
-@inject GetSystemUseCase GetSystemUseCase
+@inject IGetAllResourcesByKindUseCase<SystemResource> GetAllUseCase
+@inject IGetResourceByNameUseCase<SystemResource> GetByNameUseCase
 @inject AddSystemDriveUseCase AddSystemDriveUseCase
 @inject RemoveSystemDriveUseCase RemoveSystemDriveUseCase
 @inject UpdateSystemDriveUseCase UpdateSystemDriveUseCase
-@inject DeleteSystemUseCase DeleteSystemUseCase
-@inject CloneSystemUseCase CloneSystemUseCase
+@inject IDeleteResourceUseCase<SystemResource> DeleteSystemUseCase
+@inject ICloneResourceUseCase<SystemResource> CloneUseCase
 @inject NavigationManager Nav
-@inject RenameSystemUseCase RenameSystemUseCase
+@inject IRenameResourceUseCase<SystemResource> RenameUseCase
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
@@ -314,7 +317,7 @@
             System.Ram,
             name,
             System.Notes);
-        System = await GetSystemUseCase.ExecuteAsync(System.Name);
+        System = await GetByNameUseCase.ExecuteAsync(System.Name);
         _edit = SystemEditModel.From(System);
     }
 
@@ -354,14 +357,14 @@
             await UpdateSystemDriveUseCase.ExecuteAsync(System.Name, _editingDriveIndex, drive.Type ?? "hdd", drive.Size ?? 0);
         }
 
-        System = await GetSystemUseCase.ExecuteAsync(System.Name);
+        System = await GetByNameUseCase.ExecuteAsync(System.Name);
         StateHasChanged();
     }
 
     async Task HandleDriveDelete(Drive drive)
     {
         await RemoveSystemDriveUseCase.ExecuteAsync(System.Name, _editingDriveIndex);
-        System = await GetSystemUseCase.ExecuteAsync(System.Name);
+        System = await GetByNameUseCase.ExecuteAsync(System.Name);
         StateHasChanged();
     }
 
@@ -411,7 +414,7 @@
 
     async Task HandleCloneSubmit(string newName)
     {
-        await CloneSystemUseCase.ExecuteAsync(System.Name, newName);
+        await CloneUseCase.ExecuteAsync(System.Name, newName);
 
         Nav.NavigateTo($"resources/systems/{newName}");
     }
@@ -429,7 +432,7 @@
 
     async Task HandleRenameSubmit(string newName)
     {
-        await RenameSystemUseCase.ExecuteAsync(System.Name, newName);
+        await RenameUseCase.ExecuteAsync(System.Name, newName);
         Nav.NavigateTo($"resources/systems/{newName}");
     }
 

@@ -1,4 +1,5 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
@@ -12,13 +13,13 @@ public record SystemDescription(
     string? RunsOn
 );
 
-public class DescribeSystemUseCase(ISystemRepository repository) : IUseCase
+public class DescribeSystemUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<SystemDescription> ExecuteAsync(string name)
     {
         name = Normalize.SystemName(name);
         ThrowIfInvalid.ResourceName(name);
-        var system = await repository.GetByNameAsync(name);
+        var system = await repository.GetByNameAsync(name) as SystemResource;
         if (system is null)
             throw new NotFoundException($"System '{name}' not found.");
 

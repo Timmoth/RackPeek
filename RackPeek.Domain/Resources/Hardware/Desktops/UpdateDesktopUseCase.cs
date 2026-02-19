@@ -1,9 +1,10 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops;
 
-public class UpdateDesktopUseCase(IHardwareRepository repository) : IUseCase
+public class UpdateDesktopUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task ExecuteAsync(
         string name,

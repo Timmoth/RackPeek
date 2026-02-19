@@ -1,6 +1,8 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
+using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.Services.UseCases;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -23,7 +25,7 @@ public class ServiceAddCommand(
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddServiceUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Service>>();
 
         await useCase.ExecuteAsync(
             settings.Name

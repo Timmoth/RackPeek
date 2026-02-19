@@ -1,4 +1,5 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Firewalls;
@@ -13,7 +14,7 @@ public record FirewallDescription(
     string PortSummary
 );
 
-public class DescribeFirewallUseCase(IHardwareRepository repository) : IUseCase
+public class DescribeFirewallUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<FirewallDescription> ExecuteAsync(string name)
     {

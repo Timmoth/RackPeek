@@ -1,5 +1,5 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.UpsUnits
-@inject AddUpsUseCase AddUps
+@inject IAddResourceUseCase<Ups> AddUseCase
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="text-zinc-100 mb-3">
@@ -50,7 +50,7 @@
         {
             _isSubmitting = true;
             var name = _name.Trim();
-            await AddUps.ExecuteAsync(name);
+            await AddUseCase.ExecuteAsync(name);
             _name = string.Empty;
 
             await OnCreated.InvokeAsync(name);

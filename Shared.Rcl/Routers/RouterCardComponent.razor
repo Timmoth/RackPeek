@@ -1,15 +1,17 @@
 ﻿@inject UpdateRouterUseCase UpdateRouterUseCase
-@inject GetRouterUseCase GetRouterUseCase
+@inject IGetAllResourcesByKindUseCase<Router> GetAllUseCase
+@inject IGetResourceByNameUseCase<Router> GetByNameUseCase
 @inject AddRouterPortUseCase AddRouterPortUseCase
 @inject UpdateRouterPortUseCase UpdateRouterPortUseCase
 @inject RemoveRouterPortUseCase RemoveRouterPortUseCase
-@inject DeleteRouterUseCase DeleteUseCase
+@inject IDeleteResourceUseCase<Router> DeleteUseCase
+@using RackPeek.Domain.Resources.Hardware.Desktops
 @using RackPeek.Domain.Resources.Hardware.Routers
 @using RackPeek.Domain.Resources.Hardware.Routers.Ports
 @using RackPeek.Domain.Resources.Models
 @using Router = RackPeek.Domain.Resources.Models.Router
-@inject RenameRouterUseCase RenameUseCase
-@inject CloneRouterUseCase CloneUseCase
+@inject IRenameResourceUseCase<Router> RenameUseCase
+@inject ICloneResourceUseCase<Router> CloneUseCase
 
 @inject NavigationManager Nav
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
@@ -226,7 +228,7 @@
             _edit.Poe,
             _edit.Notes);
 
-        Router = await GetRouterUseCase.ExecuteAsync(Router.Name);
+        Router = await GetByNameUseCase.ExecuteAsync(Router.Name);
     }
 
     void Cancel()
@@ -275,7 +277,7 @@
                 port.Count);
         }
 
-        Router = await GetRouterUseCase.ExecuteAsync(Router.Name);
+        Router = await GetByNameUseCase.ExecuteAsync(Router.Name);
         StateHasChanged();
     }
 
@@ -285,7 +287,7 @@
             Router.Name,
             _editingPortIndex);
 
-        Router = await GetRouterUseCase.ExecuteAsync(Router.Name);
+        Router = await GetByNameUseCase.ExecuteAsync(Router.Name);
         StateHasChanged();
     }
 

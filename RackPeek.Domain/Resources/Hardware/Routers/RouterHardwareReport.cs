@@ -1,3 +1,4 @@
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Routers;
@@ -16,12 +17,11 @@ public record RouterHardwareRow(
     string PortSummary
 );
 
-public class RouterHardwareReportUseCase(IHardwareRepository repository) : IUseCase
+public class RouterHardwareReportUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<RouterHardwareReport> ExecuteAsync()
     {
-        var hardware = await repository.GetAllAsync();
-        var routers = hardware.OfType<Router>();
+        var routers = await repository.GetAllOfTypeAsync<Router>();
 
         var rows = routers.Select(sw =>
         {

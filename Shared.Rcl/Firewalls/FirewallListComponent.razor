@@ -1,6 +1,7 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Firewalls
 @using RackPeek.Domain.Resources.Models
-@inject GetFirewallsUseCase GetFirewalls
+@inject IGetAllResourcesByKindUseCase<Firewall> GetAllUseCase
+@inject IGetResourceByNameUseCase<Firewall> GetByNameUseCase
 @inject NavigationManager Nav
 
 <PageTitle>Firewall</PageTitle>
@@ -33,7 +34,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _Firewall = await GetFirewalls.ExecuteAsync();
+        _Firewall = await GetAllUseCase.ExecuteAsync();
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -44,7 +45,7 @@
 
     private async Task Callback(string obj)
     {
-        _Firewall = await GetFirewalls.ExecuteAsync();
+        _Firewall = await GetAllUseCase.ExecuteAsync();
     }
 
 }

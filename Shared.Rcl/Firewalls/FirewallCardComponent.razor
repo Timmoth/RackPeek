@@ -1,15 +1,17 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Firewalls
+﻿@using RackPeek.Domain.Resources.Hardware.Desktops
+@using RackPeek.Domain.Resources.Hardware.Firewalls
 @using RackPeek.Domain.Resources.Hardware.Firewalls.Ports
 @using RackPeek.Domain.Resources.Models
 @inject UpdateFirewallUseCase UpdateFirewallUseCase
-@inject GetFirewallUseCase GetFirewallUseCase
+@inject IGetAllResourcesByKindUseCase<Firewall> GetAllUseCase
+@inject IGetResourceByNameUseCase<Firewall> GetByNameUseCase
 @inject AddFirewallPortUseCase AddFirewallPortUseCase
 @inject UpdateFirewallPortUseCase UpdateFirewallPortUseCase
 @inject RemoveFirewallPortUseCase RemoveFirewallPortUseCase
-@inject DeleteFirewallUseCase DeleteUseCase
-@inject CloneFirewallUseCase CloneUseCase
+@inject IDeleteResourceUseCase<Firewall> DeleteUseCase
+@inject ICloneResourceUseCase<Firewall> CloneUseCase
 
-@inject RenameFirewallUseCase RenameUseCase
+@inject IRenameResourceUseCase<Firewall> RenameUseCase
 @inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
@@ -229,7 +231,7 @@
             _edit.Poe,
             _edit.Notes);
 
-        Firewall = await GetFirewallUseCase.ExecuteAsync(Firewall.Name);
+        Firewall = await GetByNameUseCase.ExecuteAsync(Firewall.Name);
     }
 
     void Cancel()
@@ -278,7 +280,7 @@
                 port.Count);
         }
 
-        Firewall = await GetFirewallUseCase.ExecuteAsync(Firewall.Name);
+        Firewall = await GetByNameUseCase.ExecuteAsync(Firewall.Name);
         StateHasChanged();
     }
 
@@ -288,7 +290,7 @@
             Firewall.Name,
             _editingPortIndex);
 
-        Firewall = await GetFirewallUseCase.ExecuteAsync(Firewall.Name);
+        Firewall = await GetByNameUseCase.ExecuteAsync(Firewall.Name);
         StateHasChanged();
     }
 

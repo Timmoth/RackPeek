@@ -1,13 +1,13 @@
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Laptops;
 
-public class LaptopHardwareReportUseCase(IHardwareRepository repository) : IUseCase
+public class LaptopHardwareReportUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<LaptopHardwareReport> ExecuteAsync()
     {
-        var hardware = await repository.GetAllAsync();
-        var laptops = hardware.OfType<Laptop>();
+        var laptops = await repository.GetAllOfTypeAsync<Laptop>();
 
         var rows = laptops.Select(laptop =>
         {

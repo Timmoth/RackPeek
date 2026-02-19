@@ -22,6 +22,4 @@ public class SystemResource : Resource
     public int? Cores { get; set; }
     public int? Ram { get; set; }
     public List<Drive>? Drives { get; set; }
-
-    public string? RunsOn { get; set; }
 }

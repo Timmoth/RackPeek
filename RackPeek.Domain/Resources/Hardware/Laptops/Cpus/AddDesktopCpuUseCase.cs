@@ -1,9 +1,10 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Laptops.Cpus;
 
-public class AddLaptopCpuUseCase(IHardwareRepository repository) : IUseCase
+public class AddLaptopCpuUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task ExecuteAsync(string name, string? model, int? cores, int? threads)
     {

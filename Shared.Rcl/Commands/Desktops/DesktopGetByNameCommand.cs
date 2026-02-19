@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -14,7 +16,7 @@ public class DesktopGetByNameCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<GetDesktopUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<Desktop>>();
 
         var desktop = await useCase.ExecuteAsync(settings.Name);
 

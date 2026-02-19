@@ -1,6 +1,7 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Switches
 @using RackPeek.Domain.Resources.Models
-@inject GetSwitchesUseCase GetSwitches
+@inject IGetAllResourcesByKindUseCase<Switch> GetAllUseCase
+@inject IGetResourceByNameUseCase<Switch> GetByNameUseCase
 @inject NavigationManager Nav
 
 <PageTitle>Switches</PageTitle>
@@ -34,7 +35,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _Switches = await GetSwitches.ExecuteAsync();
+        _Switches = await GetAllUseCase.ExecuteAsync();
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -45,7 +46,7 @@
 
     private async Task Callback(string obj)
     {
-        _Switches = await GetSwitches.ExecuteAsync();
+        _Switches = await GetAllUseCase.ExecuteAsync();
     }
 
 }

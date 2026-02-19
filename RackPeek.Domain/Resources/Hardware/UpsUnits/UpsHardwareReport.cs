@@ -1,3 +1,4 @@
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
@@ -12,12 +13,11 @@ public record UpsHardwareRow(
     int Va
 );
 
-public class UpsHardwareReportUseCase(IHardwareRepository repository) : IUseCase
+public class UpsHardwareReportUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<UpsHardwareReport> ExecuteAsync()
     {
-        var hardware = await repository.GetAllAsync();
-        var upsUnits = hardware.OfType<Ups>();
+        var upsUnits = await repository.GetAllOfTypeAsync<Ups>();
 
         var rows = upsUnits.Select(ups =>
         {

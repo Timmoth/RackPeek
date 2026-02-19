@@ -1,6 +1,7 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Laptops
 @using RackPeek.Domain.Resources.Models
-@inject GetLaptopsUseCase GetLaptops
+@inject IGetAllResourcesByKindUseCase<Laptop> GetAllUseCase
+@inject IGetResourceByNameUseCase<Laptop> GetByNameUseCase
 @inject NavigationManager Nav
 
 <PageTitle>Laptops</PageTitle>
@@ -32,7 +33,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _Laptops = await GetLaptops.ExecuteAsync();
+        _Laptops = await GetAllUseCase.ExecuteAsync();
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -43,7 +44,7 @@
 
     private async Task Callback(string obj)
     {
-        _Laptops = await GetLaptops.ExecuteAsync();
+        _Laptops = await GetAllUseCase.ExecuteAsync();
     }
 
 }

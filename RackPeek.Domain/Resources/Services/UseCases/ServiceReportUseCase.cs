@@ -1,3 +1,4 @@
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
@@ -16,18 +17,18 @@ public record ServiceReportRow(
     string? RunsOnPhysicalHost
 );
 
-public class ServiceReportUseCase(IServiceRepository repository, ISystemRepository systemRepo) : IUseCase
+public class ServiceReportUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<ServiceReport> ExecuteAsync()
     {
-        var services = await repository.GetAllAsync();
+        var services = await repository.GetAllOfTypeAsync<Service>();
 
         var rows = services.Select(async s =>
         {
             string? runsOnPhysicalHost = null;
             if (!string.IsNullOrEmpty(s.RunsOn))
             {
-                var systemResource = await systemRepo.GetByNameAsync(s.RunsOn);
+                var systemResource = await repository.GetByNameAsync(s.RunsOn);
                 runsOnPhysicalHost = systemResource?.RunsOn;
             }
 

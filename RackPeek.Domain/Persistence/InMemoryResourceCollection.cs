@@ -69,6 +69,18 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         }
     }
 
+    public Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>()
+    {
+        lock (_lock)
+         return Task.FromResult<IReadOnlyList<T>>(_resources.OfType<T>().ToList());
+    }
+
+    public Task<IReadOnlyList<Resource>> GetDependantsAsync(string name)
+    {
+        lock (_lock)
+            return Task.FromResult<IReadOnlyList<Resource>>(_resources.Where(r => r.RunsOn?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false).ToList());
+    }
+
 
     public Task AddAsync(Resource resource)
     {
@@ -111,6 +123,16 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         }
 
         return Task.CompletedTask;
+    }
+
+    public Task<Resource?> GetByNameAsync(string name)
+    {
+        lock (_lock)
+        {
+            return Task.FromResult(_resources.FirstOrDefault(r =>
+                r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
+        }
+        
     }
 
     public Resource? GetByName(string name)

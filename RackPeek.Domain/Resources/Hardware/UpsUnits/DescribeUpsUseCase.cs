@@ -1,4 +1,5 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
@@ -9,7 +10,7 @@ public record UpsDescription(
     int? Va
 );
 
-public class DescribeUpsUseCase(IHardwareRepository repository) : IUseCase
+public class DescribeUpsUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<UpsDescription> ExecuteAsync(string name)
     {

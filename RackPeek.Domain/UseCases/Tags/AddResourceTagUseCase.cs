@@ -1,4 +1,5 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Services;
 
@@ -10,7 +11,7 @@ public interface IAddTagUseCase<T> : IResourceUseCase<T>
     Task ExecuteAsync(string name, string tag);
 }
 
-public class AddTagUseCase<T>(IResourceRepo<T> repo) : IAddTagUseCase<T> where T : Resource
+public class AddTagUseCase<T>(IResourceCollection repo) : IAddTagUseCase<T> where T : Resource
 {
     public async Task ExecuteAsync(string name, string tag)
     {

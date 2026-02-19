@@ -1,4 +1,5 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Servers
+﻿@using RackPeek.Domain.Resources.Hardware.Desktops
+@using RackPeek.Domain.Resources.Hardware.Servers
 @using RackPeek.Domain.Resources.Hardware.Servers.Cpus
 @using RackPeek.Domain.Resources.Hardware.Servers.Drives
 @using RackPeek.Domain.Resources.Hardware.Servers.Gpus
@@ -21,12 +22,13 @@
 @inject RemoveGpuUseCase RemoveGpuUseCase
 
 
-@inject GetServerUseCase GetServerUseCase
+@inject IGetAllResourcesByKindUseCase<Server> GetAllUseCase
+@inject IGetResourceByNameUseCase<Server> GetByNameUseCase
 @inject UpdateServerUseCase UpdateServerUseCase
-@inject DeleteServerUseCase DeleteServerUseCase
-@inject CloneServerUseCase CloneUseCase
+@inject IDeleteResourceUseCase<Server> DeleteServerUseCase
+@inject ICloneResourceUseCase<Server> CloneUseCase
 
-@inject RenameServerUseCase RenameServerUseCase
+@inject IRenameResourceUseCase<Server> RenameUseCase
 @inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
@@ -327,7 +329,7 @@
     {
         _isRamModalOpen = false;
         await UpdateServerUseCase.ExecuteAsync(Server.Name, value.Size, value.Mts, Server.Ipmi);
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     #endregion
@@ -367,13 +369,13 @@
             await UpdateCpuUseCase.ExecuteAsync(Server.Name, _editingCpuIndex, cpu.Model, cpu.Cores, cpu.Threads);
         }
 
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     async Task HandleCpuDelete(Cpu cpu)
     {
         await RemoveCpuUseCase.ExecuteAsync(Server.Name, _editingCpuIndex);
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     #endregion
@@ -413,14 +415,14 @@
             await UpdateDriveUseCase.ExecuteAsync(Server.Name, _editingDriveIndex, drive.Type, drive.Size);
         }
 
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
         StateHasChanged();
     }
 
     async Task HandleDriveDelete(Drive drive)
     {
         await RemoveDriveUseCase.ExecuteAsync(Server.Name, _editingDriveIndex);
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
         StateHasChanged();
     }
 
@@ -469,13 +471,13 @@
                 nic.Ports);
         }
 
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     async Task HandleNicDelete(Nic nic)
     {
         await RemoveNicUseCase.ExecuteAsync(Server.Name, _editingNicIndex);
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     #endregion
@@ -521,13 +523,13 @@
                 gpu.Vram);
         }
 
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     async Task HandleGpuDelete(Gpu gpu)
     {
         await RemoveGpuUseCase.ExecuteAsync(Server.Name, _editingGpuIndex);
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     #endregion
@@ -566,7 +568,7 @@
 
     async Task HandleRenameSubmit(string newName)
     {
-        await RenameServerUseCase.ExecuteAsync(Server.Name, newName);
+        await RenameUseCase.ExecuteAsync(Server.Name, newName);
         Nav.NavigateTo($"resources/hardware/{newName}");
     }
 
@@ -619,7 +621,7 @@
             Server.Ipmi,
             _notesDraft);
 
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
         _notesDraft = null;
     }
 

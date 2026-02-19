@@ -1,4 +1,5 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops;
@@ -13,7 +14,7 @@ public record DesktopDescription(
     int GpuCount
 );
 
-public class DescribeDesktopUseCase(IHardwareRepository repository) : IUseCase
+public class DescribeDesktopUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<DesktopDescription> ExecuteAsync(string name)
     {

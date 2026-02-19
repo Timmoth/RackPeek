@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Laptops;
+using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -14,7 +16,7 @@ public class LaptopGetByNameCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<GetLaptopUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<Laptop>>();
 
         var laptop = await useCase.ExecuteAsync(settings.Name);
 

@@ -1,6 +1,6 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.AccessPoints
 @using RackPeek.Domain.Resources.Models
-@inject GetAccessPointsUseCase GetAccessPoints
+@inject IGetAllResourcesByKindUseCase<AccessPoint> GetAllUseCase
 @inject NavigationManager Nav
 
 <PageTitle>Access Points</PageTitle>
@@ -35,7 +35,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _AccessPoints = await GetAccessPoints.ExecuteAsync();
+        _AccessPoints = await GetAllUseCase.ExecuteAsync();
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -46,7 +46,7 @@
 
     private async Task Callback(string obj)
     {
-        _AccessPoints = await GetAccessPoints.ExecuteAsync();
+        _AccessPoints = await GetAllUseCase.ExecuteAsync();
     }
 
 }

@@ -1,11 +1,14 @@
-﻿@using RackPeek.Domain.Resources.Services
+﻿@using RackPeek.Domain.Resources.Hardware.Desktops
+@using RackPeek.Domain.Resources.Services
 @using RackPeek.Domain.Resources.Services.UseCases
+@using RackPeek.Domain.UseCases
 @inject UpdateServiceUseCase UpdateServiceUseCase
-@inject GetServiceUseCase GetServiceUseCase
-@inject DeleteServiceUseCase DeleteServiceUseCase
-@inject CloneServiceUseCase CloneServiceUseCase
+@inject IGetAllResourcesByKindUseCase<Service> GetAllUseCase
+@inject IGetResourceByNameUseCase<Service> GetByNameUseCase
+@inject IDeleteResourceUseCase<Service> DeleteServiceUseCase
+@inject ICloneResourceUseCase<Service> CloneUseCase
 @inject NavigationManager Nav
-@inject RenameServiceUseCase RenameServiceUseCase
+@inject IRenameResourceUseCase<Service> RenameUseCase
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
     <div class="flex justify-between items-center mb-3">
@@ -243,7 +246,7 @@
 
     async Task HandleCloneSubmit(string newName)
     {
-        await CloneServiceUseCase.ExecuteAsync(Service.Name, newName);
+        await CloneUseCase.ExecuteAsync(Service.Name, newName);
 
         Nav.NavigateTo($"resources/services/{newName}");
     }
@@ -289,7 +292,7 @@
             Service.Network?.Url,
             name,
             Service.Notes);
-        Service = await GetServiceUseCase.ExecuteAsync(Service.Name);
+        Service = await GetByNameUseCase.ExecuteAsync(Service.Name);
         _edit = ServiceEditModel.From(Service);
     }
 
@@ -338,7 +341,7 @@
 
     async Task HandleRenameSubmit(string newName)
     {
-        await RenameServiceUseCase.ExecuteAsync(Service.Name, newName);
+        await RenameUseCase.ExecuteAsync(Service.Name, newName);
         Nav.NavigateTo($"resources/services/{newName}");
     }
 

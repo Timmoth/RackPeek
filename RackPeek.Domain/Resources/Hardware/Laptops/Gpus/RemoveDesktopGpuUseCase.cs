@@ -1,9 +1,10 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Laptops.Gpus;
 
-public class RemoveLaptopGpuUseCase(IHardwareRepository repository) : IUseCase
+public class RemoveLaptopGpuUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task ExecuteAsync(string name, int index)
     {

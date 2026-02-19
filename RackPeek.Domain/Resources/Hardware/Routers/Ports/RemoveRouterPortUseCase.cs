@@ -1,9 +1,10 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Routers.Ports;
 
-public class RemoveRouterPortUseCase(IHardwareRepository repository) : IUseCase
+public class RemoveRouterPortUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task ExecuteAsync(string name, int index)
     {

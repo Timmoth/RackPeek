@@ -1,3 +1,4 @@
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers;
@@ -23,12 +24,11 @@ public record ServerHardwareRow(
     bool Ipmi
 );
 
-public class ServerHardwareReportUseCase(IHardwareRepository repository) : IUseCase
+public class ServerHardwareReportUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<ServerHardwareReport> ExecuteAsync()
     {
-        var hardware = await repository.GetAllAsync();
-        var servers = hardware.OfType<Server>();
+        var servers = await repository.GetAllOfTypeAsync<Server>();
 
         var rows = servers.Select(server =>
         {

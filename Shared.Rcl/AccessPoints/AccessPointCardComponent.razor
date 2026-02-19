@@ -1,11 +1,12 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.AccessPoints
 @using RackPeek.Domain.Resources.Hardware.Desktops
 @using RackPeek.Domain.Resources.Models
+@using RackPeek.Domain.UseCases
 
 @inject UpdateAccessPointUseCase UpdateUseCase
-@inject DeleteAccessPointUseCase DeleteUseCase
-@inject RenameAccessPointUseCase RenameUseCase
-@inject CloneAccessPointUseCase CloneUseCase
+@inject IDeleteResourceUseCase<AccessPoint> DeleteUseCase
+@inject IRenameResourceUseCase<AccessPoint> RenameUseCase
+@inject ICloneResourceUseCase<AccessPoint> CloneUseCase
 @inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">

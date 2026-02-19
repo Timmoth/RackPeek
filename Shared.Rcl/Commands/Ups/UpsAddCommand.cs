@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.UpsUnits;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -19,7 +20,7 @@ public class UpsAddCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddUpsUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Domain.Resources.Models.Ups>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

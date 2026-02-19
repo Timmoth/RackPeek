@@ -1,9 +1,10 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops.Gpus;
 
-public class UpdateDesktopGpuUseCase(IHardwareRepository repository) : IUseCase
+public class UpdateDesktopGpuUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task ExecuteAsync(
         string name,

@@ -1,3 +1,4 @@
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops;
@@ -19,12 +20,11 @@ public record DesktopHardwareRow(
     string GpuSummary
 );
 
-public class DesktopHardwareReportUseCase(IHardwareRepository repository) : IUseCase
+public class DesktopHardwareReportUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<DesktopHardwareReport> ExecuteAsync()
     {
-        var hardware = await repository.GetAllAsync();
-        var desktops = hardware.OfType<Desktop>();
+        var desktops = await repository.GetAllOfTypeAsync<Models.Desktop>();
 
         var rows = desktops.Select(desktop =>
         {

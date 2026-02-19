@@ -1,3 +1,4 @@
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Switches;
@@ -16,12 +17,11 @@ public record SwitchHardwareRow(
     string PortSummary
 );
 
-public class SwitchHardwareReportUseCase(IHardwareRepository repository) : IUseCase
+public class SwitchHardwareReportUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<SwitchHardwareReport> ExecuteAsync()
     {
-        var hardware = await repository.GetAllAsync();
-        var switches = hardware.OfType<Switch>();
+        var switches = await repository.GetAllOfTypeAsync<Switch>();
 
         var rows = switches.Select(sw =>
         {

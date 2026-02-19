@@ -1,6 +1,8 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Desktops
 @using RackPeek.Domain.Resources.Models
-@inject GetDesktopsUseCase GetDesktops
+@inject IGetAllResourcesByKindUseCase<Desktop> GetAllUseCase
+@inject IGetResourceByNameUseCase<Desktop> GetByNameUseCase
+
 @inject NavigationManager Nav
 
 <PageTitle>Desktops</PageTitle>
@@ -33,7 +35,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _desktops = await GetDesktops.ExecuteAsync();
+        _desktops = await GetAllUseCase.ExecuteAsync();
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -44,7 +46,7 @@
 
     private async Task Callback(string obj)
     {
-        _desktops = await GetDesktops.ExecuteAsync();
+        _desktops = await GetAllUseCase.ExecuteAsync();
     }
 
 }

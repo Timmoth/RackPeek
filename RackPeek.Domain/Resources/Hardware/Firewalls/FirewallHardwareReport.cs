@@ -1,3 +1,4 @@
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Firewalls;
@@ -16,12 +17,11 @@ public record FirewallHardwareRow(
     string PortSummary
 );
 
-public class FirewallHardwareReportUseCase(IHardwareRepository repository) : IUseCase
+public class FirewallHardwareReportUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<FirewallHardwareReport> ExecuteAsync()
     {
-        var hardware = await repository.GetAllAsync();
-        var firewalls = hardware.OfType<Firewall>();
+        var firewalls = await repository.GetAllOfTypeAsync<Firewall>();
 
         var rows = firewalls.Select(sw =>
         {

@@ -1,6 +1,7 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Routers
 @using Router = RackPeek.Domain.Resources.Models.Router
-@inject GetRoutersUseCase GetRouters
+@inject IGetAllResourcesByKindUseCase<Router> GetAllUseCase
+@inject IGetResourceByNameUseCase<Router> GetByNameUseCase
 @inject NavigationManager Nav
 
 <PageTitle>Routers</PageTitle>
@@ -33,7 +34,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _Routeres = await GetRouters.ExecuteAsync();
+        _Routeres = await GetAllUseCase.ExecuteAsync();
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -44,7 +45,7 @@
 
     private async Task Callback(string obj)
     {
-        _Routeres = await GetRouters.ExecuteAsync();
+        _Routeres = await GetAllUseCase.ExecuteAsync();
     }
 
 }

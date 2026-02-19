@@ -39,6 +39,15 @@ public sealed class YamlResourceCollection(
         return Task.FromResult(result);
     }
 
+    public Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>()
+    {
+        return Task.FromResult<IReadOnlyList<T>>(resourceCollection.Resources.OfType<T>().ToList());
+    }
+    
+    public Task<IReadOnlyList<Resource>> GetDependantsAsync(string name)
+    {
+        return Task.FromResult<IReadOnlyList<Resource>>(resourceCollection.Resources.Where(r => r.RunsOn?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false).ToList());
+    }
 
     public Task<IReadOnlyList<Resource>> GetByTagAsync(string name)
     {
@@ -68,6 +77,12 @@ public sealed class YamlResourceCollection(
 
     public IReadOnlyList<Service> ServiceResources =>
         resourceCollection.Resources.OfType<Service>().ToList();
+
+    public Task<Resource?> GetByNameAsync(string name)
+    {
+        return Task.FromResult(resourceCollection.Resources.FirstOrDefault(r =>
+            r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
+    }
 
     public Resource? GetByName(string name) =>
         resourceCollection.Resources.FirstOrDefault(r =>

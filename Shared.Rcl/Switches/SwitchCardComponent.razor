@@ -1,15 +1,17 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Switches
+﻿@using RackPeek.Domain.Resources.Hardware.Desktops
+@using RackPeek.Domain.Resources.Hardware.Switches
 @using RackPeek.Domain.Resources.Hardware.Switches.Ports
 @using RackPeek.Domain.Resources.Models
 @inject UpdateSwitchUseCase UpdateSwitchUseCase
-@inject GetSwitchUseCase GetSwitchUseCase
+@inject IGetAllResourcesByKindUseCase<Switch> GetAllUseCase
+@inject IGetResourceByNameUseCase<Switch> GetByNameUseCase
 @inject AddSwitchPortUseCase AddSwitchPortUseCase
 @inject UpdateSwitchPortUseCase UpdateSwitchPortUseCase
 @inject RemoveSwitchPortUseCase RemoveSwitchPortUseCase
-@inject DeleteSwitchUseCase DeleteUseCase
-@inject CloneSwitchUseCase CloneUseCase
+@inject IDeleteResourceUseCase<Switch> DeleteUseCase
+@inject ICloneResourceUseCase<Switch> CloneUseCase
 
-@inject RenameSwitchUseCase RenameUseCase
+@inject IRenameResourceUseCase<Switch> RenameUseCase
 @inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
@@ -228,7 +230,7 @@
             _edit.Poe,
             _edit.Notes);
 
-        Switch = await GetSwitchUseCase.ExecuteAsync(Switch.Name);
+        Switch = await GetByNameUseCase.ExecuteAsync(Switch.Name);
     }
 
     void Cancel()
@@ -277,7 +279,7 @@
                 port.Count);
         }
 
-        Switch = await GetSwitchUseCase.ExecuteAsync(Switch.Name);
+        Switch = await GetByNameUseCase.ExecuteAsync(Switch.Name);
         StateHasChanged();
     }
 
@@ -287,7 +289,7 @@
             Switch.Name,
             _editingPortIndex);
 
-        Switch = await GetSwitchUseCase.ExecuteAsync(Switch.Name);
+        Switch = await GetByNameUseCase.ExecuteAsync(Switch.Name);
         StateHasChanged();
     }
 

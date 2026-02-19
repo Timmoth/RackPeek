@@ -1,4 +1,5 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Routers;
@@ -13,7 +14,7 @@ public record RouterDescription(
     string PortSummary
 );
 
-public class DescribeRouterUseCase(IHardwareRepository repository) : IUseCase
+public class DescribeRouterUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<RouterDescription> ExecuteAsync(string name)
     {

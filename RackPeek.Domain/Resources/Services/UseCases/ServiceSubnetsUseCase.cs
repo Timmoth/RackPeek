@@ -1,12 +1,13 @@
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Services.Networking;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
-public class ServiceSubnetsUseCase(IServiceRepository repo) : IUseCase
+public class ServiceSubnetsUseCase(IResourceCollection repo) : IUseCase
 {
     public async Task<ServiceSubnetsResult> ExecuteAsync(string? cidr, int? prefix, CancellationToken token)
     {
-        var services = await repo.GetAllAsync();
+        var services = await repo.GetAllOfTypeAsync<Service>();
 
         // If CIDR is provided → filter mode
         if (cidr is not null)

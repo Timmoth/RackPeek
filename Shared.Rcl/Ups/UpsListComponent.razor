@@ -1,6 +1,7 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.UpsUnits
 @using RackPeek.Domain.Resources.Models
-@inject GetUpsUseCase GetUpss
+@inject IGetAllResourcesByKindUseCase<Ups> GetAllUseCase
+@inject IGetResourceByNameUseCase<Ups> GetByNameUseCase
 @inject NavigationManager Nav
 
 <PageTitle>Ups</PageTitle>
@@ -33,7 +34,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _Upss = await GetUpss.ExecuteAsync();
+        _Upss = await GetAllUseCase.ExecuteAsync();
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -44,7 +45,7 @@
 
     private async Task Callback(string obj)
     {
-        _Upss = await GetUpss.ExecuteAsync();
+        _Upss = await GetAllUseCase.ExecuteAsync();
     }
 
 }

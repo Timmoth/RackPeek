@@ -1,6 +1,7 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Servers
 @using RackPeek.Domain.Resources.Models
-@inject GetServersUseCase GetServers
+@inject IGetAllResourcesByKindUseCase<Server> GetAllUseCase
+@inject IGetResourceByNameUseCase<Server> GetByNameUseCase
 @inject NavigationManager Nav
 
 <PageTitle>Servers</PageTitle>
@@ -35,7 +36,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _servers = await GetServers.ExecuteAsync();
+        _servers = await GetAllUseCase.ExecuteAsync();
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -46,7 +47,7 @@
 
     private async Task Callback(string obj)
     {
-        _servers = await GetServers.ExecuteAsync();
+        _servers = await GetAllUseCase.ExecuteAsync();
     }
 
 }

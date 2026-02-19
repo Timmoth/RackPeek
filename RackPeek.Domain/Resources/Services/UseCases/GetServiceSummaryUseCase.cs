@@ -1,15 +1,9 @@
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
-public sealed class AllServicesSummary
+public sealed class AllServicesSummary(int totalServices, int totalIpAddresses)
 {
-    public AllServicesSummary(int totalServices, int totalIpAddresses)
-    {
-        TotalServices = totalServices;
-        TotalIpAddresses = totalIpAddresses;
-    }
-
-    public int TotalServices { get; }
-    public int TotalIpAddresses { get; }
+    public int TotalServices { get; } = totalServices;
+    public int TotalIpAddresses { get; } = totalIpAddresses;
 }
 
 public class GetServiceSummaryUseCase(IServiceRepository repository) : IUseCase

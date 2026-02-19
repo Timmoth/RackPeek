@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -20,7 +22,7 @@ public class SwitchAddCommand(
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddSwitchUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Switch>>();
 
         await useCase.ExecuteAsync(
             settings.Name

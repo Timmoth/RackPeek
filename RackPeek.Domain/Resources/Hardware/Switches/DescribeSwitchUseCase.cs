@@ -1,4 +1,5 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Switches;
@@ -13,7 +14,7 @@ public record SwitchDescription(
     string PortSummary
 );
 
-public class DescribeSwitchUseCase(IHardwareRepository repository) : IUseCase
+public class DescribeSwitchUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<SwitchDescription> ExecuteAsync(string name)
     {
