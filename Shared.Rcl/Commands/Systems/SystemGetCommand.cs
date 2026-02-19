@@ -42,7 +42,7 @@ public class SystemGetCommand(
                 s.Cores.ToString(),
                 s.RamGb.ToString(),
                 s.TotalStorageGb.ToString(),
-                s.RunsOn ?? "Unknown"
+                string.Join(", ", s.RunsOn) ?? "Unkown"
             );
 
         AnsiConsole.Write(table);

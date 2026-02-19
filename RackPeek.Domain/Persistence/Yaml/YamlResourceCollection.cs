@@ -57,7 +57,7 @@ public sealed class YamlResourceCollection(
     public Task<IReadOnlyList<Resource>> GetDependantsAsync(string name)
     {
         return Task.FromResult<IReadOnlyList<Resource>>(resourceCollection.Resources
-            .Where(r => r.RunsOn?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false)
+            .Where(r => r.RunsOn.Select(p => p.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList().Count > 0 )
             .ToList());
     }
 

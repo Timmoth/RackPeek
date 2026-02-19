@@ -43,7 +43,8 @@ resources:
     drives:
         - size: 2Tb
         - size: 1tb   
-    runsOn: dell-c6400-node-01
+    runsOn:
+        - dell-c6400-node-01
 ";
         var sut = await CreateSut(yaml);
 
@@ -66,6 +67,6 @@ resources:
         Assert.Equal(2048, system.Drives[0].Size);
         Assert.Equal(1024, system.Drives[1].Size);
 
-        Assert.Equal("dell-c6400-node-01", system.RunsOn);
+        Assert.Equal("dell-c6400-node-01", system.RunsOn.First());
     }
 }

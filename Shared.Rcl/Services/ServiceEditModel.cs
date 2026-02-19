@@ -9,7 +9,7 @@ public sealed class ServiceEditModel
     public int? Port { get; set; }
     public string? Protocol { get; set; }
     public string? Url { get; set; }
-    public string? RunsOn { get; set; }
+    public List<string>? RunsOn { get; set; }
     public string? Notes { get; set; }
 
     public static ServiceEditModel From(Service s)

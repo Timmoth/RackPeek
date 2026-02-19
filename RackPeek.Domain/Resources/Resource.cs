@@ -50,7 +50,7 @@ public abstract class Resource
     public string[] Tags { get; set; } = [];
     public string? Notes { get; set; }
 
-    public string? RunsOn { get; set; }
+    public List<string> RunsOn { get; set; } = new List<string>();
 
     public static string KindToPlural(string kind)
     {

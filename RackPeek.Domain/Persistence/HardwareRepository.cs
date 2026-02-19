@@ -20,14 +20,21 @@ public class YamlHardwareRepository(IResourceCollection resources) : IHardwareRe
     {
         var hardwareTree = new List<HardwareTree>();
 
+        // List<string> systemGroups = resources.SystemResources.ToList<string>();
+            // .Where(s => s.RunsOn != null)
+            // .ToList();
+
         var systemGroups = resources.SystemResources
-            .Where(s => !string.IsNullOrWhiteSpace(s.RunsOn))
-            .GroupBy(s => s.RunsOn!.Trim(), StringComparer.OrdinalIgnoreCase)
+            // .Where(s => !string.IsNullOrWhiteSpace(s.RunsOn))
+            // .Where(s => s.RunsOn != null)
+            // TODO: Get rid of 'First'
+            .GroupBy(s => s.RunsOn.First().Trim(), StringComparer.OrdinalIgnoreCase)
             .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
 
         var serviceGroups = resources.ServiceResources
-            .Where(s => !string.IsNullOrWhiteSpace(s.RunsOn))
-            .GroupBy(s => s.RunsOn!.Trim(), StringComparer.OrdinalIgnoreCase)
+            // .Where(s => !string.IsNullOrWhiteSpace(s.RunsOn))
+            // TODO: Get rid of 'First'
+            .GroupBy(s => s.RunsOn.First().Trim(), StringComparer.OrdinalIgnoreCase)
             .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
 
         foreach (var hardware in resources.HardwareResources)

@@ -9,7 +9,7 @@ public sealed class SystemEditModel
     public string? Os { get; set; }
     public int? Cores { get; set; }
     public double? Ram { get; set; }
-    public string? RunsOn { get; set; }
+    public List<string> RunsOn { get; set; } = new List<string>();
     public string? Notes { get; set; }
 
     public static SystemEditModel From(SystemResource system)
