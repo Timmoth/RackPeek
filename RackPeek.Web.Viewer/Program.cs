@@ -8,6 +8,7 @@ using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
+using Shared.Rcl;
 
 namespace RackPeek.Web.Viewer;
 

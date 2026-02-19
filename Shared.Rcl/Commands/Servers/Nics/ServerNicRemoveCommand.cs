@@ -3,7 +3,7 @@ using RackPeek.Domain.Resources.Hardware.Servers.Nics;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers.Nics;
+namespace Shared.Rcl.Commands.Servers.Nics;
 
 public class ServerNicRemoveSettings : ServerNameSettings
 {

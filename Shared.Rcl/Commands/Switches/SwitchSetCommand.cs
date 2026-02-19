@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Commands.Servers;
 using RackPeek.Domain.Resources.Hardware.Switches;
+using Shared.Rcl.Commands.Servers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches;
+namespace Shared.Rcl.Commands.Switches;
 
 public class SwitchSetSettings : ServerNameSettings
 {

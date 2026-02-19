@@ -1,17 +1,17 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Desktops
 @using RackPeek.Domain.Resources.Hardware.Servers
-@using RackPeek.Domain.Resources.Hardware.Servers.Cpus
-@using RackPeek.Domain.Resources.Hardware.Servers.Drives
 @using RackPeek.Domain.Resources.Hardware.Servers.Gpus
 @using RackPeek.Domain.Resources.Hardware.Servers.Nics
 @using RackPeek.Domain.Resources.Models
-@inject AddCpuUseCase AddCpuUseCase
-@inject RemoveCpuUseCase RemoveCpuUseCase
-@inject UpdateCpuUseCase UpdateCpuUseCase
+@using RackPeek.Domain.UseCases.Cpus
+@using RackPeek.Domain.UseCases.Drives
+@inject IAddCpuUseCase<Server> AddCpuUseCase
+@inject IRemoveCpuUseCase<Server> RemoveCpuUseCase
+@inject IUpdateCpuUseCase<Server> UpdateCpuUseCase
 
-@inject AddDrivesUseCase AddDriveUseCase
-@inject RemoveDriveUseCase RemoveDriveUseCase
-@inject UpdateDriveUseCase UpdateDriveUseCase
+@inject IAddDriveUseCase<Server> AddDriveUseCase
+@inject IUpdateDriveUseCase<Server> UpdateDriveUseCase
+@inject IRemoveDriveUseCase<Server> RemoveDriveUseCase
 
 @inject AddNicUseCase AddNicUseCase
 @inject UpdateNicUseCase UpdateNicUseCase

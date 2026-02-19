@@ -1,9 +1,9 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Desktops
-@using RackPeek.Domain.Resources.Hardware.Desktops.Cpus
-@using RackPeek.Domain.Resources.Hardware.Desktops.Drives
 @using RackPeek.Domain.Resources.Hardware.Desktops.Gpus
 @using RackPeek.Domain.Resources.Hardware.Desktops.Nics
 @using RackPeek.Domain.Resources.Models
+@using RackPeek.Domain.UseCases.Cpus
+@using RackPeek.Domain.UseCases.Drives
 @using Shared.Rcl.Modals
 @inject IGetAllResourcesByKindUseCase<Desktop> GetAllUseCase
 @inject IGetResourceByNameUseCase<Desktop> GetByNameUseCase
@@ -11,13 +11,13 @@
 @inject UpdateDesktopUseCase UpdateDesktopUseCase
 @inject IDeleteResourceUseCase<Desktop> DeleteDesktopUseCase
 
-@inject AddDesktopCpuUseCase AddCpuUseCase
-@inject UpdateDesktopCpuUseCase UpdateCpuUseCase
-@inject RemoveDesktopCpuUseCase RemoveCpuUseCase
+@inject IAddCpuUseCase<Desktop> AddCpuUseCase
+@inject IUpdateCpuUseCase<Desktop> UpdateCpuUseCase
+@inject IRemoveCpuUseCase<Desktop> RemoveCpuUseCase
 
-@inject AddDesktopDriveUseCase AddDriveUseCase
-@inject UpdateDesktopDriveUseCase UpdateDriveUseCase
-@inject RemoveDesktopDriveUseCase RemoveDriveUseCase
+@inject IAddDriveUseCase<Desktop> AddDriveUseCase
+@inject IUpdateDriveUseCase<Desktop> UpdateDriveUseCase
+@inject IRemoveDriveUseCase<Desktop> RemoveDriveUseCase
 
 @inject AddDesktopNicUseCase AddNicUseCase
 @inject UpdateDesktopNicUseCase UpdateNicUseCase

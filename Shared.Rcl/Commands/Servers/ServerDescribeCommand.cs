@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Servers;
 using RackPeek.Domain.Resources.Models;
 using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers;
+namespace Shared.Rcl.Commands.Servers;
 
 public class ServerDescribeCommand(
     IServiceProvider serviceProvider

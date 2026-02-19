@@ -4,7 +4,7 @@ using RackPeek.Domain.Resources.Services.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Services;
+namespace Shared.Rcl.Commands.Services;
 
 public class ServiceSubnetsCommand(
     ILogger<ServiceSubnetsCommand> logger,

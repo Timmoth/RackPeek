@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Servers.Cpus;
+using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.UseCases.Cpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers.Cpus;
+namespace Shared.Rcl.Commands.Servers.Cpus;
 
 public class ServerCpuRemoveSettings : ServerNameSettings
 {
@@ -18,7 +19,7 @@ public class ServerCpuRemoveCommand(IServiceProvider serviceProvider) : AsyncCom
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RemoveCpuUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveCpuUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

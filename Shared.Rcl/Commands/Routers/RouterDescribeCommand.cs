@@ -3,7 +3,7 @@ using RackPeek.Domain.Resources.Hardware.Routers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Routers;
+namespace Shared.Rcl.Commands.Routers;
 
 public class RouterDescribeCommand(
     IServiceProvider serviceProvider

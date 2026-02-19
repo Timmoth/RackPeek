@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RackPeek.Spectre;
+using Shared.Rcl;
 using Spectre.Console.Cli;
 
 namespace RackPeek;

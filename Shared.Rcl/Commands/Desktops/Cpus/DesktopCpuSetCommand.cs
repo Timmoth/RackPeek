@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Desktops.Cpus;
+using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.UseCases.Cpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops.Cpus;
+namespace Shared.Rcl.Commands.Desktops.Cpus;
 
 public class DesktopCpuSetCommand(IServiceProvider provider)
     : AsyncCommand<DesktopCpuSetSettings>
@@ -14,7 +15,7 @@ public class DesktopCpuSetCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateDesktopCpuUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateCpuUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Index, settings.Model, settings.Cores,
             settings.Threads);

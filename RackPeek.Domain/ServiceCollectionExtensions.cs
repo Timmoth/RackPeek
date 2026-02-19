@@ -8,6 +8,8 @@ using RackPeek.Domain.Resources.Models;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 using RackPeek.Domain.UseCases;
+using RackPeek.Domain.UseCases.Cpus;
+using RackPeek.Domain.UseCases.Drives;
 using RackPeek.Domain.UseCases.Tags;
 
 namespace RackPeek.Domain;
@@ -57,6 +59,16 @@ public static class ServiceCollectionExtensions
         services.AddScoped(typeof(IGetResourceByNameUseCase<>), typeof(GetResourceByNameUseCase<>));
         services.AddScoped(typeof(IRenameResourceUseCase<>), typeof(RenameResourceUseCase<>));
 
+        services.AddScoped(typeof(IAddCpuUseCase<>), typeof(AddCpuUseCase<>));
+        services.AddScoped(typeof(IRemoveCpuUseCase<>), typeof(RemoveCpuUseCase<>));
+        services.AddScoped(typeof(IUpdateCpuUseCase<>), typeof(UpdateCpuUseCase<>));
+
+        
+        services.AddScoped(typeof(IAddDriveUseCase<>), typeof(AddDriveUseCase<>));
+        services.AddScoped(typeof(IRemoveDriveUseCase<>), typeof(RemoveDriveUseCase<>));
+        services.AddScoped(typeof(IUpdateDriveUseCase<>), typeof(UpdateDriveUseCase<>));
+
+        
         var usecases = Assembly.GetAssembly(typeof(IUseCase))
             ?.GetTypes()
             .Where(t =>

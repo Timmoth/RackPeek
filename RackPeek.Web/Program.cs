@@ -8,7 +8,6 @@ using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 using RackPeek.Web.Components;
-using RackPeek.Yaml;
 using Shared.Rcl;
 
 namespace RackPeek.Web;

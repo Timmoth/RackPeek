@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RackPeek;
+using Shared.Rcl;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Testing;

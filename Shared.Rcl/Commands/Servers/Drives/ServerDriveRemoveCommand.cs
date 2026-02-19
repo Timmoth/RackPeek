@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Servers.Drives;
+using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.UseCases.Drives;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers.Drives;
+namespace Shared.Rcl.Commands.Servers.Drives;
 
 public class ServerDriveRemoveSettings : ServerNameSettings
 {
@@ -19,7 +20,7 @@ public class ServerDriveRemoveCommand(IServiceProvider serviceProvider)
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RemoveDriveUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveDriveUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

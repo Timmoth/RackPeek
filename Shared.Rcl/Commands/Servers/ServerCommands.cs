@@ -1,6 +1,6 @@
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers;
+namespace Shared.Rcl.Commands.Servers;
 
 public class ServerNameSettings : CommandSettings
 {

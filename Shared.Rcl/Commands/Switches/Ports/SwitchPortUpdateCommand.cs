@@ -1,10 +1,9 @@
-using Spectre.Console.Cli;
-using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Switches.Ports;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches.Ports;
+namespace Shared.Rcl.Commands.Switches.Ports;
 
 public class SwitchPortUpdateSettings : SwitchNameSettings
 {

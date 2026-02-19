@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Laptops.Cpus;
+using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.UseCases.Cpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops.Cpus;
+namespace Shared.Rcl.Commands.Laptops.Cpus;
 
 public class LaptopCpuRemoveCommand(IServiceProvider provider)
     : AsyncCommand<LaptopCpuRemoveSettings>
@@ -14,7 +15,7 @@ public class LaptopCpuRemoveCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RemoveLaptopCpuUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveCpuUseCase<Laptop>>();
 
         await useCase.ExecuteAsync(settings.LaptopName, settings.Index);
 

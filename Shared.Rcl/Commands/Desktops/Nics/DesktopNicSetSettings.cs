@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops.Nics;
+namespace Shared.Rcl.Commands.Desktops.Nics;
 
 public class DesktopNicSetSettings : CommandSettings
 {

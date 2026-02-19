@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.AccessPoints;
 using RackPeek.Domain.Resources.Models;
 using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.AccessPoints;
+namespace Shared.Rcl.Commands.AccessPoints;
 
 public class AccessPointGetByNameCommand(
     IServiceProvider serviceProvider

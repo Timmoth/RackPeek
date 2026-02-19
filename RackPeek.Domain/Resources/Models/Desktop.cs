@@ -1,6 +1,6 @@
 namespace RackPeek.Domain.Resources.Models;
 
-public class Desktop : Hardware
+public class Desktop : Hardware, ICpuResource, IDriveResource
 {
     public const string KindLabel = "Desktop";
     public List<Cpu>? Cpus { get; set; }

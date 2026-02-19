@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops.Cpus;
+namespace Shared.Rcl.Commands.Desktops.Cpus;
 
 public class DesktopCpuAddSettings : CommandSettings
 {

@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Laptops;
 using RackPeek.Domain.Resources.Models;
 using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops;
+namespace Shared.Rcl.Commands.Laptops;
 
 public class LaptopDeleteCommand(IServiceProvider provider)
     : AsyncCommand<LaptopNameSettings>

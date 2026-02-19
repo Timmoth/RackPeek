@@ -3,7 +3,7 @@ using RackPeek.Domain.Resources.Hardware.Servers.Gpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers.Gpus;
+namespace Shared.Rcl.Commands.Servers.Gpus;
 
 public class ServerGpuUpdateSettings : ServerNameSettings
 {

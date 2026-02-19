@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops.Cpus;
+namespace Shared.Rcl.Commands.Laptops.Cpus;
 
 public class LaptopCpuRemoveSettings : CommandSettings
 {

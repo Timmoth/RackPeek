@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers;
+namespace Shared.Rcl.Commands.Servers;
 
 public sealed class ServerTreeCommand(GetHardwareSystemTreeUseCase useCase) : AsyncCommand<ServerNameSettings>
 {

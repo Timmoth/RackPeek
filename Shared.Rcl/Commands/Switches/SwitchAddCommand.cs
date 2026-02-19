@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Switches;
 using RackPeek.Domain.Resources.Models;
 using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches;
+namespace Shared.Rcl.Commands.Switches;
 
 public class SwitchAddSettings : CommandSettings
 {

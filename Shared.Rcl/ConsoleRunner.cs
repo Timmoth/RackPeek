@@ -1,10 +1,9 @@
-using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Testing;
 
-namespace RackPeek;
+namespace Shared.Rcl;
 
 public class ConsoleEmulator : IConsoleEmulator
 {

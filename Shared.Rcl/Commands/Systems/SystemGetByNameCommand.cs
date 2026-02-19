@@ -3,7 +3,7 @@ using RackPeek.Domain.Resources.SystemResources.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Systems;
+namespace Shared.Rcl.Commands.Systems;
 
 public class SystemGetByNameCommand(
     IServiceProvider serviceProvider

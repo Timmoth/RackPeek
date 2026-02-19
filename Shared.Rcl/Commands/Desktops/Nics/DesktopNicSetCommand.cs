@@ -3,7 +3,7 @@ using RackPeek.Domain.Resources.Hardware.Desktops.Nics;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops.Nics;
+namespace Shared.Rcl.Commands.Desktops.Nics;
 
 public class DesktopNicSetCommand(IServiceProvider provider)
     : AsyncCommand<DesktopNicSetSettings>

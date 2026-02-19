@@ -3,7 +3,7 @@ using RackPeek.Domain.Resources.Hardware.Laptops.Gpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops.Gpus;
+namespace Shared.Rcl.Commands.Laptops.Gpus;
 
 public class LaptopGpuRemoveCommand(IServiceProvider provider)
     : AsyncCommand<LaptopGpuRemoveSettings>

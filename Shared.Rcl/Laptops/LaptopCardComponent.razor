@@ -1,21 +1,20 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Desktops
 @using RackPeek.Domain.Resources.Hardware.Laptops
-@using RackPeek.Domain.Resources.Hardware.Laptops.Cpus
-@using RackPeek.Domain.Resources.Hardware.Laptops.Drives
 @using RackPeek.Domain.Resources.Hardware.Laptops.Gpus
-@using RackPeek.Domain.Resources.Models
+@using RackPeek.Domain.UseCases.Cpus
+@using RackPeek.Domain.UseCases.Drives
 @inject IGetAllResourcesByKindUseCase<Laptop> GetAllUseCase
 @inject IGetResourceByNameUseCase<Laptop> GetByNameUseCase
 @inject UpdateLaptopUseCase UpdateLaptopUseCase
 @inject IDeleteResourceUseCase<Laptop> DeleteLaptopUseCase
 
-@inject AddLaptopCpuUseCase AddCpuUseCase
-@inject UpdateLaptopCpuUseCase UpdateCpuUseCase
-@inject RemoveLaptopCpuUseCase RemoveCpuUseCase
+@inject IAddCpuUseCase<Laptop> AddCpuUseCase
+@inject IUpdateCpuUseCase<Laptop> UpdateCpuUseCase
+@inject IRemoveCpuUseCase<Laptop> RemoveCpuUseCase
 
-@inject AddLaptopDriveUseCase AddDriveUseCase
-@inject UpdateLaptopDriveUseCase UpdateDriveUseCase
-@inject RemoveLaptopDriveUseCase RemoveDriveUseCase
+@inject IAddDriveUseCase<Laptop> AddDriveUseCase
+@inject IUpdateDriveUseCase<Laptop> UpdateDriveUseCase
+@inject IRemoveDriveUseCase<Laptop> RemoveDriveUseCase
 
 @inject AddLaptopGpuUseCase AddGpuUseCase
 @inject UpdateLaptopGpuUseCase UpdateGpuUseCase

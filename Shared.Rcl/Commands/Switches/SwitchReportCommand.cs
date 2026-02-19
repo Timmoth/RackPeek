@@ -4,7 +4,7 @@ using RackPeek.Domain.Resources.Hardware.Switches;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches;
+namespace Shared.Rcl.Commands.Switches;
 
 public class SwitchReportCommand(
     ILogger<SwitchReportCommand> logger,

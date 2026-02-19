@@ -4,7 +4,7 @@ using RackPeek.Domain.Resources.Models;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops.Gpus;
+namespace Shared.Rcl.Commands.Laptops.Gpus;
 
 public class LaptopGpuSetCommand(IServiceProvider provider)
     : AsyncCommand<LaptopGpuSetSettings>

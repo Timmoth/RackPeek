@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops.Drive;
+namespace Shared.Rcl.Commands.Laptops.Drive;
 
 public class LaptopDriveRemoveSettings : CommandSettings
 {

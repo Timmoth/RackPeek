@@ -1,10 +1,9 @@
-using Spectre.Console.Cli;
-using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Hardware.Routers.Ports;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Routers.Ports;
+namespace Shared.Rcl.Commands.Routers.Ports;
 
 public class RouterPortAddSettings : RouterNameSettings
 {

@@ -1,6 +1,6 @@
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches;
+namespace Shared.Rcl.Commands.Switches;
 
 public class SwitchNameSettings : CommandSettings
 {

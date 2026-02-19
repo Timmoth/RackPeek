@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Servers.Cpus;
+using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.UseCases.Cpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers.Cpus;
+namespace Shared.Rcl.Commands.Servers.Cpus;
 
 public class ServerCpuSetSettings : ServerNameSettings
 {
@@ -24,7 +25,7 @@ public class ServerCpuSetCommand(IServiceProvider serviceProvider) : AsyncComman
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateCpuUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateCpuUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

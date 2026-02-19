@@ -5,7 +5,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyVersion>v0.0.11</AssemblyVersion>
+        <AssemblyVersion>0.0.11</AssemblyVersion>
     </PropertyGroup>
 
     <ItemGroup>

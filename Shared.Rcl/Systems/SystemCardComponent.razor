@@ -3,12 +3,13 @@
 @using RackPeek.Domain.Resources.SystemResources
 @using RackPeek.Domain.Resources.SystemResources.UseCases
 @using RackPeek.Domain.UseCases
+@using RackPeek.Domain.UseCases.Drives
 @inject UpdateSystemUseCase UpdateSystemUseCase
 @inject IGetAllResourcesByKindUseCase<SystemResource> GetAllUseCase
 @inject IGetResourceByNameUseCase<SystemResource> GetByNameUseCase
-@inject AddSystemDriveUseCase AddSystemDriveUseCase
-@inject RemoveSystemDriveUseCase RemoveSystemDriveUseCase
-@inject UpdateSystemDriveUseCase UpdateSystemDriveUseCase
+@inject IAddDriveUseCase<SystemResource> AddDriveUseCase
+@inject IUpdateDriveUseCase<SystemResource> UpdateDriveUseCase
+@inject IRemoveDriveUseCase<SystemResource> RemoveDriveUseCase
 @inject IDeleteResourceUseCase<SystemResource> DeleteSystemUseCase
 @inject ICloneResourceUseCase<SystemResource> CloneUseCase
 @inject NavigationManager Nav
@@ -350,11 +351,11 @@
 
         if (_editingDriveIndex < 0)
         {
-            await AddSystemDriveUseCase.ExecuteAsync(System.Name, drive.Type ?? "hdd", drive.Size ?? 0);
+            await AddDriveUseCase.ExecuteAsync(System.Name, drive.Type ?? "hdd", drive.Size ?? 0);
         }
         else
         {
-            await UpdateSystemDriveUseCase.ExecuteAsync(System.Name, _editingDriveIndex, drive.Type ?? "hdd", drive.Size ?? 0);
+            await UpdateDriveUseCase.ExecuteAsync(System.Name, _editingDriveIndex, drive.Type ?? "hdd", drive.Size ?? 0);
         }
 
         System = await GetByNameUseCase.ExecuteAsync(System.Name);
@@ -363,7 +364,7 @@
 
     async Task HandleDriveDelete(Drive drive)
     {
-        await RemoveSystemDriveUseCase.ExecuteAsync(System.Name, _editingDriveIndex);
+        await RemoveDriveUseCase.ExecuteAsync(System.Name, _editingDriveIndex);
         System = await GetByNameUseCase.ExecuteAsync(System.Name);
         StateHasChanged();
     }

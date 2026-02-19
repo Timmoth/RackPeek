@@ -1,7 +1,6 @@
 ﻿using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources.SystemResources;
-using RackPeek.Yaml;
 
 namespace Tests.Yaml;
 

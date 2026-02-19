@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.SystemResources;
-using RackPeek.Domain.Resources.SystemResources.UseCases;
 using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Systems;
+namespace Shared.Rcl.Commands.Systems;
 
 public class SystemDeleteCommand(
     IServiceProvider serviceProvider

@@ -1,14 +1,13 @@
 using System.Collections.Specialized;
-using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Models;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
-using RackPeek.Yaml;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+
+namespace RackPeek.Domain.Persistence.Yaml;
 
 public class ResourceCollection
 {

@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.SystemResources;
 
-public class SystemResource : Resource
+public class SystemResource : Resource, IDriveResource
 {
     public const string KindLabel = "System";
 

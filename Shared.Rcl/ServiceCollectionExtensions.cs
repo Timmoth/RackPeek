@@ -2,7 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace RackPeek;
+namespace Shared.Rcl;
 
 public static class ServiceCollectionExtensions
 {

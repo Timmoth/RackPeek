@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Commands.Servers;
 using RackPeek.Domain.Resources.Hardware.Firewalls;
+using Shared.Rcl.Commands.Servers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Firewalls;
+namespace Shared.Rcl.Commands.Firewalls;
 
 public class FirewallSetSettings : ServerNameSettings
 {

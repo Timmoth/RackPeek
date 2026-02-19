@@ -4,7 +4,7 @@ using RackPeek.Domain.Resources.Hardware.Servers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers;
+namespace Shared.Rcl.Commands.Servers;
 
 public class ServerReportCommand(ILogger<ServerReportCommand> logger, IServiceProvider serviceProvider)
     : AsyncCommand

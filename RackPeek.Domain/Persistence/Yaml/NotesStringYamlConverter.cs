@@ -2,6 +2,8 @@ using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 
+namespace RackPeek.Domain.Persistence.Yaml;
+
 public sealed class NotesStringYamlConverter : IYamlTypeConverter
 {
     public bool Accepts(Type type) => type == typeof(string);

@@ -4,7 +4,7 @@ using RackPeek.Domain.Resources.Hardware.Laptops;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops;
+namespace Shared.Rcl.Commands.Laptops;
 
 public class LaptopReportCommand(
     ILogger<LaptopReportCommand> logger,
