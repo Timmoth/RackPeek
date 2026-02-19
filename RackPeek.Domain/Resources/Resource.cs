@@ -51,7 +51,7 @@ public abstract class Resource
     public Dictionary<string, string> Labels { get; set; } = new();
     public string? Notes { get; set; }
 
-    public string? RunsOn { get; set; }
+    public List<string> RunsOn { get; set; } = new List<string>();
 
     public static string KindToPlural(string kind)
     {

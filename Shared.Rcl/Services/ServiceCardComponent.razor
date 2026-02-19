@@ -159,31 +159,49 @@
 
         <!-- Runs On -->
         <div data-testid="service-runson-section">
-            <div class="text-zinc-400 mb-1">Runs On</div>
+            <div class="text-zinc-400 mb-1">
+              Runs On
+
+              <button
+                  data-testid="service-runson-button"
+                  class="hover:text-emerald-400 pr-4"
+                  title="Add Runs On"
+                  @onclick="() => _selectParentOpen = true">
+                      @("+")
+              </button>
+            </div>
 
             @if (_isEditing)
             {
-                <button
-                    data-testid="service-runson-button"
-                    class="hover:text-emerald-400"
-                    @onclick="() => _selectParentOpen = true">
-                    @if (!string.IsNullOrWhiteSpace(Service.RunsOn))
+                    @if (Service.RunsOn?.Count > 0)
                     {
-                        @($"{Service.RunsOn} +")
+                      @foreach(var parent in Service.RunsOn)
+                      {
+                        <button
+                          class="hover:text-emerald-400"
+                          title="Edit Runs On"
+                          @onclick="() => _selectParentOpen = true">
+                            @($"{parent}")
+                        </button>
+                        <button
+                          class="text-red-400 hover:text-red-300 pr-4"
+                          title="Remove"
+                          @onclick="() => HandleParentDeleted(parent)">
+                            @($"✕")
+                        </button>
+                      }
                     }
-                    else
-                    {
-                        @("Edit parent")
-                    }
-                </button>
             }
-            else if (!string.IsNullOrWhiteSpace(Service.RunsOn))
+            else if (Service.RunsOn?.Count > 0)
             {
-                <NavLink href="@($"resources/systems/{Service.RunsOn}")"
-                         data-testid="service-runson-link"
-                         class="text-emerald-400">
-                    @Service.RunsOn
-                </NavLink>
+                @foreach(var parent in Service.RunsOn)
+                {
+                  <NavLink href="@($"resources/systems/{parent}")"
+                           data-testid="service-runson-link"
+                           class="text-emerald-400 pr-4">
+                      @parent
+                  </NavLink>
+                }
             }
         </div>
 
@@ -322,7 +340,23 @@
             Service.Network?.Port,
             Service.Network?.Protocol,
             Service.Network?.Url,
-            name,
+            new List<string>{name},
+            Service.Notes);
+        Service = await GetByNameUseCase.ExecuteAsync(Service.Name);
+        _edit = ServiceEditModel.From(Service);
+    }
+
+    async Task HandleParentDeleted(string? name)
+    {
+        SelectedParentName = name;
+        Service.RunsOn.Remove(SelectedParentName);
+        await UpdateUseCase.ExecuteAsync(
+            Service.Name,
+            Service.Network?.Ip,
+            Service.Network?.Port,
+            Service.Network?.Protocol,
+            Service.Network?.Url,
+            Service.RunsOn,
             Service.Notes);
         Service = await GetByNameUseCase.ExecuteAsync(Service.Name);
         _edit = ServiceEditModel.From(Service);

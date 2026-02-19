@@ -33,7 +33,7 @@ public class RenameResourceUseCase<T>(IResourceCollection repo) : IRenameResourc
         var children = await repo.GetDependantsAsync(originalName);
         foreach (var child in children)
         {
-            child.RunsOn = newName;
+            child.RunsOn = child.RunsOn.ConvertAll<string>(p => p == originalName ? newName : p);
             await repo.UpdateAsync(child);
         }
     }

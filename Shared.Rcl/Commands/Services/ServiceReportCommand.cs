@@ -34,14 +34,28 @@ public class ServiceReportCommand(
             .AddColumn("Runs On");
 
         foreach (var s in report.Services)
+        {
+            string sys = "Unknown";
+            string phys = "Unknown";
+
+            if (s.RunsOnSystemHost?.Count > 0 )
+            {
+                sys = string.Join(", ", s.RunsOnSystemHost);
+            }
+            if (s.RunsOnPhysicalHost?.Count > 0 )
+            {
+                phys = string.Join(", ", s.RunsOnPhysicalHost);
+            }
+
             table.AddRow(
                 s.Name,
                 s.Ip ?? "",
                 s.Port.ToString() ?? "",
                 s.Protocol ?? "",
                 s.Url ?? "",
-                ServicesFormatExtensions.FormatRunsOn(s.RunsOnSystemHost, s.RunsOnPhysicalHost)
+                ServicesFormatExtensions.FormatRunsOn(sys, phys)
             );
+        }
 
         AnsiConsole.Write(table);
         return 0;

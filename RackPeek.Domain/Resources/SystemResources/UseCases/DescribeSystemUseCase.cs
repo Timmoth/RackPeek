@@ -10,7 +10,7 @@ public record SystemDescription(
     int Cores,
     double RamGb,
     int TotalStorageGb,
-    string? RunsOn,
+    List<string> RunsOn,
     Dictionary<string, string> Labels
 );
 

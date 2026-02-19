@@ -18,12 +18,16 @@ namespace RackPeek.Domain.Persistence.Yaml;
 
 public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<YamlRoot>
 {
+    // List migration functions here
+    public static readonly IReadOnlyList<Func<IServiceProvider, Dictionary<object, object>, ValueTask>> ListOfMigrations = new List<Func<IServiceProvider, Dictionary<object,object>, ValueTask>>{
+        EnsureSchemaVersionExists,
+        ConvertScalarRunsOnToList,
+    };
+
     public RackPeekConfigMigrationDeserializer(IServiceProvider serviceProvider,
         ILogger<YamlMigrationDeserializer<YamlRoot>> logger) :
         base(serviceProvider, logger, 
-            new List<Func<IServiceProvider, Dictionary<object,object>, ValueTask>>{
-                EnsureSchemaVersionExists,
-            },
+            ListOfMigrations,
             "version",
             new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithCaseInsensitivePropertyMatching()
@@ -64,6 +68,39 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
             obj["version"] = 0;
         }
         
+        return ValueTask.CompletedTask;
+    }
+
+    public static ValueTask ConvertScalarRunsOnToList(IServiceProvider serviceProvider, Dictionary<object, object> obj)
+    {
+        const string key = "runsOn";
+        var resourceList = obj["resources"];
+        if (resourceList is List<object> resources)
+        {
+            foreach(var resourceObj in resources)
+            {
+                if (resourceObj is Dictionary<object,object> resourceDict)
+                {
+                    if (resourceDict.ContainsKey(key))
+                    {
+                        var runsOn = resourceDict[key];
+                        Type t = runsOn.GetType();
+                        switch (runsOn)
+                        {
+                            case string r:
+                                resourceDict[key] = new List<string>{r};
+                                break;
+                            case List<string> r:
+                                // Nothing to do
+                                break;
+                            default:
+                                throw new InvalidCastException($"Cannot convert from {t} to List<string> in {resourceDict}[{key}]");
+                        }
+                    }
+                }
+            }
+        }
+
         return ValueTask.CompletedTask;
     }
 
