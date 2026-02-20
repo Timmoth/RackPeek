@@ -9,11 +9,12 @@ public interface IGetAllResourcesByKindUseCase<T> : IResourceUseCase<T>
     public Task<IReadOnlyList<T>> ExecuteAsync();
 }
 
-
-public class GetAllResourcesByKindUseCase<T>(IResourceCollection repo) : IGetAllResourcesByKindUseCase<T> where T : Resource
+public class GetAllResourcesByKindUseCase<T>(IResourceCollection repo)
+    : IGetAllResourcesByKindUseCase<T> where T : Resource
 {
     public async Task<IReadOnlyList<T>> ExecuteAsync()
     {
-        return await repo.GetAllOfTypeAsync<T>();;
+        return await repo.GetAllOfTypeAsync<T>();
+        ;
     }
 }

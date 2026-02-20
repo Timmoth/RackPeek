@@ -34,3 +34,17 @@ docker buildx build \
 
 
 ```
+
+
+e2e tests
+```bash
+cd Tests.E2e
+dotnet tool install --global Microsoft.Playwright.CLI
+dotnet build
+
+playwright install
+
+docker build -t rackpeek:ci -f RackPeek.Web/Dockerfile .
+
+
+```

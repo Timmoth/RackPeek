@@ -1,9 +1,9 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Services;
 
 namespace RackPeek.Domain.UseCases.Tags;
+
 public interface IRemoveTagUseCase<T> : IResourceUseCase<T>
     where T : Resource
 {

@@ -1,11 +1,8 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Desktops
-@using RackPeek.Domain.Resources.SubResources
+﻿@using RackPeek.Domain.Resources.SubResources
 @using RackPeek.Domain.Resources.SystemResources
 @using RackPeek.Domain.Resources.SystemResources.UseCases
-@using RackPeek.Domain.UseCases
 @using RackPeek.Domain.UseCases.Drives
 @inject UpdateSystemUseCase UpdateSystemUseCase
-@inject IGetAllResourcesByKindUseCase<SystemResource> GetAllUseCase
 @inject IGetResourceByNameUseCase<SystemResource> GetByNameUseCase
 @inject IAddDriveUseCase<SystemResource> AddDriveUseCase
 @inject IUpdateDriveUseCase<SystemResource> UpdateDriveUseCase
@@ -15,7 +12,8 @@
 @inject NavigationManager Nav
 @inject IRenameResourceUseCase<SystemResource> RenameUseCase
 
-<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900"
+     data-testid=@($"system-item-{System.Name.Replace(" ", "-")}")>
     <div class="flex justify-between items-center mb-3">
         <NavLink href="@($"resources/systems/{System.Name}")" class="block">
 
@@ -27,49 +25,50 @@
         <div class="flex gap-3 text-xs">
             @if (!_isEditing)
             {
-                <button class="text-zinc-400 hover:text-zinc-200"
+                <button data-testid="edit-system-button"
+                        class="text-zinc-400 hover:text-zinc-200"
                         @onclick="BeginEdit">
                     Edit
                 </button>
 
-                <button class="text-xs text-blue-400 hover:text-blue-300 transition"
-                        title="Rename service"
+                <button data-testid="rename-system-button"
+                        class="text-xs text-blue-400 hover:text-blue-300 transition"
                         @onclick="OpenRename">
                     Rename
                 </button>
-                
-                <button
-                    class="text-xs text-emerald-400 hover:text-emerald-300 transition"
-                    title="Clone service"
-                    @onclick="OpenClone">
+
+                <button data-testid="clone-system-button"
+                        class="text-xs text-emerald-400 hover:text-emerald-300 transition"
+                        @onclick="OpenClone">
                     Clone
                 </button>
-                
-                <button
-                    class="text-xs text-red-400 hover:text-red-300 transition"
-                    title="Delete server"
-                    @onclick="ConfirmDelete">
+
+                <button data-testid="delete-system-button"
+                        class="text-xs text-red-400 hover:text-red-300 transition"
+                        @onclick="ConfirmDelete">
                     Delete
                 </button>
+
             }
             else
             {
-                <button class="text-emerald-400 hover:text-emerald-300"
+                <button data-testid="save-system-button"
+                        class="text-emerald-400 hover:text-emerald-300"
                         @onclick="Save">
                     Save
                 </button>
-                <button class="text-zinc-500 hover:text-zinc-300"
+
+                <button data-testid="cancel-system-button"
+                        class="text-zinc-500 hover:text-zinc-300"
                         @onclick="Cancel">
                     Cancel
                 </button>
+
             }
         </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-
-        <!-- Type -->
-        <!-- Type -->
         <div>
             <div class="text-zinc-400 mb-1">Type</div>
 
@@ -83,6 +82,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
+                                             data-testid="system-type-select"
                         @bind="_edit.Type">
                     @foreach (var type in SystemResource.ValidSystemTypes)
                     {
@@ -111,6 +111,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
+                    data-testid="system-os-input"
                        @bind="_edit.Os"/>
             }
             else if (!string.IsNullOrWhiteSpace(System.Os))
@@ -133,6 +134,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
+                       data-testid="system-cores-input"
                        @bind="_edit.Cores"/>
             }
             else if (System.Cores.HasValue)
@@ -155,6 +157,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
+                       data-testid="system-ram-input"
                        @bind="_edit.Ram"/>
             }
             else if (System.Ram.HasValue)
@@ -171,6 +174,7 @@
                 <button
                     class="hover:text-emerald-400"
                     title="Edit Runs On"
+                    data-testid="system-runs-on-button"
                     @onclick="() => _selectParentOpen = true">
                     @if (!string.IsNullOrWhiteSpace(System.RunsOn))
                     {
@@ -198,6 +202,7 @@
                     <button
                         class="hover:text-emerald-400 group-hover:opacity-100 transition"
                         title="Add Drive"
+                        data-testid="add-drive-button"
                         @onclick="OpenAddDrive">
                         +
                     </button>
@@ -212,7 +217,7 @@
                         class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
 
                         <div class="flex gap-2 group-hover:opacity-100 transition">
-                            <button
+                            <button data-testid=@($"drive-item-{drive.Type}-{drive.Size}")
                                 class="hover:text-emerald-400"
                                 title="Edit Drive"
                                 @onclick="() => OpenEditDrives(drive)">
@@ -261,10 +266,11 @@
 <ConfirmModal
     IsOpen="_confirmDeleteOpen"
     IsOpenChanged="v => _confirmDeleteOpen = v"
-    Title="Delete service"
+    Title="Delete system"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
+    OnConfirm="DeleteServer"
+    TestIdPrefix="System">>
     Are you sure you want to delete <strong>@System.Name</strong>?
     <br/>
     This will detach all dependent systems.

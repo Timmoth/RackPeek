@@ -1,7 +1,6 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Services;
 
 namespace RackPeek.Domain.UseCases;
 
@@ -17,23 +16,20 @@ public class RenameResourceUseCase<T>(IResourceCollection repo) : IRenameResourc
     {
         originalName = Normalize.SystemName(originalName);
         ThrowIfInvalid.ResourceName(originalName);
-        
+
         newName = Normalize.SystemName(newName);
         ThrowIfInvalid.ResourceName(newName);
 
         var existingResource = await repo.GetByNameAsync(newName);
         if (existingResource != null)
             throw new ConflictException($"{existingResource.Kind} resource '{newName}' already exists.");
-        
+
         var original = await repo.GetByNameAsync(originalName);
-        if (original == null)
-        {
-            throw new NotFoundException($"Resource '{originalName}' not found.");
-        }
+        if (original == null) throw new NotFoundException($"Resource '{originalName}' not found.");
 
         original.Name = newName;
         await repo.UpdateAsync(original);
-        
+
         var children = await repo.GetDependantsAsync(originalName);
         foreach (var child in children)
         {

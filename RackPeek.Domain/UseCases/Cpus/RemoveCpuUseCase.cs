@@ -13,8 +13,6 @@ public interface IRemoveCpuUseCase<T> : IResourceUseCase<T>
         int index);
 }
 
-
-    
 public class RemoveCpuUseCase<T>(IResourceCollection repo) : IRemoveCpuUseCase<T> where T : Resource
 {
     public async Task ExecuteAsync(
@@ -24,7 +22,8 @@ public class RemoveCpuUseCase<T>(IResourceCollection repo) : IRemoveCpuUseCase<T
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
-        var resource = await repo.GetByNameAsync(name);
+        var resource = await repo.GetByNameAsync<T>(name) ??
+                       throw new NotFoundException($"Resource '{name}' not found.");
         if (resource is not ICpuResource cpuResource) return;
 
         cpuResource.Cpus ??= [];

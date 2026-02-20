@@ -1,41 +1,53 @@
 ﻿@typeparam TResource where TResource : Resource
 
 @using RackPeek.Domain.Resources
-@using RackPeek.Domain.UseCases
 
 @inject IAddResourceUseCase<TResource> AddResource
 
-<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
-    <div class="text-zinc-100 mb-3">
-        Add @typeof(TResource).Name
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900"
+     data-testid=@($"add-{@ResourceTypeLower}-root")>
+
+    <div class="text-zinc-100 mb-3"
+         data-testid=@($"add-{@ResourceTypeLower}-title")>
+        Add @ResourceType
     </div>
 
-    <div class="flex gap-2">
+    <div class="flex gap-2"
+         data-testid=@($"add-{@ResourceTypeLower}-form")>
+
         <input
             class="flex-1 bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
             placeholder="@Placeholder"
             @bind="_name"
-            @bind:event="oninput" />
+            @bind:event="oninput"
+            data-testid=@($"add-{@ResourceTypeLower}-input") />
 
         <button
             class="px-4 py-2 text-sm rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-100 disabled:opacity-50"
             disabled="@_isSubmitting"
-            @onclick="CreateAsync">
+            @onclick="CreateAsync"
+            data-testid=@($"add-{@ResourceTypeLower}-button")>
             add
         </button>
     </div>
 
     @if (_error is not null)
     {
-        <div class="mt-2 text-sm text-red-400">
+        <div class="mt-2 text-sm text-red-400"
+             data-testid=@($"add-{@ResourceTypeLower}-error")>
             @_error
         </div>
     }
 </div>
 
+
 @code {
+    private string ResourceTypeLower => Resource.GetKind<TResource>().ToLower();
+    private string ResourceType => Resource.GetKind<TResource>();
+
     [Parameter] public EventCallback<string> OnCreated { get; set; }
     [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? RunsOn { get; set; }
 
     private string _name = string.Empty;
     private string? _error;
@@ -56,7 +68,7 @@
             _isSubmitting = true;
             var name = _name.Trim();
 
-            await AddResource.ExecuteAsync(name);
+            await AddResource.ExecuteAsync(name, RunsOn);
 
             _name = string.Empty;
             await OnCreated.InvokeAsync(name);

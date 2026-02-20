@@ -56,7 +56,6 @@
       <AdditionalFiles Include="Routers\RouterCardComponent.razor" />
       <AdditionalFiles Include="Routers\RouterListComponent.razor" />
       <AdditionalFiles Include="Routers\RouterListPage.razor" />
-      <AdditionalFiles Include="Servers\AddServerComponent.razor" />
       <AdditionalFiles Include="Servers\ServerCardComponent.razor" />
       <AdditionalFiles Include="Servers\ServersListComponent.razor" />
       <AdditionalFiles Include="Servers\ServersListPage.razor" />
@@ -76,7 +75,6 @@
       <AdditionalFiles Include="Systems\SystemsListComponent.razor" />
       <AdditionalFiles Include="Systems\SystemsListPage.razor" />
       <AdditionalFiles Include="Ups\AddUpsComponent.razor" />
-      <AdditionalFiles Include="Ups\UpCardComponent.razor" />
       <AdditionalFiles Include="Ups\UpsCardComponent.razor" />
     </ItemGroup>
 

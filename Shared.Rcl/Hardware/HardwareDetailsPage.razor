@@ -8,6 +8,7 @@
 @using RackPeek.Domain.Resources.Hardware.Servers
 @using RackPeek.Domain.Resources.Hardware.Switches
 @using RackPeek.Domain.Resources.Hardware.UpsUnits
+@using RackPeek.Domain.Resources.SystemResources
 
 @using Router = RackPeek.Domain.Resources.Hardware.Routers.Router
 @using Shared.Rcl.Components
@@ -96,8 +97,11 @@
         }
 
         <div class="m-4">
-            <AddSystemComponent RunsOn="@HardwareName"/>
-        </div>
+            <AddResourceComponent TResource="SystemResource"
+                                  Placeholder="System name"
+                                  OnCreated="NavigateToNewResource" 
+                                  RunsOn="@HardwareName"/>
+            </div>
     }
 </div>
 
@@ -124,6 +128,12 @@
     private async Task DeleteCallback(string obj)
     {
         Nav.NavigateTo($"/hardware/tree");
+    }
+    
+    private Task NavigateToNewResource(string serverName)
+    {
+        Nav.NavigateTo($"resources/systems/{serverName}");
+        return Task.CompletedTask;
     }
 
 }

@@ -1,10 +1,10 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Hardware.Firewalls;
 using RackPeek.Domain.Resources.Hardware.Servers;
 
 namespace RackPeek.Domain.UseCases.Ports;
+
 public interface IUpdatePortUseCase<T> : IResourceUseCase<T>
     where T : Resource
 {
@@ -37,10 +37,7 @@ public class UpdatePortUseCase<T>(IResourceCollection repository) : IUpdatePortU
         var resource = await repository.GetByNameAsync<T>(name)
                        ?? throw new NotFoundException($"Resource '{name}' not found.");
 
-        if (resource is not IPortResource pr)
-        {
-            throw new NotFoundException($"Resource '{name}' not found.");
-        }
+        if (resource is not IPortResource pr) throw new NotFoundException($"Resource '{name}' not found.");
 
         if (pr.Ports == null || index < 0 || index >= pr.Ports.Count)
             throw new NotFoundException($"Port index {index} not found on '{name}'.");

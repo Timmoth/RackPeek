@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Desktops.Gpus;
+using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.UseCases.Gpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -14,7 +15,7 @@ public class DesktopGpuRemoveCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RemoveDesktopGpuUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveGpuUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Index);
 

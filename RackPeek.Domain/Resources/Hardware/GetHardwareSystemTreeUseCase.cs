@@ -24,7 +24,8 @@ public class GetHardwareSystemTreeUseCase(
         var systems = await repo.GetDependantsAsync(server.Name);
 
         var systemTrees = new List<SystemDependencyTree>();
-        foreach (var system in systems.OfType<SystemResource>()) systemTrees.Add(await BuildSystemDependencyTreeAsync(system));
+        foreach (var system in systems.OfType<SystemResource>())
+            systemTrees.Add(await BuildSystemDependencyTreeAsync(system));
 
         return new HardwareDependencyTree(server, systemTrees);
     }

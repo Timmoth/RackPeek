@@ -1,14 +1,86 @@
 ﻿@page "/systems/list"
 
+@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.SystemResources.UseCases
+@inject IResourceCollection Repo
+@inject ISystemRepository SystemRepo
+
+@inject UpdateSystemUseCase UpdateSystemUseCase
+@inject NavigationManager Nav
+
 <PageTitle>Systems</PageTitle>
 
-<h1 class="text-lg text-zinc-100">
+<h1 class="text-lg text-zinc-100"
+    data-testid="systems-page-title">
     Systems
 </h1>
 
-<SystemsListComponent 
-    TypeFilter="@Type"
-    OsFilter="@Os" />
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6"
+     data-testid="systems-page-root">
+
+    <!-- Add System -->
+    <div data-testid="add-system-section">
+        <AddResourceComponent TResource="SystemResource"
+                              Placeholder="System name"
+                              OnCreated="NavigateToNewResource" />
+    </div>
+
+    @if (_systems is null)
+    {
+        <div class="text-zinc-500"
+             data-testid="systems-loading">
+            loading systems…
+        </div>
+    }
+    else if (_systems.Count == 0)
+    {
+        <div class="text-zinc-500"
+             data-testid="systems-empty">
+            no systems found
+        </div>
+    }
+    else
+    {
+        <div class="space-y-4"
+             data-testid="systems-list">
+
+            @foreach (var group in _systems
+                          .OrderBy(s => s.Name)
+                          .GroupBy(s => s.RunsOn)
+                          .OrderByDescending(g => g.Count()))
+            {
+                var groupKey = string.IsNullOrWhiteSpace(group.Key)
+                    ? "unassigned"
+                    : group.Key.Replace(" ", "-");
+
+                <div data-testid=@($"systems-group-{groupKey}")>
+
+                    <div class="text-xs text-zinc-500 uppercase tracking-wider mb-2"
+                         data-testid=@($"systems-group-title-{groupKey}")>
+                        @(string.IsNullOrWhiteSpace(group.Key) ? "Unassigned" : group.Key)
+                    </div>
+
+                    <div class="space-y-4"
+                         data-testid=@($"systems-group-list-{groupKey}")>
+
+                        @foreach (var systemResource in group)
+                        {
+                            <div data-testid=@($"systems-list-item-{systemResource.Name.Replace(" ", "-")}")>
+                                <SystemCardComponent System="systemResource"
+                                                     OnSave="UpdateSystem"
+                                                     OnDeleted="Callback"/>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
 
 @code {
 
@@ -19,4 +91,60 @@
     [Parameter]
     [SupplyParameterFromQuery(Name = "os")]
     public string? Os { get; set; }= null;
+}
+
+@code {
+    private IReadOnlyList<SystemResource>? _systems;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await Reload();
+    }
+
+    private async Task Reload()
+    {
+        var type = Normalize(Type);
+        var os = Normalize(Os);
+
+        if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(os))
+        {
+            _systems = await Repo.GetAllOfTypeAsync<SystemResource>();
+        }
+        else
+        {
+            _systems = await SystemRepo.GetFilteredAsync(
+                type,
+                os
+            );
+        }
+    }
+
+    private static string? Normalize(string? s)
+        => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+
+    async Task UpdateSystem(SystemEditModel edit)
+    {
+        await UpdateSystemUseCase.ExecuteAsync(
+            edit.Name,
+            edit.Type,
+            edit.Os,
+            edit.Cores,
+            edit.Ram,
+            edit.RunsOn,
+            edit.Notes
+        );
+
+        await Reload();
+    }
+
+    private Task NavigateToNewResource(string serverName)
+    {
+        Nav.NavigateTo($"resources/systems/{serverName}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Callback(string obj)
+    {
+        await Reload();
+    }
 }

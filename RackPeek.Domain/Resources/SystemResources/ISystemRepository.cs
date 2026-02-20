@@ -1,5 +1,3 @@
-using RackPeek.Domain.Resources.Services;
-
 namespace RackPeek.Domain.Resources.SystemResources;
 
 public interface ISystemRepository

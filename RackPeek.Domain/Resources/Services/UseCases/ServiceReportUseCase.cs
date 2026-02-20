@@ -1,5 +1,4 @@
 using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
 

@@ -1,6 +1,5 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Resources.Hardware;
 
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
@@ -43,11 +42,8 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         if (ram.HasValue)
             system.Ram = ram.Value;
 
-        if (notes != null)
-        {
-            system.Notes = notes;
-        }
-        
+        if (notes != null) system.Notes = notes;
+
         if (!string.IsNullOrWhiteSpace(runsOn))
         {
             ThrowIfInvalid.ResourceName(runsOn);

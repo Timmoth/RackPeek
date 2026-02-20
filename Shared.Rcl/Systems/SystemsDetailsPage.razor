@@ -8,6 +8,7 @@
 @inject UpdateSystemUseCase UpdateSystemUseCase
 @inject GetSystemServiceTreeUseCase GetSystemServiceTreeUseCase
 @inject NavigationManager NavigationManager
+@inject NavigationManager Nav
 
 <PageTitle>System Details</PageTitle>
 
@@ -44,7 +45,10 @@
         }
 
         <div class="m-4">
-            <AddServiceComponent RunsOn="@SystemName"/>
+            <AddResourceComponent TResource="Service"
+                                  Placeholder="Service name"
+                                  OnCreated="NavigateToNewResource" 
+                                  RunsOn="@SystemName"/>
         </div>
     }
 </div>
@@ -86,4 +90,10 @@
         NavigationManager.NavigateTo("/systems/list");
     }
 
+    private Task NavigateToNewResource(string serverName)
+    {
+        Nav.NavigateTo($"resources/systems/{serverName}");
+        return Task.CompletedTask;
+    }
+    
 }

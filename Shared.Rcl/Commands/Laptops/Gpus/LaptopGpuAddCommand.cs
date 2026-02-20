@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Laptops.Gpus;
+using RackPeek.Domain.Resources.Hardware.Laptops;
+using RackPeek.Domain.UseCases.Gpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -14,7 +15,7 @@ public class LaptopGpuAddCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddLaptopGpuUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IAddGpuUseCase<Laptop>>();
 
         await useCase.ExecuteAsync(settings.LaptopName, settings.Model, settings.Vram);
 

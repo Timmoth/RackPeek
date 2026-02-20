@@ -1,7 +1,110 @@
 ﻿@page "/services/list"
+@using RackPeek.Domain.Persistence
+@inject IResourceCollection Repo
+@inject UpdateServiceUseCase UpdateServiceUseCase
+@inject NavigationManager Nav
 
 <PageTitle>Services</PageTitle>
-<h1 class="text-lg text-zinc-100">
+
+<h1 class="text-lg text-zinc-100"
+    data-testid="services-page-title">
     Services
 </h1>
-<ServicesListComponent/>
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6"
+     data-testid="services-page-root">
+
+    <!-- Add Service Section -->
+    <div data-testid="add-service-section">
+        <AddResourceComponent TResource="Service"
+                              Placeholder="Service name"
+                              OnCreated="NavigateToNewResource" />
+    </div>
+
+    @if (_services is null)
+    {
+        <div class="text-zinc-500"
+             data-testid="services-loading">
+            loading services…
+        </div>
+    }
+    else if (_services.Count == 0)
+    {
+        <div class="text-zinc-500"
+             data-testid="services-empty">
+            no services found
+        </div>
+    }
+    else
+    {
+        <div class="space-y-4"
+             data-testid="services-list">
+
+            @foreach (var group in _services
+                          .OrderBy(s => s.Name)
+                          .GroupBy(s => s.RunsOn)
+                          .OrderByDescending(g => g.Count()))
+            {
+                var groupKey = string.IsNullOrWhiteSpace(group.Key)
+                    ? "unassigned"
+                    : group.Key.Replace(" ", "-");
+
+                <div data-testid=@($"services-group-{groupKey}")>
+
+                    <div class="text-xs text-zinc-500 uppercase tracking-wider mb-2"
+                         data-testid=@($"services-group-title-{groupKey}")>
+                        @(string.IsNullOrWhiteSpace(group.Key) ? "Unassigned" : group.Key)
+                    </div>
+
+                    <div class="space-y-4"
+                         data-testid=@($"services-group-list-{groupKey}")>
+
+                        @foreach (var svc in group)
+                        {
+                            <div data-testid=@($"services-list-item-{svc.Name.Replace(" ", "-")}")>
+                                <ServiceCardComponent Service="svc"
+                                                      OnSave="UpdateService"
+                                                      OnDeleted="Callback"/>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    }
+</div>
+
+@code {
+    private IReadOnlyList<Service>? _services;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _services = await Repo.GetAllOfTypeAsync<Service>();
+    }
+
+    async Task UpdateService(ServiceEditModel edit)
+    {
+        await UpdateServiceUseCase.ExecuteAsync(
+            edit.Name,
+            edit.Ip,
+            edit.Port,
+            edit.Protocol,
+            edit.Url,
+            edit.RunsOn,
+            edit.Notes
+        );
+    }
+
+    private Task NavigateToNewResource(string serverName)
+    {
+        Nav.NavigateTo($"resources/services/{serverName}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Callback(string obj)
+    {
+        _services = await Repo.GetAllOfTypeAsync<Service>();
+    }
+}

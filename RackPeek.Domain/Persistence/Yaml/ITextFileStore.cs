@@ -7,15 +7,20 @@ public interface ITextFileStore
     Task WriteAllTextAsync(string path, string contents);
 }
 
-
 public sealed class PhysicalTextFileStore : ITextFileStore
 {
     public Task<bool> ExistsAsync(string path)
-        => Task.FromResult(File.Exists(path));
+    {
+        return Task.FromResult(File.Exists(path));
+    }
 
     public Task<string> ReadAllTextAsync(string path)
-        => File.ReadAllTextAsync(path);
+    {
+        return File.ReadAllTextAsync(path);
+    }
 
     public Task WriteAllTextAsync(string path, string contents)
-        => File.WriteAllTextAsync(path, contents);
+    {
+        return File.WriteAllTextAsync(path, contents);
+    }
 }

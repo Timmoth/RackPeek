@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using RackPeek.Domain.Resources.Hardware.Desktops;
 using RackPeek.Domain.Resources.Hardware.Desktops.Nics;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -14,7 +15,7 @@ public class DesktopNicSetCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateDesktopNicUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateNicUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Index, settings.Type, settings.Speed, settings.Ports);
 

@@ -1,9 +1,9 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Desktops
-@using RackPeek.Domain.Resources.Hardware.Desktops.Gpus
 @using RackPeek.Domain.Resources.Hardware.Desktops.Nics
 @using RackPeek.Domain.Resources.SubResources
 @using RackPeek.Domain.UseCases.Cpus
 @using RackPeek.Domain.UseCases.Drives
+@using RackPeek.Domain.UseCases.Gpus
 @using Shared.Rcl.Modals
 @inject IGetAllResourcesByKindUseCase<Desktop> GetAllUseCase
 @inject IGetResourceByNameUseCase<Desktop> GetByNameUseCase
@@ -19,13 +19,13 @@
 @inject IUpdateDriveUseCase<Desktop> UpdateDriveUseCase
 @inject IRemoveDriveUseCase<Desktop> RemoveDriveUseCase
 
-@inject AddDesktopNicUseCase AddNicUseCase
-@inject UpdateDesktopNicUseCase UpdateNicUseCase
-@inject RemoveDesktopNicUseCase RemoveNicUseCase
+@inject IAddNicUseCase<Desktop> AddNicUseCase
+@inject IUpdateNicUseCase<Desktop> UpdateNicUseCase
+@inject IRemoveNicUseCase<Desktop> RemoveNicUseCase
 
-@inject AddDesktopGpuUseCase AddGpuUseCase
-@inject UpdateDesktopGpuUseCase UpdateGpuUseCase
-@inject RemoveDesktopGpuUseCase RemoveGpuUseCase
+@inject IAddGpuUseCase<Desktop> AddGpuUseCase
+@inject IUpdateGpuUseCase<Desktop> UpdateGpuUseCase
+@inject IRemoveGpuUseCase<Desktop> RemoveGpuUseCase
 @inject ICloneResourceUseCase<Desktop> CloneUseCase
 
 @inject IRenameResourceUseCase<Desktop> RenameUseCase
@@ -283,7 +283,8 @@
     Title="Delete server"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
+    OnConfirm="DeleteServer"
+    TestIdPrefix="Desktop">
     Are you sure you want to delete <strong>@Desktop.Name</strong>?
     <br/>
     This will detach all dependent systems.

@@ -1,6 +1,5 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
@@ -55,11 +54,9 @@ public class UpdateServiceUseCase(IResourceCollection repository) : IUseCase
             var parentSystem = await repository.GetByNameAsync(runsOn);
             if (parentSystem == null) throw new NotFoundException($"Parent system '{runsOn}' not found.");
             service.RunsOn = runsOn;
-        }        
-        if (notes != null)
-        {
-            service.Notes = notes;
         }
+
+        if (notes != null) service.Notes = notes;
 
         await repository.UpdateAsync(service);
     }

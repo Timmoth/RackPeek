@@ -11,8 +11,6 @@ public interface IRemoveDriveUseCase<T> : IResourceUseCase<T>
     public Task ExecuteAsync(string name, int index);
 }
 
-
-    
 public class RemoveDriveUseCase<T>(IResourceCollection repository) : IRemoveDriveUseCase<T> where T : Resource
 {
     public async Task ExecuteAsync(string name, int index)
@@ -20,12 +18,10 @@ public class RemoveDriveUseCase<T>(IResourceCollection repository) : IRemoveDriv
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
-        var resource = await repository.GetByNameAsync(name) ?? throw new NotFoundException($"Resource '{name}' not found.");
+        var resource = await repository.GetByNameAsync<T>(name) ??
+                       throw new NotFoundException($"Resource '{name}' not found.");
 
-        if (resource is not IDriveResource dr)
-        {
-            throw new NotFoundException($"Resource '{name}' not found.");
-        }
+        if (resource is not IDriveResource dr) throw new NotFoundException($"Resource '{name}' not found.");
 
         if (dr.Drives == null || index < 0 || index >= dr.Drives.Count)
             throw new NotFoundException($"Drive index {index} not found on '{name}'.");

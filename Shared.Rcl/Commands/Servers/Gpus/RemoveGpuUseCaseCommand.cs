@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Servers.Gpus;
+using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.UseCases.Gpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -19,7 +20,7 @@ public class ServerGpuRemoveCommand(IServiceProvider serviceProvider)
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RemoveGpuUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveGpuUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

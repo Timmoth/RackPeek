@@ -15,7 +15,7 @@ public interface IAddDriveUseCase<T> : IResourceUseCase<T>
         int? size);
 }
 
-public class AddDriveUseCase<T>(IResourceCollection repository): IAddDriveUseCase<T> where T : Resource
+public class AddDriveUseCase<T>(IResourceCollection repository) : IAddDriveUseCase<T> where T : Resource
 {
     public async Task ExecuteAsync(
         string name,
@@ -28,13 +28,11 @@ public class AddDriveUseCase<T>(IResourceCollection repository): IAddDriveUseCas
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
-        var resource = await repository.GetByNameAsync(name) ?? throw new NotFoundException($"Resource '{name}' not found.");
+        var resource = await repository.GetByNameAsync<T>(name) ??
+                       throw new NotFoundException($"Resource '{name}' not found.");
 
-        if (resource is not IDriveResource dr)
-        {
-            throw new NotFoundException($"Resource '{name}' not found.");
-        }
-        
+        if (resource is not IDriveResource dr) throw new NotFoundException($"Resource '{name}' not found.");
+
         dr.Drives ??= new List<Drive>();
         dr.Drives.Add(new Drive
         {

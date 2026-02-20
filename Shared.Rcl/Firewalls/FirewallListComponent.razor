@@ -1,13 +1,13 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Firewalls
 @inject IGetAllResourcesByKindUseCase<Firewall> GetAllUseCase
-@inject IGetResourceByNameUseCase<Firewall> GetByNameUseCase
 @inject NavigationManager Nav
 
 <PageTitle>Firewall</PageTitle>
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6">
-    <AddFirewallComponent OnCreated="NavigateToNewResource"/>
-
+    <AddResourceComponent TResource="Firewall"
+                          Placeholder="Firewall name"
+                          OnCreated="NavigateToNewResource" />
 
     @if (_Firewall is null)
     {

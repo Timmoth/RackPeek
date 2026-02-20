@@ -1,4 +1,3 @@
-using System.Collections;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
@@ -21,12 +20,10 @@ public interface IResourceCollection
     Resource? GetByName(string name);
     Task<bool> Exists(string name);
 
-    Task LoadAsync();   // required for WASM startup
+    Task LoadAsync(); // required for WASM startup
     Task<IReadOnlyList<Resource>> GetByTagAsync(string name);
     public Task<Dictionary<string, int>> GetTagsAsync();
 
     Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>();
-    Task<IReadOnlyList<Resource>>  GetDependantsAsync(string name);
-    
-    
+    Task<IReadOnlyList<Resource>> GetDependantsAsync(string name);
 }

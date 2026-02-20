@@ -16,8 +16,6 @@ public interface IAddCpuUseCase<T> : IResourceUseCase<T>
         int? threads);
 }
 
-
-    
 public class AddCpuUseCase<T>(IResourceCollection repo) : IAddCpuUseCase<T> where T : Resource
 {
     public async Task ExecuteAsync(
@@ -32,7 +30,8 @@ public class AddCpuUseCase<T>(IResourceCollection repo) : IAddCpuUseCase<T> wher
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
-        var resource = await repo.GetByNameAsync(name);
+        var resource = await repo.GetByNameAsync<T>(name) ??
+                       throw new NotFoundException($"Resource '{name}' not found.");
 
         if (resource is not ICpuResource cpuResource) return;
 

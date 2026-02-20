@@ -185,10 +185,11 @@
 <ConfirmModal
     IsOpen="_confirmDeleteOpen"
     IsOpenChanged="v => _confirmDeleteOpen = v"
-    Title="Delete server"
+    Title="Delete firewall"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
+    OnConfirm="DeleteServer"
+    TestIdPrefix="Firewall">
     Are you sure you want to delete <strong>@Firewall.Name</strong>?
 </ConfirmModal>
 <StringValueModal

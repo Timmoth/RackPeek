@@ -8,6 +8,10 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+    
     <ItemGroup>
         <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj" />
     </ItemGroup>

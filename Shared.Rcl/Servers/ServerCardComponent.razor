@@ -1,10 +1,9 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Desktops
+﻿@using RackPeek.Domain.Resources.Hardware.Desktops.Nics
 @using RackPeek.Domain.Resources.Hardware.Servers
-@using RackPeek.Domain.Resources.Hardware.Servers.Gpus
-@using RackPeek.Domain.Resources.Hardware.Servers.Nics
 @using RackPeek.Domain.Resources.SubResources
 @using RackPeek.Domain.UseCases.Cpus
 @using RackPeek.Domain.UseCases.Drives
+@using RackPeek.Domain.UseCases.Gpus
 @inject IAddCpuUseCase<Server> AddCpuUseCase
 @inject IRemoveCpuUseCase<Server> RemoveCpuUseCase
 @inject IUpdateCpuUseCase<Server> UpdateCpuUseCase
@@ -13,16 +12,14 @@
 @inject IUpdateDriveUseCase<Server> UpdateDriveUseCase
 @inject IRemoveDriveUseCase<Server> RemoveDriveUseCase
 
-@inject AddNicUseCase AddNicUseCase
-@inject UpdateNicUseCase UpdateNicUseCase
-@inject RemoveNicUseCase RemoveNicUseCase
+@inject IAddNicUseCase<Server> AddNicUseCase
+@inject IUpdateNicUseCase<Server> UpdateNicUseCase
+@inject IRemoveNicUseCase<Server> RemoveNicUseCase
 
-@inject AddGpuUseCase AddGpuUseCase
-@inject UpdateGpuUseCase UpdateGpuUseCase
-@inject RemoveGpuUseCase RemoveGpuUseCase
+@inject IAddGpuUseCase<Server> AddGpuUseCase
+@inject IUpdateGpuUseCase<Server> UpdateGpuUseCase
+@inject IRemoveGpuUseCase<Server> RemoveGpuUseCase
 
-
-@inject IGetAllResourcesByKindUseCase<Server> GetAllUseCase
 @inject IGetResourceByNameUseCase<Server> GetByNameUseCase
 @inject UpdateServerUseCase UpdateServerUseCase
 @inject IDeleteResourceUseCase<Server> DeleteServerUseCase
@@ -31,7 +28,7 @@
 @inject IRenameResourceUseCase<Server> RenameUseCase
 @inject NavigationManager Nav
 
-<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900" data-testid=@($"server-item-{@Server.Name.Replace(" ", "-")}")>
     <div class="flex justify-between items-center mb-3">
         <div class="text-zinc-100 hover:text-emerald-300">
             <NavLink href="@($"resources/hardware/{Server.Name}")" class="block">
@@ -45,23 +42,27 @@
 
             <div class="flex items-center gap-2">
 
-                <button class="text-xs text-blue-400 hover:text-blue-300 transition"
-                        title="Rename service"
-                        @onclick="OpenRename">
+                <button
+                    data-testid="rename-server-button"
+                    class="text-xs text-blue-400 hover:text-blue-300 transition"
+                    @onclick="OpenRename">
                     Rename
                 </button>
+
                 <button
+                    data-testid="clone-server-button"
                     class="text-xs text-emerald-400 hover:text-emerald-300 transition"
-                    title="Clone service"
                     @onclick="OpenClone">
                     Clone
                 </button>
+
                 <button
+                    data-testid="delete-server-button"
                     class="text-xs text-red-400 hover:text-red-300 transition"
-                    title="Delete server"
                     @onclick="ConfirmDelete">
                     Delete
                 </button>
+
             </div>
         </div>
 
@@ -69,12 +70,13 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
 
-        <div>
+        <div data-testid="server-cpu-section">
             <div class="flex items-center justify-between mb-1 group">
                 <div class="text-zinc-400">CPU
                     <button
                         class="hover:text-emerald-400 group-hover:opacity-100 transition"
                         title="Add CPU"
+                        data-testid="add-cpu-button"
                         @onclick="OpenAddCpu">
                         +
                     </button>
@@ -91,6 +93,7 @@
 
                         <div class="flex gap-2 group-hover:opacity-100 transition">
                             <button
+                                data-testid=@($"edit-cpu-{cpu.ToString().Replace(" ", "-")}")
                                 class="hover:text-emerald-400"
                                 title="Edit CPU"
                                 @onclick="() => OpenEditCpu(cpu)">
@@ -291,7 +294,8 @@
     Title="Delete server"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
+    OnConfirm="DeleteServer"
+    TestIdPrefix="Server">
     Are you sure you want to delete <strong>@Server.Name</strong>?
     <br/>
     This will detach all dependent systems.

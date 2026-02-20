@@ -1,9 +1,9 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Desktops
 @using RackPeek.Domain.Resources.Hardware.Laptops
-@using RackPeek.Domain.Resources.Hardware.Laptops.Gpus
 @using RackPeek.Domain.Resources.SubResources
 @using RackPeek.Domain.UseCases.Cpus
 @using RackPeek.Domain.UseCases.Drives
+@using RackPeek.Domain.UseCases.Gpus
 @inject IGetAllResourcesByKindUseCase<Laptop> GetAllUseCase
 @inject IGetResourceByNameUseCase<Laptop> GetByNameUseCase
 @inject UpdateLaptopUseCase UpdateLaptopUseCase
@@ -17,9 +17,9 @@
 @inject IUpdateDriveUseCase<Laptop> UpdateDriveUseCase
 @inject IRemoveDriveUseCase<Laptop> RemoveDriveUseCase
 
-@inject AddLaptopGpuUseCase AddGpuUseCase
-@inject UpdateLaptopGpuUseCase UpdateGpuUseCase
-@inject RemoveLaptopGpuUseCase RemoveGpuUseCase
+@inject IAddGpuUseCase<Laptop> AddGpuUseCase
+@inject IUpdateGpuUseCase<Laptop> UpdateGpuUseCase
+@inject IRemoveGpuUseCase<Laptop> RemoveGpuUseCase
 @inject ICloneResourceUseCase<Laptop> CloneUseCase
 
 @inject IRenameResourceUseCase<Laptop> RenameUseCase
@@ -238,10 +238,11 @@
 <ConfirmModal
     IsOpen="_confirmDeleteOpen"
     IsOpenChanged="v => _confirmDeleteOpen = v"
-    Title="Delete server"
+    Title="Delete laptop"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
+    OnConfirm="DeleteServer"
+    TestIdPrefix="Laptop">
     Are you sure you want to delete <strong>@Laptop.Name</strong>?
     <br/>
     This will detach all dependent systems.

@@ -10,7 +10,6 @@ public interface IGetResourceByNameUseCase<T> : IResourceUseCase<T>
     public Task<T> ExecuteAsync(string name);
 }
 
-
 public class GetResourceByNameUseCase<T>(IResourceCollection repo) : IGetResourceByNameUseCase<T> where T : Resource
 {
     public async Task<T> ExecuteAsync(string name)
@@ -18,10 +17,9 @@ public class GetResourceByNameUseCase<T>(IResourceCollection repo) : IGetResourc
         name = Normalize.SystemName(name);
         ThrowIfInvalid.ResourceName(name);
 
-        if ((await repo.GetByNameAsync(name)) is not T resource)
+        if (await repo.GetByNameAsync(name) is not T resource)
             throw new NotFoundException($"Resource '{name}' not found.");
-        
+
         return resource;
-        
     }
 }

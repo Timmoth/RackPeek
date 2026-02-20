@@ -10,7 +10,7 @@
 @inject NavigationManager Nav
 @inject IRenameResourceUseCase<Service> RenameUseCase
 
-<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900" data-testid=@($"service-item-{@Service.Name.Replace(" ", "-")}")>
     <div class="flex justify-between items-center mb-3">
         <NavLink href="@($"resources/services/{Service.Name}")" class="block">
 
@@ -23,12 +23,15 @@
             @if (!_isEditing)
             {
                 <button class="text-zinc-400 hover:text-zinc-200"
+                        data-testid="edit-service-button"
                         @onclick="BeginEdit">
                     Edit
                 </button>
 
                 <button class="text-xs text-blue-400 hover:text-blue-300 transition"
                         title="Rename service"
+                        data-testid="rename-service-button"
+
                         @onclick="OpenRename">
                     Rename
                 </button>
@@ -36,6 +39,7 @@
                 <button
                     class="text-xs text-emerald-400 hover:text-emerald-300 transition"
                     title="Clone service"
+                    data-testid="clone-service-button"
                     @onclick="OpenClone">
                     Clone
                 </button>
@@ -44,6 +48,7 @@
                 <button
                     class="text-xs text-red-400 hover:text-red-300 transition"
                     title="Delete server"
+                    data-testid="delete-service-button"
                     @onclick="ConfirmDelete">
                     Delete
                 </button>
@@ -51,10 +56,13 @@
             else
             {
                 <button class="text-emerald-400 hover:text-emerald-300"
+                        data-testid="save-service-button"
+
                         @onclick="Save">
                     Save
                 </button>
                 <button class="text-zinc-500 hover:text-zinc-300"
+                        data-testid="cancel-service-button"
                         @onclick="Cancel">
                     Cancel
                 </button>
@@ -209,10 +217,10 @@
 <ConfirmModal
     IsOpen="_confirmDeleteOpen"
     IsOpenChanged="v => _confirmDeleteOpen = v"
-    Title="Delete server"
+    Title="Delete service"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
+    OnConfirm="DeleteServer" TestIdPrefix="Service">
     Are you sure you want to delete <strong>@Service.Name</strong>?
 </ConfirmModal>
 
@@ -298,16 +306,6 @@
 
 }
 
-<ConfirmModal
-    IsOpen="_confirmDeleteOpen"
-    IsOpenChanged="v => _confirmDeleteOpen = v"
-    Title="Delete service"
-    ConfirmText="Delete"
-    ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
-    Are you sure you want to delete <strong>@Service.Name</strong>?
-    <br/>
-</ConfirmModal>
 
 @code {
     private bool _confirmDeleteOpen;

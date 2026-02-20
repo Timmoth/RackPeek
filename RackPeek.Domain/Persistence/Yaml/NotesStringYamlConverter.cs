@@ -6,7 +6,11 @@ namespace RackPeek.Domain.Persistence.Yaml;
 
 public sealed class NotesStringYamlConverter : IYamlTypeConverter
 {
-    public bool Accepts(Type type) => type == typeof(string);
+    public bool Accepts(Type type)
+    {
+        return type == typeof(string);
+    }
+
     public object? ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
     {
         var scalar = parser.Consume<Scalar>();
@@ -30,7 +34,6 @@ public sealed class NotesStringYamlConverter : IYamlTypeConverter
         var s = (string)value;
 
         if (s.Contains('\n'))
-        {
             // Literal block style (|)
             emitter.Emit(new Scalar(
                 AnchorName.Empty,
@@ -39,10 +42,7 @@ public sealed class NotesStringYamlConverter : IYamlTypeConverter
                 ScalarStyle.Literal,
                 true,
                 false));
-        }
         else
-        {
             emitter.Emit(new Scalar(s));
-        }
     }
 }

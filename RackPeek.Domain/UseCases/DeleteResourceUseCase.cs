@@ -1,7 +1,6 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Services;
 
 namespace RackPeek.Domain.UseCases;
 
@@ -21,14 +20,14 @@ public class DeleteResourceUseCase<T>(IResourceCollection repo) : IDeleteResourc
         var existingResource = await repo.GetByNameAsync(name);
         if (existingResource == null)
             throw new NotFoundException($"Resource '{name}' does not exist.");
-        
+
         var dependants = await repo.GetDependantsAsync(name);
         foreach (var resource in dependants)
         {
             resource.RunsOn = null;
             await repo.UpdateAsync(resource);
         }
-        
+
         await repo.DeleteAsync(name);
     }
 }

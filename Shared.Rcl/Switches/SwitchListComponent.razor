@@ -7,8 +7,9 @@
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6">
 
-    <AddSwitchComponent OnCreated="NavigateToNewResource"/>
-
+    <AddResourceComponent TResource="Switch"
+                          Placeholder="Switch name"
+                          OnCreated="NavigateToNewResource" />
 
     @if (_Switches is null)
     {

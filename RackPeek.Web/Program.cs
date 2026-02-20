@@ -3,10 +3,6 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using RackPeek.Domain;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
-using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Hardware;
-using RackPeek.Domain.Resources.Services;
-using RackPeek.Domain.Resources.SystemResources;
 using RackPeek.Web.Components;
 using Shared.Rcl;
 
@@ -14,10 +10,8 @@ namespace RackPeek.Web;
 
 public class Program
 {
-    public static async Task Main(string[] args)
+    public static async Task<WebApplication> BuildApp(WebApplicationBuilder builder)
     {
-        var builder = WebApplication.CreateBuilder(args);
-
         StaticWebAssetsLoader.UseStaticWebAssets(
             builder.Environment,
             builder.Configuration
@@ -77,13 +71,11 @@ public class Program
         builder.Services.AddUseCases();
         builder.Services.AddCommands();
         builder.Services.AddScoped<IConsoleEmulator, ConsoleEmulator>();
-
         
-
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
-
+        
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -99,11 +91,20 @@ public class Program
         app.UseStaticFiles();
 
         app.UseAntiforgery();
-
+        
         app.MapStaticAssets();
+
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
+        
+        return app;
+    }
 
+    public static async Task Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        var app = await BuildApp(builder);
         await app.RunAsync();
     }
+    
 }

@@ -28,20 +28,6 @@ public abstract class Resource
         { "service", "services" }
     };
 
-    public string Kind { get; set; } = string.Empty;
-
-    public required string Name { get; set; }
-
-    public string[]? Tags { get; set; } = [];
-    public string? Notes { get; set; }
-    
-    public string? RunsOn { get; set; }
-
-    public static string KindToPlural(string kind)
-    {
-        return KindToPluralDictionary.GetValueOrDefault(kind.ToLower().Trim(), kind);
-    }
-    
     private static readonly Dictionary<Type, string> TypeToKindMap = new()
     {
         { typeof(Hardware.Hardware), "Hardware" },
@@ -56,7 +42,21 @@ public abstract class Resource
         { typeof(SystemResource), "System" },
         { typeof(Service), "Service" }
     };
-    
+
+    public string Kind { get; set; } = string.Empty;
+
+    public required string Name { get; set; }
+
+    public string[]? Tags { get; set; } = [];
+    public string? Notes { get; set; }
+
+    public string? RunsOn { get; set; }
+
+    public static string KindToPlural(string kind)
+    {
+        return KindToPluralDictionary.GetValueOrDefault(kind.ToLower().Trim(), kind);
+    }
+
     public static string GetKind<T>() where T : Resource
     {
         if (TypeToKindMap.TryGetValue(typeof(T), out var kind))
@@ -65,7 +65,7 @@ public abstract class Resource
         throw new InvalidOperationException(
             $"No kind mapping defined for type {typeof(T).Name}");
     }
-    
+
     public static bool CanRunOn<T>(Resource parent) where T : Resource
     {
         var childKind = GetKind<T>().ToLowerInvariant();
@@ -81,5 +81,4 @@ public abstract class Resource
 
         return false;
     }
-
 }

@@ -3,129 +3,129 @@
 @inject IHardwareRepository HardwareRepository
 
 <PageTitle>Hardware</PageTitle>
-<h1 class="text-lg text-zinc-100">
+
+<h1 class="text-lg text-zinc-100"
+    data-testid="hardware-page-title">
     Hardware
 </h1>
-<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
 
-    <nav class="space-x-6 text-sm mb-4">
-        <NavLink href="servers/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-            Servers
-        </NavLink>
-        <NavLink href="switches/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-            Switches
-        </NavLink>
-        <NavLink href="firewalls/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-            Firewalls
-        </NavLink>
-        <NavLink href="routers/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-            Routers
-        </NavLink>
-        <NavLink href="accesspoints/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-            AccessPoints
-        </NavLink>
-        <NavLink href="ups/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-            Ups
-        </NavLink>
-        <NavLink href="desktops/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-            Desktops
-        </NavLink>
-        <NavLink href="laptops/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-            Laptops
-        </NavLink>
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6"
+     data-testid="hardware-page-root">
+
+    <!-- Secondary Navigation -->
+    <nav class="space-x-6 text-sm mb-4"
+         data-testid="hardware-subnav">
+
+        <NavLink href="servers/list" data-testid="nav-servers">Servers</NavLink>
+        <NavLink href="switches/list" data-testid="nav-switches">Switches</NavLink>
+        <NavLink href="firewalls/list" data-testid="nav-firewalls">Firewalls</NavLink>
+        <NavLink href="routers/list" data-testid="nav-routers">Routers</NavLink>
+        <NavLink href="accesspoints/list" data-testid="nav-accesspoints">AccessPoints</NavLink>
+        <NavLink href="ups/list" data-testid="nav-ups">Ups</NavLink>
+        <NavLink href="desktops/list" data-testid="nav-desktops">Desktops</NavLink>
+        <NavLink href="laptops/list" data-testid="nav-laptops">Laptops</NavLink>
     </nav>
 
     @if (_tree is null)
     {
-        <div class="text-zinc-500">loading tree…</div>
+        <div class="text-zinc-500"
+             data-testid="hardware-loading">
+            loading tree…
+        </div>
     }
     else if (_tree.Count == 0)
     {
-        <div class="text-zinc-500">no resources found</div>
+        <div class="text-zinc-500"
+             data-testid="hardware-empty">
+            no resources found
+        </div>
     }
     else
     {
-        @foreach (var group in _tree
-                          .OrderByDescending(h => h.Systems.Count)
-                          .ThenBy(h => h.Kind)
-                          .ThenBy(h => h.HardwareName)
-                          .GroupBy(h => h.Kind))
-        {
-            <!-- Hardware Kind Header -->
-            <div class="mb-6">
-                <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
-                    @group.Key
-                </div>
+        <div data-testid="hardware-tree">
 
-                <ul class="space-y-4">
-                    @foreach (var hardware in group)
-                    {
-                        <li>
-                            <!-- Hardware -->
-                            <NavLink href="@($"resources/hardware/{hardware.HardwareName}")" class="block">
+            @foreach (var group in _tree
+                .OrderByDescending(h => h.Systems.Count)
+                .ThenBy(h => h.Kind)
+                .ThenBy(h => h.HardwareName)
+                .GroupBy(h => h.Kind))
+            {
+                <div class="mb-6"
+                     data-testid=@($"hardware-group-{@group.Key}")>
+
+                    <!-- Hardware Kind Header -->
+                    <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3"
+                         data-testid=@($"hardware-group-title-{@group.Key}")>
+                        @group.Key
+                    </div>
+
+                    <ul class="space-y-4">
+                        @foreach (var hardware in group)
+                        {
+                            <li data-testid=@($"hardware-item-{hardware.HardwareName}")>
+
+                                <!-- Hardware -->
+                                <NavLink href="@($"resources/hardware/{hardware.HardwareName}")"
+                                         class="block"
+                                         data-testid=@($"hardware-link-{hardware.HardwareName}")>
+
+                                    <div class="text-zinc-100 hover:text-emerald-300"
+                                         data-testid=@($"hardware-name-{@hardware.HardwareName}")>
+                                        @hardware.HardwareName
+                                    </div>
+
+                                </NavLink>
 
                                 @if (hardware.Systems.Any())
                                 {
-                                    <div class="text-zinc-100 hover:text-emerald-300">
-                                        @hardware.HardwareName (@hardware.Systems.Count / @hardware.Systems.Sum(s => s.Services.Count))
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="text-zinc-100 hover:text-emerald-300">
-                                        @hardware.HardwareName
-                                    </div>
-                                }
+                                    <ul class="ml-4 mt-2 border-l border-zinc-800 pl-4 space-y-2"
+                                        data-testid=@($"system-list-{hardware.HardwareName}")>
 
-                            </NavLink>
+                                        @foreach (var system in hardware.Systems
+                                            .OrderByDescending(s => s.Services.Count)
+                                            .ThenBy(s => s.SystemName))
+                                        {
+                                            <li data-testid=@($"system-item-{system.SystemName}")>
 
-                            @if (hardware.Systems.Any())
-                            {
-                                <ul class="ml-4 mt-2 border-l border-zinc-800 pl-4 space-y-2">
-                                    @foreach (var system in hardware.Systems.OrderByDescending(s => s.Services.Count).ThenBy(s => s.SystemName))
-                                    {
-                                        <li>
-                                            <!-- System -->
-                                            <NavLink href="@($"resources/systems/{system.SystemName}")" class="block">
-                                                @if (system.Services.Any())
-                                                {
-                                                    <div class="text-zinc-300 hover:text-emerald-300">
-                                                        └─ @system.SystemName (@system.Services.Count)
-                                                    </div>
-                                                }
-                                                else
-                                                {
+                                                <!-- System -->
+                                                <NavLink href="@($"resources/systems/{system.SystemName}")"
+                                                         class="block"
+                                                         data-testid=@($"system-link-{system.SystemName}")>
+
                                                     <div class="text-zinc-300 hover:text-emerald-300">
                                                         └─ @system.SystemName
                                                     </div>
-                                                }
 
-                                            </NavLink>
+                                                </NavLink>
 
-                                            @if (system.Services.Any())
-                                            {
-                                                <ul class="ml-4 mt-1 space-y-1">
-                                                    @foreach (var service in system.Services.OrderBy(s => s))
-                                                    {
-                                                        <NavLink href="@($"resources/services/{service}")"
-                                                                 class="block hover:text-emerald-300">
+                                                @if (system.Services.Any())
+                                                {
+                                                    <ul class="ml-4 mt-1 space-y-1"
+                                                        data-testid=@($"service-list-{system.SystemName}")>
 
-                                                            <li class="text-zinc-500 hover:text-emerald-300">
-                                                                > @service
+                                                        @foreach (var service in system.Services.OrderBy(s => s))
+                                                        {
+                                                            <li data-testid=@($"service-item-{service}")>
+                                                                <NavLink href="@($"resources/services/{service}")"
+                                                                         class="block hover:text-emerald-300"
+                                                                         data-testid=@($"service-link-{service}")>
+                                                                    > @service
+                                                                </NavLink>
                                                             </li>
-                                                        </NavLink>
-                                                    }
-                                                </ul>
-                                            }
-                                        </li>
-                                    }
-                                </ul>
-                            }
-                        </li>
-                    }
-                </ul>
-            </div>
-        }
+                                                        }
+                                                    </ul>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+        </div>
     }
 </div>
 
@@ -134,7 +134,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _tree = await HardwareRepository.GetTreeAsync();
+        try
+        {
+            _tree = await HardwareRepository.GetTreeAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+            throw;
+        }
     }
 
 }

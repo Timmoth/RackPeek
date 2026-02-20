@@ -1,13 +1,13 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Laptops
 @inject IGetAllResourcesByKindUseCase<Laptop> GetAllUseCase
-@inject IGetResourceByNameUseCase<Laptop> GetByNameUseCase
 @inject NavigationManager Nav
 
 <PageTitle>Laptops</PageTitle>
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6">
-    <AddLaptopComponent OnCreated="NavigateToNewResource"/>
-
+    <AddResourceComponent TResource="Laptop"
+                          Placeholder="Laptop name"
+                          OnCreated="NavigateToNewResource" />
     @if (_Laptops is null)
     {
         <div class="text-zinc-500">loading Laptops…</div>

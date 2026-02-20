@@ -23,7 +23,9 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         get
         {
             lock (_lock)
+            {
                 return _resources.OfType<Hardware>().ToList();
+            }
         }
     }
 
@@ -32,7 +34,9 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         get
         {
             lock (_lock)
+            {
                 return _resources.OfType<SystemResource>().ToList();
+            }
         }
     }
 
@@ -41,7 +45,9 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         get
         {
             lock (_lock)
+            {
                 return _resources.OfType<Service>().ToList();
+            }
         }
     }
 
@@ -55,12 +61,16 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
     }
 
     public Task LoadAsync()
-        => Task.CompletedTask;
+    {
+        return Task.CompletedTask;
+    }
 
     public Task<IReadOnlyList<Resource>> GetByTagAsync(string name)
     {
         lock (_lock)
+        {
             return Task.FromResult<IReadOnlyList<Resource>>(_resources.Where(r => r.Tags.Contains(name)).ToList());
+        }
     }
 
     public Task<Dictionary<string, int>> GetTagsAsync()
@@ -69,7 +79,7 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         {
             var result = _resources
                 .Where(r => r.Tags != null)
-                .SelectMany(r => r.Tags!)      // flatten all tag arrays
+                .SelectMany(r => r.Tags!) // flatten all tag arrays
                 .Where(t => !string.IsNullOrWhiteSpace(t))
                 .GroupBy(t => t)
                 .ToDictionary(g => g.Key, g => g.Count());
@@ -80,13 +90,18 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
     public Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>()
     {
         lock (_lock)
-         return Task.FromResult<IReadOnlyList<T>>(_resources.OfType<T>().ToList());
+        {
+            return Task.FromResult<IReadOnlyList<T>>(_resources.OfType<T>().ToList());
+        }
     }
 
     public Task<IReadOnlyList<Resource>> GetDependantsAsync(string name)
     {
         lock (_lock)
-            return Task.FromResult<IReadOnlyList<Resource>>(_resources.Where(r => r.RunsOn?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false).ToList());
+        {
+            return Task.FromResult<IReadOnlyList<Resource>>(_resources
+                .Where(r => r.RunsOn?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false).ToList());
+        }
     }
 
 
@@ -140,9 +155,8 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
             return Task.FromResult(_resources.FirstOrDefault(r =>
                 r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
         }
-        
     }
-    
+
     public Task<T?> GetByNameAsync<T>(string name) where T : Resource
     {
         lock (_lock)
@@ -161,19 +175,22 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         }
     }
 
-    private static string GetKind(Resource resource) => resource switch
+    private static string GetKind(Resource resource)
     {
-        Server => "Server",
-        Switch => "Switch",
-        Firewall => "Firewall",
-        Router => "Router",
-        Desktop => "Desktop",
-        Laptop => "Laptop",
-        AccessPoint => "AccessPoint",
-        Ups => "Ups",
-        SystemResource => "System",
-        Service => "Service",
-        _ => throw new InvalidOperationException(
-            $"Unknown resource type: {resource.GetType().Name}")
-    };
+        return resource switch
+        {
+            Server => "Server",
+            Switch => "Switch",
+            Firewall => "Firewall",
+            Router => "Router",
+            Desktop => "Desktop",
+            Laptop => "Laptop",
+            AccessPoint => "AccessPoint",
+            Ups => "Ups",
+            SystemResource => "System",
+            Service => "Service",
+            _ => throw new InvalidOperationException(
+                $"Unknown resource type: {resource.GetType().Name}")
+        };
+    }
 }
