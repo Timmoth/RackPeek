@@ -12,7 +12,7 @@ Code, docs, ideas, bug reports, and real-world usage feedback are all massively 
 If you run a home lab, you belong here.
 
 
-[![David Burgess — Finally Document Your Home Lab the Easy Way (Docker Install)](https://img.shields.io/badge/David%20Burgess%20[video]-Finally%20Document%20Your%20Home%20Lab%20the%20Easy%20Way%20(Docker%20Install)-blue?style=for-the-badge)](https://www.youtube.com/watch?v=RJtMO8kIsqU)
+[![DB Tech — Finally Document Your Home Lab the Easy Way (Docker Install)](https://img.shields.io/badge/DB%20Tech%20[video]-Finally%20Document%20Your%20Home%20Lab%20the%20Easy%20Way%20(Docker%20Install)-blue?style=for-the-badge)](https://www.youtube.com/watch?v=RJtMO8kIsqU)
 [![Brandon Lee — I’m Documenting My Entire Home Lab as Code with RackPeek](https://img.shields.io/badge/Brandon%20Lee%20[article]-I%E2%80%99m%20Documenting%20My%20Entire%20Home%20Lab%20as%20Code%20with%20RackPeek-blue?style=for-the-badge)](https://www.virtualizationhowto.com/2026/02/im-documenting-my-entire-home-lab-as-code-with-rackpeek/)
 [![Jared Heinrichs — How to Document Your Entire Homelab](https://img.shields.io/badge/Jared%20Heinrichs%20[article]-How%20to%20Document%20Your%20Entire%20Homelab-blue?style=for-the-badge)](https://jaredheinrichs.substack.com/p/how-to-document-your-entire-homelab)
 
