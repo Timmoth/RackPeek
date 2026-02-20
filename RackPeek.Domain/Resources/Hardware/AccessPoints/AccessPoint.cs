@@ -1,4 +1,4 @@
-namespace RackPeek.Domain.Resources.Models;
+namespace RackPeek.Domain.Resources.Hardware.AccessPoints;
 
 public class AccessPoint : Hardware
 {

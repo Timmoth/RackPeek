@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using RackPeek.Domain.Resources.Hardware.Switches;
 using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -15,7 +16,7 @@ public class SwitchDeleteCommand(
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<RackPeek.Domain.Resources.Models.Switch>>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Switch>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

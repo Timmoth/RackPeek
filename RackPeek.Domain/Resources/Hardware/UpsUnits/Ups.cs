@@ -1,4 +1,4 @@
-namespace RackPeek.Domain.Resources.Models;
+namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
 
 public class Ups : Hardware
 {

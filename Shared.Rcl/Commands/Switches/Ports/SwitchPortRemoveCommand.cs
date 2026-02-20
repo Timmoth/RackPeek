@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Switches.Ports;
+using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -17,7 +18,7 @@ public class SwitchPortRemoveCommand(IServiceProvider sp)
     public override async Task<int> ExecuteAsync(CommandContext ctx, SwitchPortRemoveSettings s, CancellationToken ct)
     {
         using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RemoveSwitchPortUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Switch>>();
 
         await useCase.ExecuteAsync(s.Name, s.Index);
 

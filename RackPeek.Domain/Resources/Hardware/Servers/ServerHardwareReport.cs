@@ -1,5 +1,4 @@
 using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers;
 

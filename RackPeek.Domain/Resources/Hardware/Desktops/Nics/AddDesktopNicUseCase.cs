@@ -1,6 +1,6 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.SubResources;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops.Nics;
 

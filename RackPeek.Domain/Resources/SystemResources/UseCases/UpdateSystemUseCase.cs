@@ -51,7 +51,7 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         if (!string.IsNullOrWhiteSpace(runsOn))
         {
             ThrowIfInvalid.ResourceName(runsOn);
-            var parentHardware = await repository.GetByNameAsync(runsOn) as Models.Hardware;
+            var parentHardware = await repository.GetByNameAsync(runsOn) as Hardware.Hardware;
             if (parentHardware == null) throw new NotFoundException($"Parent hardware '{runsOn}' not found.");
             system.RunsOn = runsOn;
         }

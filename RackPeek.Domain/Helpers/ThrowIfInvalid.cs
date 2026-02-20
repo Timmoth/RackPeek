@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.SubResources;
 using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Helpers;

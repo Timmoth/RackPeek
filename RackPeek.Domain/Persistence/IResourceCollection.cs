@@ -1,6 +1,6 @@
 using System.Collections;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 

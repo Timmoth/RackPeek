@@ -1,7 +1,7 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.Hardware.Servers;
 
 namespace RackPeek.Domain.UseCases.Drives;
 

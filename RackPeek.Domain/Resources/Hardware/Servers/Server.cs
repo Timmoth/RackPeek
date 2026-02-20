@@ -1,4 +1,6 @@
-namespace RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.SubResources;
+
+namespace RackPeek.Domain.Resources.Hardware.Servers;
 
 public class Server : Hardware, ICpuResource, IDriveResource
 {
@@ -19,4 +21,9 @@ public interface ICpuResource
 public interface IDriveResource
 {
     public List<Drive>? Drives { get; set; }
+}
+
+public interface IPortResource
+{
+    public List<Port>? Ports { get; set; }
 }

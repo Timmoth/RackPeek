@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Servers.Nics;
 

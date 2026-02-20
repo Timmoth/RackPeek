@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Firewalls.Ports;
+using RackPeek.Domain.Resources.Hardware.Firewalls;
+using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -16,7 +17,7 @@ public class FirewallPortRemoveCommand(IServiceProvider sp)
     public override async Task<int> ExecuteAsync(CommandContext ctx, FirewallPortRemoveSettings s, CancellationToken ct)
     {
         using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RemoveFirewallPortUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Firewall>>();
 
         await useCase.ExecuteAsync(s.Name, s.Index);
 

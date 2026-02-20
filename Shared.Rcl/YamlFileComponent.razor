@@ -2,13 +2,18 @@
 @using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Persistence.Yaml
 @using RackPeek.Domain.Resources
-@using RackPeek.Domain.Resources.Models
+@using RackPeek.Domain.Resources.Hardware.AccessPoints
+@using RackPeek.Domain.Resources.Hardware.Desktops
+@using RackPeek.Domain.Resources.Hardware.Firewalls
+@using RackPeek.Domain.Resources.Hardware.Laptops
+@using RackPeek.Domain.Resources.Hardware.Servers
+@using RackPeek.Domain.Resources.Hardware.Switches
 @using RackPeek.Domain.Resources.Services
 @using RackPeek.Domain.Resources.SystemResources
 @using YamlDotNet.RepresentationModel
 @using YamlDotNet.Serialization
 @using YamlDotNet.Serialization.NamingConventions
-@using Router = RackPeek.Domain.Resources.Models.Router
+@using Router = RackPeek.Domain.Resources.Hardware.Routers.Router
 @inject ITextFileStore FileStore
 @inject IResourceCollection Resources
 
@@ -183,7 +188,7 @@ private bool ValidateYamlRoundTrip(string yaml, out string? error)
                     { Desktop.KindLabel, typeof(Desktop) },
                     { Laptop.KindLabel, typeof(Laptop) },
                     { AccessPoint.KindLabel, typeof(AccessPoint) },
-                    { RackPeek.Domain.Resources.Models.Ups.KindLabel, typeof(RackPeek.Domain.Resources.Models.Ups) },
+                    { RackPeek.Domain.Resources.Hardware.UpsUnits.Ups.KindLabel, typeof(RackPeek.Domain.Resources.Hardware.UpsUnits.Ups) },
                     { SystemResource.KindLabel, typeof(SystemResource) },
                     { Service.KindLabel, typeof(Service) }
                 });

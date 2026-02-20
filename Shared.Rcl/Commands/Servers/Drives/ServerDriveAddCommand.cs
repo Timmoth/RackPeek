@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.Hardware.Servers;
 using RackPeek.Domain.UseCases.Drives;
 using Spectre.Console;
 using Spectre.Console.Cli;

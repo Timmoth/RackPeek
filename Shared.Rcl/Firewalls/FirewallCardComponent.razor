@@ -1,13 +1,13 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Desktops
 @using RackPeek.Domain.Resources.Hardware.Firewalls
-@using RackPeek.Domain.Resources.Hardware.Firewalls.Ports
-@using RackPeek.Domain.Resources.Models
+@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.UseCases.Ports
 @inject UpdateFirewallUseCase UpdateFirewallUseCase
 @inject IGetAllResourcesByKindUseCase<Firewall> GetAllUseCase
 @inject IGetResourceByNameUseCase<Firewall> GetByNameUseCase
-@inject AddFirewallPortUseCase AddFirewallPortUseCase
-@inject UpdateFirewallPortUseCase UpdateFirewallPortUseCase
-@inject RemoveFirewallPortUseCase RemoveFirewallPortUseCase
+@inject IAddPortUseCase<Firewall> AddFirewallPortUseCase
+@inject IUpdatePortUseCase<Firewall> UpdateFirewallPortUseCase
+@inject IRemovePortUseCase<Firewall> RemoveFirewallPortUseCase
 @inject IDeleteResourceUseCase<Firewall> DeleteUseCase
 @inject ICloneResourceUseCase<Firewall> CloneUseCase
 

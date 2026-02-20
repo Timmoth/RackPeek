@@ -1,7 +1,14 @@
 ﻿using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources.Hardware;
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.Hardware.AccessPoints;
+using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.Resources.Hardware.Firewalls;
+using RackPeek.Domain.Resources.Hardware.Laptops;
+using RackPeek.Domain.Resources.Hardware.Routers;
+using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.Hardware.UpsUnits;
 
 namespace Tests.Yaml;
 

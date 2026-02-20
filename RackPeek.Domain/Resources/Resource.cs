@@ -1,4 +1,11 @@
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.Hardware.AccessPoints;
+using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.Resources.Hardware.Firewalls;
+using RackPeek.Domain.Resources.Hardware.Laptops;
+using RackPeek.Domain.Resources.Hardware.Routers;
+using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.Hardware.UpsUnits;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 
@@ -37,7 +44,7 @@ public abstract class Resource
     
     private static readonly Dictionary<Type, string> TypeToKindMap = new()
     {
-        { typeof(Models.Hardware), "Hardware" },
+        { typeof(Hardware.Hardware), "Hardware" },
         { typeof(Server), "Server" },
         { typeof(Switch), "Switch" },
         { typeof(Firewall), "Firewall" },
@@ -69,7 +76,7 @@ public abstract class Resource
             return true;
 
         // System -> Hardware
-        if (childKind == "system" && parent is Models.Hardware)
+        if (childKind == "system" && parent is Hardware.Hardware)
             return true;
 
         return false;

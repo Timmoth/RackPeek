@@ -1,6 +1,14 @@
 using System.Collections.Specialized;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.Hardware;
+using RackPeek.Domain.Resources.Hardware.AccessPoints;
+using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.Resources.Hardware.Firewalls;
+using RackPeek.Domain.Resources.Hardware.Laptops;
+using RackPeek.Domain.Resources.Hardware.Routers;
+using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.Hardware.UpsUnits;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 using YamlDotNet.Core;

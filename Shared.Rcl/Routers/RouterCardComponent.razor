@@ -1,15 +1,15 @@
 ﻿@inject UpdateRouterUseCase UpdateRouterUseCase
 @inject IGetAllResourcesByKindUseCase<Router> GetAllUseCase
 @inject IGetResourceByNameUseCase<Router> GetByNameUseCase
-@inject AddRouterPortUseCase AddRouterPortUseCase
-@inject UpdateRouterPortUseCase UpdateRouterPortUseCase
-@inject RemoveRouterPortUseCase RemoveRouterPortUseCase
+@inject IAddPortUseCase<Router> AddRouterPortUseCase
+@inject IUpdatePortUseCase<Router> UpdateRouterPortUseCase
+@inject IRemovePortUseCase<Router> RemoveRouterPortUseCase
 @inject IDeleteResourceUseCase<Router> DeleteUseCase
 @using RackPeek.Domain.Resources.Hardware.Desktops
 @using RackPeek.Domain.Resources.Hardware.Routers
-@using RackPeek.Domain.Resources.Hardware.Routers.Ports
-@using RackPeek.Domain.Resources.Models
-@using Router = RackPeek.Domain.Resources.Models.Router
+@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.UseCases.Ports
+@using Router = RackPeek.Domain.Resources.Hardware.Routers.Router
 @inject IRenameResourceUseCase<Router> RenameUseCase
 @inject ICloneResourceUseCase<Router> CloneUseCase
 

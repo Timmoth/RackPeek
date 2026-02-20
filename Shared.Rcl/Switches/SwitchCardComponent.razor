@@ -1,13 +1,13 @@
 ﻿@using RackPeek.Domain.Resources.Hardware.Desktops
 @using RackPeek.Domain.Resources.Hardware.Switches
-@using RackPeek.Domain.Resources.Hardware.Switches.Ports
-@using RackPeek.Domain.Resources.Models
+@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.UseCases.Ports
 @inject UpdateSwitchUseCase UpdateSwitchUseCase
 @inject IGetAllResourcesByKindUseCase<Switch> GetAllUseCase
 @inject IGetResourceByNameUseCase<Switch> GetByNameUseCase
-@inject AddSwitchPortUseCase AddSwitchPortUseCase
-@inject UpdateSwitchPortUseCase UpdateSwitchPortUseCase
-@inject RemoveSwitchPortUseCase RemoveSwitchPortUseCase
+@inject IAddPortUseCase<Switch> AddSwitchPortUseCase
+@inject IUpdatePortUseCase<Switch> UpdateSwitchPortUseCase
+@inject IRemovePortUseCase<Switch> RemoveSwitchPortUseCase
 @inject IDeleteResourceUseCase<Switch> DeleteUseCase
 @inject ICloneResourceUseCase<Switch> CloneUseCase
 

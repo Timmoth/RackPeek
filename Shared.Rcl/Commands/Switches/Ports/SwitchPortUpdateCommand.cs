@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Switches.Ports;
+using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -26,7 +27,7 @@ public class SwitchPortUpdateCommand(IServiceProvider sp)
     public override async Task<int> ExecuteAsync(CommandContext ctx, SwitchPortUpdateSettings s, CancellationToken ct)
     {
         using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateSwitchPortUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IUpdatePortUseCase<Switch>>();
 
         await useCase.ExecuteAsync(s.Name, s.Index, s.Type, s.Speed, s.Count);
 

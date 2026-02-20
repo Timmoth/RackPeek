@@ -1,5 +1,4 @@
 using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Resources.Models;
 
 namespace RackPeek.Domain.Resources.Hardware.Desktops;
 
@@ -24,7 +23,7 @@ public class DesktopHardwareReportUseCase(IResourceCollection repository) : IUse
 {
     public async Task<DesktopHardwareReport> ExecuteAsync()
     {
-        var desktops = await repository.GetAllOfTypeAsync<Models.Desktop>();
+        var desktops = await repository.GetAllOfTypeAsync<Desktop>();
 
         var rows = desktops.Select(desktop =>
         {

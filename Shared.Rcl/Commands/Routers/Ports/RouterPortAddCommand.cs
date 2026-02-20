@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Routers.Ports;
+using RackPeek.Domain.Resources.Hardware.Routers;
+using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -18,7 +19,7 @@ public class RouterPortAddCommand(IServiceProvider sp)
     public override async Task<int> ExecuteAsync(CommandContext ctx, RouterPortAddSettings s, CancellationToken ct)
     {
         using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddRouterPortUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IAddPortUseCase<Router>>();
 
         await useCase.ExecuteAsync(s.Name, s.Type, s.Speed, s.Count);
 

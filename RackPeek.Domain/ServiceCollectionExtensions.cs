@@ -4,12 +4,12 @@ using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Hardware.Desktops;
-using RackPeek.Domain.Resources.Models;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 using RackPeek.Domain.UseCases;
 using RackPeek.Domain.UseCases.Cpus;
 using RackPeek.Domain.UseCases.Drives;
+using RackPeek.Domain.UseCases.Ports;
 using RackPeek.Domain.UseCases.Tags;
 
 namespace RackPeek.Domain;
@@ -68,6 +68,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped(typeof(IRemoveDriveUseCase<>), typeof(RemoveDriveUseCase<>));
         services.AddScoped(typeof(IUpdateDriveUseCase<>), typeof(UpdateDriveUseCase<>));
 
+        services.AddScoped(typeof(IAddPortUseCase<>), typeof(AddPortUseCase<>));
+        services.AddScoped(typeof(IRemovePortUseCase<>), typeof(RemovePortUseCase<>));
+        services.AddScoped(typeof(IUpdatePortUseCase<>), typeof(UpdatePortUseCase<>));
         
         var usecases = Assembly.GetAssembly(typeof(IUseCase))
             ?.GetTypes()

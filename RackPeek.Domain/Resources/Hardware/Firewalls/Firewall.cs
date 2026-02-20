@@ -1,6 +1,9 @@
-namespace RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.SubResources;
 
-public class Firewall : Hardware
+namespace RackPeek.Domain.Resources.Hardware.Firewalls;
+
+public class Firewall : Hardware, IPortResource
 {
     public const string KindLabel = "Firewall";
     public string? Model { get; set; }
