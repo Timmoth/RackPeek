@@ -1,4 +1,5 @@
 ﻿@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources
 @typeparam TResource where TResource : RackPeek.Domain.Resources.Resource
 
 @inject IResourceCollection Repo
@@ -12,38 +13,32 @@
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6"
      data-testid="@($"{TestId}-page-root")">
 
-    <!-- Add Resource Section -->
     <div data-testid="@($"{TestId}-add-section")">
         <AddResourceComponent TResource="TResource"
-                              Placeholder=@($"{Title} name")
+                              Placeholder=@($"{ResourceKind} name")
                               OnCreated="OnCreated"/>
     </div>
 
-    @if (_resources is null)
+    @if (ResourcesToRender is null)
     {
-        <div class="text-zinc-500"
-             data-testid="@($"{TestId}-loading")">
-            loading @Title.ToLower()…
+        <div class="text-zinc-500" data-testid="@($"{TestId}-loading")">
+            loading @ResourceKind.ToLower()…
         </div>
     }
-    else if (!_resources.Any())
+    else if (!ResourcesToRender.Any())
     {
-        <div class="text-zinc-500"
-             data-testid="@($"{TestId}-empty")">
-            no @Title.ToLower() found
+        <div class="text-zinc-500" data-testid="@($"{TestId}-empty")">
+            no @ResourceKind.ToLower() found
         </div>
     }
     else
     {
-        <div class="space-y-4"
-             data-testid="@($"{TestId}-list")">
-
-            @foreach (var group in GroupResources(_resources))
+        <div class="space-y-4" data-testid="@($"{TestId}-list")">
+            @foreach (var group in GroupResources(ResourcesToRender))
             {
                 var groupKey = FormatGroupKey(group.Key);
 
                 <div data-testid="@($"{TestId}-group-{groupKey}")">
-
                     @if (ShouldGroup)
                     {
                         <div class="text-xs text-zinc-500 uppercase tracking-wider mb-2"
@@ -52,18 +47,14 @@
                         </div>
                     }
 
-                    <div class="space-y-4"
-                         data-testid="@($"{TestId}-group-list-{groupKey}")">
-
+                    <div class="space-y-4" data-testid="@($"{TestId}-group-list-{groupKey}")">
                         @foreach (var item in group)
                         {
                             @ItemTemplate(item)
                         }
-
                     </div>
                 </div>
             }
-
         </div>
     }
 </div>
@@ -72,41 +63,37 @@
     [Parameter] public string Title { get; set; } = default!;
     [Parameter] public string TestId { get; set; } = default!;
 
+    [Parameter] public IReadOnlyList<TResource>? Resources { get; set; }
+
     [Parameter] public RenderFragment AddSection { get; set; } = default!;
     [Parameter] public RenderFragment<TResource> ItemTemplate { get; set; } = default!;
 
     [Parameter] public bool ShouldGroup { get; set; }
+    [Parameter] public Func<TResource, string?> GroupBy { get; set; } = _ => null;
 
-    [Parameter] public Func<TResource, string?> GroupBy { get; set; } = s => null;
     [Parameter] public EventCallback<string> OnCreated { get; set; }
 
-    private IReadOnlyList<TResource>? _resources;
+    private IReadOnlyList<TResource>? _loadedResources;
+    
+    private IReadOnlyList<TResource>? ResourcesToRender => Resources ?? _loadedResources;
 
-    protected override async Task OnInitializedAsync()
+    public string ResourceKind { get; set; } = Resource.GetKind<TResource>();
+    
+    protected override async Task OnParametersSetAsync()
     {
-        _resources = await Repo.GetAllOfTypeAsync<TResource>();
+        if (Resources is not null)
+            return;
+
+        if (_loadedResources is null)
+            _loadedResources = await Repo.GetAllOfTypeAsync<TResource>();
     }
 
-    private IEnumerable<IGrouping<string?, TResource>> GroupResources(
-        IEnumerable<TResource> resources)
-    {
-        return resources
-            .GroupBy(GroupBy)
-            .OrderByDescending(g => g.Count());
-    }
+    private IEnumerable<IGrouping<string?, TResource>> GroupResources(IEnumerable<TResource> resources) =>
+        resources.GroupBy(GroupBy).OrderByDescending(g => g.Count());
 
-    private static string FormatGroupKey(string? key)
-    {
-        return string.IsNullOrWhiteSpace(key)
-            ? "unassigned"
-            : key.Replace(" ", "-");
-    }
+    private static string FormatGroupKey(string? key) =>
+        string.IsNullOrWhiteSpace(key) ? "unassigned" : key.Replace(" ", "-");
 
-    private static string DisplayGroupKey(string? key)
-    {
-        return string.IsNullOrWhiteSpace(key)
-            ? "Unassigned"
-            : key;
-    }
-
+    private static string DisplayGroupKey(string? key) =>
+        string.IsNullOrWhiteSpace(key) ? "Unassigned" : key;
 }
