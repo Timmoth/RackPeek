@@ -1,0 +1,45 @@
+name: Feature Request
+description: Suggest a new feature or improvement for RackPeek
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing your idea! Feature requests help shape RackPeek's roadmap. Please describe what you'd like to see.
+  - type: textarea
+    id: feature
+    attributes:
+      label: What feature would you like?
+      description: A brief description of the feature or improvement.
+      placeholder: e.g. Add support for tracking VLANs on switch ports...
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: What problem does it solve?
+      description: How would you use this in your homelab or workflow?
+      placeholder: e.g. I'd use this to document which VLAN each port is assigned to...
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where would this apply?
+      description: CLI, Web UI, or both?
+      options:
+        - CLI (rpk commands)
+        - Web UI
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or mockups (optional)
+      description: Drag and drop images here. Mockups, annotated screenshots, or examples of what you're envisioning help us understand your idea.
+      placeholder: Drop images here or paste links...
+    validations:
+      required: false
+

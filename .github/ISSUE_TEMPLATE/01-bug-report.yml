@@ -1,0 +1,66 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in RackPeek
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve RackPeek! Please fill out the fields below. The more context you provide, the easier it is for us to investigate.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A brief description of the bug. What did you see vs. what did you expect?
+      placeholder: e.g. "rpk servers add my-server" fails with an error when...
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does this occur?
+      description: CLI or Web UI?
+      options:
+        - CLI (rpk commands)
+        - Web UI
+        - Both / Not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: How do you run RackPeek?
+      description: Helps with deployment-specific issues
+      options:
+        - Docker
+        - Native Linux binary
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: RackPeek version
+      description: e.g. 0.0.3, or Docker image tag (e.g. aptacode/rackpeek:latest)
+      placeholder: 0.0.3 or latest
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce (optional)
+      description: If you can reproduce the bug, list the steps. Paste commands or describe Web UI actions.
+      placeholder: |
+        1. rpk servers add test-server
+        2. rpk servers drive add test-server --type ssd --size 500
+        3. ...
+    validations:
+      required: false
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots (optional)
+      description: Drag and drop images here. Screenshots of the error, terminal output, or unexpected UI help a lot. Please redact any sensitive info (hostnames, IPs, config).
+      placeholder: Drop images here or paste links...
+    validations:
+      required: false
