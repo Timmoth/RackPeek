@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.SystemResources.UseCases;
+using RackPeek.Domain.Resources.SystemResources;
+using RackPeek.Domain.UseCases.Drives;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Systems.Drives;
+namespace Shared.Rcl.Commands.Systems.Drives;
 
 public class SystemDriveAddSettings : SystemNameSettings
 {
@@ -21,7 +22,7 @@ public class SystemDriveAddCommand(IServiceProvider serviceProvider)
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddSystemDriveUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IAddDriveUseCase<SystemResource>>();
 
         await useCase.ExecuteAsync(settings.Name, settings.Type, settings.Size);
 

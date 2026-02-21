@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Commands.Servers;
-using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.Switches;
+using Shared.Rcl.Commands.Servers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches;
+namespace Shared.Rcl.Commands.Switches;
 
 public class SwitchSetSettings : ServerNameSettings
 {
@@ -33,7 +33,7 @@ public class SwitchSetCommand(
             settings.Managed,
             settings.Poe);
 
-        AnsiConsole.MarkupLine($"[green]Server '{settings.Name}' updated.[/]");
+        AnsiConsole.MarkupLine($"[green]Switch '{settings.Name}' updated.[/]");
         return 0;
     }
 }

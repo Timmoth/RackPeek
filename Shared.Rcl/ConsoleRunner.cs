@@ -1,21 +1,20 @@
-using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Testing;
 
-namespace RackPeek;
+namespace Shared.Rcl;
 
 public class ConsoleEmulator : IConsoleEmulator
 {
-    public CommandApp App { get; }
-
     public ConsoleEmulator(IServiceProvider provider)
     {
         var registrar = new TypeRegistrar(provider);
         App = new CommandApp(registrar);
         CliBootstrap.BuildApp(App);
     }
+
+    public CommandApp App { get; }
 
     public async Task<string> Execute(string input)
     {
@@ -61,7 +60,6 @@ public sealed class TypeRegistrar : ITypeRegistrar
     }
 }
 
-
 public sealed class TypeResolver : ITypeResolver
 {
     private readonly IServiceProvider _provider;
@@ -72,5 +70,7 @@ public sealed class TypeResolver : ITypeResolver
     }
 
     public object? Resolve(Type? type)
-        => type == null ? null : _provider.GetService(type);
+    {
+        return type == null ? null : _provider.GetService(type);
+    }
 }

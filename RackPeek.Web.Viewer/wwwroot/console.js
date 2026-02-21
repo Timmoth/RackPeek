@@ -17,7 +17,7 @@ window.scrollToAnchor = (anchor) => {
         const el = document.getElementById(anchor);
 
         if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "start" });
+            el.scrollIntoView({behavior: "smooth", block: "start"});
             return;
         }
 

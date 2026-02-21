@@ -1,0 +1,112 @@
+﻿@using RackPeek.Domain.Persistence
+@typeparam TResource where TResource : RackPeek.Domain.Resources.Resource
+
+@inject IResourceCollection Repo
+
+<PageTitle>@Title</PageTitle>
+
+<h1 class="text-lg text-zinc-100" data-testid="@($"{TestId}-page-title")">
+    @Title
+</h1>
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6"
+     data-testid="@($"{TestId}-page-root")">
+
+    <!-- Add Resource Section -->
+    <div data-testid="@($"{TestId}-add-section")">
+        <AddResourceComponent TResource="TResource"
+                              Placeholder=@($"{Title} name")
+                              OnCreated="OnCreated"/>
+    </div>
+
+    @if (_resources is null)
+    {
+        <div class="text-zinc-500"
+             data-testid="@($"{TestId}-loading")">
+            loading @Title.ToLower()…
+        </div>
+    }
+    else if (!_resources.Any())
+    {
+        <div class="text-zinc-500"
+             data-testid="@($"{TestId}-empty")">
+            no @Title.ToLower() found
+        </div>
+    }
+    else
+    {
+        <div class="space-y-4"
+             data-testid="@($"{TestId}-list")">
+
+            @foreach (var group in GroupResources(_resources))
+            {
+                var groupKey = FormatGroupKey(group.Key);
+
+                <div data-testid="@($"{TestId}-group-{groupKey}")">
+
+                    @if (ShouldGroup)
+                    {
+                        <div class="text-xs text-zinc-500 uppercase tracking-wider mb-2"
+                             data-testid="@($"{TestId}-group-title-{groupKey}")">
+                            @DisplayGroupKey(group.Key)
+                        </div>
+                    }
+
+                    <div class="space-y-4"
+                         data-testid="@($"{TestId}-group-list-{groupKey}")">
+
+                        @foreach (var item in group)
+                        {
+                            @ItemTemplate(item)
+                        }
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = default!;
+    [Parameter] public string TestId { get; set; } = default!;
+
+    [Parameter] public RenderFragment AddSection { get; set; } = default!;
+    [Parameter] public RenderFragment<TResource> ItemTemplate { get; set; } = default!;
+
+    [Parameter] public bool ShouldGroup { get; set; }
+
+    [Parameter] public Func<TResource, string?> GroupBy { get; set; } = s => null;
+    [Parameter] public EventCallback<string> OnCreated { get; set; }
+
+    private IReadOnlyList<TResource>? _resources;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _resources = await Repo.GetAllOfTypeAsync<TResource>();
+    }
+
+    private IEnumerable<IGrouping<string?, TResource>> GroupResources(
+        IEnumerable<TResource> resources)
+    {
+        return resources
+            .GroupBy(GroupBy)
+            .OrderByDescending(g => g.Count());
+    }
+
+    private static string FormatGroupKey(string? key)
+    {
+        return string.IsNullOrWhiteSpace(key)
+            ? "unassigned"
+            : key.Replace(" ", "-");
+    }
+
+    private static string DisplayGroupKey(string? key)
+    {
+        return string.IsNullOrWhiteSpace(key)
+            ? "Unassigned"
+            : key;
+    }
+
+}

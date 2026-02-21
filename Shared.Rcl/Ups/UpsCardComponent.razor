@@ -1,11 +1,9 @@
-﻿@using RackPeek.Domain.Resources.Hardware.UpsUnits
-@using RackPeek.Domain.Resources.Models
-@using Shared.Rcl.Modals
+﻿@using RackPeek.Domain.Resources.UpsUnits
 @inject UpdateUpsUseCase UpdateUpsUseCase
-@inject GetUpsUnitUseCase GetUpsUseCase
-@inject DeleteUpsUseCase DeleteUseCase
-@inject RenameUpsUseCase RenameUpsUseCase
-@inject CloneUpsUseCase CloneUseCase
+@inject IGetResourceByNameUseCase<Ups> GetByNameUseCase
+@inject IDeleteResourceUseCase<Ups> DeleteUseCase
+@inject IRenameResourceUseCase<Ups> RenameUseCase
+@inject ICloneResourceUseCase<Ups> CloneUseCase
 
 @inject NavigationManager Nav
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
@@ -72,7 +70,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
-                       @bind="_edit.Model"/>
+                    @bind="_edit.Model"/>
             }
             else if (!string.IsNullOrWhiteSpace(Ups.Model))
             {
@@ -101,7 +99,7 @@
                 <div class="text-zinc-300">@Ups.Va VA</div>
             }
         </div>
-        <ResourceTagEditor Resource="Ups" />
+        <ResourceTagEditor Resource="Ups"/>
 
         <div class="md:col-span-2">
             <div class="text-zinc-400 mb-1">Notes</div>
@@ -110,13 +108,13 @@
             {
                 <MarkdownEditor
                     @bind-Value="_edit.Notes"
-                    ShowActionButtons="false" />
+                    ShowActionButtons="false"/>
             }
             else
             {
                 <MarkdownViewer
                     Value="@Ups.Notes"
-                    ShowEditButton="false" />
+                    ShowEditButton="false"/>
             }
         </div>
     </div>
@@ -128,7 +126,8 @@
     Title="Delete UPS"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteUps">
+    OnConfirm="DeleteUps"
+    TestIdPrefix="Ups">>
     Are you sure you want to delete <strong>@Ups.Name</strong>?
 </ConfirmModal>
 <StringValueModal
@@ -138,7 +137,7 @@
     Description="Enter a new name for this Ups"
     Label="New Ups name"
     Value="@Ups.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 <StringValueModal
     IsOpen="_cloneOpen"
     IsOpenChanged="v => _cloneOpen = v"
@@ -146,10 +145,10 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{Ups.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
 
 @code {
-    [Parameter][EditorRequired] public Ups Ups { get; set; } = default!;
+    [Parameter] [EditorRequired] public Ups Ups { get; set; } = default!;
 
     [Parameter] public EventCallback<string> OnDeleted { get; set; }
 
@@ -174,7 +173,7 @@
             _edit.Va,
             _edit.Notes);
 
-        Ups = await GetUpsUseCase.ExecuteAsync(Ups.Name);
+        Ups = await GetByNameUseCase.ExecuteAsync(Ups.Name);
     }
 
     void Cancel()
@@ -227,7 +226,7 @@
 
     async Task HandleRenameSubmit(string newName)
     {
-        await RenameUpsUseCase.ExecuteAsync(Ups.Name, newName);
+        await RenameUseCase.ExecuteAsync(Ups.Name, newName);
         Nav.NavigateTo($"resources/hardware/{newName}");
     }
 

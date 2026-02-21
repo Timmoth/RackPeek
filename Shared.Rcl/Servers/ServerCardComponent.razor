@@ -1,35 +1,35 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Servers
-@using RackPeek.Domain.Resources.Hardware.Servers.Cpus
-@using RackPeek.Domain.Resources.Hardware.Servers.Drives
-@using RackPeek.Domain.Resources.Hardware.Servers.Gpus
-@using RackPeek.Domain.Resources.Hardware.Servers.Nics
-@using RackPeek.Domain.Resources.Models
-@inject AddCpuUseCase AddCpuUseCase
-@inject RemoveCpuUseCase RemoveCpuUseCase
-@inject UpdateCpuUseCase UpdateCpuUseCase
+﻿@using RackPeek.Domain.Resources.Servers
+@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.UseCases.Cpus
+@using RackPeek.Domain.UseCases.Drives
+@using RackPeek.Domain.UseCases.Gpus
+@using RackPeek.Domain.UseCases.Nics
+@inject IAddCpuUseCase<Server> AddCpuUseCase
+@inject IRemoveCpuUseCase<Server> RemoveCpuUseCase
+@inject IUpdateCpuUseCase<Server> UpdateCpuUseCase
 
-@inject AddDrivesUseCase AddDriveUseCase
-@inject RemoveDriveUseCase RemoveDriveUseCase
-@inject UpdateDriveUseCase UpdateDriveUseCase
+@inject IAddDriveUseCase<Server> AddDriveUseCase
+@inject IUpdateDriveUseCase<Server> UpdateDriveUseCase
+@inject IRemoveDriveUseCase<Server> RemoveDriveUseCase
 
-@inject AddNicUseCase AddNicUseCase
-@inject UpdateNicUseCase UpdateNicUseCase
-@inject RemoveNicUseCase RemoveNicUseCase
+@inject IAddNicUseCase<Server> AddNicUseCase
+@inject IUpdateNicUseCase<Server> UpdateNicUseCase
+@inject IRemoveNicUseCase<Server> RemoveNicUseCase
 
-@inject AddGpuUseCase AddGpuUseCase
-@inject UpdateGpuUseCase UpdateGpuUseCase
-@inject RemoveGpuUseCase RemoveGpuUseCase
+@inject IAddGpuUseCase<Server> AddGpuUseCase
+@inject IUpdateGpuUseCase<Server> UpdateGpuUseCase
+@inject IRemoveGpuUseCase<Server> RemoveGpuUseCase
 
-
-@inject GetServerUseCase GetServerUseCase
+@inject IGetResourceByNameUseCase<Server> GetByNameUseCase
 @inject UpdateServerUseCase UpdateServerUseCase
-@inject DeleteServerUseCase DeleteServerUseCase
-@inject CloneServerUseCase CloneUseCase
+@inject IDeleteResourceUseCase<Server> DeleteServerUseCase
+@inject ICloneResourceUseCase<Server> CloneUseCase
 
-@inject RenameServerUseCase RenameServerUseCase
+@inject IRenameResourceUseCase<Server> RenameUseCase
 @inject NavigationManager Nav
 
-<div class="border border-zinc-800 rounded p-4 bg-zinc-900">
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900"
+     data-testid=@($"server-item-{Server.Name.Replace(" ", "-")}")>
     <div class="flex justify-between items-center mb-3">
         <div class="text-zinc-100 hover:text-emerald-300">
             <NavLink href="@($"resources/hardware/{Server.Name}")" class="block">
@@ -43,23 +43,27 @@
 
             <div class="flex items-center gap-2">
 
-                <button class="text-xs text-blue-400 hover:text-blue-300 transition"
-                        title="Rename service"
-                        @onclick="OpenRename">
+                <button
+                    data-testid="rename-server-button"
+                    class="text-xs text-blue-400 hover:text-blue-300 transition"
+                    @onclick="OpenRename">
                     Rename
                 </button>
+
                 <button
+                    data-testid="clone-server-button"
                     class="text-xs text-emerald-400 hover:text-emerald-300 transition"
-                    title="Clone service"
                     @onclick="OpenClone">
                     Clone
                 </button>
+
                 <button
+                    data-testid="delete-server-button"
                     class="text-xs text-red-400 hover:text-red-300 transition"
-                    title="Delete server"
                     @onclick="ConfirmDelete">
                     Delete
                 </button>
+
             </div>
         </div>
 
@@ -67,12 +71,13 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
 
-        <div>
+        <div data-testid="server-cpu-section">
             <div class="flex items-center justify-between mb-1 group">
                 <div class="text-zinc-400">CPU
                     <button
                         class="hover:text-emerald-400 group-hover:opacity-100 transition"
                         title="Add CPU"
+                        data-testid="add-cpu-button"
                         @onclick="OpenAddCpu">
                         +
                     </button>
@@ -89,6 +94,7 @@
 
                         <div class="flex gap-2 group-hover:opacity-100 transition">
                             <button
+                                data-testid=@($"edit-cpu-{cpu.ToString().Replace(" ", "-")}")
                                 class="hover:text-emerald-400"
                                 title="Edit CPU"
                                 @onclick="() => OpenEditCpu(cpu)">
@@ -225,7 +231,7 @@
 
 
     </div>
-    <ResourceTagEditor Resource="Server" />
+    <ResourceTagEditor Resource="Server"/>
 
     <div class="md:col-span-2">
         <div class="text-zinc-400 mb-1">Notes</div>
@@ -235,7 +241,7 @@
             <MarkdownViewer
                 Value="@Server.Notes"
                 ShowEditButton="true"
-                OnEdit="BeginNotesEdit" />
+                OnEdit="BeginNotesEdit"/>
         }
         else
         {
@@ -243,10 +249,10 @@
                 @bind-Value="_notesDraft"
                 ShowActionButtons="true"
                 OnSave="SaveNotes"
-                OnCancel="CancelNotesEdit" />
+                OnCancel="CancelNotesEdit"/>
         }
     </div>
-    
+
 </div>
 
 <CpuModal
@@ -289,7 +295,8 @@
     Title="Delete server"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
+    OnConfirm="DeleteServer"
+    TestIdPrefix="Server">
     Are you sure you want to delete <strong>@Server.Name</strong>?
     <br/>
     This will detach all dependent systems.
@@ -302,7 +309,7 @@
     Description="Enter a new name for this server"
     Label="New server name"
     Value="@Server.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 <StringValueModal
     IsOpen="_cloneOpen"
     IsOpenChanged="v => _cloneOpen = v"
@@ -310,7 +317,8 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{Server.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
+
 @code {
     [Parameter] [EditorRequired] public Server Server { get; set; } = default!;
 
@@ -327,7 +335,7 @@
     {
         _isRamModalOpen = false;
         await UpdateServerUseCase.ExecuteAsync(Server.Name, value.Size, value.Mts, Server.Ipmi);
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     #endregion
@@ -367,13 +375,13 @@
             await UpdateCpuUseCase.ExecuteAsync(Server.Name, _editingCpuIndex, cpu.Model, cpu.Cores, cpu.Threads);
         }
 
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     async Task HandleCpuDelete(Cpu cpu)
     {
         await RemoveCpuUseCase.ExecuteAsync(Server.Name, _editingCpuIndex);
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     #endregion
@@ -413,14 +421,14 @@
             await UpdateDriveUseCase.ExecuteAsync(Server.Name, _editingDriveIndex, drive.Type, drive.Size);
         }
 
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
         StateHasChanged();
     }
 
     async Task HandleDriveDelete(Drive drive)
     {
         await RemoveDriveUseCase.ExecuteAsync(Server.Name, _editingDriveIndex);
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
         StateHasChanged();
     }
 
@@ -469,13 +477,13 @@
                 nic.Ports);
         }
 
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     async Task HandleNicDelete(Nic nic)
     {
         await RemoveNicUseCase.ExecuteAsync(Server.Name, _editingNicIndex);
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     #endregion
@@ -521,13 +529,13 @@
                 gpu.Vram);
         }
 
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     async Task HandleGpuDelete(Gpu gpu)
     {
         await RemoveGpuUseCase.ExecuteAsync(Server.Name, _editingGpuIndex);
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
     #endregion
@@ -566,7 +574,7 @@
 
     async Task HandleRenameSubmit(string newName)
     {
-        await RenameServerUseCase.ExecuteAsync(Server.Name, newName);
+        await RenameUseCase.ExecuteAsync(Server.Name, newName);
         Nav.NavigateTo($"resources/hardware/{newName}");
     }
 
@@ -619,9 +627,9 @@
             Server.Ipmi,
             _notesDraft);
 
-        Server = await GetServerUseCase.ExecuteAsync(Server.Name);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
         _notesDraft = null;
     }
 
-    
+
 }

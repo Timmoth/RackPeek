@@ -1,6 +1,7 @@
 # CLI Commands
 
 ## `rpk`
+
 ```
 USAGE:
     rpk [OPTIONS] <COMMAND>
@@ -24,6 +25,7 @@ COMMANDS:
 ```
 
 ## `rpk summary`
+
 ```
 DESCRIPTION:
 Show a summarized report of all resources in the system
@@ -36,6 +38,7 @@ OPTIONS:
 ```
 
 ## `rpk servers`
+
 ```
 DESCRIPTION:
 Manage servers and their components
@@ -61,6 +64,7 @@ COMMANDS:
 ```
 
 ## `rpk servers summary`
+
 ```
 DESCRIPTION:
 Show a summarized hardware report for all servers
@@ -73,6 +77,7 @@ OPTIONS:
 ```
 
 ## `rpk servers add`
+
 ```
 DESCRIPTION:
 Add a new server to the inventory
@@ -88,6 +93,7 @@ OPTIONS:
 ```
 
 ## `rpk servers get`
+
 ```
 DESCRIPTION:
 List all servers or retrieve a specific server by name
@@ -103,6 +109,7 @@ OPTIONS:
 ```
 
 ## `rpk servers describe`
+
 ```
 DESCRIPTION:
 Display detailed information about a specific server
@@ -118,6 +125,7 @@ OPTIONS:
 ```
 
 ## `rpk servers set`
+
 ```
 DESCRIPTION:
 Update properties of an existing server
@@ -136,6 +144,7 @@ OPTIONS:
 ```
 
 ## `rpk servers del`
+
 ```
 DESCRIPTION:
 Delete a server from the inventory
@@ -151,6 +160,7 @@ OPTIONS:
 ```
 
 ## `rpk servers tree`
+
 ```
 DESCRIPTION:
 Display the dependency tree of a server
@@ -166,6 +176,7 @@ OPTIONS:
 ```
 
 ## `rpk servers cpu`
+
 ```
 DESCRIPTION:
 Manage CPUs attached to a server
@@ -183,6 +194,7 @@ COMMANDS:
 ```
 
 ## `rpk servers cpu add`
+
 ```
 DESCRIPTION:
 Add a CPU to a specific server
@@ -201,6 +213,7 @@ OPTIONS:
 ```
 
 ## `rpk servers cpu set`
+
 ```
 DESCRIPTION:
 Update configuration of a server CPU
@@ -220,6 +233,7 @@ OPTIONS:
 ```
 
 ## `rpk servers cpu del`
+
 ```
 DESCRIPTION:
 Remove a CPU from a server
@@ -236,6 +250,7 @@ OPTIONS:
 ```
 
 ## `rpk servers drive`
+
 ```
 DESCRIPTION:
 Manage drives attached to a server
@@ -253,6 +268,7 @@ COMMANDS:
 ```
 
 ## `rpk servers drive add`
+
 ```
 DESCRIPTION:
 Add a storage drive to a server
@@ -270,6 +286,7 @@ OPTIONS:
 ```
 
 ## `rpk servers drive set`
+
 ```
 DESCRIPTION:
 Update properties of a server drive
@@ -288,6 +305,7 @@ OPTIONS:
 ```
 
 ## `rpk servers drive del`
+
 ```
 DESCRIPTION:
 Remove a drive from a server
@@ -304,6 +322,7 @@ OPTIONS:
 ```
 
 ## `rpk servers gpu`
+
 ```
 DESCRIPTION:
 Manage GPUs attached to a server
@@ -321,6 +340,7 @@ COMMANDS:
 ```
 
 ## `rpk servers gpu add`
+
 ```
 DESCRIPTION:
 Add a GPU to a server
@@ -338,6 +358,7 @@ OPTIONS:
 ```
 
 ## `rpk servers gpu set`
+
 ```
 DESCRIPTION:
 Update properties of a server GPU
@@ -356,6 +377,7 @@ OPTIONS:
 ```
 
 ## `rpk servers gpu del`
+
 ```
 DESCRIPTION:
 Remove a GPU from a server
@@ -372,6 +394,7 @@ OPTIONS:
 ```
 
 ## `rpk servers nic`
+
 ```
 DESCRIPTION:
 Manage network interface cards (NICs) for a server
@@ -389,6 +412,7 @@ COMMANDS:
 ```
 
 ## `rpk servers nic add`
+
 ```
 DESCRIPTION:
 Add a NIC to a server
@@ -407,6 +431,7 @@ OPTIONS:
 ```
 
 ## `rpk servers nic set`
+
 ```
 DESCRIPTION:
 Update properties of a server NIC
@@ -426,6 +451,7 @@ OPTIONS:
 ```
 
 ## `rpk servers nic del`
+
 ```
 DESCRIPTION:
 Remove a NIC from a server
@@ -442,6 +468,7 @@ OPTIONS:
 ```
 
 ## `rpk switches`
+
 ```
 DESCRIPTION:
 Manage network switches
@@ -464,6 +491,7 @@ COMMANDS:
 ```
 
 ## `rpk switches summary`
+
 ```
 DESCRIPTION:
 Show a hardware report for all switches
@@ -476,6 +504,7 @@ OPTIONS:
 ```
 
 ## `rpk switches add`
+
 ```
 DESCRIPTION:
 Add a new network switch to the inventory
@@ -491,6 +520,7 @@ OPTIONS:
 ```
 
 ## `rpk switches list`
+
 ```
 DESCRIPTION:
 List all switches in the system
@@ -503,6 +533,7 @@ OPTIONS:
 ```
 
 ## `rpk switches get`
+
 ```
 DESCRIPTION:
 Retrieve details of a specific switch by name
@@ -518,6 +549,7 @@ OPTIONS:
 ```
 
 ## `rpk switches describe`
+
 ```
 DESCRIPTION:
 Show detailed information about a switch
@@ -533,6 +565,7 @@ OPTIONS:
 ```
 
 ## `rpk switches set`
+
 ```
 DESCRIPTION:
 Update properties of a switch
@@ -551,6 +584,7 @@ OPTIONS:
 ```
 
 ## `rpk switches del`
+
 ```
 DESCRIPTION:
 Delete a switch from the inventory
@@ -566,6 +600,7 @@ OPTIONS:
 ```
 
 ## `rpk switches port`
+
 ```
 DESCRIPTION:
 Manage ports on a network switch
@@ -583,6 +618,7 @@ COMMANDS:
 ```
 
 ## `rpk switches port add`
+
 ```
 DESCRIPTION:
 Add a port to a switch
@@ -601,6 +637,7 @@ OPTIONS:
 ```
 
 ## `rpk switches port set`
+
 ```
 DESCRIPTION:
 Update a switch port
@@ -620,6 +657,7 @@ OPTIONS:
 ```
 
 ## `rpk switches port del`
+
 ```
 DESCRIPTION:
 Remove a port from a switch
@@ -636,6 +674,7 @@ OPTIONS:
 ```
 
 ## `rpk routers`
+
 ```
 DESCRIPTION:
 Manage network routers
@@ -658,6 +697,7 @@ COMMANDS:
 ```
 
 ## `rpk routers summary`
+
 ```
 DESCRIPTION:
 Show a hardware report for all routers
@@ -670,6 +710,7 @@ OPTIONS:
 ```
 
 ## `rpk routers add`
+
 ```
 DESCRIPTION:
 Add a new network router to the inventory
@@ -685,6 +726,7 @@ OPTIONS:
 ```
 
 ## `rpk routers list`
+
 ```
 DESCRIPTION:
 List all routers in the system
@@ -697,6 +739,7 @@ OPTIONS:
 ```
 
 ## `rpk routers get`
+
 ```
 DESCRIPTION:
 Retrieve details of a specific router by name
@@ -712,6 +755,7 @@ OPTIONS:
 ```
 
 ## `rpk routers describe`
+
 ```
 DESCRIPTION:
 Show detailed information about a router
@@ -727,6 +771,7 @@ OPTIONS:
 ```
 
 ## `rpk routers set`
+
 ```
 DESCRIPTION:
 Update properties of a router
@@ -745,6 +790,7 @@ OPTIONS:
 ```
 
 ## `rpk routers del`
+
 ```
 DESCRIPTION:
 Delete a router from the inventory
@@ -760,6 +806,7 @@ OPTIONS:
 ```
 
 ## `rpk routers port`
+
 ```
 DESCRIPTION:
 Manage ports on a router
@@ -777,6 +824,7 @@ COMMANDS:
 ```
 
 ## `rpk routers port add`
+
 ```
 DESCRIPTION:
 Add a port to a router
@@ -795,6 +843,7 @@ OPTIONS:
 ```
 
 ## `rpk routers port set`
+
 ```
 DESCRIPTION:
 Update a router port
@@ -814,6 +863,7 @@ OPTIONS:
 ```
 
 ## `rpk routers port del`
+
 ```
 DESCRIPTION:
 Remove a port from a router
@@ -830,6 +880,7 @@ OPTIONS:
 ```
 
 ## `rpk firewalls`
+
 ```
 DESCRIPTION:
 Manage firewalls
@@ -852,6 +903,7 @@ COMMANDS:
 ```
 
 ## `rpk firewalls summary`
+
 ```
 DESCRIPTION:
 Show a hardware report for all firewalls
@@ -864,6 +916,7 @@ OPTIONS:
 ```
 
 ## `rpk firewalls add`
+
 ```
 DESCRIPTION:
 Add a new firewall to the inventory
@@ -879,6 +932,7 @@ OPTIONS:
 ```
 
 ## `rpk firewalls list`
+
 ```
 DESCRIPTION:
 List all firewalls in the system
@@ -891,6 +945,7 @@ OPTIONS:
 ```
 
 ## `rpk firewalls get`
+
 ```
 DESCRIPTION:
 Retrieve details of a specific firewall by name
@@ -906,6 +961,7 @@ OPTIONS:
 ```
 
 ## `rpk firewalls describe`
+
 ```
 DESCRIPTION:
 Show detailed information about a firewall
@@ -921,6 +977,7 @@ OPTIONS:
 ```
 
 ## `rpk firewalls set`
+
 ```
 DESCRIPTION:
 Update properties of a firewall
@@ -939,6 +996,7 @@ OPTIONS:
 ```
 
 ## `rpk firewalls del`
+
 ```
 DESCRIPTION:
 Delete a firewall from the inventory
@@ -954,6 +1012,7 @@ OPTIONS:
 ```
 
 ## `rpk firewalls port`
+
 ```
 DESCRIPTION:
 Manage ports on a firewall
@@ -971,6 +1030,7 @@ COMMANDS:
 ```
 
 ## `rpk firewalls port add`
+
 ```
 DESCRIPTION:
 Add a port to a firewall
@@ -989,6 +1049,7 @@ OPTIONS:
 ```
 
 ## `rpk firewalls port set`
+
 ```
 DESCRIPTION:
 Update a firewall port
@@ -1008,6 +1069,7 @@ OPTIONS:
 ```
 
 ## `rpk firewalls port del`
+
 ```
 DESCRIPTION:
 Remove a port from a firewall
@@ -1024,6 +1086,7 @@ OPTIONS:
 ```
 
 ## `rpk systems`
+
 ```
 DESCRIPTION:
 Manage systems and their dependencies
@@ -1046,6 +1109,7 @@ COMMANDS:
 ```
 
 ## `rpk systems summary`
+
 ```
 DESCRIPTION:
 Show a summary report for all systems
@@ -1058,6 +1122,7 @@ OPTIONS:
 ```
 
 ## `rpk systems add`
+
 ```
 DESCRIPTION:
 Add a new system to the inventory
@@ -1073,6 +1138,7 @@ OPTIONS:
 ```
 
 ## `rpk systems list`
+
 ```
 DESCRIPTION:
 List all systems
@@ -1085,6 +1151,7 @@ OPTIONS:
 ```
 
 ## `rpk systems get`
+
 ```
 DESCRIPTION:
 Retrieve a system by name
@@ -1100,6 +1167,7 @@ OPTIONS:
 ```
 
 ## `rpk systems describe`
+
 ```
 DESCRIPTION:
 Display detailed information about a system
@@ -1115,6 +1183,7 @@ OPTIONS:
 ```
 
 ## `rpk systems set`
+
 ```
 DESCRIPTION:
 Update properties of a system
@@ -1135,6 +1204,7 @@ OPTIONS:
 ```
 
 ## `rpk systems del`
+
 ```
 DESCRIPTION:
 Delete a system from the inventory
@@ -1150,6 +1220,7 @@ OPTIONS:
 ```
 
 ## `rpk systems tree`
+
 ```
 DESCRIPTION:
 Display the dependency tree for a system
@@ -1165,6 +1236,7 @@ OPTIONS:
 ```
 
 ## `rpk accesspoints`
+
 ```
 DESCRIPTION:
 Manage access points
@@ -1186,6 +1258,7 @@ COMMANDS:
 ```
 
 ## `rpk accesspoints summary`
+
 ```
 DESCRIPTION:
 Show a hardware report for all access points
@@ -1198,6 +1271,7 @@ OPTIONS:
 ```
 
 ## `rpk accesspoints add`
+
 ```
 DESCRIPTION:
 Add a new access point
@@ -1213,6 +1287,7 @@ OPTIONS:
 ```
 
 ## `rpk accesspoints list`
+
 ```
 DESCRIPTION:
 List all access points
@@ -1225,6 +1300,7 @@ OPTIONS:
 ```
 
 ## `rpk accesspoints get`
+
 ```
 DESCRIPTION:
 Retrieve an access point by name
@@ -1240,6 +1316,7 @@ OPTIONS:
 ```
 
 ## `rpk accesspoints describe`
+
 ```
 DESCRIPTION:
 Show detailed information about an access point
@@ -1255,6 +1332,7 @@ OPTIONS:
 ```
 
 ## `rpk accesspoints set`
+
 ```
 DESCRIPTION:
 Update properties of an access point
@@ -1272,6 +1350,7 @@ OPTIONS:
 ```
 
 ## `rpk accesspoints del`
+
 ```
 DESCRIPTION:
 Delete an access point
@@ -1287,6 +1366,7 @@ OPTIONS:
 ```
 
 ## `rpk ups`
+
 ```
 DESCRIPTION:
 Manage UPS units
@@ -1308,6 +1388,7 @@ COMMANDS:
 ```
 
 ## `rpk ups summary`
+
 ```
 DESCRIPTION:
 Show a hardware report for all UPS units
@@ -1320,6 +1401,7 @@ OPTIONS:
 ```
 
 ## `rpk ups add`
+
 ```
 DESCRIPTION:
 Add a new UPS unit
@@ -1335,6 +1417,7 @@ OPTIONS:
 ```
 
 ## `rpk ups list`
+
 ```
 DESCRIPTION:
 List all UPS units
@@ -1347,6 +1430,7 @@ OPTIONS:
 ```
 
 ## `rpk ups get`
+
 ```
 DESCRIPTION:
 Retrieve a UPS unit by name
@@ -1362,6 +1446,7 @@ OPTIONS:
 ```
 
 ## `rpk ups describe`
+
 ```
 DESCRIPTION:
 Show detailed information about a UPS unit
@@ -1377,6 +1462,7 @@ OPTIONS:
 ```
 
 ## `rpk ups set`
+
 ```
 DESCRIPTION:
 Update properties of a UPS unit
@@ -1394,6 +1480,7 @@ OPTIONS:
 ```
 
 ## `rpk ups del`
+
 ```
 DESCRIPTION:
 Delete a UPS unit
@@ -1409,6 +1496,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops`
+
 ```
 DESCRIPTION:
 Manage desktop computers and their components
@@ -1435,6 +1523,7 @@ COMMANDS:
 ```
 
 ## `rpk desktops add`
+
 ```
 DESCRIPTION:
 Add a new desktop
@@ -1450,6 +1539,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops list`
+
 ```
 DESCRIPTION:
 List all desktops
@@ -1462,6 +1552,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops get`
+
 ```
 DESCRIPTION:
 Retrieve a desktop by name
@@ -1477,6 +1568,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops describe`
+
 ```
 DESCRIPTION:
 Show detailed information about a desktop
@@ -1492,6 +1584,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops set`
+
 ```
 DESCRIPTION:
 Update properties of a desktop
@@ -1508,6 +1601,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops del`
+
 ```
 DESCRIPTION:
 Delete a desktop from the inventory
@@ -1523,6 +1617,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops summary`
+
 ```
 DESCRIPTION:
 Show a summarized hardware report for all desktops
@@ -1535,6 +1630,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops tree`
+
 ```
 DESCRIPTION:
 Display the dependency tree for a desktop
@@ -1550,6 +1646,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops cpu`
+
 ```
 DESCRIPTION:
 Manage CPUs attached to desktops
@@ -1567,6 +1664,7 @@ COMMANDS:
 ```
 
 ## `rpk desktops cpu add`
+
 ```
 DESCRIPTION:
 Add a CPU to a desktop
@@ -1585,6 +1683,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops cpu set`
+
 ```
 DESCRIPTION:
 Update a desktop CPU
@@ -1604,6 +1703,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops cpu del`
+
 ```
 DESCRIPTION:
 Remove a CPU from a desktop
@@ -1620,6 +1720,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops drive`
+
 ```
 DESCRIPTION:
 Manage storage drives attached to desktops
@@ -1637,6 +1738,7 @@ COMMANDS:
 ```
 
 ## `rpk desktops drive add`
+
 ```
 DESCRIPTION:
 Add a drive to a desktop
@@ -1654,6 +1756,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops drive set`
+
 ```
 DESCRIPTION:
 Update a desktop drive
@@ -1672,6 +1775,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops drive del`
+
 ```
 DESCRIPTION:
 Remove a drive from a desktop
@@ -1688,6 +1792,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops gpu`
+
 ```
 DESCRIPTION:
 Manage GPUs attached to desktops
@@ -1705,6 +1810,7 @@ COMMANDS:
 ```
 
 ## `rpk desktops gpu add`
+
 ```
 DESCRIPTION:
 Add a GPU to a desktop
@@ -1722,6 +1828,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops gpu set`
+
 ```
 DESCRIPTION:
 Update a desktop GPU
@@ -1740,6 +1847,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops gpu del`
+
 ```
 DESCRIPTION:
 Remove a GPU from a desktop
@@ -1756,6 +1864,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops nic`
+
 ```
 DESCRIPTION:
 Manage network interface cards (NICs) for desktops
@@ -1773,6 +1882,7 @@ COMMANDS:
 ```
 
 ## `rpk desktops nic add`
+
 ```
 DESCRIPTION:
 Add a NIC to a desktop
@@ -1791,6 +1901,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops nic set`
+
 ```
 DESCRIPTION:
 Update a desktop NIC
@@ -1810,6 +1921,7 @@ OPTIONS:
 ```
 
 ## `rpk desktops nic del`
+
 ```
 DESCRIPTION:
 Remove a NIC from a desktop
@@ -1826,6 +1938,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops`
+
 ```
 DESCRIPTION:
 Manage Laptop computers and their components
@@ -1850,6 +1963,7 @@ COMMANDS:
 ```
 
 ## `rpk laptops add`
+
 ```
 DESCRIPTION:
 Add a new Laptop
@@ -1865,6 +1979,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops list`
+
 ```
 DESCRIPTION:
 List all Laptops
@@ -1877,6 +1992,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops get`
+
 ```
 DESCRIPTION:
 Retrieve a Laptop by name
@@ -1892,6 +2008,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops describe`
+
 ```
 DESCRIPTION:
 Show detailed information about a Laptop
@@ -1907,6 +2024,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops del`
+
 ```
 DESCRIPTION:
 Delete a Laptop from the inventory
@@ -1922,6 +2040,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops summary`
+
 ```
 DESCRIPTION:
 Show a summarized hardware report for all Laptops
@@ -1934,6 +2053,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops tree`
+
 ```
 DESCRIPTION:
 Display the dependency tree for a Laptop
@@ -1949,6 +2069,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops cpu`
+
 ```
 DESCRIPTION:
 Manage CPUs attached to Laptops
@@ -1966,6 +2087,7 @@ COMMANDS:
 ```
 
 ## `rpk laptops cpu add`
+
 ```
 DESCRIPTION:
 Add a CPU to a Laptop
@@ -1984,6 +2106,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops cpu set`
+
 ```
 DESCRIPTION:
 Update a Laptop CPU
@@ -2003,6 +2126,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops cpu del`
+
 ```
 DESCRIPTION:
 Remove a CPU from a Laptop
@@ -2019,6 +2143,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops drives`
+
 ```
 DESCRIPTION:
 Manage storage drives attached to Laptops
@@ -2036,6 +2161,7 @@ COMMANDS:
 ```
 
 ## `rpk laptops drives add`
+
 ```
 DESCRIPTION:
 Add a drive to a Laptop
@@ -2053,6 +2179,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops drives set`
+
 ```
 DESCRIPTION:
 Update a Laptop drive
@@ -2071,6 +2198,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops drives del`
+
 ```
 DESCRIPTION:
 Remove a drive from a Laptop
@@ -2087,6 +2215,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops gpu`
+
 ```
 DESCRIPTION:
 Manage GPUs attached to Laptops
@@ -2104,6 +2233,7 @@ COMMANDS:
 ```
 
 ## `rpk laptops gpu add`
+
 ```
 DESCRIPTION:
 Add a GPU to a Laptop
@@ -2121,6 +2251,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops gpu set`
+
 ```
 DESCRIPTION:
 Update a Laptop GPU
@@ -2139,6 +2270,7 @@ OPTIONS:
 ```
 
 ## `rpk laptops gpu del`
+
 ```
 DESCRIPTION:
 Remove a GPU from a Laptop
@@ -2155,6 +2287,7 @@ OPTIONS:
 ```
 
 ## `rpk services`
+
 ```
 DESCRIPTION:
 Manage services and their configurations
@@ -2177,6 +2310,7 @@ COMMANDS:
 ```
 
 ## `rpk services summary`
+
 ```
 DESCRIPTION:
 Show a summary report for all services
@@ -2189,6 +2323,7 @@ OPTIONS:
 ```
 
 ## `rpk services add`
+
 ```
 DESCRIPTION:
 Add a new service
@@ -2204,6 +2339,7 @@ OPTIONS:
 ```
 
 ## `rpk services list`
+
 ```
 DESCRIPTION:
 List all services
@@ -2216,6 +2352,7 @@ OPTIONS:
 ```
 
 ## `rpk services get`
+
 ```
 DESCRIPTION:
 Retrieve a service by name
@@ -2231,6 +2368,7 @@ OPTIONS:
 ```
 
 ## `rpk services describe`
+
 ```
 DESCRIPTION:
 Show detailed information about a service
@@ -2246,6 +2384,7 @@ OPTIONS:
 ```
 
 ## `rpk services set`
+
 ```
 DESCRIPTION:
 Update properties of a service
@@ -2266,6 +2405,7 @@ OPTIONS:
 ```
 
 ## `rpk services del`
+
 ```
 DESCRIPTION:
 Delete a service
@@ -2281,6 +2421,7 @@ OPTIONS:
 ```
 
 ## `rpk services subnets`
+
 ```
 DESCRIPTION:
 List subnets associated with a service, optionally filtered by CIDR

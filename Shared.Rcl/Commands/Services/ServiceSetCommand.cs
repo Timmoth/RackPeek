@@ -1,11 +1,11 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Commands.Servers;
 using RackPeek.Domain.Resources.Services.UseCases;
+using Shared.Rcl.Commands.Servers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Services;
+namespace Shared.Rcl.Commands.Services;
 
 public class ServiceSetSettings : ServerNameSettings
 {

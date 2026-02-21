@@ -1,9 +1,32 @@
 ﻿@page "/accesspoints/list"
+@using RackPeek.Domain.Resources.AccessPoints
+@inject NavigationManager Nav
 
-<PageTitle>AccessPoints</PageTitle>
+<ResourcesListComponent TResource="AccessPoint"
+                        Title="AccessPoints"
+                        TestId="accesspoints"
+                        OnCreated="NavigateToNewResource">
 
-<h1 class="text-lg text-zinc-100">
-    AccessPoints
-</h1>
+    <ItemTemplate Context="accessPoint">
+        <AccessPointCardComponent AccessPoint="accessPoint"
+                                  OnDeleted="Reload"/>
+    </ItemTemplate>
 
-<AccessPointsListComponent/>
+</ResourcesListComponent>
+
+@code {
+
+    [Inject] IGetAllResourcesByKindUseCase<AccessPoint> GetAllUseCase { get; set; } = default!;
+
+    private Task NavigateToNewResource(string name)
+    {
+        Nav.NavigateTo($"resources/hardware/{name}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Reload(string _)
+    {
+        await GetAllUseCase.ExecuteAsync();
+    }
+
+}

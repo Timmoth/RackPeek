@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RackPeek.Spectre;
+using Shared.Rcl;
 using Spectre.Console.Cli;
 
 namespace RackPeek;
@@ -16,7 +16,7 @@ public static class Program
         var configuration = new ConfigurationBuilder()
             .SetBasePath(appBasePath)
             .AddEnvironmentVariables()
-            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile("appsettings.json", true)
             .Build();
 
         var yamlDir = configuration.GetValue<string>("RPK_YAML_DIR") ?? "config";

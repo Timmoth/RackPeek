@@ -1,15 +1,16 @@
-﻿@inject UpdateRouterUseCase UpdateRouterUseCase
-@inject GetRouterUseCase GetRouterUseCase
-@inject AddRouterPortUseCase AddRouterPortUseCase
-@inject UpdateRouterPortUseCase UpdateRouterPortUseCase
-@inject RemoveRouterPortUseCase RemoveRouterPortUseCase
-@inject DeleteRouterUseCase DeleteUseCase
-@using RackPeek.Domain.Resources.Hardware.Routers
-@using RackPeek.Domain.Resources.Hardware.Routers.Ports
-@using RackPeek.Domain.Resources.Models
-@using Router = RackPeek.Domain.Resources.Models.Router
-@inject RenameRouterUseCase RenameUseCase
-@inject CloneRouterUseCase CloneUseCase
+﻿@using RackPeek.Domain.Resources.Routers
+@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.UseCases.Ports
+@using Router = RackPeek.Domain.Resources.Routers.Router
+
+@inject UpdateRouterUseCase UpdateRouterUseCase
+@inject IGetResourceByNameUseCase<Router> GetByNameUseCase
+@inject IAddPortUseCase<Router> AddRouterPortUseCase
+@inject IUpdatePortUseCase<Router> UpdateRouterPortUseCase
+@inject IRemovePortUseCase<Router> RemoveRouterPortUseCase
+@inject IDeleteResourceUseCase<Router> DeleteUseCase
+@inject IRenameResourceUseCase<Router> RenameUseCase
+@inject ICloneResourceUseCase<Router> CloneUseCase
 
 @inject NavigationManager Nav
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
@@ -75,7 +76,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
-                       @bind="_edit.Model"/>
+                    @bind="_edit.Model"/>
             }
             else if (!string.IsNullOrWhiteSpace(Router.Model))
             {
@@ -148,7 +149,7 @@
                 }
             }
         </div>
-        <ResourceTagEditor Resource="Router" />
+        <ResourceTagEditor Resource="Router"/>
 
         <div class="md:col-span-2">
             <div class="text-zinc-400 mb-1">Notes</div>
@@ -157,16 +158,16 @@
             {
                 <MarkdownEditor
                     @bind-Value="_edit.Notes"
-                    ShowActionButtons="false" />
+                    ShowActionButtons="false"/>
             }
             else
             {
                 <MarkdownViewer
                     Value="@Router.Notes"
-                    ShowEditButton="false" />
+                    ShowEditButton="false"/>
             }
         </div>
-        
+
     </div>
 </div>
 
@@ -180,10 +181,11 @@
 <ConfirmModal
     IsOpen="_confirmDeleteOpen"
     IsOpenChanged="v => _confirmDeleteOpen = v"
-    Title="Delete server"
+    Title="Delete router"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
+    OnConfirm="DeleteServer"
+    TestIdPrefix="Router">
     Are you sure you want to delete <strong>@Router.Name</strong>?
 </ConfirmModal>
 <StringValueModal
@@ -193,7 +195,7 @@
     Description="Enter a new name for this router"
     Label="New router name"
     Value="@Router.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 
 <StringValueModal
     IsOpen="_cloneOpen"
@@ -202,9 +204,10 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{Router.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
+
 @code {
-    [Parameter][EditorRequired] public Router Router { get; set; } = default!;
+    [Parameter] [EditorRequired] public Router Router { get; set; } = default!;
 
     bool _isEditing;
     RouterEditModel _edit = new();
@@ -226,7 +229,7 @@
             _edit.Poe,
             _edit.Notes);
 
-        Router = await GetRouterUseCase.ExecuteAsync(Router.Name);
+        Router = await GetByNameUseCase.ExecuteAsync(Router.Name);
     }
 
     void Cancel()
@@ -275,7 +278,7 @@
                 port.Count);
         }
 
-        Router = await GetRouterUseCase.ExecuteAsync(Router.Name);
+        Router = await GetByNameUseCase.ExecuteAsync(Router.Name);
         StateHasChanged();
     }
 
@@ -285,7 +288,7 @@
             Router.Name,
             _editingPortIndex);
 
-        Router = await GetRouterUseCase.ExecuteAsync(Router.Name);
+        Router = await GetByNameUseCase.ExecuteAsync(Router.Name);
         StateHasChanged();
     }
 
@@ -350,6 +353,7 @@
     }
 
 }
+
 @code
 {
     bool _cloneOpen;

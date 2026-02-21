@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RackPeek;
+using Shared.Rcl;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Testing;
@@ -32,17 +32,17 @@ public static class YamlCliTestHost
             builder.ClearProviders();
             builder.AddProvider(new XUnitLoggerProvider(output));
         });
-        
+
         var console = new TestConsole();
 
         var registrar = new TypeRegistrar(services.BuildServiceProvider());
-        var app = new CommandApp(registrar);
 
+        var app = new CommandApp(registrar);
         AnsiConsole.Console = console;
         app.Configure(c => c.Settings.Console = console);
 
         CliBootstrap.BuildApp(app);
-        
+
         await app.RunAsync(args);
 
         return console.Output;

@@ -51,8 +51,8 @@ public class ServiceYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper output
                          port: 80
                          protocol: TCP
                          url: http://timmoth.lan:80
-                       runsOn: vm01
                        name: immich
+                       runsOn: vm01
                      - kind: System
                        name: vm01
 

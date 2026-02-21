@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Desktops.Gpus;
+using RackPeek.Domain.Resources.Desktops;
+using RackPeek.Domain.UseCases.Gpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops.Gpus;
+namespace Shared.Rcl.Commands.Desktops.Gpus;
 
 public class DesktopGpuSetCommand(IServiceProvider provider)
     : AsyncCommand<DesktopGpuSetSettings>
@@ -14,7 +15,7 @@ public class DesktopGpuSetCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateDesktopGpuUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateGpuUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Index, settings.Model, settings.Vram);
 

@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops.Gpus;
+namespace Shared.Rcl.Commands.Desktops.Gpus;
 
 public class DesktopGpuRemoveSettings : CommandSettings
 {

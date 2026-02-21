@@ -5,7 +5,7 @@ using RackPeek.Domain.Resources.SystemResources.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands;
+namespace Shared.Rcl.Commands;
 
 public class GetTotalSummaryCommand(IServiceProvider provider) : AsyncCommand
 {

@@ -1,21 +1,28 @@
 using System.Collections.Specialized;
-using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.AccessPoints;
+using RackPeek.Domain.Resources.Desktops;
+using RackPeek.Domain.Resources.Firewalls;
+using RackPeek.Domain.Resources.Hardware;
+using RackPeek.Domain.Resources.Laptops;
+using RackPeek.Domain.Resources.Routers;
+using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.Services;
+using RackPeek.Domain.Resources.Switches;
 using RackPeek.Domain.Resources.SystemResources;
-using RackPeek.Yaml;
+using RackPeek.Domain.Resources.UpsUnits;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
+namespace RackPeek.Domain.Persistence.Yaml;
+
 public class ResourceCollection
 {
-    public List<Resource> Resources { get; } = new();
     public readonly SemaphoreSlim FileLock = new(1, 1);
-
+    public List<Resource> Resources { get; } = new();
 }
+
 public sealed class YamlResourceCollection(
     string filePath,
     ITextFileStore fileStore,
@@ -27,24 +34,35 @@ public sealed class YamlResourceCollection(
         return Task.FromResult(resourceCollection.Resources.Exists(r =>
             r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
     }
-    
+
     public Task<Dictionary<string, int>> GetTagsAsync()
     {
         var result = resourceCollection.Resources
             .Where(r => r.Tags != null)
-            .SelectMany(r => r.Tags!)      // flatten all tag arrays
+            .SelectMany(r => r.Tags!) // flatten all tag arrays
             .Where(t => !string.IsNullOrWhiteSpace(t))
             .GroupBy(t => t)
             .ToDictionary(g => g.Key, g => g.Count());
         return Task.FromResult(result);
     }
 
+    public Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>()
+    {
+        return Task.FromResult<IReadOnlyList<T>>(resourceCollection.Resources.OfType<T>().ToList());
+    }
+
+    public Task<IReadOnlyList<Resource>> GetDependantsAsync(string name)
+    {
+        return Task.FromResult<IReadOnlyList<Resource>>(resourceCollection.Resources
+            .Where(r => r.RunsOn?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false).ToList());
+    }
 
     public Task<IReadOnlyList<Resource>> GetByTagAsync(string name)
     {
-        return Task.FromResult<IReadOnlyList<Resource>>(resourceCollection.Resources.Where(r => r.Tags.Contains(name)).ToList());
+        return Task.FromResult<IReadOnlyList<Resource>>(resourceCollection.Resources.Where(r => r.Tags.Contains(name))
+            .ToList());
     }
-    
+
     public async Task LoadAsync()
     {
         var loaded = await LoadFromFileAsync();
@@ -69,12 +87,28 @@ public sealed class YamlResourceCollection(
     public IReadOnlyList<Service> ServiceResources =>
         resourceCollection.Resources.OfType<Service>().ToList();
 
-    public Resource? GetByName(string name) =>
-        resourceCollection.Resources.FirstOrDefault(r =>
-            r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+    public Task<Resource?> GetByNameAsync(string name)
+    {
+        return Task.FromResult(resourceCollection.Resources.FirstOrDefault(r =>
+            r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
+    }
 
-    public Task AddAsync(Resource resource) =>
-        UpdateWithLockAsync(list =>
+    public Task<T?> GetByNameAsync<T>(string name) where T : Resource
+    {
+        var resource =
+            resourceCollection.Resources.FirstOrDefault(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        return Task.FromResult<T?>(resource as T);
+    }
+
+    public Resource? GetByName(string name)
+    {
+        return resourceCollection.Resources.FirstOrDefault(r =>
+            r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public Task AddAsync(Resource resource)
+    {
+        return UpdateWithLockAsync(list =>
         {
             if (list.Any(r => r.Name.Equals(resource.Name, StringComparison.OrdinalIgnoreCase)))
                 throw new InvalidOperationException($"'{resource.Name}' already exists.");
@@ -82,9 +116,11 @@ public sealed class YamlResourceCollection(
             resource.Kind = GetKind(resource);
             list.Add(resource);
         });
+    }
 
-    public Task UpdateAsync(Resource resource) =>
-        UpdateWithLockAsync(list =>
+    public Task UpdateAsync(Resource resource)
+    {
+        return UpdateWithLockAsync(list =>
         {
             var index = list.FindIndex(r => r.Name.Equals(resource.Name, StringComparison.OrdinalIgnoreCase));
             if (index == -1) throw new InvalidOperationException("Not found.");
@@ -92,10 +128,13 @@ public sealed class YamlResourceCollection(
             resource.Kind = GetKind(resource);
             list[index] = resource;
         });
+    }
 
-    public Task DeleteAsync(string name) =>
-        UpdateWithLockAsync(list =>
+    public Task DeleteAsync(string name)
+    {
+        return UpdateWithLockAsync(list =>
             list.RemoveAll(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
+    }
 
     private async Task UpdateWithLockAsync(Action<List<Resource>> action)
     {
@@ -133,14 +172,13 @@ public sealed class YamlResourceCollection(
     {
         var yaml = await fileStore.ReadAllTextAsync(filePath);
         if (string.IsNullOrWhiteSpace(yaml))
-            return new();
+            return new List<Resource>();
 
         var deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .WithCaseInsensitivePropertyMatching()
             .WithTypeConverter(new StorageSizeYamlConverter())
             .WithTypeConverter(new NotesStringYamlConverter())
-            
             .WithTypeDiscriminatingNodeDeserializer(options =>
             {
                 options.AddKeyValueTypeDiscriminator<Resource>("kind", new Dictionary<string, Type>
@@ -162,28 +200,31 @@ public sealed class YamlResourceCollection(
         try
         {
             var root = deserializer.Deserialize<YamlRoot>(yaml);
-            return root?.Resources ?? new();
+            return root?.Resources ?? new List<Resource>();
         }
         catch (YamlException)
         {
-            return new();
+            return new List<Resource>();
         }
     }
 
-    private string GetKind(Resource resource) => resource switch
+    private string GetKind(Resource resource)
     {
-        Server => "Server",
-        Switch => "Switch",
-        Firewall => "Firewall",
-        Router => "Router",
-        Desktop => "Desktop",
-        Laptop => "Laptop",
-        AccessPoint => "AccessPoint",
-        Ups => "Ups",
-        SystemResource => "System",
-        Service => "Service",
-        _ => throw new InvalidOperationException($"Unknown resource type: {resource.GetType().Name}")
-    };
+        return resource switch
+        {
+            Server => "Server",
+            Switch => "Switch",
+            Firewall => "Firewall",
+            Router => "Router",
+            Desktop => "Desktop",
+            Laptop => "Laptop",
+            AccessPoint => "AccessPoint",
+            Ups => "Ups",
+            SystemResource => "System",
+            Service => "Service",
+            _ => throw new InvalidOperationException($"Unknown resource type: {resource.GetType().Name}")
+        };
+    }
 
     private OrderedDictionary SerializeResource(Resource resource)
     {
@@ -213,9 +254,8 @@ public sealed class YamlResourceCollection(
 
         return map;
     }
-
-
 }
+
 public class YamlRoot
 {
     public List<Resource>? Resources { get; set; }

@@ -4,7 +4,7 @@ using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 
-namespace RackPeek.Yaml;
+namespace RackPeek.Domain.Persistence.Yaml;
 
 public static class StorageSizeParser
 {

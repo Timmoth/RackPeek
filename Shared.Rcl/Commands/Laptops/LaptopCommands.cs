@@ -1,6 +1,6 @@
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops;
+namespace Shared.Rcl.Commands.Laptops;
 
 public class LaptopNameSettings : CommandSettings
 {

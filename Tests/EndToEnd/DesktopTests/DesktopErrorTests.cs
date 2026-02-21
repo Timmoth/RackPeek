@@ -1,7 +1,7 @@
 using Tests.EndToEnd.Infra;
 using Xunit.Abstractions;
 
-namespace Tests.EndToEnd;
+namespace Tests.EndToEnd.DesktopTests;
 
 [Collection("Yaml CLI tests")]
 public class DesktopErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
@@ -80,7 +80,7 @@ public class DesktopErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHe
             "--model", "Xeon"
         );
 
-        Assert.Contains("invalid", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 
     // Drive errors

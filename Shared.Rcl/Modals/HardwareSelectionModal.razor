@@ -1,7 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources.Hardware
-@using RackPeek.Domain.Resources.Models
-@inject IHardwareRepository HardwareRepository
+@inject IResourceCollection Repo
 
 @if (IsOpen)
 {
@@ -89,7 +89,7 @@
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
 
-    [Parameter][EditorRequired] public string Title { get; set; } = "Select hardware";
+    [Parameter] [EditorRequired] public string Title { get; set; } = "Select hardware";
 
     /// <summary>
     ///     Default / pre-selected hardware name (may be null)
@@ -118,7 +118,7 @@
     {
         if (IsOpen)
         {
-            _hardware = (await HardwareRepository.GetAllAsync())
+            _hardware = (await Repo.GetAllOfTypeAsync<Hardware>())
                 .OrderBy(h => h.Kind)
                 .ThenBy(h => h.Name)
                 .ToList();

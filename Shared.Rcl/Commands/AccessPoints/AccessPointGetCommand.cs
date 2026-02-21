@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.AccessPoints;
+using RackPeek.Domain.Resources.AccessPoints;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.AccessPoints;
+namespace Shared.Rcl.Commands.AccessPoints;
 
 public class AccessPointGetCommand(
     IServiceProvider serviceProvider

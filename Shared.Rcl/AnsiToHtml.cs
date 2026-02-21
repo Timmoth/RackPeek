@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
 
+namespace Shared.Rcl;
+
 public static class AnsiStripper
 {
     private static readonly Regex CsiRegex =

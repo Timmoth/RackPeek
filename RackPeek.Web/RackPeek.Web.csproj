@@ -8,8 +8,12 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+
     <ItemGroup>
-        <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj" />
+        <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -33,63 +37,63 @@
         <_ContentIncludedByDefault Remove="Components\Servers\Components\SystemCardComponent.razor"/>
         <_ContentIncludedByDefault Remove="Components\Servers\Components\SystemDependencyTreeComponent.razor"/>
         <_ContentIncludedByDefault Remove="Components\Servers\Components\SystemsListComponent.razor"/>
-        <_ContentIncludedByDefault Remove="Components\AccessPoints\AccessPointCardComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\AccessPoints\AccessPointsListComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\AccessPoints\AccessPointsListPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\AccessPoints\AddAccessPointComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Components\HardwareDependencyTreeComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Components\ResourceBreadCrumbComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Desktops\AddDesktopComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Desktops\DesktopCardComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Desktops\DesktopsListComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Desktops\DesktopsListPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Firewalls\AddFirewallComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Firewalls\FirewallListComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Firewalls\FirewallListPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Hardware\HardwareDetailsPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Hardware\HardwareTreePage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Laptops\AddLaptopComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
-        <_ContentIncludedByDefault Remove="Components\Layout\ReconnectModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Modals\ConfirmModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Modals\CpuModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Modals\DriveModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Modals\GpuModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Modals\HardwareSelectionModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Modals\NicModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Modals\PortModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Modals\RamModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Modals\StringValueModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Modals\SystemSelectionModal.razor" />
-        <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
-        <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
-        <_ContentIncludedByDefault Remove="Components\Pages\NotFound.razor" />
-        <_ContentIncludedByDefault Remove="Components\Routers\AddRouterComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Routers\RouterListComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Routers\RouterListPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Servers\AddServerComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Servers\ServerCardComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Servers\ServersListComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Servers\ServersListPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Services\AddServiceComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Services\ServiceCardComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Services\ServiceDetailsPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Services\ServicesListComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Services\ServicesListPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Switches\AddSwitchComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Switches\SwitchCardComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Switches\SwitchListComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Switches\SwitchListPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Systems\AddSystemComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Systems\SystemCardComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Systems\SystemDependencyTreeComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Systems\SystemsDetailsPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Systems\SystemsListComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Systems\SystemsListPage.razor" />
-        <_ContentIncludedByDefault Remove="Components\Ups\AddUpsComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Ups\UpsCardComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Ups\UpsListComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\Ups\UpsListPage.razor" />
+        <_ContentIncludedByDefault Remove="Components\AccessPoints\AccessPointCardComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\AccessPoints\AccessPointsListComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\AccessPoints\AccessPointsListPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\AccessPoints\AddAccessPointComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Components\HardwareDependencyTreeComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Components\ResourceBreadCrumbComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Desktops\AddDesktopComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Desktops\DesktopCardComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Desktops\DesktopsListComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Desktops\DesktopsListPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Firewalls\AddFirewallComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Firewalls\FirewallListComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Firewalls\FirewallListPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Hardware\HardwareDetailsPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Hardware\HardwareTreePage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Laptops\AddLaptopComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Layout\ReconnectModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Modals\ConfirmModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Modals\CpuModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Modals\DriveModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Modals\GpuModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Modals\HardwareSelectionModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Modals\NicModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Modals\PortModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Modals\RamModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Modals\StringValueModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Modals\SystemSelectionModal.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Pages\Error.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Pages\Home.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Pages\NotFound.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Routers\AddRouterComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Routers\RouterListComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Routers\RouterListPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Servers\AddServerComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Servers\ServerCardComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Servers\ServersListComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Servers\ServersListPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Services\AddServiceComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Services\ServiceCardComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Services\ServiceDetailsPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Services\ServicesListComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Services\ServicesListPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Switches\AddSwitchComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Switches\SwitchCardComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Switches\SwitchListComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Switches\SwitchListPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Systems\AddSystemComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Systems\SystemCardComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Systems\SystemDependencyTreeComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Systems\SystemsDetailsPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Systems\SystemsListComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Systems\SystemsListPage.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Ups\AddUpsComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Ups\UpsCardComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Ups\UpsListComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Ups\UpsListPage.razor"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -1,7 +1,36 @@
 ﻿@page "/services/list"
+@using RackPeek.Domain.Persistence
+@inject NavigationManager Nav
 
-<PageTitle>Services</PageTitle>
-<h1 class="text-lg text-zinc-100">
-    Services
-</h1>
-<ServicesListComponent/>
+<ResourcesListComponent TResource="Service"
+                        Title="Services"
+                        TestId="services"
+                        GroupBy="@(s => s.RunsOn)"
+                        ShouldGroup="true"
+                        OnCreated="NavigateToNewResource">
+
+    <ItemTemplate Context="svc">
+        <div data-testid=@($"services-list-item-{svc.Name.Replace(" ", "-")}")>
+            <ServiceCardComponent Service="svc"
+                                  OnDeleted="Reload"/>
+        </div>
+    </ItemTemplate>
+
+</ResourcesListComponent>
+
+@code {
+
+    [Inject] IResourceCollection Repo { get; set; } = default!;
+
+    private Task NavigateToNewResource(string name)
+    {
+        Nav.NavigateTo($"resources/services/{name}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Reload(string _)
+    {
+        await Repo.GetAllOfTypeAsync<Service>();
+    }
+
+}

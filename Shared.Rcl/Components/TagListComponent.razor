@@ -1,7 +1,5 @@
-﻿@using RackPeek.Domain.Resources
-@using RackPeek.Domain.UseCases.Tags
-@inject IResourceRepository TagRepository
-@inject NavigationManager Nav
+﻿@using RackPeek.Domain.Persistence
+@inject IResourceCollection TagRepository
 
 <div>
     <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
@@ -47,4 +45,5 @@
     {
         _tags = await TagRepository.GetTagsAsync();
     }
+
 }

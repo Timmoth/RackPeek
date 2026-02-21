@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops.Drive;
+namespace Shared.Rcl.Commands.Desktops.Drive;
 
 public class DesktopDriveAddSettings : CommandSettings
 {

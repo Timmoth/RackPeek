@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Desktops.Drives;
+using RackPeek.Domain.Resources.Desktops;
+using RackPeek.Domain.UseCases.Drives;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops.Drive;
+namespace Shared.Rcl.Commands.Desktops.Drive;
 
 public class DesktopDriveAddCommand(IServiceProvider provider)
     : AsyncCommand<DesktopDriveAddSettings>
@@ -14,7 +15,7 @@ public class DesktopDriveAddCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddDesktopDriveUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IAddDriveUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Type, settings.Size);
 

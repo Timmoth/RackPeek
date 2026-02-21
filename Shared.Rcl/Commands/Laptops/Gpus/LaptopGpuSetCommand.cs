@@ -1,10 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Laptops.Gpus;
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.Laptops;
+using RackPeek.Domain.Resources.SubResources;
+using RackPeek.Domain.UseCases.Gpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops.Gpus;
+namespace Shared.Rcl.Commands.Laptops.Gpus;
 
 public class LaptopGpuSetCommand(IServiceProvider provider)
     : AsyncCommand<LaptopGpuSetSettings>
@@ -15,7 +16,7 @@ public class LaptopGpuSetCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateLaptopGpuUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateGpuUseCase<Laptop>>();
 
         var gpu = new Gpu
         {

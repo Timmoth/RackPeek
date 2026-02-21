@@ -4,10 +4,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using RackPeek.Domain;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
-using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Hardware;
-using RackPeek.Domain.Resources.Services;
-using RackPeek.Domain.Resources.SystemResources;
+using Shared.Rcl;
 
 namespace RackPeek.Web.Viewer;
 
@@ -31,7 +28,7 @@ public class Program
             };
         });
 
-        
+
         builder.Services.AddScoped<ITextFileStore, WasmTextFileStore>();
 
         var resources = new ResourceCollection();
@@ -45,7 +42,7 @@ public class Program
                 yamlFilePath,
                 sp.GetRequiredService<ITextFileStore>(),
                 sp.GetRequiredService<ResourceCollection>()));
-     
+
         builder.Services.AddYamlRepos();
         builder.Services.AddCommands();
         builder.Services.AddScoped<IConsoleEmulator, ConsoleEmulator>();

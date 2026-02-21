@@ -1,9 +1,32 @@
 ﻿@page "/laptops/list"
+@using RackPeek.Domain.Resources.Laptops
+@inject NavigationManager Nav
 
-<PageTitle>Laptops</PageTitle>
+<ResourcesListComponent TResource="Laptop"
+                        Title="Laptops"
+                        TestId="laptops"
+                        OnCreated="NavigateToNewResource">
 
-<h1 class="text-lg text-zinc-100">
-    Laptops
-</h1>
+    <ItemTemplate Context="laptop">
+        <LaptopCardComponent Laptop="laptop"
+                             OnDeleted="Reload"/>
+    </ItemTemplate>
 
-<LaptopsListComponent/>
+</ResourcesListComponent>
+
+@code {
+
+    [Inject] IGetAllResourcesByKindUseCase<Laptop> GetAllUseCase { get; set; } = default!;
+
+    private Task NavigateToNewResource(string name)
+    {
+        Nav.NavigateTo($"resources/hardware/{name}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Reload(string _)
+    {
+        await GetAllUseCase.ExecuteAsync();
+    }
+
+}

@@ -1,30 +1,39 @@
 ﻿@if (IsOpen)
 {
-    <div class="fixed inset-0 z-50 flex items-center justify-center">
+    <div class="fixed inset-0 z-50 flex items-center justify-center"
+         data-testid="@($"{BaseTestId}")">
+
         <!-- Backdrop -->
         <div
             class="absolute inset-0 bg-black/60"
+            data-testid="@($"{BaseTestId}-backdrop")"
             @onclick="Close">
         </div>
 
         <!-- Modal -->
-        <div class="relative z-10 w-full max-w-md rounded border border-zinc-800 bg-zinc-900 p-4 shadow-lg">
-            <div class="mb-3 text-lg font-semibold text-zinc-100">
+        <div class="relative z-10 w-full max-w-md rounded border border-zinc-800 bg-zinc-900 p-4 shadow-lg"
+             data-testid="@($"{BaseTestId}-container")">
+
+            <div class="mb-3 text-lg font-semibold text-zinc-100"
+                 data-testid="@($"{BaseTestId}-title")">
                 @Title
             </div>
 
-            <div class="mb-4 text-sm text-zinc-300">
+            <div class="mb-4 text-sm text-zinc-300"
+                 data-testid="@($"{BaseTestId}-content")">
                 @ChildContent
             </div>
 
             <div class="flex justify-end gap-2">
                 <button
+                    data-testid="@($"{BaseTestId}-cancel")"
                     class="px-3 py-1 text-sm rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition"
                     @onclick="Close">
                     Cancel
                 </button>
 
                 <button
+                    data-testid="@($"{BaseTestId}-confirm")"
                     class="px-3 py-1 text-sm rounded text-white transition @ConfirmClass"
                     @onclick="Confirm">
                     @ConfirmText
@@ -34,17 +43,25 @@
     </div>
 }
 
-@code{
+@code {
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
 
-    [Parameter][EditorRequired] public string Title { get; set; } = default!;
+    [Parameter] [EditorRequired] public string Title { get; set; } = default!;
     [Parameter] public string ConfirmText { get; set; } = "Confirm";
     [Parameter] public string ConfirmClass { get; set; } = "bg-emerald-600 hover:bg-emerald-500";
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    [Parameter][EditorRequired] public EventCallback OnConfirm { get; set; }
+    [Parameter] [EditorRequired] public EventCallback OnConfirm { get; set; }
+
+    [Parameter] public string? TestIdPrefix { get; set; }
+
+    // Centralized test id base
+    private string BaseTestId =>
+        string.IsNullOrWhiteSpace(TestIdPrefix)
+            ? "confirm-modal"
+            : $"{TestIdPrefix}-confirm-modal";
 
     async Task Close()
     {

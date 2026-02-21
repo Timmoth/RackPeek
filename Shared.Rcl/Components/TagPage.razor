@@ -1,10 +1,9 @@
 ﻿@page "/tags/{TagName}"
-
+@using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources
 @using RackPeek.Domain.Resources.SystemResources
 
-@inject IResourceRepository ResourceRepository
-@inject NavigationManager Nav
+@inject IResourceCollection ResourceRepository
 
 <PageTitle>Tag: @TagName</PageTitle>
 
@@ -53,8 +52,7 @@
 </div>
 
 @code {
-    [Parameter]
-    public string TagName { get; set; } = string.Empty;
+    [Parameter] public string TagName { get; set; } = string.Empty;
 
     private IReadOnlyList<Resource>? _resources;
 
@@ -69,13 +67,14 @@
         if (resource.Kind == SystemResource.KindLabel)
         {
             return $"resources/systems/{resource.Name}";
-        }else if (resource.Kind == Service.KindLabel)
+        }
+
+        if (resource.Kind == Service.KindLabel)
         {
             return $"resources/services/{resource.Name}";
         }
-        else
-        {
-            return $"resources/hardware/{resource.Name}";
-        }
+
+        return $"resources/hardware/{resource.Name}";
     }
+
 }

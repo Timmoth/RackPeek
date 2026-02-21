@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Laptops.Cpus;
+using RackPeek.Domain.Resources.Laptops;
+using RackPeek.Domain.UseCases.Cpus;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops.Cpus;
+namespace Shared.Rcl.Commands.Laptops.Cpus;
 
 public class LaptopCpuSetCommand(IServiceProvider provider)
     : AsyncCommand<LaptopCpuSetSettings>
@@ -14,7 +15,7 @@ public class LaptopCpuSetCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateLaptopCpuUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateCpuUseCase<Laptop>>();
 
         await useCase.ExecuteAsync(settings.LaptopName, settings.Index, settings.Model, settings.Cores,
             settings.Threads);

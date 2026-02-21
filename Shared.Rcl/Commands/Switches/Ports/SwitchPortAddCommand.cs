@@ -1,10 +1,11 @@
-using Spectre.Console.Cli;
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Switches.Ports;
+using RackPeek.Domain.Resources.Switches;
+using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches.Ports;
+namespace Shared.Rcl.Commands.Switches.Ports;
 
 public class SwitchPortAddSettings : SwitchNameSettings
 {
@@ -27,7 +28,7 @@ public class SwitchPortAddCommand(IServiceProvider sp)
     public override async Task<int> ExecuteAsync(CommandContext ctx, SwitchPortAddSettings s, CancellationToken ct)
     {
         using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddSwitchPortUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IAddPortUseCase<Switch>>();
 
         await useCase.ExecuteAsync(s.Name, s.Type, s.Speed, s.Count);
 

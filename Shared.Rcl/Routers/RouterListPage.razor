@@ -1,9 +1,32 @@
 ﻿@page "/routers/list"
+@using Router = RackPeek.Domain.Resources.Routers.Router
+@inject NavigationManager Nav
 
-<PageTitle>Routers</PageTitle>
+<ResourcesListComponent TResource="Router"
+                        Title="Routers"
+                        TestId="routers"
+                        OnCreated="NavigateToNewResource">
 
-<h1 class="text-lg text-zinc-100">
-    Routers
-</h1>
+    <ItemTemplate Context="router">
+        <RouterCardComponent Router="router"
+                             OnDeleted="Reload"/>
+    </ItemTemplate>
 
-<RouterListComponent/>
+</ResourcesListComponent>
+
+@code {
+
+    [Inject] IGetAllResourcesByKindUseCase<Router> GetAllUseCase { get; set; } = default!;
+
+    private Task NavigateToNewResource(string name)
+    {
+        Nav.NavigateTo($"resources/hardware/{name}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Reload(string _)
+    {
+        await GetAllUseCase.ExecuteAsync();
+    }
+
+}

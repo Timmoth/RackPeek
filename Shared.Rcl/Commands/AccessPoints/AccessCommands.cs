@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.AccessPoints;
+namespace Shared.Rcl.Commands.AccessPoints;
 
 public class AccessPointNameSettings : CommandSettings
 {

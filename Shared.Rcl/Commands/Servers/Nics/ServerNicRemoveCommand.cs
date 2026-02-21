@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Servers.Nics;
+using RackPeek.Domain.Resources.Servers;
+using RackPeek.Domain.UseCases.Nics;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers.Nics;
+namespace Shared.Rcl.Commands.Servers.Nics;
 
 public class ServerNicRemoveSettings : ServerNameSettings
 {
@@ -19,7 +20,7 @@ public class ServerNicRemoveCommand(IServiceProvider serviceProvider)
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RemoveNicUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveNicUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

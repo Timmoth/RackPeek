@@ -1,9 +1,32 @@
 ﻿@page "/ups/list"
+@using RackPeek.Domain.Resources.UpsUnits
+@inject NavigationManager Nav
 
-<PageTitle>Ups</PageTitle>
+<ResourcesListComponent TResource="Ups"
+                        Title="Ups"
+                        TestId="ups"
+                        OnCreated="NavigateToNewResource">
 
-<h1 class="text-lg text-zinc-100">
-    Ups
-</h1>
+    <ItemTemplate Context="ups">
+        <UpsCardComponent Ups="ups"
+                          OnDeleted="Reload"/>
+    </ItemTemplate>
 
-<UpsListComponent/>
+</ResourcesListComponent>
+
+@code {
+
+    [Inject] IGetAllResourcesByKindUseCase<Ups> GetAllUseCase { get; set; } = default!;
+
+    private Task NavigateToNewResource(string name)
+    {
+        Nav.NavigateTo($"resources/hardware/{name}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Reload(string _)
+    {
+        await GetAllUseCase.ExecuteAsync();
+    }
+
+}

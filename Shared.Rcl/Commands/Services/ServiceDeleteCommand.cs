@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Services.UseCases;
+using RackPeek.Domain.Resources.Services;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Services;
+namespace Shared.Rcl.Commands.Services;
 
 public class ServiceDeleteCommand(
     IServiceProvider serviceProvider
@@ -15,7 +16,7 @@ public class ServiceDeleteCommand(
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DeleteServiceUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Service>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

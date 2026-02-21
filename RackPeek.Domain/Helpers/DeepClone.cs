@@ -1,6 +1,6 @@
-namespace RackPeek.Domain.Helpers;
-
 using System.Text.Json;
+
+namespace RackPeek.Domain.Helpers;
 
 public static class Clone
 {
@@ -9,5 +9,4 @@ public static class Clone
         var json = JsonSerializer.Serialize(obj);
         return JsonSerializer.Deserialize<T>(json)!;
     }
-
 }

@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.Switches;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches;
+namespace Shared.Rcl.Commands.Switches;
 
 public class SwitchReportCommand(
     ILogger<SwitchReportCommand> logger,

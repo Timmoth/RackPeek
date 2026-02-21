@@ -1,6 +1,6 @@
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Routers;
+namespace Shared.Rcl.Commands.Routers;
 
 public class RouterNameSettings : CommandSettings
 {

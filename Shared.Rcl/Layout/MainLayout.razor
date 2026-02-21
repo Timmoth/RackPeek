@@ -1,48 +1,41 @@
 ﻿@inherits LayoutComponentBase
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono"
+     data-testid="app-root">
 
-<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono">
+    <header class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900"
+            data-testid="app-header">
 
-    <!-- Header / Branding -->
-    <header class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900">
-        <NavLink href="" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-            <div class="text-xl font-bold text-emerald-400 tracking-wider">
+        <NavLink href=""
+                 data-testid="brand-link"
+                 class="hover:text-emerald-400"
+                 activeClass="text-emerald-400 font-semibold">
+            <div class="text-xl font-bold text-emerald-400 tracking-wider"
+                 data-testid="brand-text">
                 rackpeek
             </div>
         </NavLink>
 
+        <nav class="space-x-6 text-sm" data-testid="main-nav">
 
-        <!-- Navigation -->
-        <nav class="space-x-6 text-sm">
             <NavLink href=""
                      Match="NavLinkMatch.All"
-                     class="hover:texRt-emerald-400"
+                     data-testid="nav-home"
+                     class="hover:text-emerald-400"
                      activeClass="text-emerald-400 font-semibold">
                 Home
             </NavLink>
-            <NavLink href="cli" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-                CLI
-            </NavLink>
-            <NavLink href="yaml" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-                Yaml
-            </NavLink>
-            <NavLink href="hardware/tree" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-                Hardware
-            </NavLink>
-            <NavLink href="systems/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-                Systems
-            </NavLink>
-            <NavLink href="services/list" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-                Services
-            </NavLink>
-            <NavLink href="docs/CommandIndex" class="hover:text-emerald-400" activeClass="text-emerald-400 font-semibold">
-                Docs
-            </NavLink>
-            
+
+            <NavLink href="cli" data-testid="nav-cli">CLI</NavLink>
+            <NavLink href="yaml" data-testid="nav-yaml">Yaml</NavLink>
+            <NavLink href="hardware/tree" data-testid="nav-hardware">Hardware</NavLink>
+            <NavLink href="systems/list" data-testid="nav-systems">Systems</NavLink>
+            <NavLink href="services/list" data-testid="nav-services">Services</NavLink>
+            <NavLink href="docs/CommandIndex" data-testid="nav-docs">Docs</NavLink>
+
         </nav>
     </header>
 
-    <!-- Page content -->
-    <main class="p-6">
+    <main class="p-6" data-testid="page-content">
         @Body
     </main>
 

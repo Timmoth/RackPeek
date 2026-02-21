@@ -1,15 +1,15 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Switches
-@using RackPeek.Domain.Resources.Hardware.Switches.Ports
-@using RackPeek.Domain.Resources.Models
+﻿@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.Resources.Switches
+@using RackPeek.Domain.UseCases.Ports
 @inject UpdateSwitchUseCase UpdateSwitchUseCase
-@inject GetSwitchUseCase GetSwitchUseCase
-@inject AddSwitchPortUseCase AddSwitchPortUseCase
-@inject UpdateSwitchPortUseCase UpdateSwitchPortUseCase
-@inject RemoveSwitchPortUseCase RemoveSwitchPortUseCase
-@inject DeleteSwitchUseCase DeleteUseCase
-@inject CloneSwitchUseCase CloneUseCase
+@inject IGetResourceByNameUseCase<Switch> GetByNameUseCase
+@inject IAddPortUseCase<Switch> AddSwitchPortUseCase
+@inject IUpdatePortUseCase<Switch> UpdateSwitchPortUseCase
+@inject IRemovePortUseCase<Switch> RemoveSwitchPortUseCase
+@inject IDeleteResourceUseCase<Switch> DeleteUseCase
+@inject ICloneResourceUseCase<Switch> CloneUseCase
 
-@inject RenameSwitchUseCase RenameUseCase
+@inject IRenameResourceUseCase<Switch> RenameUseCase
 @inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
@@ -76,7 +76,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
-                       @bind="_edit.Model"/>
+                    @bind="_edit.Model"/>
             }
             else if (!string.IsNullOrWhiteSpace(Switch.Model))
             {
@@ -149,7 +149,7 @@
                 }
             }
         </div>
-        <ResourceTagEditor Resource="Switch" />
+        <ResourceTagEditor Resource="Switch"/>
 
         <div class="md:col-span-2">
             <div class="text-zinc-400 mb-1">Notes</div>
@@ -158,16 +158,16 @@
             {
                 <MarkdownEditor
                     @bind-Value="_edit.Notes"
-                    ShowActionButtons="false" />
+                    ShowActionButtons="false"/>
             }
             else
             {
                 <MarkdownViewer
                     Value="@Switch.Notes"
-                    ShowEditButton="false" />
+                    ShowEditButton="false"/>
             }
         </div>
-        
+
     </div>
 </div>
 
@@ -181,10 +181,11 @@
 <ConfirmModal
     IsOpen="_confirmDeleteOpen"
     IsOpenChanged="v => _confirmDeleteOpen = v"
-    Title="Delete server"
+    Title="Delete switch"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
+    OnConfirm="DeleteServer"
+    TestIdPrefix="Switch">>
     Are you sure you want to delete <strong>@Switch.Name</strong>?
 </ConfirmModal>
 <StringValueModal
@@ -194,7 +195,7 @@
     Description="Enter a new name for this switch"
     Label="New switch name"
     Value="@Switch.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 
 <StringValueModal
     IsOpen="_cloneOpen"
@@ -203,10 +204,10 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{Switch.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
 
 @code {
-    [Parameter][EditorRequired] public Switch Switch { get; set; } = default!;
+    [Parameter] [EditorRequired] public Switch Switch { get; set; } = default!;
 
     bool _isEditing;
     SwitchEditModel _edit = new();
@@ -228,7 +229,7 @@
             _edit.Poe,
             _edit.Notes);
 
-        Switch = await GetSwitchUseCase.ExecuteAsync(Switch.Name);
+        Switch = await GetByNameUseCase.ExecuteAsync(Switch.Name);
     }
 
     void Cancel()
@@ -277,7 +278,7 @@
                 port.Count);
         }
 
-        Switch = await GetSwitchUseCase.ExecuteAsync(Switch.Name);
+        Switch = await GetByNameUseCase.ExecuteAsync(Switch.Name);
         StateHasChanged();
     }
 
@@ -287,7 +288,7 @@
             Switch.Name,
             _editingPortIndex);
 
-        Switch = await GetSwitchUseCase.ExecuteAsync(Switch.Name);
+        Switch = await GetByNameUseCase.ExecuteAsync(Switch.Name);
         StateHasChanged();
     }
 

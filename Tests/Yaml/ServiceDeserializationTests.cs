@@ -1,13 +1,12 @@
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources.Services;
-using RackPeek.Yaml;
 
 namespace Tests.Yaml;
 
 public class ServiceDeserializationTests
 {
-    public static async Task<IServiceRepository> CreateSut(string yaml)
+    public static async Task<IResourceCollection> CreateSut(string yaml)
     {
         var tempDir = Path.Combine(
             Path.GetTempPath(),
@@ -19,10 +18,11 @@ public class ServiceDeserializationTests
         var filePath = Path.Combine(tempDir, "config.yaml");
         await File.WriteAllTextAsync(filePath, yaml);
 
-        var yamlResourceCollection = new YamlResourceCollection(filePath, new PhysicalTextFileStore(), new ResourceCollection());
+        var yamlResourceCollection =
+            new YamlResourceCollection(filePath, new PhysicalTextFileStore(), new ResourceCollection());
         await yamlResourceCollection.LoadAsync();
 
-        return new YamlServiceRepository(yamlResourceCollection);
+        return yamlResourceCollection;
     }
 
 
@@ -45,7 +45,7 @@ resources:
         var sut = await CreateSut(yaml);
 
         // When
-        var resources = await sut.GetAllAsync();
+        var resources = await sut.GetAllOfTypeAsync<Service>();
 
         // Then
         var resource = Assert.Single(resources);

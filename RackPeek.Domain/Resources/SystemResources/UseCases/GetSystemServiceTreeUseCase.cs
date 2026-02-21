@@ -1,21 +1,21 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
 public class GetSystemServiceTreeUseCase(
-    ISystemRepository systemRepository,
-    IServiceRepository serviceRepository) : IUseCase
+    IResourceCollection repo) : IUseCase
 {
     public async Task<SystemDependencyTree> ExecuteAsync(string name)
     {
         name = Normalize.SystemName(name);
         ThrowIfInvalid.ResourceName(name);
-        var system = await systemRepository.GetByNameAsync(name);
+        var system = await repo.GetByNameAsync(name) as SystemResource;
         if (system is null) throw new NotFoundException($"System '{name}' not found.");
-        var services = await serviceRepository.GetBySystemHostAsync(system.Name);
+        var services = await repo.GetDependantsAsync(system.Name);
 
-        return new SystemDependencyTree(system, services);
+        return new SystemDependencyTree(system, services.OfType<Service>());
     }
 }

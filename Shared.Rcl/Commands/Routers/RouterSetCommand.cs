@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Commands.Servers;
-using RackPeek.Domain.Resources.Hardware.Routers;
+using RackPeek.Domain.Resources.Routers;
+using Shared.Rcl.Commands.Servers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Routers;
+namespace Shared.Rcl.Commands.Routers;
 
 public class RouterSetSettings : ServerNameSettings
 {

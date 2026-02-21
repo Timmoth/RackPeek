@@ -1,8 +1,9 @@
-using RackPeek.Domain.Resources.Models;
+using RackPeek.Domain.Resources.Servers;
+using RackPeek.Domain.Resources.SubResources;
 
 namespace RackPeek.Domain.Resources.SystemResources;
 
-public class SystemResource : Resource
+public class SystemResource : Resource, IDriveResource
 {
     public const string KindLabel = "System";
 
@@ -22,6 +23,4 @@ public class SystemResource : Resource
     public int? Cores { get; set; }
     public int? Ram { get; set; }
     public List<Drive>? Drives { get; set; }
-
-    public string? RunsOn { get; set; }
 }

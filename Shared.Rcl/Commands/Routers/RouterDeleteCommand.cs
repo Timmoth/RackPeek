@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Routers;
+using RackPeek.Domain.Resources.Routers;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Routers;
+namespace Shared.Rcl.Commands.Routers;
 
 public class RouterDeleteCommand(
     IServiceProvider serviceProvider
@@ -15,7 +16,7 @@ public class RouterDeleteCommand(
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DeleteRouterUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Router>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

@@ -32,12 +32,37 @@
     color: #34d399;
 }
 
-.markdown h1 { font-size: 1.8rem; border-bottom: 1px solid #27272a; padding-bottom: 0.3em; }
-.markdown h2 { font-size: 1.5rem; border-bottom: 1px solid #27272a; padding-bottom: 0.25em; }
-.markdown h3 { font-size: 1.25rem; }
-.markdown h4 { font-size: 1.1rem; }
-.markdown h5 { font-size: 1rem; opacity: 0.9; }
-.markdown h6 { font-size: 0.9rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.05em; }
+.markdown h1 {
+    font-size: 1.8rem;
+    border-bottom: 1px solid #27272a;
+    padding-bottom: 0.3em;
+}
+
+.markdown h2 {
+    font-size: 1.5rem;
+    border-bottom: 1px solid #27272a;
+    padding-bottom: 0.25em;
+}
+
+.markdown h3 {
+    font-size: 1.25rem;
+}
+
+.markdown h4 {
+    font-size: 1.1rem;
+}
+
+.markdown h5 {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.markdown h6 {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
 
 /* ============================= */
 /* Paragraphs */
@@ -73,11 +98,21 @@
     padding-left: 1rem;
 }
 
-.markdown ul { list-style: disc; }
-.markdown ul ul { list-style: circle; }
-.markdown ul ul ul { list-style: square; }
+.markdown ul {
+    list-style: disc;
+}
 
-.markdown ol { list-style: decimal; }
+.markdown ul ul {
+    list-style: circle;
+}
+
+.markdown ul ul ul {
+    list-style: square;
+}
+
+.markdown ol {
+    list-style: decimal;
+}
 
 .markdown li {
     margin: 0.35em 0;

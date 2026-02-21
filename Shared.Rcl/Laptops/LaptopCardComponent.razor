@@ -1,26 +1,26 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Laptops
-@using RackPeek.Domain.Resources.Hardware.Laptops.Cpus
-@using RackPeek.Domain.Resources.Hardware.Laptops.Drives
-@using RackPeek.Domain.Resources.Hardware.Laptops.Gpus
-@using RackPeek.Domain.Resources.Models
-@inject GetLaptopUseCase GetLaptopUseCase
+﻿@using RackPeek.Domain.Resources.Laptops
+@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.UseCases.Cpus
+@using RackPeek.Domain.UseCases.Drives
+@using RackPeek.Domain.UseCases.Gpus
+@inject IGetResourceByNameUseCase<Laptop> GetByNameUseCase
 @inject UpdateLaptopUseCase UpdateLaptopUseCase
-@inject DeleteLaptopUseCase DeleteLaptopUseCase
+@inject IDeleteResourceUseCase<Laptop> DeleteLaptopUseCase
 
-@inject AddLaptopCpuUseCase AddCpuUseCase
-@inject UpdateLaptopCpuUseCase UpdateCpuUseCase
-@inject RemoveLaptopCpuUseCase RemoveCpuUseCase
+@inject IAddCpuUseCase<Laptop> AddCpuUseCase
+@inject IUpdateCpuUseCase<Laptop> UpdateCpuUseCase
+@inject IRemoveCpuUseCase<Laptop> RemoveCpuUseCase
 
-@inject AddLaptopDriveUseCase AddDriveUseCase
-@inject UpdateLaptopDriveUseCase UpdateDriveUseCase
-@inject RemoveLaptopDriveUseCase RemoveDriveUseCase
+@inject IAddDriveUseCase<Laptop> AddDriveUseCase
+@inject IUpdateDriveUseCase<Laptop> UpdateDriveUseCase
+@inject IRemoveDriveUseCase<Laptop> RemoveDriveUseCase
 
-@inject AddLaptopGpuUseCase AddGpuUseCase
-@inject UpdateLaptopGpuUseCase UpdateGpuUseCase
-@inject RemoveLaptopGpuUseCase RemoveGpuUseCase
-@inject CloneLaptopUseCase CloneUseCase
+@inject IAddGpuUseCase<Laptop> AddGpuUseCase
+@inject IUpdateGpuUseCase<Laptop> UpdateGpuUseCase
+@inject IRemoveGpuUseCase<Laptop> RemoveGpuUseCase
+@inject ICloneResourceUseCase<Laptop> CloneUseCase
 
-@inject RenameLaptopUseCase RenameUseCase
+@inject IRenameResourceUseCase<Laptop> RenameUseCase
 @inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900">
@@ -181,9 +181,9 @@
             }
         </div>
 
-        
+
     </div>
-    <ResourceTagEditor Resource="Laptop" />
+    <ResourceTagEditor Resource="Laptop"/>
 
     <div class="md:col-span-2">
         <div class="text-zinc-400 mb-1">Notes</div>
@@ -193,7 +193,7 @@
             <MarkdownViewer
                 Value="@Laptop.Notes"
                 ShowEditButton="true"
-                OnEdit="BeginNotesEdit" />
+                OnEdit="BeginNotesEdit"/>
         }
         else
         {
@@ -201,10 +201,10 @@
                 @bind-Value="_notesDraft"
                 ShowActionButtons="true"
                 OnSave="SaveNotes"
-                OnCancel="CancelNotesEdit" />
+                OnCancel="CancelNotesEdit"/>
         }
     </div>
-    
+
 </div>
 <CpuModal
     IsOpen="@_cpuModalOpen"
@@ -236,10 +236,11 @@
 <ConfirmModal
     IsOpen="_confirmDeleteOpen"
     IsOpenChanged="v => _confirmDeleteOpen = v"
-    Title="Delete server"
+    Title="Delete laptop"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteServer">
+    OnConfirm="DeleteServer"
+    TestIdPrefix="Laptop">
     Are you sure you want to delete <strong>@Laptop.Name</strong>?
     <br/>
     This will detach all dependent systems.
@@ -252,7 +253,7 @@
     Description="Enter a new name for this laptop"
     Label="New laptop name"
     Value="@Laptop.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 <StringValueModal
     IsOpen="_cloneOpen"
     IsOpenChanged="v => _cloneOpen = v"
@@ -260,7 +261,8 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{Laptop.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
+
 @code {
     [Parameter] [EditorRequired] public Laptop Laptop { get; set; } = default!;
 
@@ -277,7 +279,7 @@
     {
         _isRamModalOpen = false;
         await UpdateLaptopUseCase.ExecuteAsync(Laptop.Name, Laptop.Model, value.Size, value.Mts, Laptop.Notes);
-        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        Laptop = await GetByNameUseCase.ExecuteAsync(Laptop.Name);
     }
 
     #endregion
@@ -317,13 +319,13 @@
             await UpdateCpuUseCase.ExecuteAsync(Laptop.Name, _editingCpuIndex, cpu.Model, cpu.Cores, cpu.Threads);
         }
 
-        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        Laptop = await GetByNameUseCase.ExecuteAsync(Laptop.Name);
     }
 
     async Task HandleCpuDelete(Cpu cpu)
     {
         await RemoveCpuUseCase.ExecuteAsync(Laptop.Name, _editingCpuIndex);
-        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        Laptop = await GetByNameUseCase.ExecuteAsync(Laptop.Name);
     }
 
     #endregion
@@ -363,14 +365,14 @@
             await UpdateDriveUseCase.ExecuteAsync(Laptop.Name, _editingDriveIndex, drive.Type, drive.Size);
         }
 
-        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        Laptop = await GetByNameUseCase.ExecuteAsync(Laptop.Name);
         StateHasChanged();
     }
 
     async Task HandleDriveDelete(Drive drive)
     {
         await RemoveDriveUseCase.ExecuteAsync(Laptop.Name, _editingDriveIndex);
-        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        Laptop = await GetByNameUseCase.ExecuteAsync(Laptop.Name);
         StateHasChanged();
     }
 
@@ -417,13 +419,13 @@
                 gpu.Vram);
         }
 
-        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        Laptop = await GetByNameUseCase.ExecuteAsync(Laptop.Name);
     }
 
     async Task HandleGpuDelete(Gpu gpu)
     {
         await RemoveGpuUseCase.ExecuteAsync(Laptop.Name, _editingGpuIndex);
-        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        Laptop = await GetByNameUseCase.ExecuteAsync(Laptop.Name);
     }
 
     #endregion
@@ -515,9 +517,9 @@
             Laptop.Ram?.Mts,
             _notesDraft);
 
-        Laptop = await GetLaptopUseCase.ExecuteAsync(Laptop.Name);
+        Laptop = await GetByNameUseCase.ExecuteAsync(Laptop.Name);
         _notesDraft = null;
     }
 
-    
+
 }

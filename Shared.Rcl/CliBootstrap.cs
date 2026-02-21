@@ -1,55 +1,53 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Commands;
-using RackPeek.Commands.AccessPoints;
-using RackPeek.Commands.Desktops;
-using RackPeek.Commands.Desktops.Cpus;
-using RackPeek.Commands.Desktops.Drive;
-using RackPeek.Commands.Desktops.Gpus;
-using RackPeek.Commands.Desktops.Nics;
-using RackPeek.Commands.Firewalls;
-using RackPeek.Commands.Firewalls.Ports;
-using RackPeek.Commands.Laptops;
-using RackPeek.Commands.Laptops.Cpus;
-using RackPeek.Commands.Laptops.Drive;
-using RackPeek.Commands.Laptops.Gpus;
-using RackPeek.Commands.Routers;
-using RackPeek.Commands.Routers.Ports;
-using RackPeek.Commands.Servers;
-using RackPeek.Commands.Servers.Cpus;
-using RackPeek.Commands.Servers.Drives;
-using RackPeek.Commands.Servers.Gpus;
-using RackPeek.Commands.Servers.Nics;
-using RackPeek.Commands.Services;
-using RackPeek.Commands.Switches;
-using RackPeek.Commands.Switches.Ports;
-using RackPeek.Commands.Systems;
-using RackPeek.Commands.Ups;
 using RackPeek.Domain;
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
-using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Hardware;
-using RackPeek.Domain.Resources.Services;
-using RackPeek.Domain.Resources.SystemResources;
-using RackPeek.Yaml;
+using Shared.Rcl.Commands;
+using Shared.Rcl.Commands.AccessPoints;
+using Shared.Rcl.Commands.Desktops;
+using Shared.Rcl.Commands.Desktops.Cpus;
+using Shared.Rcl.Commands.Desktops.Drive;
+using Shared.Rcl.Commands.Desktops.Gpus;
+using Shared.Rcl.Commands.Desktops.Nics;
+using Shared.Rcl.Commands.Firewalls;
+using Shared.Rcl.Commands.Firewalls.Ports;
+using Shared.Rcl.Commands.Laptops;
+using Shared.Rcl.Commands.Laptops.Cpus;
+using Shared.Rcl.Commands.Laptops.Drive;
+using Shared.Rcl.Commands.Laptops.Gpus;
+using Shared.Rcl.Commands.Routers;
+using Shared.Rcl.Commands.Routers.Ports;
+using Shared.Rcl.Commands.Servers;
+using Shared.Rcl.Commands.Servers.Cpus;
+using Shared.Rcl.Commands.Servers.Drives;
+using Shared.Rcl.Commands.Servers.Gpus;
+using Shared.Rcl.Commands.Servers.Nics;
+using Shared.Rcl.Commands.Services;
+using Shared.Rcl.Commands.Switches;
+using Shared.Rcl.Commands.Switches.Ports;
+using Shared.Rcl.Commands.Systems;
+using Shared.Rcl.Commands.Ups;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek;
+namespace Shared.Rcl;
 
 public static class CliBootstrap
 {
     private static string[]? _lastArgs;
     private static CommandApp? _app;
 
+    private static bool _showingHelp;
+
     public static void SetContext(string[] args, CommandApp app)
     {
         _lastArgs = args;
         _app = app;
     }
+
     public static async Task RegisterInternals(
         IServiceCollection services,
         IConfiguration configuration,
@@ -62,17 +60,14 @@ public static class CliBootstrap
         var resolvedYamlDir = Path.IsPathRooted(yamlDir)
             ? yamlDir
             : Path.Combine(appBasePath, yamlDir);
-        
+
 
         Directory.CreateDirectory(resolvedYamlDir);
 
         var fullYamlPath = Path.Combine(resolvedYamlDir, yamlFile);
 
-        if (!File.Exists(fullYamlPath))
-        {
-            await File.WriteAllTextAsync(fullYamlPath, "");
-        }
-        
+        if (!File.Exists(fullYamlPath)) await File.WriteAllTextAsync(fullYamlPath, "");
+
         var collection = new YamlResourceCollection(
             fullYamlPath,
             new PhysicalTextFileStore(),
@@ -88,7 +83,7 @@ public static class CliBootstrap
         services.AddUseCases();
         services.AddCommands();
     }
-    
+
     public static void BuildApp(CommandApp app)
     {
         // Spectre bootstrap
@@ -533,8 +528,6 @@ public static class CliBootstrap
                 return 99;
         }
     }
-
-    private static bool _showingHelp;
 
     private static void ShowContextualHelp()
     {

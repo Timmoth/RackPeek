@@ -2,14 +2,16 @@
 @using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Persistence.Yaml
 @using RackPeek.Domain.Resources
-@using RackPeek.Domain.Resources.Models
-@using RackPeek.Domain.Resources.Services
+@using RackPeek.Domain.Resources.AccessPoints
+@using RackPeek.Domain.Resources.Desktops
+@using RackPeek.Domain.Resources.Firewalls
+@using RackPeek.Domain.Resources.Laptops
+@using RackPeek.Domain.Resources.Servers
+@using RackPeek.Domain.Resources.Switches
 @using RackPeek.Domain.Resources.SystemResources
-@using RackPeek.Yaml
-@using YamlDotNet.RepresentationModel
 @using YamlDotNet.Serialization
 @using YamlDotNet.Serialization.NamingConventions
-@using Router = RackPeek.Domain.Resources.Models.Router
+@using Router = RackPeek.Domain.Resources.Routers.Router
 @inject ITextFileStore FileStore
 @inject IResourceCollection Resources
 
@@ -52,8 +54,8 @@
     else if (_isEditing)
     {
         <textarea class="w-full input font-mono text-xs"
-          style="min-height: 40rem"
-          @bind="_editText">
+                  style="min-height: 40rem"
+                  @bind="_editText">
         </textarea>
 
 
@@ -76,20 +78,18 @@
     Title="Delete File"
     ConfirmText="Delete"
     ConfirmClass="bg-red-600 hover:bg-red-500"
-    OnConfirm="DeleteFile">
+    OnConfirm="DeleteFile"
+    TestIdPrefix="File">>
     Are you sure you want to delete <strong>@Path</strong>?
 </ConfirmModal>
 
 @code {
 
-    [Parameter, EditorRequired]
-    public string Path { get; set; } = default!;
+    [Parameter][EditorRequired] public string Path { get; set; } = default!;
 
-    [Parameter]
-    public string Title { get; set; } = "Edit YAML";
+    [Parameter] public string Title { get; set; } = "Edit YAML";
 
-    [Parameter]
-    public EventCallback<string> OnDeleted { get; set; }
+    [Parameter] public EventCallback<string> OnDeleted { get; set; }
 
     bool _isEditing;
     bool _exists;
@@ -126,6 +126,7 @@
         _isEditing = false;
         _validationError = null;
     }
+
     async Task Save()
     {
         if (!ValidateYamlRoundTrip(_editText, out var error))
@@ -158,87 +159,88 @@
         if (OnDeleted.HasDelegate)
             await OnDeleted.InvokeAsync(Path);
     }
-private bool ValidateYamlRoundTrip(string yaml, out string? error)
-{
-    try
-    {
-        if (string.IsNullOrWhiteSpace(yaml))
-        {
-            error = "YAML is empty.";
-            return false;
-        }
 
-        // ---------- DESERIALIZER (same as resource loader) ----------
-        var deserializer = new DeserializerBuilder()
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .WithCaseInsensitivePropertyMatching()
-            .WithTypeConverter(new StorageSizeYamlConverter())
-            .WithTypeDiscriminatingNodeDeserializer(options =>
+    private bool ValidateYamlRoundTrip(string yaml, out string? error)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(yaml))
             {
-                options.AddKeyValueTypeDiscriminator<Resource>("kind", new Dictionary<string, Type>
+                error = "YAML is empty.";
+                return false;
+            }
+
+            // ---------- DESERIALIZER (same as resource loader) ----------
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .WithCaseInsensitivePropertyMatching()
+                .WithTypeConverter(new StorageSizeYamlConverter())
+                .WithTypeDiscriminatingNodeDeserializer(options =>
                 {
-                    { Server.KindLabel, typeof(Server) },
-                    { Switch.KindLabel, typeof(Switch) },
-                    { Firewall.KindLabel, typeof(Firewall) },
-                    { Router.KindLabel, typeof(Router) },
-                    { Desktop.KindLabel, typeof(Desktop) },
-                    { Laptop.KindLabel, typeof(Laptop) },
-                    { AccessPoint.KindLabel, typeof(AccessPoint) },
-                    { RackPeek.Domain.Resources.Models.Ups.KindLabel, typeof(RackPeek.Domain.Resources.Models.Ups) },
-                    { SystemResource.KindLabel, typeof(SystemResource) },
-                    { Service.KindLabel, typeof(Service) }
-                });
-            })
-            .Build();
+                    options.AddKeyValueTypeDiscriminator<Resource>("kind", new Dictionary<string, Type>
+                    {
+                        { Server.KindLabel, typeof(Server) },
+                        { Switch.KindLabel, typeof(Switch) },
+                        { Firewall.KindLabel, typeof(Firewall) },
+                        { Router.KindLabel, typeof(Router) },
+                        { Desktop.KindLabel, typeof(Desktop) },
+                        { Laptop.KindLabel, typeof(Laptop) },
+                        { AccessPoint.KindLabel, typeof(AccessPoint) },
+                        { RackPeek.Domain.Resources.UpsUnits.Ups.KindLabel, typeof(RackPeek.Domain.Resources.UpsUnits.Ups) },
+                        { SystemResource.KindLabel, typeof(SystemResource) },
+                        { Service.KindLabel, typeof(Service) }
+                    });
+                })
+                .Build();
 
-        var root = deserializer.Deserialize<YamlRoot>(yaml);
+            var root = deserializer.Deserialize<YamlRoot>(yaml);
 
-        if (root?.Resources == null)
+            if (root?.Resources == null)
+            {
+                error = "No resources section found.";
+                return false;
+            }
+
+            // ---------- SERIALIZE AGAIN ----------
+            var serializer = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+
+            var payload = new OrderedDictionary
+            {
+                ["resources"] = root.Resources
+            };
+
+            var roundTripYaml = serializer.Serialize(payload);
+
+            // ---------- DESERIALIZE AGAIN ----------
+            var root2 = deserializer.Deserialize<YamlRoot>(roundTripYaml);
+
+            if (root2?.Resources == null)
+            {
+                error = "Round-trip serialization failed.";
+                return false;
+            }
+
+            // ---------- DUPLICATE NAME CHECK ----------
+            var dup = root2.Resources
+                .GroupBy(r => r.Name, StringComparer.OrdinalIgnoreCase)
+                .FirstOrDefault(g => g.Count() > 1);
+
+            if (dup != null)
+            {
+                error = $"Duplicate resource name: '{dup.Key}'";
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+        catch (Exception ex)
         {
-            error = "No resources section found.";
+            error = $"YAML validation failed: {ex.Message}";
             return false;
         }
-
-        // ---------- SERIALIZE AGAIN ----------
-        var serializer = new SerializerBuilder()
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .Build();
-
-        var payload = new OrderedDictionary
-        {
-            ["resources"] = root.Resources
-        };
-
-        var roundTripYaml = serializer.Serialize(payload);
-
-        // ---------- DESERIALIZE AGAIN ----------
-        var root2 = deserializer.Deserialize<YamlRoot>(roundTripYaml);
-
-        if (root2?.Resources == null)
-        {
-            error = "Round-trip serialization failed.";
-            return false;
-        }
-
-        // ---------- DUPLICATE NAME CHECK ----------
-        var dup = root2.Resources
-            .GroupBy(r => r.Name, StringComparer.OrdinalIgnoreCase)
-            .FirstOrDefault(g => g.Count() > 1);
-
-        if (dup != null)
-        {
-            error = $"Duplicate resource name: '{dup.Key}'";
-            return false;
-        }
-
-        error = null;
-        return true;
     }
-    catch (Exception ex)
-    {
-        error = $"YAML validation failed: {ex.Message}";
-        return false;
-    }
-}
 
 }

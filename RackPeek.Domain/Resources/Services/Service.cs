@@ -6,7 +6,6 @@ public class Service : Resource
 {
     public const string KindLabel = "Service";
     public Network? Network { get; set; }
-    public string? RunsOn { get; set; }
 
     public string NetworkString()
     {

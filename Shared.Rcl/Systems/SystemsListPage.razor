@@ -1,22 +1,79 @@
 ﻿@page "/systems/list"
+@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.SystemResources.UseCases
+@inject NavigationManager Nav
 
-<PageTitle>Systems</PageTitle>
+<ResourcesListComponent TResource="SystemResource"
+                        Title="Systems"
+                        TestId="systems"
+                        ShouldGroup="true"
+                        GroupBy="@(s => s.RunsOn)"
+                        OnCreated="NavigateToNewResource">
 
-<h1 class="text-lg text-zinc-100">
-    Systems
-</h1>
+    <ItemTemplate Context="systemResource">
+        <div data-testid=@($"systems-list-item-{systemResource.Name.Replace(" ", "-")}")>
+            <SystemCardComponent System="systemResource"
+                                 OnSave="UpdateSystem"
+                                 OnDeleted="Reload"/>
+        </div>
+    </ItemTemplate>
 
-<SystemsListComponent 
-    TypeFilter="@Type"
-    OsFilter="@Os" />
+</ResourcesListComponent>
 
 @code {
 
+    [Inject] IResourceCollection Repo { get; set; } = default!;
+    [Inject] ISystemRepository SystemRepo { get; set; } = default!;
+    [Inject] UpdateSystemUseCase UpdateSystemUseCase { get; set; } = default!;
+
     [Parameter]
     [SupplyParameterFromQuery(Name = "type")]
-    public string? Type { get; set; } = null;
+    public string? Type { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "os")]
-    public string? Os { get; set; }= null;
+    public string? Os { get; set; }
+
+    private async Task Reload(string _ = "")
+    {
+        var type = Normalize(Type);
+        var os = Normalize(Os);
+
+        if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(os))
+        {
+            await Repo.GetAllOfTypeAsync<SystemResource>();
+        }
+        else
+        {
+            await SystemRepo.GetFilteredAsync(type, os);
+        }
+    }
+
+    private static string? Normalize(string? s)
+    {
+        return string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+    }
+
+    private async Task UpdateSystem(SystemEditModel edit)
+    {
+        await UpdateSystemUseCase.ExecuteAsync(
+            edit.Name,
+            edit.Type,
+            edit.Os,
+            edit.Cores,
+            edit.Ram,
+            edit.RunsOn,
+            edit.Notes
+        );
+
+        await Reload();
+    }
+
+    private Task NavigateToNewResource(string name)
+    {
+        Nav.NavigateTo($"resources/systems/{name}");
+        return Task.CompletedTask;
+    }
+
 }

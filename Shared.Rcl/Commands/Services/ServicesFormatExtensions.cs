@@ -1,4 +1,4 @@
-namespace RackPeek.Commands.Services;
+namespace Shared.Rcl.Commands.Services;
 
 public static class ServicesFormatExtensions
 {

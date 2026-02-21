@@ -14,80 +14,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Markdig" Version="0.45.0" />
+        <PackageReference Include="Markdig" Version="0.45.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0"/>
-        <PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
-        <PackageReference Include="Spectre.Console.Testing" Version="0.54.0" />
+        <PackageReference Include="Spectre.Console.Cli" Version="0.53.1"/>
+        <PackageReference Include="Spectre.Console.Testing" Version="0.54.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="AccessPoints\AccessPointCardComponent.razor" />
-      <AdditionalFiles Include="AccessPoints\AccessPointsListComponent.razor" />
-      <AdditionalFiles Include="AccessPoints\AccessPointsListPage.razor" />
-      <AdditionalFiles Include="AccessPoints\AddAccessPointComponent.razor" />
-      <AdditionalFiles Include="Components\ResourceBreadCrumbComponent.razor" />
-      <AdditionalFiles Include="Desktops\AddDesktopComponent.razor" />
-      <AdditionalFiles Include="Desktops\DesktopCardComponent.razor" />
-      <AdditionalFiles Include="Desktops\DesktopsListComponent.razor" />
-      <AdditionalFiles Include="Desktops\DesktopsListPage.razor" />
-      <AdditionalFiles Include="Firewalls\AddFirewallComponent.razor" />
-      <AdditionalFiles Include="Firewalls\FirewallCardComponent.razor" />
-      <AdditionalFiles Include="Firewalls\FirewallListComponent.razor" />
-      <AdditionalFiles Include="Firewalls\FirewallListPage.razor" />
-      <AdditionalFiles Include="Hardware\HardwareDetailsPage.razor" />
-      <AdditionalFiles Include="Hardware\HardwareTreePage.razor" />
-      <AdditionalFiles Include="Laptops\AddLaptopComponent.razor" />
-      <AdditionalFiles Include="Layout\MainLayout.razor" />
-      <AdditionalFiles Include="Layout\ReconnectModal.razor" />
-      <AdditionalFiles Include="Modals\ConfirmModal.razor" />
-      <AdditionalFiles Include="Modals\CpuModal.razor" />
-      <AdditionalFiles Include="Modals\DriveModal.razor" />
-      <AdditionalFiles Include="Modals\GpuModal.razor" />
-      <AdditionalFiles Include="Modals\HardwareSelectionModal.razor" />
-      <AdditionalFiles Include="Modals\NicModal.razor" />
-      <AdditionalFiles Include="Modals\PortModal.razor" />
-      <AdditionalFiles Include="Modals\RamModal.razor" />
-      <AdditionalFiles Include="Modals\StringValueModal.razor" />
-      <AdditionalFiles Include="Modals\SystemSelectionModal.razor" />
-      <AdditionalFiles Include="Pages\Error.razor" />
-      <AdditionalFiles Include="Pages\Home.razor" />
-      <AdditionalFiles Include="Pages\NotFound.razor" />
-      <AdditionalFiles Include="Routers\AddRouterComponent.razor" />
-      <AdditionalFiles Include="Routers\RouterCardComponent.razor" />
-      <AdditionalFiles Include="Routers\RouterListComponent.razor" />
-      <AdditionalFiles Include="Routers\RouterListPage.razor" />
-      <AdditionalFiles Include="Servers\AddServerComponent.razor" />
-      <AdditionalFiles Include="Servers\ServerCardComponent.razor" />
-      <AdditionalFiles Include="Servers\ServersListComponent.razor" />
-      <AdditionalFiles Include="Servers\ServersListPage.razor" />
-      <AdditionalFiles Include="Services\AddServiceComponent.razor" />
-      <AdditionalFiles Include="Services\ServiceCardComponent.razor" />
-      <AdditionalFiles Include="Services\ServiceDetailsPage.razor" />
-      <AdditionalFiles Include="Services\ServicesListComponent.razor" />
-      <AdditionalFiles Include="Services\ServicesListPage.razor" />
-      <AdditionalFiles Include="Switches\AddSwitchComponent.razor" />
-      <AdditionalFiles Include="Switches\SwitchCardComponent.razor" />
-      <AdditionalFiles Include="Switches\SwitchListComponent.razor" />
-      <AdditionalFiles Include="Switches\SwitchListPage.razor" />
-      <AdditionalFiles Include="Systems\AddSystemComponent.razor" />
-      <AdditionalFiles Include="Systems\SystemCardComponent.razor" />
-      <AdditionalFiles Include="Systems\SystemDependencyTreeComponent.razor" />
-      <AdditionalFiles Include="Systems\SystemsDetailsPage.razor" />
-      <AdditionalFiles Include="Systems\SystemsListComponent.razor" />
-      <AdditionalFiles Include="Systems\SystemsListPage.razor" />
-      <AdditionalFiles Include="Ups\AddUpsComponent.razor" />
-      <AdditionalFiles Include="Ups\UpCardComponent.razor" />
-      <AdditionalFiles Include="Ups\UpsCardComponent.razor" />
+        <ProjectReference Include="..\RackPeek.Domain\RackPeek.Domain.csproj"/>
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\RackPeek.Domain\RackPeek.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Pages\" />
-    </ItemGroup>
-    
 
 
 </Project>

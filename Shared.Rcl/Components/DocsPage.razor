@@ -1,9 +1,8 @@
 ﻿@page "/docs/{Page}"
-
-@using Markdig
 @inject HttpClient Http
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@using Markdig
 @implements IDisposable
 
 <PageTitle>Docs: @Page</PageTitle>
@@ -37,8 +36,7 @@
 
 @code {
 
-    [Parameter]
-    public string Page { get; set; } = string.Empty;
+    [Parameter] public string Page { get; set; } = string.Empty;
 
     private string? _htmlContent;
     private bool _isLoading = true;
@@ -119,4 +117,5 @@
     {
         Nav.LocationChanged -= HandleLocationChanged;
     }
+
 }

@@ -3,22 +3,15 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using RackPeek.Domain;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
-using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Hardware;
-using RackPeek.Domain.Resources.Services;
-using RackPeek.Domain.Resources.SystemResources;
 using RackPeek.Web.Components;
-using RackPeek.Yaml;
 using Shared.Rcl;
 
 namespace RackPeek.Web;
 
 public class Program
 {
-    public static async Task Main(string[] args)
+    public static async Task<WebApplication> BuildApp(WebApplicationBuilder builder)
     {
-        var builder = WebApplication.CreateBuilder(args);
-
         StaticWebAssetsLoader.UseStaticWebAssets(
             builder.Environment,
             builder.Configuration
@@ -52,7 +45,7 @@ public class Program
 
         builder.Services.AddScoped<ITextFileStore, PhysicalTextFileStore>();
 
-        
+
         builder.Services.AddScoped(sp =>
         {
             var nav = sp.GetRequiredService<NavigationManager>();
@@ -62,7 +55,7 @@ public class Program
             };
         });
 
-        
+
         var resources = new ResourceCollection();
         builder.Services.AddSingleton(resources);
 
@@ -71,15 +64,13 @@ public class Program
                 yamlFilePath,
                 sp.GetRequiredService<ITextFileStore>(),
                 sp.GetRequiredService<ResourceCollection>()));
-        
+
         // Infrastructure
         builder.Services.AddYamlRepos();
 
         builder.Services.AddUseCases();
         builder.Services.AddCommands();
         builder.Services.AddScoped<IConsoleEmulator, ConsoleEmulator>();
-
-        
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
@@ -102,9 +93,17 @@ public class Program
         app.UseAntiforgery();
 
         app.MapStaticAssets();
+
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 
+        return app;
+    }
+
+    public static async Task Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        var app = await BuildApp(builder);
         await app.RunAsync();
     }
 }

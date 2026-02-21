@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.AccessPoints;
+using RackPeek.Domain.Resources.AccessPoints;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.AccessPoints;
+namespace Shared.Rcl.Commands.AccessPoints;
 
 public class AccessPointDescribeCommand(
     IServiceProvider serviceProvider
@@ -15,7 +16,7 @@ public class AccessPointDescribeCommand(
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DescribeAccessPointUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<AccessPoint>>();
 
         var ap = await useCase.ExecuteAsync(settings.Name);
 

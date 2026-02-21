@@ -1,3 +1,5 @@
+using RackPeek.Domain.Persistence;
+
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
 public record SystemReport(
@@ -14,11 +16,11 @@ public record SystemReportRow(
     string? RunsOn
 );
 
-public class SystemReportUseCase(ISystemRepository repository) : IUseCase
+public class SystemReportUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task<SystemReport> ExecuteAsync()
     {
-        var systems = await repository.GetAllAsync();
+        var systems = await repository.GetAllOfTypeAsync<SystemResource>();
 
         var rows = systems.Select(system =>
         {

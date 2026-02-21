@@ -1,10 +1,10 @@
-using Spectre.Console.Cli;
-using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Routers.Ports;
+using RackPeek.Domain.Resources.Routers;
+using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Routers.Ports;
+namespace Shared.Rcl.Commands.Routers.Ports;
 
 public class RouterPortRemoveSettings : RouterNameSettings
 {
@@ -17,7 +17,7 @@ public class RouterPortRemoveCommand(IServiceProvider sp)
     public override async Task<int> ExecuteAsync(CommandContext ctx, RouterPortRemoveSettings s, CancellationToken ct)
     {
         using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RemoveRouterPortUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Router>>();
 
         await useCase.ExecuteAsync(s.Name, s.Index);
 

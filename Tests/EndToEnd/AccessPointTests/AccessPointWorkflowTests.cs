@@ -1,7 +1,7 @@
 using Tests.EndToEnd.Infra;
 using Xunit.Abstractions;
 
-namespace Tests.EndToEnd;
+namespace Tests.EndToEnd.AccessPointTests;
 
 [Collection("Yaml CLI tests")]
 public class AccessPointWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)

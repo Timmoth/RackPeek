@@ -1,9 +1,32 @@
 ﻿@page "/firewalls/list"
+@using RackPeek.Domain.Resources.Firewalls
+@inject NavigationManager Nav
 
-<PageTitle>Firewalls</PageTitle>
+<ResourcesListComponent TResource="Firewall"
+                        Title="Firewalls"
+                        TestId="firewalls"
+                        OnCreated="NavigateToNewResource">
 
-<h1 class="text-lg text-zinc-100">
-    Firewalls
-</h1>
+    <ItemTemplate Context="firewall">
+        <FirewallCardComponent Firewall="firewall"
+                               OnDeleted="Reload"/>
+    </ItemTemplate>
 
-<FirewallListComponent/>
+</ResourcesListComponent>
+
+@code {
+
+    [Inject] IGetAllResourcesByKindUseCase<Firewall> GetAllUseCase { get; set; } = default!;
+
+    private Task NavigateToNewResource(string name)
+    {
+        Nav.NavigateTo($"resources/hardware/{name}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Reload(string _)
+    {
+        await GetAllUseCase.ExecuteAsync();
+    }
+
+}

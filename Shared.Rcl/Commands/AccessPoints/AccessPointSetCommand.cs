@@ -1,11 +1,11 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Commands.Servers;
-using RackPeek.Domain.Resources.Hardware.AccessPoints;
+using RackPeek.Domain.Resources.AccessPoints;
+using Shared.Rcl.Commands.Servers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.AccessPoints;
+namespace Shared.Rcl.Commands.AccessPoints;
 
 public class AccessPointSetSettings : ServerNameSettings
 {

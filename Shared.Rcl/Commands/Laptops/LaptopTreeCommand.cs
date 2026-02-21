@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops;
+namespace Shared.Rcl.Commands.Laptops;
 
 public sealed class LaptopTreeCommand(GetHardwareSystemTreeUseCase useCase)
     : AsyncCommand<LaptopNameSettings>

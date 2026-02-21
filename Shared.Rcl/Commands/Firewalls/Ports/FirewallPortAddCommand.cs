@@ -1,10 +1,10 @@
-using Spectre.Console.Cli;
-using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Firewalls.Ports;
+using RackPeek.Domain.Resources.Firewalls;
+using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Firewalls.Ports;
+namespace Shared.Rcl.Commands.Firewalls.Ports;
 
 public class FirewallPortAddSettings : FirewallNameSettings
 {
@@ -19,7 +19,7 @@ public class FirewallPortAddCommand(IServiceProvider sp)
     public override async Task<int> ExecuteAsync(CommandContext ctx, FirewallPortAddSettings s, CancellationToken ct)
     {
         using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddFirewallPortUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IAddPortUseCase<Firewall>>();
 
         await useCase.ExecuteAsync(s.Name, s.Type, s.Speed, s.Count);
 

@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Firewalls;
+using RackPeek.Domain.Resources.Firewalls;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Firewalls;
+namespace Shared.Rcl.Commands.Firewalls;
 
 public class FirewallDeleteCommand(
     IServiceProvider serviceProvider
@@ -15,7 +16,7 @@ public class FirewallDeleteCommand(
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DeleteFirewallUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Firewall>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

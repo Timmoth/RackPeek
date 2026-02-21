@@ -1,19 +1,25 @@
 ﻿@page "/resources/hardware/{HardwareName}"
-@using RackPeek.Domain.Resources.Hardware
-@using RackPeek.Domain.Resources.Models
 
-@using Router = RackPeek.Domain.Resources.Models.Router
-@using Shared.Rcl.Components
-@using Shared.Rcl.Servers
-@using Shared.Rcl.Desktops
+@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources.AccessPoints
+@using RackPeek.Domain.Resources.Desktops
+@using RackPeek.Domain.Resources.Firewalls
+@using RackPeek.Domain.Resources.Hardware
+@using RackPeek.Domain.Resources.Laptops
+@using RackPeek.Domain.Resources.Servers
+@using RackPeek.Domain.Resources.Switches
+@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.UpsUnits
 @using Shared.Rcl.AccessPoints
-@using Shared.Rcl.Switches
+@using Shared.Rcl.Desktops
 @using Shared.Rcl.Firewalls
 @using Shared.Rcl.Laptops
 @using Shared.Rcl.Routers
+@using Shared.Rcl.Servers
+@using Shared.Rcl.Switches
 @using Shared.Rcl.Ups
-@using Shared.Rcl.Systems
-@inject IHardwareRepository HardwareRepository
+@using Router = RackPeek.Domain.Resources.Routers.Router
+@inject IResourceCollection Repo
 @inject GetHardwareSystemTreeUseCase GetHardwareSystemTreeUseCase
 @inject NavigationManager Nav
 
@@ -89,7 +95,10 @@
         }
 
         <div class="m-4">
-            <AddSystemComponent RunsOn="@HardwareName"/>
+            <AddResourceComponent TResource="SystemResource"
+                                  Placeholder="System name"
+                                  OnCreated="NavigateToNewResource"
+                                  RunsOn="@HardwareName"/>
         </div>
     }
 </div>
@@ -103,7 +112,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _hardware = await HardwareRepository.GetByNameAsync(HardwareName);
+        _hardware = await Repo.GetByNameAsync(HardwareName) as Hardware;
         _tree = null;
         if (!string.IsNullOrEmpty(_hardware?.Name))
         {
@@ -116,7 +125,13 @@
 
     private async Task DeleteCallback(string obj)
     {
-        Nav.NavigateTo($"/hardware/tree");
+        Nav.NavigateTo("/hardware/tree");
+    }
+
+    private Task NavigateToNewResource(string serverName)
+    {
+        Nav.NavigateTo($"resources/systems/{serverName}");
+        return Task.CompletedTask;
     }
 
 }

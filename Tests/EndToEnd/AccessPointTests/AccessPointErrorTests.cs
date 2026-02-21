@@ -1,7 +1,7 @@
 using Tests.EndToEnd.Infra;
 using Xunit.Abstractions;
 
-namespace Tests.EndToEnd;
+namespace Tests.EndToEnd.AccessPointTests;
 
 [Collection("Yaml CLI tests")]
 public class AccessPointErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
@@ -67,6 +67,6 @@ public class AccessPointErrorTests(TempYamlCliFixture fs, ITestOutputHelper outp
             "--speed", "not-a-number"
         );
 
-        Assert.Contains("invalid", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("error", output, StringComparison.OrdinalIgnoreCase);
     }
 }

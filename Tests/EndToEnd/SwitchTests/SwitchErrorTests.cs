@@ -1,7 +1,7 @@
 using Tests.EndToEnd.Infra;
 using Xunit.Abstractions;
 
-namespace Tests.EndToEnd;
+namespace Tests.EndToEnd.SwitchTests;
 
 [Collection("Yaml CLI tests")]
 public class SwitchErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
@@ -74,7 +74,7 @@ public class SwitchErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
             "--type", "rj45"
         );
 
-        Assert.Contains("invalid", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -87,6 +87,6 @@ public class SwitchErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
             "--index", "3"
         );
 
-        Assert.Contains("invalid", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 }

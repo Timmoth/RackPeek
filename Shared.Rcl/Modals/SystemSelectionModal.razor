@@ -1,6 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources.SystemResources
-@inject ISystemRepository SystemRepository
+@inject IResourceCollection Repo
 
 @if (IsOpen)
 {
@@ -88,7 +89,7 @@
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
 
-    [Parameter][EditorRequired] public string Title { get; set; } = "Select system";
+    [Parameter] [EditorRequired] public string Title { get; set; } = "Select system";
 
     /// <summary>
     ///     Default / pre-selected system name (may be null)
@@ -117,7 +118,7 @@
     {
         if (IsOpen)
         {
-            _systems = (await SystemRepository.GetAllAsync())
+            _systems = (await Repo.GetAllOfTypeAsync<SystemResource>())
                 .OrderBy(s => s.Type)
                 .ThenBy(s => s.Name)
                 .ToList();

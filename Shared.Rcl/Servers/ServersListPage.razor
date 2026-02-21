@@ -1,7 +1,32 @@
 ﻿@page "/servers/list"
+@using RackPeek.Domain.Resources.Servers
+@inject NavigationManager Nav
 
-<PageTitle>Servers</PageTitle>
-<h1 class="text-lg text-zinc-100">
-    Servers
-</h1>
-<ServersListComponent/>
+<ResourcesListComponent TResource="Server"
+                        Title="Servers"
+                        TestId="servers"
+                        OnCreated="NavigateToNewResource">
+
+    <ItemTemplate Context="server">
+        <ServerCardComponent Server="server"
+                             OnDeleted="Reload"/>
+    </ItemTemplate>
+
+</ResourcesListComponent>
+
+@code {
+
+    [Inject] IGetAllResourcesByKindUseCase<Server> GetAllUseCase { get; set; } = default!;
+
+    private Task NavigateToNewResource(string name)
+    {
+        Nav.NavigateTo($"resources/hardware/{name}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Reload(string _)
+    {
+        await GetAllUseCase.ExecuteAsync();
+    }
+
+}

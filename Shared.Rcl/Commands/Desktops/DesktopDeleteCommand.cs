@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.Resources.Desktops;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops;
+namespace Shared.Rcl.Commands.Desktops;
 
 public class DesktopDeleteCommand(IServiceProvider provider)
     : AsyncCommand<DesktopNameSettings>
@@ -14,7 +15,7 @@ public class DesktopDeleteCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DeleteDesktopUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RackPeek.Domain.Resources.Hardware.Laptops;
+using RackPeek.Domain.Resources.Laptops;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops;
+namespace Shared.Rcl.Commands.Laptops;
 
 public class LaptopReportCommand(
     ILogger<LaptopReportCommand> logger,

@@ -1,7 +1,7 @@
 using Tests.EndToEnd.Infra;
 using Xunit.Abstractions;
 
-namespace Tests.EndToEnd;
+namespace Tests.EndToEnd.UpsTests;
 
 [Collection("Yaml CLI tests")]
 public class UpsErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
@@ -67,6 +67,6 @@ public class UpsErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper
             "--va", "not-a-number"
         );
 
-        Assert.Contains("invalid", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("error", output, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -1,15 +1,16 @@
 using RackPeek.Domain.Helpers;
+using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Services;
 
 namespace RackPeek.Domain.UseCases.Tags;
+
 public interface IRemoveTagUseCase<T> : IResourceUseCase<T>
     where T : Resource
 {
     Task ExecuteAsync(string name, string tag);
 }
 
-public class RemoveTagUseCase<T>(IResourceRepo<T> repo)
+public class RemoveTagUseCase<T>(IResourceCollection repo)
     : IRemoveTagUseCase<T>
     where T : Resource
 {

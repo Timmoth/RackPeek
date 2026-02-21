@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RackPeek.Domain.Resources.Hardware.UpsUnits;
+using RackPeek.Domain.Resources.UpsUnits;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Ups;
+namespace Shared.Rcl.Commands.Ups;
 
 public class UpsReportCommand(
     ILogger<UpsReportCommand> logger,

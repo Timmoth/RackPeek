@@ -10,18 +10,18 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all"/>
-        <PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
-        <PackageReference Include="Spectre.Console.Testing" Version="0.54.0" />
+        <PackageReference Include="Spectre.Console.Cli" Version="0.53.1"/>
+        <PackageReference Include="Spectre.Console.Testing" Version="0.54.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj" />
+        <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Layout\MainLayout.razor" />
-      <_ContentIncludedByDefault Remove="Layout\NavMenu.razor" />
-      <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
+        <_ContentIncludedByDefault Remove="Layout\MainLayout.razor"/>
+        <_ContentIncludedByDefault Remove="Layout\NavMenu.razor"/>
+        <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json"/>
     </ItemGroup>
 
 </Project>

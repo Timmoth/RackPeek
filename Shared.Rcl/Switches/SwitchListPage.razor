@@ -1,9 +1,32 @@
 ﻿@page "/switches/list"
+@using RackPeek.Domain.Resources.Switches
+@inject NavigationManager Nav
 
-<PageTitle>Switches</PageTitle>
+<ResourcesListComponent TResource="Switch"
+                        Title="Switches"
+                        TestId="switches"
+                        OnCreated="NavigateToNewResource">
 
-<h1 class="text-lg text-zinc-100">
-    Switches
-</h1>
+    <ItemTemplate Context="switchItem">
+        <SwitchCardComponent Switch="switchItem"
+                             OnDeleted="Reload"/>
+    </ItemTemplate>
 
-<SwitchListComponent/>
+</ResourcesListComponent>
+
+@code {
+
+    [Inject] IGetAllResourcesByKindUseCase<Switch> GetAllUseCase { get; set; } = default!;
+
+    private Task NavigateToNewResource(string name)
+    {
+        Nav.NavigateTo($"resources/hardware/{name}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Reload(string _)
+    {
+        await GetAllUseCase.ExecuteAsync();
+    }
+
+}

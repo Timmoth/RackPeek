@@ -1,10 +1,6 @@
 ﻿@page "/resources/services/{ServiceName}"
-@using RackPeek.Domain.Resources.Services
-@using RackPeek.Domain.Resources.Services.UseCases
-@using Shared.Rcl.Components
-@using Shared.Rcl.Components
-@inject IServiceRepository ServiceRepository
-@inject UpdateServiceUseCase UpdateServiceUseCase
+@using RackPeek.Domain.Persistence
+@inject IResourceCollection Repo
 @inject NavigationManager NavigationManager
 
 <PageTitle>Service Details</PageTitle>
@@ -28,7 +24,7 @@
             @_service.Name (@_service.Kind)
         </h1>
 
-        <ServiceCardComponent Service="_service" OnSave="UpdateService" OnDeleted="OnDeleted"/>
+        <ServiceCardComponent Service="_service" OnDeleted="OnDeleted"/>
     }
 </div>
 
@@ -40,21 +36,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _service = await ServiceRepository.GetByNameAsync(ServiceName);
+        _service = await Repo.GetByNameAsync<Service>(ServiceName);
         _loading = false;
-    }
-
-    async Task UpdateService(ServiceEditModel edit)
-    {
-        await UpdateServiceUseCase.ExecuteAsync(
-            edit.Name,
-            edit.Ip,
-            edit.Port,
-            edit.Protocol,
-            edit.Url,
-            edit.RunsOn,
-                edit.Notes
-        );
     }
 
     private void OnDeleted(string obj)

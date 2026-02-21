@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Servers;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Servers;
+namespace Shared.Rcl.Commands.Servers;
 
 public class ServerDescribeCommand(
     IServiceProvider serviceProvider
@@ -15,7 +16,7 @@ public class ServerDescribeCommand(
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<GetServerUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<Server>>();
 
         var server = await useCase.ExecuteAsync(settings.Name);
 

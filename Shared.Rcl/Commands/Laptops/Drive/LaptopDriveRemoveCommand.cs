@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Laptops.Drives;
+using RackPeek.Domain.Resources.Laptops;
+using RackPeek.Domain.UseCases.Drives;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Laptops.Drive;
+namespace Shared.Rcl.Commands.Laptops.Drive;
 
 public class LaptopDriveRemoveCommand(IServiceProvider provider)
     : AsyncCommand<LaptopDriveRemoveSettings>
@@ -14,7 +15,7 @@ public class LaptopDriveRemoveCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RemoveLaptopDriveUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveDriveUseCase<Laptop>>();
 
         await useCase.ExecuteAsync(settings.LaptopName, settings.Index);
 

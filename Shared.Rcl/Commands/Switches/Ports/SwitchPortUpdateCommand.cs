@@ -1,24 +1,20 @@
-using Spectre.Console.Cli;
-using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Switches.Ports;
+using RackPeek.Domain.Resources.Switches;
+using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Switches.Ports;
+namespace Shared.Rcl.Commands.Switches.Ports;
 
 public class SwitchPortUpdateSettings : SwitchNameSettings
 {
-    [CommandOption("--index <INDEX>")]
-    public int Index { get; set; }
+    [CommandOption("--index <INDEX>")] public int Index { get; set; }
 
-    [CommandOption("--type")]
-    public string? Type { get; set; }
+    [CommandOption("--type")] public string? Type { get; set; }
 
-    [CommandOption("--speed")]
-    public double? Speed { get; set; }
+    [CommandOption("--speed")] public double? Speed { get; set; }
 
-    [CommandOption("--count")]
-    public int? Count { get; set; }
+    [CommandOption("--count")] public int? Count { get; set; }
 }
 
 public class SwitchPortUpdateCommand(IServiceProvider sp)
@@ -27,7 +23,7 @@ public class SwitchPortUpdateCommand(IServiceProvider sp)
     public override async Task<int> ExecuteAsync(CommandContext ctx, SwitchPortUpdateSettings s, CancellationToken ct)
     {
         using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateSwitchPortUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IUpdatePortUseCase<Switch>>();
 
         await useCase.ExecuteAsync(s.Name, s.Index, s.Type, s.Speed, s.Count);
 

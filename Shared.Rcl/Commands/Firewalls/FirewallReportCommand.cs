@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RackPeek.Domain.Resources.Hardware.Firewalls;
+using RackPeek.Domain.Resources.Firewalls;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Firewalls;
+namespace Shared.Rcl.Commands.Firewalls;
 
 public class FirewallReportCommand(
     ILogger<FirewallReportCommand> logger,

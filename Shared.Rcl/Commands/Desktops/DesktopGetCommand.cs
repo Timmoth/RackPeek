@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.Resources.Desktops;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops;
+namespace Shared.Rcl.Commands.Desktops;
 
 public class DesktopGetCommand(IServiceProvider provider)
     : AsyncCommand
@@ -13,7 +14,7 @@ public class DesktopGetCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<GetDesktopsUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IGetAllResourcesByKindUseCase<Desktop>>();
 
         var desktops = await useCase.ExecuteAsync();
 

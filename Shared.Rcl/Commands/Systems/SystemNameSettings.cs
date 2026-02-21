@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Systems;
+namespace Shared.Rcl.Commands.Systems;
 
 public class SystemNameSettings : CommandSettings
 {

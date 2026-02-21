@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.Resources.Desktops;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops;
+namespace Shared.Rcl.Commands.Desktops;
 
 public class DesktopDescribeCommand(IServiceProvider provider)
     : AsyncCommand<DesktopNameSettings>

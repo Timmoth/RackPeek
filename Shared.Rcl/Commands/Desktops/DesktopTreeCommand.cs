@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources.Hardware;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops;
+namespace Shared.Rcl.Commands.Desktops;
 
 public sealed class DesktopTreeCommand(GetHardwareSystemTreeUseCase useCase)
     : AsyncCommand<DesktopNameSettings>

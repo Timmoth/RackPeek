@@ -1,6 +1,6 @@
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Firewalls;
+namespace Shared.Rcl.Commands.Firewalls;
 
 public class FirewallNameSettings : CommandSettings
 {

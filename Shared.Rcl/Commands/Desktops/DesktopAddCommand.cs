@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.Resources.Desktops;
+using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace RackPeek.Commands.Desktops;
+namespace Shared.Rcl.Commands.Desktops;
 
 public class DesktopAddCommand(IServiceProvider provider)
     : AsyncCommand<DesktopNameSettings>
@@ -14,7 +15,7 @@ public class DesktopAddCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<AddDesktopUseCase>();
+        var useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.Name);
 
