@@ -5,8 +5,9 @@
 @inject NavigationManager Nav
 
 <ResourcesListComponent TResource="SystemResource"
-                        Title="Systems"
+                        Title="@PageTitle"
                         TestId="systems"
+                        Resources="@Systems"
                         ShouldGroup="true"
                         GroupBy="@(s => s.RunsOn)"
                         OnCreated="NavigateToNewResource">
@@ -35,6 +36,40 @@
     [SupplyParameterFromQuery(Name = "os")]
     public string? Os { get; set; }
 
+    public IReadOnlyList<SystemResource> Systems { get; set; } = new List<SystemResource>();
+
+    // Computed title that reflects active filters
+    private string PageTitle
+    {
+        get
+        {
+            var type = Normalize(Type);
+            var os = Normalize(Os);
+
+            if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(os))
+                return "Systems";
+
+            var parts = new List<string>();
+            if (!string.IsNullOrEmpty(type)) parts.Add(type);
+            if (!string.IsNullOrEmpty(os)) parts.Add(os);
+
+            return $"Systems ({string.Join(" / ", parts)})";
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Reload();
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // If query params change while staying on the page, keep list + title in sync
+        await Reload();
+        await base.OnParametersSetAsync();
+    }
+
     private async Task Reload(string _ = "")
     {
         var type = Normalize(Type);
@@ -42,18 +77,16 @@
 
         if (string.IsNullOrEmpty(type) && string.IsNullOrEmpty(os))
         {
-            await Repo.GetAllOfTypeAsync<SystemResource>();
+            Systems = await Repo.GetAllOfTypeAsync<SystemResource>();
         }
         else
         {
-            await SystemRepo.GetFilteredAsync(type, os);
+            Systems = await SystemRepo.GetFilteredAsync(type, os);
         }
     }
 
     private static string? Normalize(string? s)
-    {
-        return string.IsNullOrWhiteSpace(s) ? null : s.Trim();
-    }
+        => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
 
     private async Task UpdateSystem(SystemEditModel edit)
     {
@@ -75,5 +108,4 @@
         Nav.NavigateTo($"resources/systems/{name}");
         return Task.CompletedTask;
     }
-
 }
