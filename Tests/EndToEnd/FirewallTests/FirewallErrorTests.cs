@@ -87,6 +87,6 @@ public class FirewallErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputH
             "--index", "3"
         );
 
-        Assert.Contains("test", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 }
