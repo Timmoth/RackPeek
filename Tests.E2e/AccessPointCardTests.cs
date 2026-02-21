@@ -246,4 +246,71 @@ public class AccessPointCardTests(
             await context.CloseAsync();
         }
     }
+    
+    [Fact]
+    public async Task User_Can_Add_And_Remove_Tags_From_AccessPoint_Card()
+    {
+        var (context, page) = await CreatePageAsync();
+        var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
+
+        try
+        {
+            await page.GotoAsync(fixture.BaseUrl);
+
+            var layout = new MainLayoutPom(page);
+            await layout.AssertLoadedAsync();
+            await layout.GotoHardwareAsync();
+
+            var hardwareTree = new HardwareTreePom(page);
+            await hardwareTree.AssertLoadedAsync();
+            await hardwareTree.GotoAccessPointsListAsync();
+
+            var list = new AccessPointsListPom(page);
+            await list.AssertLoadedAsync();
+
+            await list.AddAccessPointAsync(name);
+            await page.WaitForURLAsync($"**/resources/hardware/{name}");
+
+            var card = new AccessPointCardPom(page);
+            await card.AssertCardVisibleAsync(name);
+
+            var tags = card.Tags;
+
+            // -------------------------------------------------
+            // Add multiple tags in one modal interaction
+            // -------------------------------------------------
+
+            await tags.AddTagsAsync("accesspoint", "Foo", "Bar", "Baz");
+
+            await tags.AssertTagVisibleAsync("accesspoint", "Foo");
+            await tags.AssertTagVisibleAsync("accesspoint", "Bar");
+            await tags.AssertTagVisibleAsync("accesspoint", "Baz");
+
+            // -------------------------------------------------
+            // Remove a single tag
+            // -------------------------------------------------
+
+            await tags.RemoveTagAsync("accesspoint", "Bar");
+
+            await tags.AssertTagNotVisibleAsync("accesspoint", "Bar");
+            await tags.AssertTagVisibleAsync("accesspoint", "Foo");
+            await tags.AssertTagVisibleAsync("accesspoint", "Baz");
+
+            // -------------------------------------------------
+            // Reload to verify persistence
+            // -------------------------------------------------
+
+            await page.ReloadAsync();
+
+            await tags.AssertTagVisibleAsync("accesspoint", "Foo");
+            await tags.AssertTagVisibleAsync("accesspoint", "Baz");
+            await tags.AssertTagNotVisibleAsync("accesspoint", "Bar");
+
+            await context.CloseAsync();
+        }
+        finally
+        {
+            await context.CloseAsync();
+        }
+    }
 }

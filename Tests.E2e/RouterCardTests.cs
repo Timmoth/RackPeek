@@ -228,4 +228,70 @@ public class RouterCardTests(
             await context.CloseAsync();
         }
     }
+    
+    
+    [Fact]
+    public async Task User_Can_Add_And_Remove_Tags_From_Router_Card()
+    {
+        var (context, page) = await CreatePageAsync();
+        var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
+
+        try
+        {
+            await page.GotoAsync(fixture.BaseUrl);
+
+            var layout = new MainLayoutPom(page);
+            await layout.AssertLoadedAsync();
+            await layout.GotoHardwareAsync();
+
+            var hardwareTree = new HardwareTreePom(page);
+            await hardwareTree.AssertLoadedAsync();
+            await hardwareTree.GotoRoutersListAsync();
+
+            var list = new RouterListPom(page);
+            await list.AssertLoadedAsync();
+
+            await list.AddRouterAsync(name);
+            await page.WaitForURLAsync($"**/resources/hardware/{name}");
+
+            var card = new RouterCardPom(page);
+            var tags = card.Tags;
+
+            // -------------------------------------------------
+            // Add multiple tags in one modal interaction
+            // -------------------------------------------------
+
+            await tags.AddTagsAsync("router", "Foo", "Bar", "Baz");
+
+            await tags.AssertTagVisibleAsync("router", "Foo");
+            await tags.AssertTagVisibleAsync("router", "Bar");
+            await tags.AssertTagVisibleAsync("router", "Baz");
+
+            // -------------------------------------------------
+            // Remove a single tag
+            // -------------------------------------------------
+
+            await tags.RemoveTagAsync("router", "Bar");
+
+            await tags.AssertTagNotVisibleAsync("router", "Bar");
+            await tags.AssertTagVisibleAsync("router", "Foo");
+            await tags.AssertTagVisibleAsync("router", "Baz");
+
+            // -------------------------------------------------
+            // Reload to verify persistence
+            // -------------------------------------------------
+
+            await page.ReloadAsync();
+
+            await tags.AssertTagVisibleAsync("router", "Foo");
+            await tags.AssertTagVisibleAsync("router", "Baz");
+            await tags.AssertTagNotVisibleAsync("router", "Bar");
+
+            await context.CloseAsync();
+        }
+        finally
+        {
+            await context.CloseAsync();
+        }
+    }
 }

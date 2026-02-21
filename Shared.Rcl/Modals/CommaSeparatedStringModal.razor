@@ -1,0 +1,171 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+@if (IsOpen)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center"
+         data-testid="@BaseTestId">
+
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/70"
+             data-testid="@($"{BaseTestId}-backdrop")"
+             @onclick="Cancel">
+        </div>
+
+        <!-- Modal -->
+        <div class="relative bg-zinc-900 border border-zinc-800 rounded w-full max-w-md p-4"
+             data-testid="@($"{BaseTestId}-container")">
+
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-3"
+                 data-testid="@($"{BaseTestId}-header")">
+
+                <div class="text-zinc-100 text-sm font-medium"
+                     data-testid="@($"{BaseTestId}-title")">
+                    @Title
+                </div>
+
+                <button class="text-zinc-400 hover:text-zinc-200"
+                        data-testid="@($"{BaseTestId}-close")"
+                        @onclick="Cancel">
+                    ✕
+                </button>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Description))
+            {
+                <div class="text-xs text-zinc-400 mb-4"
+                     data-testid="@($"{BaseTestId}-description")">
+                    @Description
+                </div>
+            }
+
+            <!-- Form -->
+            <EditForm Model="_model"
+                      OnValidSubmit="HandleValidSubmit"
+                      data-testid="@($"{BaseTestId}-form")">
+
+                <DataAnnotationsValidator />
+
+                @if (!string.IsNullOrEmpty(_error))
+                {
+                    <div class="text-xs text-red-400 mb-3"
+                         data-testid="@($"{BaseTestId}-error")">
+                        @_error
+                    </div>
+                }
+
+                <div class="text-sm"
+                     data-testid="@($"{BaseTestId}-field")">
+
+                    <label class="block text-zinc-400 mb-1">
+                        @Label
+                    </label>
+
+                    <InputText class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                               data-testid="@($"{BaseTestId}-input")"
+                               @bind-Value="_model.Value" />
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-2 mt-5"
+                     data-testid="@($"{BaseTestId}-actions")">
+
+                    <button type="button"
+                            class="px-3 py-1 rounded border border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                            data-testid="@($"{BaseTestId}-cancel")"
+                            @onclick="Cancel">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="px-3 py-1 rounded bg-emerald-600 text-black hover:bg-emerald-500"
+                            data-testid="@($"{BaseTestId}-submit")">
+                        Accept
+                    </button>
+                </div>
+
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public string Title { get; set; } = "Add values";
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public string Label { get; set; } = "Values";
+
+    [Parameter] public string? Value { get; set; }
+
+    [Parameter] public EventCallback<IReadOnlyList<string>> OnSubmit { get; set; }
+
+    [Parameter] public string? TestIdPrefix { get; set; }
+
+    private string BaseTestId =>
+        string.IsNullOrWhiteSpace(TestIdPrefix)
+            ? "comma-separated-string-modal"
+            : $"{TestIdPrefix}-comma-separated-string-modal";
+
+    private FormModel _model = new();
+    private string? _error;
+
+    protected override void OnParametersSet()
+    {
+        if (IsOpen)
+        {
+            _error = null;
+            _model = new FormModel
+            {
+                Value = Value
+            };
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        _error = null;
+
+        try
+        {
+            var values = (_model.Value ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (!values.Any())
+            {
+                _error = "Please enter at least one value.";
+                return;
+            }
+
+            await OnSubmit.InvokeAsync(values);
+            await Close();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private async Task Cancel()
+    {
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        _model = new FormModel();
+        _error = null;
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private class FormModel
+    {
+        [Required]
+        public string? Value { get; set; }
+    }
+}

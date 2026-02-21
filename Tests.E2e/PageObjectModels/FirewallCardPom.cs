@@ -4,6 +4,8 @@ using Microsoft.Playwright;
 
 public class FirewallCardPom(IPage page)
 {
+    public TagsPom Tags => new(page);
+
     // -------------------------------------------------
     // Dynamic Firewall Item (root)
     // -------------------------------------------------

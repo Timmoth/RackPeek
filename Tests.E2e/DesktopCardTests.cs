@@ -281,4 +281,74 @@ public class DesktopCardTests(
             await context.CloseAsync();
         }
     }
+    
+    
+    [Fact]
+    public async Task User_Can_Add_And_Remove_Tags_From_Desktop_Card()
+    {
+        var (context, page) = await CreatePageAsync();
+        var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
+
+        try
+        {
+            await page.GotoAsync(fixture.BaseUrl);
+
+            var layout = new MainLayoutPom(page);
+            await layout.AssertLoadedAsync();
+            await layout.GotoHardwareAsync();
+
+            var hardwareTree = new HardwareTreePom(page);
+            await hardwareTree.AssertLoadedAsync();
+            await hardwareTree.GotoDesktopsListAsync();
+
+            var list = new DesktopsListPom(page);
+            await list.AssertLoadedAsync();
+
+            await list.AddDesktopAsync(name);
+            await page.WaitForURLAsync($"**/resources/hardware/{name}");
+
+            var card = new DesktopCardPom(page);
+            await Assertions.Expect(card.DesktopItem(name)).ToBeVisibleAsync();
+
+            var tags = card.Tags;
+
+            // -------------------------------------------------
+            // Add multiple tags in one modal interaction
+            // -------------------------------------------------
+
+            await tags.AddTagsAsync("desktop", "Foo", "Bar", "Baz");
+
+            await tags.AssertTagVisibleAsync("desktop", "Foo");
+            await tags.AssertTagVisibleAsync("desktop", "Bar");
+            await tags.AssertTagVisibleAsync("desktop", "Baz");
+
+            // -------------------------------------------------
+            // Remove a single tag
+            // -------------------------------------------------
+
+            await tags.RemoveTagAsync("desktop", "Bar");
+
+            await tags.AssertTagNotVisibleAsync("desktop", "Bar");
+            await tags.AssertTagVisibleAsync("desktop", "Foo");
+            await tags.AssertTagVisibleAsync("desktop", "Baz");
+
+            // -------------------------------------------------
+            // Reload to verify persistence
+            // -------------------------------------------------
+
+            await page.ReloadAsync();
+
+            await tags.AssertTagVisibleAsync("desktop", "Foo");
+            await tags.AssertTagVisibleAsync("desktop", "Baz");
+            await tags.AssertTagNotVisibleAsync("desktop", "Bar");
+
+            await context.CloseAsync();
+        }
+        finally
+        {
+            await context.CloseAsync();
+        }
+    }
+    
+    
 }
