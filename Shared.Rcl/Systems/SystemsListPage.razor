@@ -1,5 +1,4 @@
 ﻿@page "/systems/list"
-
 @using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources.SystemResources
 @using RackPeek.Domain.Resources.SystemResources.UseCases
@@ -16,7 +15,7 @@
         <div data-testid=@($"systems-list-item-{systemResource.Name.Replace(" ", "-")}")>
             <SystemCardComponent System="systemResource"
                                  OnSave="UpdateSystem"
-                                 OnDeleted="Reload" />
+                                 OnDeleted="Reload"/>
         </div>
     </ItemTemplate>
 
@@ -52,7 +51,9 @@
     }
 
     private static string? Normalize(string? s)
-        => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+    {
+        return string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+    }
 
     private async Task UpdateSystem(SystemEditModel edit)
     {
@@ -74,4 +75,5 @@
         Nav.NavigateTo($"resources/systems/{name}");
         return Task.CompletedTask;
     }
+
 }

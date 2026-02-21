@@ -4,7 +4,7 @@ namespace Tests.E2e.PageObjectModels;
 
 public class ServicesListPom
 {
-     private readonly IPage _page;
+    private readonly IPage _page;
 
     public ServicesListPom(IPage page)
     {
@@ -26,43 +26,60 @@ public class ServicesListPom
     // Add Service Component (Reusable Component Object)
     // -------------------------------------------------
 
-    public AddResourceComponent AddService =>
-        new AddResourceComponent(_page, "service");
+    public AddResourceComponent AddService => new(_page, "service");
 
     // -------------------------------------------------
     // Grouping (RunsOn)
     // -------------------------------------------------
 
     public ILocator Group(string groupKey)
-        => _page.GetByTestId($"services-group-{SanitizeGroup(groupKey)}");
+    {
+        return _page.GetByTestId($"services-group-{SanitizeGroup(groupKey)}");
+    }
 
     public ILocator GroupTitle(string groupKey)
-        => _page.GetByTestId($"services-group-title-{SanitizeGroup(groupKey)}");
+    {
+        return _page.GetByTestId($"services-group-title-{SanitizeGroup(groupKey)}");
+    }
 
     public ILocator GroupList(string groupKey)
-        => _page.GetByTestId($"services-group-list-{SanitizeGroup(groupKey)}");
+    {
+        return _page.GetByTestId($"services-group-list-{SanitizeGroup(groupKey)}");
+    }
 
     // -------------------------------------------------
     // Individual Services
     // -------------------------------------------------
 
     public ILocator ServiceListItem(string name)
-        => _page.GetByTestId($"services-list-item-{Sanitize(name)}");
+    {
+        return _page.GetByTestId($"services-list-item-{Sanitize(name)}");
+    }
 
     public ILocator ServiceCard(string name)
-        => _page.GetByTestId($"service-item-{Sanitize(name)}");
+    {
+        return _page.GetByTestId($"service-item-{Sanitize(name)}");
+    }
 
     public ILocator DeleteButton(string name)
-        => ServiceCard(name).GetByTestId("delete-service-button");
+    {
+        return ServiceCard(name).GetByTestId("delete-service-button");
+    }
 
     public ILocator EditButton(string name)
-        => ServiceCard(name).GetByTestId("edit-service-button");
+    {
+        return ServiceCard(name).GetByTestId("edit-service-button");
+    }
 
     public ILocator RenameButton(string name)
-        => ServiceCard(name).GetByTestId("rename-service-button");
+    {
+        return ServiceCard(name).GetByTestId("rename-service-button");
+    }
 
     public ILocator CloneButton(string name)
-        => ServiceCard(name).GetByTestId("clone-service-button");
+    {
+        return ServiceCard(name).GetByTestId("clone-service-button");
+    }
 
     // -------------------------------------------------
     // Navigation
@@ -155,10 +172,14 @@ public class ServicesListPom
     // -------------------------------------------------
 
     private static string Sanitize(string value)
-        => value.Replace(" ", "-");
+    {
+        return value.Replace(" ", "-");
+    }
 
     private static string SanitizeGroup(string? value)
-        => string.IsNullOrWhiteSpace(value)
+    {
+        return string.IsNullOrWhiteSpace(value)
             ? "unassigned"
             : value.Replace(" ", "-");
+    }
 }

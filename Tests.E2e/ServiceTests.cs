@@ -1,14 +1,12 @@
-﻿using Microsoft.Playwright;
-using Shared.Rcl.Systems;
+﻿using Tests.E2e.Infra;
 using Tests.E2e.PageObjectModels;
-using Tests.E2e.Pages;
 using Xunit.Abstractions;
 
 namespace Tests.E2e;
 
 public class ServiceTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) :E2ETestBase(fixture, output)
+    ITestOutputHelper output) : E2ETestBase(fixture, output)
 {
     private readonly ITestOutputHelper _output = output;
 
@@ -23,13 +21,13 @@ public class ServiceTests(
             await page.GotoAsync(fixture.BaseUrl);
 
             _output.WriteLine($"URL after Goto: {page.Url}");
-            
+
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
             await layout.GotoServicesAsync();
-            
+
             var systems = new ServicesListPom(page);
-            
+
             var serviceName = $"e2e-service-{Guid.NewGuid():N}"[..12];
 
             await systems.AddServiceAsync(serviceName);
@@ -52,7 +50,7 @@ public class ServiceTests(
             _output.WriteLine("==== DOM SNAPSHOT START ====");
             _output.WriteLine(html);
             _output.WriteLine("==== DOM SNAPSHOT END ====");
-            
+
             throw;
         }
         finally

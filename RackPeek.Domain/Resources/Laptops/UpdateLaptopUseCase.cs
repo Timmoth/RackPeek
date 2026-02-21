@@ -2,7 +2,7 @@ using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.SubResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Laptops;
+namespace RackPeek.Domain.Resources.Laptops;
 
 public class UpdateLaptopUseCase(IResourceCollection repository) : IUseCase
 {

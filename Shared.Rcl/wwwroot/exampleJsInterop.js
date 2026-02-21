@@ -2,5 +2,5 @@
 // functions, and may import other JavaScript modules if required.
 
 export function showPrompt(message) {
-  return prompt(message, 'Type anything here');
+    return prompt(message, 'Type anything here');
 }

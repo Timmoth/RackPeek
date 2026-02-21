@@ -2,7 +2,7 @@ using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.SubResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Servers;
+namespace RackPeek.Domain.Resources.Servers;
 
 public class UpdateServerUseCase(IResourceCollection repository) : IUseCase
 {

@@ -1,32 +1,31 @@
-﻿@typeparam TResource where TResource : Resource
-
-@using RackPeek.Domain.Resources
+﻿@using RackPeek.Domain.Resources
+@typeparam TResource where TResource : RackPeek.Domain.Resources.Resource
 
 @inject IAddResourceUseCase<TResource> AddResource
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900"
-     data-testid=@($"add-{@ResourceTypeLower}-root")>
+     data-testid=@($"add-{ResourceTypeLower}-root")>
 
     <div class="text-zinc-100 mb-3"
-         data-testid=@($"add-{@ResourceTypeLower}-title")>
+         data-testid=@($"add-{ResourceTypeLower}-title")>
         Add @ResourceType
     </div>
 
     <div class="flex gap-2"
-         data-testid=@($"add-{@ResourceTypeLower}-form")>
+         data-testid=@($"add-{ResourceTypeLower}-form")>
 
         <input
             class="flex-1 bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
             placeholder="@Placeholder"
             @bind="_name"
             @bind:event="oninput"
-            data-testid=@($"add-{@ResourceTypeLower}-input") />
+            data-testid=@($"add-{ResourceTypeLower}-input")/>
 
         <button
             class="px-4 py-2 text-sm rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-100 disabled:opacity-50"
             disabled="@_isSubmitting"
             @onclick="CreateAsync"
-            data-testid=@($"add-{@ResourceTypeLower}-button")>
+            data-testid=@($"add-{ResourceTypeLower}-button")>
             add
         </button>
     </div>
@@ -34,7 +33,7 @@
     @if (_error is not null)
     {
         <div class="mt-2 text-sm text-red-400"
-             data-testid=@($"add-{@ResourceTypeLower}-error")>
+             data-testid=@($"add-{ResourceTypeLower}-error")>
             @_error
         </div>
     }
@@ -82,4 +81,5 @@
             _isSubmitting = false;
         }
     }
+
 }

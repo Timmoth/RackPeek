@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.AccessPoints;
+using RackPeek.Domain.Resources.AccessPoints;
 using Shared.Rcl.Commands.Servers;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -22,7 +22,6 @@ public class AccessPointSetCommand(
     IServiceProvider serviceProvider
 ) : AsyncCommand<AccessPointSetSettings>
 {
-    
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         AccessPointSetSettings settings,

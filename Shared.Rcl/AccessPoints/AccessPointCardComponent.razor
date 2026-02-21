@@ -1,7 +1,4 @@
-﻿@using RackPeek.Domain.Resources.Hardware.AccessPoints
-@using RackPeek.Domain.Resources.Hardware.Desktops
-@using RackPeek.Domain.UseCases
-
+﻿@using RackPeek.Domain.Resources.AccessPoints
 @inject UpdateAccessPointUseCase UpdateUseCase
 @inject IDeleteResourceUseCase<AccessPoint> DeleteUseCase
 @inject IRenameResourceUseCase<AccessPoint> RenameUseCase
@@ -66,7 +63,7 @@
                 <input class="w-full px-3 py-2 rounded-md
                           bg-zinc-800 text-zinc-100
                           border border-zinc-600"
-                       @bind="_edit.Model" />
+                       @bind="_edit.Model"/>
             }
             else if (!string.IsNullOrWhiteSpace(AccessPoint.Model))
             {
@@ -85,7 +82,7 @@
                        class="w-full px-3 py-2 rounded-md
                           bg-zinc-800 text-zinc-100
                           border border-zinc-600"
-                       @bind="_edit.Speed" />
+                       @bind="_edit.Speed"/>
             }
             else if (AccessPoint.Speed is not null)
             {
@@ -95,8 +92,8 @@
             }
         </div>
 
-        <ResourceTagEditor Resource="AccessPoint" />
-        
+        <ResourceTagEditor Resource="AccessPoint"/>
+
         <div class="md:col-span-2">
             <div class="text-zinc-400 mb-1">Notes</div>
 
@@ -104,13 +101,13 @@
             {
                 <MarkdownEditor
                     @bind-Value="_edit.Notes"
-                    ShowActionButtons="false" />
+                    ShowActionButtons="false"/>
             }
             else
             {
                 <MarkdownViewer
                     Value="@AccessPoint.Notes"
-                    ShowEditButton="false" />
+                    ShowEditButton="false"/>
             }
         </div>
 
@@ -136,7 +133,7 @@
     Description="Enter a new name for this accesspoint"
     Label="New accesspoint name"
     Value="@AccessPoint.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 
 <StringValueModal
     IsOpen="_cloneOpen"
@@ -145,14 +142,12 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{AccessPoint.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
 
 @code {
-    [Parameter][EditorRequired]
-    public AccessPoint AccessPoint { get; set; } = default!;
+    [Parameter] [EditorRequired] public AccessPoint AccessPoint { get; set; } = default!;
 
-    [Parameter]
-    public EventCallback<string> OnDeleted { get; set; }
+    [Parameter] public EventCallback<string> OnDeleted { get; set; }
 
     bool _isEditing;
     bool _confirmDeleteOpen;
@@ -166,6 +161,7 @@
         _edit = AccessPointEditModel.From(AccessPoint);
         _isEditing = true;
     }
+
     async Task Save()
     {
         _isEditing = false;
@@ -178,8 +174,7 @@
 
         AccessPoint.Model = _edit.Model;
         AccessPoint.Speed = _edit.Speed;
-        AccessPoint.Notes = _edit.Notes; 
-        
+        AccessPoint.Notes = _edit.Notes;
     }
 
     void Cancel()

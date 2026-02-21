@@ -1,7 +1,5 @@
-﻿@typeparam TResource where TResource : RackPeek.Domain.Resources.Resource
-
-@using RackPeek.Domain.UseCases
-@using RackPeek.Domain.UseCases.Tags
+﻿@using RackPeek.Domain.UseCases.Tags
+@typeparam TResource where TResource : RackPeek.Domain.Resources.Resource
 @inject NavigationManager Nav
 
 @inject IAddTagUseCase<TResource> AddTagUseCase
@@ -56,14 +54,12 @@
     Description="Enter tag value"
     Label="Tag"
     Value=""
-    OnSubmit="HandleTagSubmit" />
-    
-@code {
-    [Parameter, EditorRequired]
-    public TResource Resource { get; set; } = default!;
+    OnSubmit="HandleTagSubmit"/>
 
-    [Parameter]
-    public EventCallback OnTagsChanged { get; set; }
+@code {
+    [Parameter][EditorRequired] public TResource Resource { get; set; } = default!;
+
+    [Parameter] public EventCallback OnTagsChanged { get; set; }
 
     bool _tagModalOpen;
 
@@ -96,9 +92,10 @@
         if (OnTagsChanged.HasDelegate)
             await OnTagsChanged.InvokeAsync();
     }
-    
+
     void NavigateToTag(string tag)
     {
         Nav.NavigateTo($"tags/{Uri.EscapeDataString(tag)}");
     }
+
 }

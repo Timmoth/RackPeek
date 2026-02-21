@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RackPeek.Domain.Resources.Hardware.Routers;
+using RackPeek.Domain.Resources.Routers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

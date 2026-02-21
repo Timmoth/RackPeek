@@ -3,11 +3,9 @@
 @using RackPeek.Domain.Resources.Hardware
 @using RackPeek.Domain.Resources.SystemResources
 @using RackPeek.Domain.Resources.SystemResources.UseCases
-@using Shared.Rcl.Services
 @inject IResourceCollection Repo
 @inject UpdateSystemUseCase UpdateSystemUseCase
 @inject GetSystemServiceTreeUseCase GetSystemServiceTreeUseCase
-@inject NavigationManager NavigationManager
 @inject NavigationManager Nav
 
 <PageTitle>System Details</PageTitle>
@@ -47,7 +45,7 @@
         <div class="m-4">
             <AddResourceComponent TResource="Service"
                                   Placeholder="Service name"
-                                  OnCreated="NavigateToNewResource" 
+                                  OnCreated="NavigateToNewResource"
                                   RunsOn="@SystemName"/>
         </div>
     }
@@ -81,13 +79,13 @@
             edit.Cores,
             edit.Ram,
             edit.RunsOn,
-                edit.Notes
+            edit.Notes
         );
     }
 
     private async Task OnDeleted()
     {
-        NavigationManager.NavigateTo("/systems/list");
+        Nav.NavigateTo("/systems/list");
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -95,5 +93,5 @@
         Nav.NavigateTo($"resources/services/{serverName}");
         return Task.CompletedTask;
     }
-    
+
 }

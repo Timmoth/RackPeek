@@ -1,9 +1,9 @@
-using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.SubResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Switches;
+namespace RackPeek.Domain.Resources.Switches;
 
-public class Switch : Hardware, IPortResource
+public class Switch : Hardware.Hardware, IPortResource
 {
     public const string KindLabel = "Switch";
     public string? Model { get; set; }

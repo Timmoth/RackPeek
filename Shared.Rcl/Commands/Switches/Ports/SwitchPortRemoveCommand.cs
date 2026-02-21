@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.Switches;
 using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -8,8 +8,7 @@ namespace Shared.Rcl.Commands.Switches.Ports;
 
 public class SwitchPortRemoveSettings : SwitchNameSettings
 {
-    [CommandOption("--index <INDEX>")]
-    public int Index { get; set; }
+    [CommandOption("--index <INDEX>")] public int Index { get; set; }
 }
 
 public class SwitchPortRemoveCommand(IServiceProvider sp)

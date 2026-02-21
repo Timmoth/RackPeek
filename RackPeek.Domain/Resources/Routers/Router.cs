@@ -1,9 +1,9 @@
-using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.SubResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Routers;
+namespace RackPeek.Domain.Resources.Routers;
 
-public class Router : Hardware, IPortResource
+public class Router : Hardware.Hardware, IPortResource
 {
     public const string KindLabel = "Router";
     public string? Model { get; set; }

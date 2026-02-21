@@ -1,6 +1,6 @@
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
+namespace RackPeek.Domain.Resources.UpsUnits;
 
 public record UpsHardwareReport(
     IReadOnlyList<UpsHardwareRow> UpsUnits

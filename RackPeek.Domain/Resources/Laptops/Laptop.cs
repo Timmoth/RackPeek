@@ -1,9 +1,9 @@
-using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.SubResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Laptops;
+namespace RackPeek.Domain.Resources.Laptops;
 
-public class Laptop : Hardware, ICpuResource, IDriveResource, IGpuResource
+public class Laptop : Hardware.Hardware, ICpuResource, IDriveResource, IGpuResource
 {
     public const string KindLabel = "Laptop";
     public Ram? Ram { get; set; }

@@ -1,13 +1,13 @@
-using RackPeek.Domain.Resources.Hardware.AccessPoints;
-using RackPeek.Domain.Resources.Hardware.Desktops;
-using RackPeek.Domain.Resources.Hardware.Firewalls;
-using RackPeek.Domain.Resources.Hardware.Laptops;
-using RackPeek.Domain.Resources.Hardware.Routers;
-using RackPeek.Domain.Resources.Hardware.Servers;
-using RackPeek.Domain.Resources.Hardware.Switches;
-using RackPeek.Domain.Resources.Hardware.UpsUnits;
+using RackPeek.Domain.Resources.AccessPoints;
+using RackPeek.Domain.Resources.Desktops;
+using RackPeek.Domain.Resources.Firewalls;
+using RackPeek.Domain.Resources.Laptops;
+using RackPeek.Domain.Resources.Routers;
+using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.Services;
+using RackPeek.Domain.Resources.Switches;
 using RackPeek.Domain.Resources.SystemResources;
+using RackPeek.Domain.Resources.UpsUnits;
 
 namespace RackPeek.Domain.Resources;
 

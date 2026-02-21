@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Firewalls;
+using RackPeek.Domain.Resources.Firewalls;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

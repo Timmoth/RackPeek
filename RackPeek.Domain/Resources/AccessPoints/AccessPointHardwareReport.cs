@@ -1,6 +1,6 @@
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.AccessPoints;
+namespace RackPeek.Domain.Resources.AccessPoints;
 
 public record AccessPointHardwareReport(
     IReadOnlyList<AccessPointHardwareRow> AccessPoints

@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.AccessPoints;
+using RackPeek.Domain.Resources.AccessPoints;
 using RackPeek.Domain.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;

@@ -2,19 +2,18 @@ using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using Microsoft.Playwright;
 
-namespace Tests.E2e;
+namespace Tests.E2e.Infra;
 
 public class PlaywrightFixture : IAsyncLifetime
 {
-    public IBrowser Browser { get; private set; } = default!;
-    public string BaseUrl { get; private set; } = default!;
-
-    private IPlaywright _playwright = default!;
-    private IContainer _container = default!;
-    private string _configDirectory = default!;
-
     // Change this if needed
     private const string DockerImage = "rackpeek:ci";
+    private string _configDirectory = default!;
+    private IContainer _container = default!;
+
+    private IPlaywright _playwright = default!;
+    public IBrowser Browser { get; private set; } = default!;
+    public string BaseUrl { get; private set; } = default!;
 
     public async Task InitializeAsync()
     {
@@ -50,10 +49,10 @@ public class PlaywrightFixture : IAsyncLifetime
 
         _playwright = await Playwright.CreateAsync();
 
-        Browser = await _playwright.Chromium.LaunchAsync(new()
+        Browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
-            //Headless = true
-            Headless = false, 
+            Headless = true,
+            //Headless = false,
             SlowMo = 200
         });
     }
@@ -70,8 +69,6 @@ public class PlaywrightFixture : IAsyncLifetime
 
         if (!string.IsNullOrWhiteSpace(_configDirectory) &&
             Directory.Exists(_configDirectory))
-        {
             Directory.Delete(_configDirectory, true);
-        }
     }
 }

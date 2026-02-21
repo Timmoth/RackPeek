@@ -1,5 +1,5 @@
 ﻿@page "/routers/list"
-@using Router = RackPeek.Domain.Resources.Hardware.Routers.Router
+@using Router = RackPeek.Domain.Resources.Routers.Router
 @inject NavigationManager Nav
 
 <ResourcesListComponent TResource="Router"
@@ -9,7 +9,7 @@
 
     <ItemTemplate Context="router">
         <RouterCardComponent Router="router"
-                             OnDeleted="Reload" />
+                             OnDeleted="Reload"/>
     </ItemTemplate>
 
 </ResourcesListComponent>

@@ -1,6 +1,6 @@
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.Firewalls;
+namespace RackPeek.Domain.Resources.Firewalls;
 
 public record FirewallHardwareReport(
     IReadOnlyList<FirewallHardwareRow> Firewalls

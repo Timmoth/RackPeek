@@ -1,7 +1,7 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
+namespace RackPeek.Domain.Resources.UpsUnits;
 
 public class UpdateUpsUseCase(IResourceCollection repository) : IUseCase
 {

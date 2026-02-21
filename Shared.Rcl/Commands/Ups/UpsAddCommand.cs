@@ -19,7 +19,8 @@ public class UpsAddCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<RackPeek.Domain.Resources.Hardware.UpsUnits.Ups>>();
+        var useCase = scope.ServiceProvider
+            .GetRequiredService<IAddResourceUseCase<RackPeek.Domain.Resources.UpsUnits.Ups>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

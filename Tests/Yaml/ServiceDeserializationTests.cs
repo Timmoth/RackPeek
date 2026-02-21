@@ -18,7 +18,8 @@ public class ServiceDeserializationTests
         var filePath = Path.Combine(tempDir, "config.yaml");
         await File.WriteAllTextAsync(filePath, yaml);
 
-        var yamlResourceCollection = new YamlResourceCollection(filePath, new PhysicalTextFileStore(), new ResourceCollection());
+        var yamlResourceCollection =
+            new YamlResourceCollection(filePath, new PhysicalTextFileStore(), new ResourceCollection());
         await yamlResourceCollection.LoadAsync();
 
         return yamlResourceCollection;

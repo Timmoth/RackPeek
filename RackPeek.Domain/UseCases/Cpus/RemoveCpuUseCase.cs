@@ -1,7 +1,7 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Servers;
 
 namespace RackPeek.Domain.UseCases.Cpus;
 
@@ -27,13 +27,13 @@ public class RemoveCpuUseCase<T>(IResourceCollection repo) : IRemoveCpuUseCase<T
         if (resource is not ICpuResource cpuResource) return;
 
         cpuResource.Cpus ??= [];
-        
+
         if (index < 0)
             throw new NotFoundException($"Please pick a CPU index >= 0 for '{name}'.");
-        
+
         if (cpuResource.Cpus.Count == 0)
             throw new NotFoundException($"'{name}' has no CPUs.");
-        
+
         if (index >= cpuResource.Cpus.Count)
             throw new NotFoundException($"Please pick a CPU index < {cpuResource.Cpus.Count} for '{name}'.");
 

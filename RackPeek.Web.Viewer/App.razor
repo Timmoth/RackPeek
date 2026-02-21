@@ -1,6 +1,6 @@
 ﻿@using RackPeek.Domain.Persistence
+@using RackPeek.Web.Viewer.Pages
 @using Shared.Rcl.Servers
-
 @inject IResourceCollection Resources
 
 @if (!_ready)
@@ -9,9 +9,9 @@
 }
 else
 {
-    <Router AppAssembly="@typeof(App).Assembly" 
-            AdditionalAssemblies="new[] { typeof(ServersListPage).Assembly }" 
-            NotFoundPage="typeof(Pages.NotFound)">
+    <Router AppAssembly="@typeof(App).Assembly"
+            AdditionalAssemblies="new[] { typeof(ServersListPage).Assembly }"
+            NotFoundPage="typeof(NotFound)">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
         </Found>
@@ -24,7 +24,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         await Resources.LoadAsync();
-        
+
         _ready = true;
     }
+
 }

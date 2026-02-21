@@ -1,9 +1,7 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Desktops
-@using RackPeek.Domain.Resources.Hardware.Switches
-@using RackPeek.Domain.Resources.SubResources
+﻿@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.Resources.Switches
 @using RackPeek.Domain.UseCases.Ports
 @inject UpdateSwitchUseCase UpdateSwitchUseCase
-@inject IGetAllResourcesByKindUseCase<Switch> GetAllUseCase
 @inject IGetResourceByNameUseCase<Switch> GetByNameUseCase
 @inject IAddPortUseCase<Switch> AddSwitchPortUseCase
 @inject IUpdatePortUseCase<Switch> UpdateSwitchPortUseCase
@@ -78,7 +76,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
-                       @bind="_edit.Model"/>
+                    @bind="_edit.Model"/>
             }
             else if (!string.IsNullOrWhiteSpace(Switch.Model))
             {
@@ -151,7 +149,7 @@
                 }
             }
         </div>
-        <ResourceTagEditor Resource="Switch" />
+        <ResourceTagEditor Resource="Switch"/>
 
         <div class="md:col-span-2">
             <div class="text-zinc-400 mb-1">Notes</div>
@@ -160,16 +158,16 @@
             {
                 <MarkdownEditor
                     @bind-Value="_edit.Notes"
-                    ShowActionButtons="false" />
+                    ShowActionButtons="false"/>
             }
             else
             {
                 <MarkdownViewer
                     Value="@Switch.Notes"
-                    ShowEditButton="false" />
+                    ShowEditButton="false"/>
             }
         </div>
-        
+
     </div>
 </div>
 
@@ -197,7 +195,7 @@
     Description="Enter a new name for this switch"
     Label="New switch name"
     Value="@Switch.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 
 <StringValueModal
     IsOpen="_cloneOpen"
@@ -206,10 +204,10 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{Switch.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
 
 @code {
-    [Parameter][EditorRequired] public Switch Switch { get; set; } = default!;
+    [Parameter] [EditorRequired] public Switch Switch { get; set; } = default!;
 
     bool _isEditing;
     SwitchEditModel _edit = new();

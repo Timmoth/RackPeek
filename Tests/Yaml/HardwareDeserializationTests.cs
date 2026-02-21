@@ -1,14 +1,14 @@
 ﻿using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
+using RackPeek.Domain.Resources.AccessPoints;
+using RackPeek.Domain.Resources.Desktops;
+using RackPeek.Domain.Resources.Firewalls;
 using RackPeek.Domain.Resources.Hardware;
-using RackPeek.Domain.Resources.Hardware.AccessPoints;
-using RackPeek.Domain.Resources.Hardware.Desktops;
-using RackPeek.Domain.Resources.Hardware.Firewalls;
-using RackPeek.Domain.Resources.Hardware.Laptops;
-using RackPeek.Domain.Resources.Hardware.Routers;
-using RackPeek.Domain.Resources.Hardware.Servers;
-using RackPeek.Domain.Resources.Hardware.Switches;
-using RackPeek.Domain.Resources.Hardware.UpsUnits;
+using RackPeek.Domain.Resources.Laptops;
+using RackPeek.Domain.Resources.Routers;
+using RackPeek.Domain.Resources.Servers;
+using RackPeek.Domain.Resources.Switches;
+using RackPeek.Domain.Resources.UpsUnits;
 
 namespace Tests.Yaml;
 
@@ -26,7 +26,8 @@ public class HardwareDeserializationTests
         var filePath = Path.Combine(tempDir, "config.yaml");
         await File.WriteAllTextAsync(filePath, yaml);
 
-        var yamlResourceCollection = new YamlResourceCollection(filePath, new PhysicalTextFileStore(), new ResourceCollection());
+        var yamlResourceCollection =
+            new YamlResourceCollection(filePath, new PhysicalTextFileStore(), new ResourceCollection());
         await yamlResourceCollection.LoadAsync();
         return yamlResourceCollection;
     }

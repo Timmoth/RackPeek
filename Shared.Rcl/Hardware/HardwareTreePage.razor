@@ -45,17 +45,17 @@
         <div data-testid="hardware-tree">
 
             @foreach (var group in _tree
-                .OrderByDescending(h => h.Systems.Count)
-                .ThenBy(h => h.Kind)
-                .ThenBy(h => h.HardwareName)
-                .GroupBy(h => h.Kind))
+                              .OrderByDescending(h => h.Systems.Count)
+                              .ThenBy(h => h.Kind)
+                              .ThenBy(h => h.HardwareName)
+                              .GroupBy(h => h.Kind))
             {
                 <div class="mb-6"
-                     data-testid=@($"hardware-group-{@group.Key}")>
+                     data-testid=@($"hardware-group-{group.Key}")>
 
                     <!-- Hardware Kind Header -->
                     <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3"
-                         data-testid=@($"hardware-group-title-{@group.Key}")>
+                         data-testid=@($"hardware-group-title-{group.Key}")>
                         @group.Key
                     </div>
 
@@ -70,7 +70,7 @@
                                          data-testid=@($"hardware-link-{hardware.HardwareName}")>
 
                                     <div class="text-zinc-100 hover:text-emerald-300"
-                                         data-testid=@($"hardware-name-{@hardware.HardwareName}")>
+                                         data-testid=@($"hardware-name-{hardware.HardwareName}")>
                                         @hardware.HardwareName
                                     </div>
 
@@ -82,8 +82,8 @@
                                         data-testid=@($"system-list-{hardware.HardwareName}")>
 
                                         @foreach (var system in hardware.Systems
-                                            .OrderByDescending(s => s.Services.Count)
-                                            .ThenBy(s => s.SystemName))
+                                                          .OrderByDescending(s => s.Services.Count)
+                                                          .ThenBy(s => s.SystemName))
                                         {
                                             <li data-testid=@($"system-item-{system.SystemName}")>
 

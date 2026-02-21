@@ -4,14 +4,14 @@ namespace Tests.E2e.PageObjectModels;
 
 public class SystemsListPom
 {
-      private readonly IPage _page;
-      public AddResourceComponent AddSystem =>
-          new AddResourceComponent(_page, "system");
+    private readonly IPage _page;
 
     public SystemsListPom(IPage page)
     {
         _page = page;
     }
+
+    public AddResourceComponent AddSystem => new(_page, "system");
 
     // -------------------------------------------------
     // Root & State
@@ -39,35 +39,53 @@ public class SystemsListPom
     // -------------------------------------------------
 
     public ILocator Group(string groupKey)
-        => _page.GetByTestId($"systems-group-{SanitizeGroup(groupKey)}");
+    {
+        return _page.GetByTestId($"systems-group-{SanitizeGroup(groupKey)}");
+    }
 
     public ILocator GroupTitle(string groupKey)
-        => _page.GetByTestId($"systems-group-title-{SanitizeGroup(groupKey)}");
+    {
+        return _page.GetByTestId($"systems-group-title-{SanitizeGroup(groupKey)}");
+    }
 
     public ILocator GroupList(string groupKey)
-        => _page.GetByTestId($"systems-group-list-{SanitizeGroup(groupKey)}");
+    {
+        return _page.GetByTestId($"systems-group-list-{SanitizeGroup(groupKey)}");
+    }
 
     // -------------------------------------------------
     // Individual Systems
     // -------------------------------------------------
 
     public ILocator SystemListItem(string name)
-        => _page.GetByTestId($"systems-list-item-{Sanitize(name)}");
+    {
+        return _page.GetByTestId($"systems-list-item-{Sanitize(name)}");
+    }
 
     public ILocator SystemCard(string name)
-        => _page.GetByTestId($"system-item-{Sanitize(name)}");
+    {
+        return _page.GetByTestId($"system-item-{Sanitize(name)}");
+    }
 
     public ILocator DeleteButton(string name)
-        => SystemCard(name).GetByTestId("delete-system-button");
+    {
+        return SystemCard(name).GetByTestId("delete-system-button");
+    }
 
     public ILocator EditButton(string name)
-        => SystemCard(name).GetByTestId("edit-system-button");
+    {
+        return SystemCard(name).GetByTestId("edit-system-button");
+    }
 
     public ILocator RenameButton(string name)
-        => SystemCard(name).GetByTestId("rename-system-button");
+    {
+        return SystemCard(name).GetByTestId("rename-system-button");
+    }
 
     public ILocator CloneButton(string name)
-        => SystemCard(name).GetByTestId("clone-system-button");
+    {
+        return SystemCard(name).GetByTestId("clone-system-button");
+    }
 
     // -------------------------------------------------
     // Navigation
@@ -102,7 +120,7 @@ public class SystemsListPom
     public async Task AddSystemAsync(string name)
     {
         await AddSystem.AddAsync(name);
-        
+
         await Assertions.Expect(SystemCard(name))
             .ToBeVisibleAsync();
     }
@@ -160,10 +178,14 @@ public class SystemsListPom
     // -------------------------------------------------
 
     private static string Sanitize(string value)
-        => value.Replace(" ", "-");
+    {
+        return value.Replace(" ", "-");
+    }
 
     private static string SanitizeGroup(string? value)
-        => string.IsNullOrWhiteSpace(value)
+    {
+        return string.IsNullOrWhiteSpace(value)
             ? "unassigned"
             : value.Replace(" ", "-");
+    }
 }

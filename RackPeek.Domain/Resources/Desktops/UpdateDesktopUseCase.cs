@@ -2,7 +2,7 @@ using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.SubResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Desktops;
+namespace RackPeek.Domain.Resources.Desktops;
 
 public class UpdateDesktopUseCase(IResourceCollection repository) : IUseCase
 {

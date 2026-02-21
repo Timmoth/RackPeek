@@ -1,5 +1,4 @@
 @using Markdig
-
 <div class="relative border border-zinc-800 rounded p-4 bg-zinc-900">
 
     @if (ShowEditButton)
@@ -45,5 +44,9 @@
     }
 
     private Task HandleEdit()
-        => OnEdit.HasDelegate ? OnEdit.InvokeAsync() : Task.CompletedTask;
+    {
+        return OnEdit.HasDelegate ? OnEdit.InvokeAsync() : Task.CompletedTask;
+    }
+
+
 }

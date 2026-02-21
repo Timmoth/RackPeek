@@ -2,7 +2,6 @@
 @typeparam TResource where TResource : RackPeek.Domain.Resources.Resource
 
 @inject IResourceCollection Repo
-@inject NavigationManager Nav
 
 <PageTitle>@Title</PageTitle>
 
@@ -16,8 +15,8 @@
     <!-- Add Resource Section -->
     <div data-testid="@($"{TestId}-add-section")">
         <AddResourceComponent TResource="TResource"
-                              Placeholder=@($"{@Title} name")
-                              OnCreated="OnCreated" />
+                              Placeholder=@($"{Title} name")
+                              OnCreated="OnCreated"/>
     </div>
 
     @if (_resources is null)
@@ -76,9 +75,9 @@
     [Parameter] public RenderFragment AddSection { get; set; } = default!;
     [Parameter] public RenderFragment<TResource> ItemTemplate { get; set; } = default!;
 
-    [Parameter] public bool ShouldGroup { get; set; } = false;
+    [Parameter] public bool ShouldGroup { get; set; }
 
-    [Parameter] public Func<TResource, string?> GroupBy { get; set; } = (s => (string?)null);
+    [Parameter] public Func<TResource, string?> GroupBy { get; set; } = s => null;
     [Parameter] public EventCallback<string> OnCreated { get; set; }
 
     private IReadOnlyList<TResource>? _resources;
@@ -90,17 +89,24 @@
 
     private IEnumerable<IGrouping<string?, TResource>> GroupResources(
         IEnumerable<TResource> resources)
-        => resources
+    {
+        return resources
             .GroupBy(GroupBy)
             .OrderByDescending(g => g.Count());
+    }
 
     private static string FormatGroupKey(string? key)
-        => string.IsNullOrWhiteSpace(key)
+    {
+        return string.IsNullOrWhiteSpace(key)
             ? "unassigned"
             : key.Replace(" ", "-");
+    }
 
     private static string DisplayGroupKey(string? key)
-        => string.IsNullOrWhiteSpace(key)
+    {
+        return string.IsNullOrWhiteSpace(key)
             ? "Unassigned"
             : key;
+    }
+
 }

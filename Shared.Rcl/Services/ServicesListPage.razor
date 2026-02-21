@@ -3,16 +3,16 @@
 @inject NavigationManager Nav
 
 <ResourcesListComponent TResource="Service"
-                  Title="Services"
-                  TestId="services"
-                  GroupBy="@(s => s.RunsOn)"
-                  ShouldGroup="true"
-                  OnCreated="NavigateToNewResource">
+                        Title="Services"
+                        TestId="services"
+                        GroupBy="@(s => s.RunsOn)"
+                        ShouldGroup="true"
+                        OnCreated="NavigateToNewResource">
 
     <ItemTemplate Context="svc">
         <div data-testid=@($"services-list-item-{svc.Name.Replace(" ", "-")}")>
             <ServiceCardComponent Service="svc"
-                                  OnDeleted="Reload" />
+                                  OnDeleted="Reload"/>
         </div>
     </ItemTemplate>
 
@@ -32,4 +32,5 @@
     {
         await Repo.GetAllOfTypeAsync<Service>();
     }
+
 }

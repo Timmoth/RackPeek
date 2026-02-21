@@ -2,7 +2,7 @@ using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.SubResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Routers;
+namespace RackPeek.Domain.Resources.Routers;
 
 public record RouterDescription(
     string Name,

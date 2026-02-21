@@ -1,6 +1,6 @@
-namespace RackPeek.Domain.Resources.Hardware.UpsUnits;
+namespace RackPeek.Domain.Resources.UpsUnits;
 
-public class Ups : Hardware
+public class Ups : Hardware.Hardware
 {
     public const string KindLabel = "Ups";
     public string? Model { get; set; }

@@ -1,12 +1,12 @@
-﻿using Tests.E2e.PageObjectModels;
-using Tests.E2e.Pages;
+﻿using Tests.E2e.Infra;
+using Tests.E2e.PageObjectModels;
 using Xunit.Abstractions;
 
 namespace Tests.E2e;
 
 public class ServerTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) :E2ETestBase(fixture, output)
+    ITestOutputHelper output) : E2ETestBase(fixture, output)
 {
     private readonly ITestOutputHelper _output = output;
 
@@ -22,11 +22,11 @@ public class ServerTests(
             await page.GotoAsync(fixture.BaseUrl);
 
             _output.WriteLine($"URL after Goto: {page.Url}");
-            
+
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
             await layout.GotoHardwareAsync();
-            
+
             var hardwarePage = new HardwareTreePom(page);
             await hardwarePage.AssertLoadedAsync();
             await hardwarePage.GotoServersListAsync();
@@ -50,7 +50,7 @@ public class ServerTests(
             _output.WriteLine("==== DOM SNAPSHOT START ====");
             _output.WriteLine(html);
             _output.WriteLine("==== DOM SNAPSHOT END ====");
-            
+
             throw;
         }
         finally

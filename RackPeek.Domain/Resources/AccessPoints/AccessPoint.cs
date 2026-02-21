@@ -1,6 +1,6 @@
-namespace RackPeek.Domain.Resources.Hardware.AccessPoints;
+namespace RackPeek.Domain.Resources.AccessPoints;
 
-public class AccessPoint : Hardware
+public class AccessPoint : Hardware.Hardware
 {
     public const string KindLabel = "AccessPoint";
     public string? Model { get; set; }

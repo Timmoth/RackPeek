@@ -45,7 +45,7 @@ public class Program
 
         builder.Services.AddScoped<ITextFileStore, PhysicalTextFileStore>();
 
-        
+
         builder.Services.AddScoped(sp =>
         {
             var nav = sp.GetRequiredService<NavigationManager>();
@@ -55,7 +55,7 @@ public class Program
             };
         });
 
-        
+
         var resources = new ResourceCollection();
         builder.Services.AddSingleton(resources);
 
@@ -64,18 +64,18 @@ public class Program
                 yamlFilePath,
                 sp.GetRequiredService<ITextFileStore>(),
                 sp.GetRequiredService<ResourceCollection>()));
-        
+
         // Infrastructure
         builder.Services.AddYamlRepos();
 
         builder.Services.AddUseCases();
         builder.Services.AddCommands();
         builder.Services.AddScoped<IConsoleEmulator, ConsoleEmulator>();
-        
+
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
-        
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -91,12 +91,12 @@ public class Program
         app.UseStaticFiles();
 
         app.UseAntiforgery();
-        
+
         app.MapStaticAssets();
 
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
-        
+
         return app;
     }
 
@@ -106,5 +106,4 @@ public class Program
         var app = await BuildApp(builder);
         await app.RunAsync();
     }
-    
 }

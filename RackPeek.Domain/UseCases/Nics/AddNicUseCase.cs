@@ -1,9 +1,10 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources;
+using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.SubResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Desktops.Nics;
+namespace RackPeek.Domain.UseCases.Nics;
 
 public interface IAddNicUseCase<T> : IResourceUseCase<T>
     where T : Resource

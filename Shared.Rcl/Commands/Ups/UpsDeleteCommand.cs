@@ -19,7 +19,8 @@ public class UpsDeleteCommand(IServiceProvider provider)
         CancellationToken cancellationToken)
     {
         using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<RackPeek.Domain.Resources.Hardware.UpsUnits.Ups>>();
+        var useCase = scope.ServiceProvider
+            .GetRequiredService<IDeleteResourceUseCase<RackPeek.Domain.Resources.UpsUnits.Ups>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

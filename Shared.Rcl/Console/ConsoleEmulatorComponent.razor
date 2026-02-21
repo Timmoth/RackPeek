@@ -38,17 +38,17 @@
            class="absolute opacity-0"
            @onkeydown="HandleKeyDown"
            @oninput="OnInputChanged"
-           disabled="@_busy" />
+           disabled="@_busy"/>
 </div>
 
 @code {
-    private List<string> _lines = new();
-    private List<string> _history = new();
+    private readonly List<string> _lines = new();
+    private readonly List<string> _history = new();
 
     private int _historyIndex = -1;
 
     private string _currentInput = "";
-    private int _cursorIndex = 0;
+    private int _cursorIndex;
 
     private bool _busy;
     private bool _showCursor = true;
@@ -56,8 +56,7 @@
     private ElementReference _inputRef;
     private ElementReference _outputDiv;
 
-    [Parameter]
-    public string Prompt { get; set; } = "rpk>";
+    [Parameter] public string Prompt { get; set; } = "rpk>";
 
     protected override void OnInitialized()
     {
@@ -73,7 +72,9 @@
     }
 
     // required but unused — we handle keys manually
-    private void OnInputChanged(ChangeEventArgs _) { }
+    private void OnInputChanged(ChangeEventArgs _)
+    {
+    }
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
@@ -113,6 +114,7 @@
                         _currentInput.Remove(_cursorIndex - 1, 1);
                     _cursorIndex--;
                 }
+
                 break;
 
             case "Delete":
@@ -121,6 +123,7 @@
                     _currentInput =
                         _currentInput.Remove(_cursorIndex, 1);
                 }
+
                 break;
 
             default:
@@ -131,6 +134,7 @@
                         _currentInput.Insert(_cursorIndex, e.Key);
                     _cursorIndex++;
                 }
+
                 break;
         }
 
@@ -206,10 +210,14 @@
     }
 
     private void WriteLine(string text)
-        => _lines.Add(text);
+    {
+        _lines.Add(text);
+    }
 
     private async Task HandleContainerClick()
-        => await _inputRef.FocusAsync();
+    {
+        await _inputRef.FocusAsync();
+    }
 
     private async Task ScrollToBottom()
     {
@@ -226,4 +234,5 @@
             await Task.Delay(500);
         }
     }
+
 }

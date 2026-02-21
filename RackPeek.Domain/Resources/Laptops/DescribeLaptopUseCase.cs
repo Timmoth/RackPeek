@@ -1,7 +1,7 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.Laptops;
+namespace RackPeek.Domain.Resources.Laptops;
 
 public class DescribeLaptopUseCase(IResourceCollection repository) : IUseCase
 {

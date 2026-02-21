@@ -40,11 +40,14 @@ public static class CliBootstrap
     private static string[]? _lastArgs;
     private static CommandApp? _app;
 
+    private static bool _showingHelp;
+
     public static void SetContext(string[] args, CommandApp app)
     {
         _lastArgs = args;
         _app = app;
     }
+
     public static async Task RegisterInternals(
         IServiceCollection services,
         IConfiguration configuration,
@@ -57,17 +60,14 @@ public static class CliBootstrap
         var resolvedYamlDir = Path.IsPathRooted(yamlDir)
             ? yamlDir
             : Path.Combine(appBasePath, yamlDir);
-        
+
 
         Directory.CreateDirectory(resolvedYamlDir);
 
         var fullYamlPath = Path.Combine(resolvedYamlDir, yamlFile);
 
-        if (!File.Exists(fullYamlPath))
-        {
-            await File.WriteAllTextAsync(fullYamlPath, "");
-        }
-        
+        if (!File.Exists(fullYamlPath)) await File.WriteAllTextAsync(fullYamlPath, "");
+
         var collection = new YamlResourceCollection(
             fullYamlPath,
             new PhysicalTextFileStore(),
@@ -83,7 +83,7 @@ public static class CliBootstrap
         services.AddUseCases();
         services.AddCommands();
     }
-    
+
     public static void BuildApp(CommandApp app)
     {
         // Spectre bootstrap
@@ -528,8 +528,6 @@ public static class CliBootstrap
                 return 99;
         }
     }
-
-    private static bool _showingHelp;
 
     private static void ShowContextualHelp()
     {

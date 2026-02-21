@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Laptops;
+using RackPeek.Domain.Resources.Laptops;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

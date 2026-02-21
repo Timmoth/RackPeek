@@ -47,13 +47,13 @@
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
 
-    [Parameter][EditorRequired] public string Title { get; set; } = default!;
+    [Parameter] [EditorRequired] public string Title { get; set; } = default!;
     [Parameter] public string ConfirmText { get; set; } = "Confirm";
     [Parameter] public string ConfirmClass { get; set; } = "bg-emerald-600 hover:bg-emerald-500";
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    [Parameter][EditorRequired] public EventCallback OnConfirm { get; set; }
+    [Parameter] [EditorRequired] public EventCallback OnConfirm { get; set; }
 
     [Parameter] public string? TestIdPrefix { get; set; }
 
@@ -74,4 +74,5 @@
         await OnConfirm.InvokeAsync();
         await Close();
     }
+
 }

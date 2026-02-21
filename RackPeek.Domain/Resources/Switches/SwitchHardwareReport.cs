@@ -1,6 +1,6 @@
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.Switches;
+namespace RackPeek.Domain.Resources.Switches;
 
 public record SwitchHardwareReport(
     IReadOnlyList<SwitchHardwareRow> Switches

@@ -1,10 +1,8 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Desktops
-@using RackPeek.Domain.Resources.Hardware.Laptops
+﻿@using RackPeek.Domain.Resources.Laptops
 @using RackPeek.Domain.Resources.SubResources
 @using RackPeek.Domain.UseCases.Cpus
 @using RackPeek.Domain.UseCases.Drives
 @using RackPeek.Domain.UseCases.Gpus
-@inject IGetAllResourcesByKindUseCase<Laptop> GetAllUseCase
 @inject IGetResourceByNameUseCase<Laptop> GetByNameUseCase
 @inject UpdateLaptopUseCase UpdateLaptopUseCase
 @inject IDeleteResourceUseCase<Laptop> DeleteLaptopUseCase
@@ -183,9 +181,9 @@
             }
         </div>
 
-        
+
     </div>
-    <ResourceTagEditor Resource="Laptop" />
+    <ResourceTagEditor Resource="Laptop"/>
 
     <div class="md:col-span-2">
         <div class="text-zinc-400 mb-1">Notes</div>
@@ -195,7 +193,7 @@
             <MarkdownViewer
                 Value="@Laptop.Notes"
                 ShowEditButton="true"
-                OnEdit="BeginNotesEdit" />
+                OnEdit="BeginNotesEdit"/>
         }
         else
         {
@@ -203,10 +201,10 @@
                 @bind-Value="_notesDraft"
                 ShowActionButtons="true"
                 OnSave="SaveNotes"
-                OnCancel="CancelNotesEdit" />
+                OnCancel="CancelNotesEdit"/>
         }
     </div>
-    
+
 </div>
 <CpuModal
     IsOpen="@_cpuModalOpen"
@@ -255,7 +253,7 @@
     Description="Enter a new name for this laptop"
     Label="New laptop name"
     Value="@Laptop.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 <StringValueModal
     IsOpen="_cloneOpen"
     IsOpenChanged="v => _cloneOpen = v"
@@ -263,7 +261,8 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{Laptop.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
+
 @code {
     [Parameter] [EditorRequired] public Laptop Laptop { get; set; } = default!;
 
@@ -522,5 +521,5 @@
         _notesDraft = null;
     }
 
-    
+
 }

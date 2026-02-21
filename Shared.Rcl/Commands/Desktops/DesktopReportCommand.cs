@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RackPeek.Domain.Resources.Hardware.Desktops;
+using RackPeek.Domain.Resources.Desktops;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

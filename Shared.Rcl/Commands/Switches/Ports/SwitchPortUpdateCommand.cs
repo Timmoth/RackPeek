@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Switches;
+using RackPeek.Domain.Resources.Switches;
 using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -8,17 +8,13 @@ namespace Shared.Rcl.Commands.Switches.Ports;
 
 public class SwitchPortUpdateSettings : SwitchNameSettings
 {
-    [CommandOption("--index <INDEX>")]
-    public int Index { get; set; }
+    [CommandOption("--index <INDEX>")] public int Index { get; set; }
 
-    [CommandOption("--type")]
-    public string? Type { get; set; }
+    [CommandOption("--type")] public string? Type { get; set; }
 
-    [CommandOption("--speed")]
-    public double? Speed { get; set; }
+    [CommandOption("--speed")] public double? Speed { get; set; }
 
-    [CommandOption("--count")]
-    public int? Count { get; set; }
+    [CommandOption("--count")] public int? Count { get; set; }
 }
 
 public class SwitchPortUpdateCommand(IServiceProvider sp)

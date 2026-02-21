@@ -1,15 +1,14 @@
-﻿@inject UpdateRouterUseCase UpdateRouterUseCase
-@inject IGetAllResourcesByKindUseCase<Router> GetAllUseCase
+﻿@using RackPeek.Domain.Resources.Routers
+@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.UseCases.Ports
+@using Router = RackPeek.Domain.Resources.Routers.Router
+
+@inject UpdateRouterUseCase UpdateRouterUseCase
 @inject IGetResourceByNameUseCase<Router> GetByNameUseCase
 @inject IAddPortUseCase<Router> AddRouterPortUseCase
 @inject IUpdatePortUseCase<Router> UpdateRouterPortUseCase
 @inject IRemovePortUseCase<Router> RemoveRouterPortUseCase
 @inject IDeleteResourceUseCase<Router> DeleteUseCase
-@using RackPeek.Domain.Resources.Hardware.Desktops
-@using RackPeek.Domain.Resources.Hardware.Routers
-@using RackPeek.Domain.Resources.SubResources
-@using RackPeek.Domain.UseCases.Ports
-@using Router = RackPeek.Domain.Resources.Hardware.Routers.Router
 @inject IRenameResourceUseCase<Router> RenameUseCase
 @inject ICloneResourceUseCase<Router> CloneUseCase
 
@@ -77,7 +76,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
-                       @bind="_edit.Model"/>
+                    @bind="_edit.Model"/>
             }
             else if (!string.IsNullOrWhiteSpace(Router.Model))
             {
@@ -150,7 +149,7 @@
                 }
             }
         </div>
-        <ResourceTagEditor Resource="Router" />
+        <ResourceTagEditor Resource="Router"/>
 
         <div class="md:col-span-2">
             <div class="text-zinc-400 mb-1">Notes</div>
@@ -159,16 +158,16 @@
             {
                 <MarkdownEditor
                     @bind-Value="_edit.Notes"
-                    ShowActionButtons="false" />
+                    ShowActionButtons="false"/>
             }
             else
             {
                 <MarkdownViewer
                     Value="@Router.Notes"
-                    ShowEditButton="false" />
+                    ShowEditButton="false"/>
             }
         </div>
-        
+
     </div>
 </div>
 
@@ -196,7 +195,7 @@
     Description="Enter a new name for this router"
     Label="New router name"
     Value="@Router.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 
 <StringValueModal
     IsOpen="_cloneOpen"
@@ -205,9 +204,10 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{Router.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
+
 @code {
-    [Parameter][EditorRequired] public Router Router { get; set; } = default!;
+    [Parameter] [EditorRequired] public Router Router { get; set; } = default!;
 
     bool _isEditing;
     RouterEditModel _edit = new();
@@ -353,6 +353,7 @@
     }
 
 }
+
 @code
 {
     bool _cloneOpen;

@@ -1,6 +1,5 @@
-using RackPeek.Domain.Persistence.Yaml;
 using Microsoft.JSInterop;
-using System.Net.Http;
+using RackPeek.Domain.Persistence.Yaml;
 
 namespace RackPeek.Web.Viewer;
 
@@ -9,7 +8,6 @@ public sealed class WasmTextFileStore(
     HttpClient http) : ITextFileStore
 {
     private const string Prefix = "rackpeek:file:";
-    private static string Key(string path) => Prefix + path;
 
     public async Task<bool> ExistsAsync(string path)
     {
@@ -62,5 +60,10 @@ public sealed class WasmTextFileStore(
             "rackpeekStorage.set",
             Key(path),
             contents);
+    }
+
+    private static string Key(string path)
+    {
+        return Prefix + path;
     }
 }

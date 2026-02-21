@@ -1,7 +1,7 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.Firewalls;
+namespace RackPeek.Domain.Resources.Firewalls;
 
 public class UpdateFirewallUseCase(IResourceCollection repository) : IUseCase
 {

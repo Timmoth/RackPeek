@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Resources.Hardware.Laptops;
+using RackPeek.Domain.Resources.Laptops;
 using RackPeek.Domain.Resources.SubResources;
 using RackPeek.Domain.UseCases.Gpus;
 using Spectre.Console;

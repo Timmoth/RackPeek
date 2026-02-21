@@ -1,15 +1,15 @@
 ﻿@page "/desktops/list"
-@using RackPeek.Domain.Resources.Hardware.Desktops
+@using RackPeek.Domain.Resources.Desktops
 @inject NavigationManager Nav
 
 <ResourcesListComponent TResource="Desktop"
-                  Title="Desktops"
-                  TestId="desktops"
-                  OnCreated="NavigateToNewResource">
+                        Title="Desktops"
+                        TestId="desktops"
+                        OnCreated="NavigateToNewResource">
 
     <ItemTemplate Context="desktop">
         <DesktopCardComponent Desktop="desktop"
-                              OnDeleted="Reload" />
+                              OnDeleted="Reload"/>
     </ItemTemplate>
 
 </ResourcesListComponent>
@@ -28,4 +28,5 @@
     {
         await GetAllUseCase.ExecuteAsync();
     }
+
 }

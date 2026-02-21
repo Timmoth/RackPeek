@@ -1,9 +1,9 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Desktops.Nics
-@using RackPeek.Domain.Resources.Hardware.Servers
+﻿@using RackPeek.Domain.Resources.Servers
 @using RackPeek.Domain.Resources.SubResources
 @using RackPeek.Domain.UseCases.Cpus
 @using RackPeek.Domain.UseCases.Drives
 @using RackPeek.Domain.UseCases.Gpus
+@using RackPeek.Domain.UseCases.Nics
 @inject IAddCpuUseCase<Server> AddCpuUseCase
 @inject IRemoveCpuUseCase<Server> RemoveCpuUseCase
 @inject IUpdateCpuUseCase<Server> UpdateCpuUseCase
@@ -28,7 +28,8 @@
 @inject IRenameResourceUseCase<Server> RenameUseCase
 @inject NavigationManager Nav
 
-<div class="border border-zinc-800 rounded p-4 bg-zinc-900" data-testid=@($"server-item-{@Server.Name.Replace(" ", "-")}")>
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900"
+     data-testid=@($"server-item-{Server.Name.Replace(" ", "-")}")>
     <div class="flex justify-between items-center mb-3">
         <div class="text-zinc-100 hover:text-emerald-300">
             <NavLink href="@($"resources/hardware/{Server.Name}")" class="block">
@@ -230,7 +231,7 @@
 
 
     </div>
-    <ResourceTagEditor Resource="Server" />
+    <ResourceTagEditor Resource="Server"/>
 
     <div class="md:col-span-2">
         <div class="text-zinc-400 mb-1">Notes</div>
@@ -240,7 +241,7 @@
             <MarkdownViewer
                 Value="@Server.Notes"
                 ShowEditButton="true"
-                OnEdit="BeginNotesEdit" />
+                OnEdit="BeginNotesEdit"/>
         }
         else
         {
@@ -248,10 +249,10 @@
                 @bind-Value="_notesDraft"
                 ShowActionButtons="true"
                 OnSave="SaveNotes"
-                OnCancel="CancelNotesEdit" />
+                OnCancel="CancelNotesEdit"/>
         }
     </div>
-    
+
 </div>
 
 <CpuModal
@@ -308,7 +309,7 @@
     Description="Enter a new name for this server"
     Label="New server name"
     Value="@Server.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 <StringValueModal
     IsOpen="_cloneOpen"
     IsOpenChanged="v => _cloneOpen = v"
@@ -316,7 +317,8 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{Server.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
+
 @code {
     [Parameter] [EditorRequired] public Server Server { get; set; } = default!;
 
@@ -629,5 +631,5 @@
         _notesDraft = null;
     }
 
-    
+
 }

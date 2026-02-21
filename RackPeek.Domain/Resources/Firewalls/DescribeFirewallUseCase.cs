@@ -2,7 +2,7 @@ using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources.SubResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Firewalls;
+namespace RackPeek.Domain.Resources.Firewalls;
 
 public record FirewallDescription(
     string Name,

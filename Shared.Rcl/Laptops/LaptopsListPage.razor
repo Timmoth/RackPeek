@@ -1,5 +1,5 @@
 ﻿@page "/laptops/list"
-@using RackPeek.Domain.Resources.Hardware.Laptops
+@using RackPeek.Domain.Resources.Laptops
 @inject NavigationManager Nav
 
 <ResourcesListComponent TResource="Laptop"
@@ -9,7 +9,7 @@
 
     <ItemTemplate Context="laptop">
         <LaptopCardComponent Laptop="laptop"
-                             OnDeleted="Reload" />
+                             OnDeleted="Reload"/>
     </ItemTemplate>
 
 </ResourcesListComponent>

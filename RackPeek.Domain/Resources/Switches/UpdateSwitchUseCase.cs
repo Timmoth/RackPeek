@@ -1,7 +1,7 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.Switches;
+namespace RackPeek.Domain.Resources.Switches;
 
 public class UpdateSwitchUseCase(IResourceCollection repository) : IUseCase
 {

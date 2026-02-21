@@ -1,15 +1,15 @@
 ﻿@page "/servers/list"
-@using RackPeek.Domain.Resources.Hardware.Servers
+@using RackPeek.Domain.Resources.Servers
 @inject NavigationManager Nav
 
 <ResourcesListComponent TResource="Server"
-                  Title="Servers"
-                  TestId="servers"
-                  OnCreated="NavigateToNewResource">
+                        Title="Servers"
+                        TestId="servers"
+                        OnCreated="NavigateToNewResource">
 
     <ItemTemplate Context="server">
         <ServerCardComponent Server="server"
-                             OnDeleted="Reload" />
+                             OnDeleted="Reload"/>
     </ItemTemplate>
 
 </ResourcesListComponent>
@@ -28,4 +28,5 @@
     {
         await GetAllUseCase.ExecuteAsync();
     }
+
 }

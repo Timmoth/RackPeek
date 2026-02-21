@@ -1,6 +1,6 @@
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.Desktops;
+namespace RackPeek.Domain.Resources.Desktops;
 
 public record DesktopHardwareReport(
     IReadOnlyList<DesktopHardwareRow> Desktops

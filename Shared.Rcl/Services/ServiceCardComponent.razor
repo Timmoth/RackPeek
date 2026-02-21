@@ -1,16 +1,12 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Desktops
-@using RackPeek.Domain.Resources.Services
-@using RackPeek.Domain.Resources.Services.UseCases
-@using RackPeek.Domain.UseCases
-@inject UpdateServiceUseCase UpdateServiceUseCase
-@inject IGetAllResourcesByKindUseCase<Service> GetAllUseCase
+﻿@inject UpdateServiceUseCase UpdateServiceUseCase
 @inject IGetResourceByNameUseCase<Service> GetByNameUseCase
 @inject IDeleteResourceUseCase<Service> DeleteServiceUseCase
 @inject ICloneResourceUseCase<Service> CloneUseCase
-@inject NavigationManager Nav
 @inject IRenameResourceUseCase<Service> RenameUseCase
+@inject NavigationManager Nav
 
-<div class="border border-zinc-800 rounded p-4 bg-zinc-900" data-testid=@($"service-item-{@Service.Name.Replace(" ", "-")}")>
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900"
+     data-testid=@($"service-item-{Service.Name.Replace(" ", "-")}")>
     <div class="flex justify-between items-center mb-3">
         <NavLink href="@($"resources/services/{Service.Name}")" class="block">
 
@@ -35,7 +31,7 @@
                         @onclick="OpenRename">
                     Rename
                 </button>
-                
+
                 <button
                     class="text-xs text-emerald-400 hover:text-emerald-300 transition"
                     title="Clone service"
@@ -44,7 +40,7 @@
                     Clone
                 </button>
 
-                
+
                 <button
                     class="text-xs text-red-400 hover:text-red-300 transition"
                     title="Delete server"
@@ -86,7 +82,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
-                       @bind="_edit.Ip"/>
+                    @bind="_edit.Ip"/>
             }
             else if (!string.IsNullOrWhiteSpace(Service.Network?.Ip))
             {
@@ -122,7 +118,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
-                       @bind="_edit.Protocol"/>
+                    @bind="_edit.Protocol"/>
             }
             else if (!string.IsNullOrWhiteSpace(Service.Network?.Protocol))
             {
@@ -144,7 +140,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
-                       @bind="_edit.Url"/>
+                    @bind="_edit.Url"/>
             }
             else if (!string.IsNullOrWhiteSpace(Service.Network?.Url))
             {
@@ -185,8 +181,8 @@
                 </NavLink>
             }
         </div>
-        
-        <ResourceTagEditor Resource="Service" />
+
+        <ResourceTagEditor Resource="Service"/>
 
         <div class="md:col-span-2">
             <div class="text-zinc-400 mb-1">Notes</div>
@@ -195,13 +191,13 @@
             {
                 <MarkdownEditor
                     @bind-Value="_edit.Notes"
-                    ShowActionButtons="false" />
+                    ShowActionButtons="false"/>
             }
             else
             {
                 <MarkdownViewer
                     Value="@Service.Notes"
-                    ShowEditButton="false" />
+                    ShowEditButton="false"/>
             }
         </div>
     </div>
@@ -231,7 +227,7 @@
     Description="Enter a name for the cloned service"
     Label="New service name"
     Value="@($"{Service.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
 
 <StringValueModal
     IsOpen="_renameOpen"
@@ -240,7 +236,7 @@
     Description="Enter a new name for this service"
     Label="New service name"
     Value="@Service.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 
 
 @code
@@ -287,10 +283,10 @@
             _edit.RunsOn,
             _edit.Notes
         );
-        
+
         await OnSave.InvokeAsync(Service.Name);
     }
-    
+
     void Cancel()
     {
         _isEditing = false;

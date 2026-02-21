@@ -1,5 +1,5 @@
 ﻿@page "/switches/list"
-@using RackPeek.Domain.Resources.Hardware.Switches
+@using RackPeek.Domain.Resources.Switches
 @inject NavigationManager Nav
 
 <ResourcesListComponent TResource="Switch"
@@ -9,7 +9,7 @@
 
     <ItemTemplate Context="switchItem">
         <SwitchCardComponent Switch="switchItem"
-                             OnDeleted="Reload" />
+                             OnDeleted="Reload"/>
     </ItemTemplate>
 
 </ResourcesListComponent>

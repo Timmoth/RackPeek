@@ -1,5 +1,5 @@
 ﻿@page "/firewalls/list"
-@using RackPeek.Domain.Resources.Hardware.Firewalls
+@using RackPeek.Domain.Resources.Firewalls
 @inject NavigationManager Nav
 
 <ResourcesListComponent TResource="Firewall"
@@ -9,7 +9,7 @@
 
     <ItemTemplate Context="firewall">
         <FirewallCardComponent Firewall="firewall"
-                               OnDeleted="Reload" />
+                               OnDeleted="Reload"/>
     </ItemTemplate>
 
 </ResourcesListComponent>
@@ -28,4 +28,5 @@
     {
         await GetAllUseCase.ExecuteAsync();
     }
+
 }

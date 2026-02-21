@@ -1,15 +1,10 @@
 ﻿@using RackPeek.Domain.Persistence
-@using RackPeek.Domain.Resources.Hardware
-@using RackPeek.Domain.Resources.Services
-@using RackPeek.Domain.Resources.SystemResources
 @inject IResourceCollection Repo
-@inject NavigationManager Nav
 
 <div class="text-sm text-zinc-300 flex gap-1 items-center">
     @foreach (var crumb in Breadcrumbs)
     {
         <span class="text-zinc-500">/</span>
-
         <a class="hover:text-white transition-colors"
            href="@crumb.Href">
             @crumb.Label

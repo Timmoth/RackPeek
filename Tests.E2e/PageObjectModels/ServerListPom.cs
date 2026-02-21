@@ -1,13 +1,11 @@
 using Microsoft.Playwright;
-using Tests.E2e.PageObjectModels;
 
-namespace Tests.E2e.Pages;
+namespace Tests.E2e.PageObjectModels;
 
 public class ServersListPom(IPage page)
 {
-    public AddResourceComponent AddServer =>
-        new AddResourceComponent(page, "server");
-    
+    public AddResourceComponent AddServer => new(page, "server");
+
     public ILocator PageRoot => page.GetByTestId("servers-page-root");
     public ILocator PageTitle => page.GetByTestId("servers-page-title");
 
@@ -26,23 +24,33 @@ public class ServersListPom(IPage page)
     // -------------------------------------------------
 
     public ILocator ServerItem(string serverName)
-        => page.GetByTestId($"server-item-{Sanitize(serverName)}");
+    {
+        return page.GetByTestId($"server-item-{Sanitize(serverName)}");
+    }
 
     public ILocator DeleteButton(string serverName)
-        => ServerItem(serverName)
+    {
+        return ServerItem(serverName)
             .GetByTestId("delete-server-button");
+    }
 
     public ILocator EditButton(string serverName)
-        => ServerItem(serverName)
+    {
+        return ServerItem(serverName)
             .GetByTestId("edit-server-button");
+    }
 
     public ILocator RenameButton(string serverName)
-        => ServerItem(serverName)
+    {
+        return ServerItem(serverName)
             .GetByTestId("rename-server-button");
+    }
 
     public ILocator CloneButton(string serverName)
-        => ServerItem(serverName)
+    {
+        return ServerItem(serverName)
             .GetByTestId("clone-server-button");
+    }
 
     // -------------------------------------------------
     // Navigation
@@ -104,5 +112,7 @@ public class ServersListPom(IPage page)
     }
 
     private static string Sanitize(string value)
-        => value.Replace(" ", "-");
+    {
+        return value.Replace(" ", "-");
+    }
 }

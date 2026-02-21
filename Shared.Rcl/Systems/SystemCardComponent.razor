@@ -48,7 +48,6 @@
                         @onclick="ConfirmDelete">
                     Delete
                 </button>
-
             }
             else
             {
@@ -63,7 +62,6 @@
                         @onclick="Cancel">
                     Cancel
                 </button>
-
             }
         </div>
     </div>
@@ -74,7 +72,7 @@
 
             @if (_isEditing)
             {
-                <select                      class="w-full px-3 py-2 rounded-md
+                <select class="w-full px-3 py-2 rounded-md
                            bg-zinc-800 text-zinc-100
                            border border-zinc-600
                            placeholder-zinc-500
@@ -82,7 +80,7 @@
                            hover:border-zinc-400
                            transition-colors duration-150
                            cursor-text"
-                                             data-testid="system-type-select"
+                        data-testid="system-type-select"
                         @bind="_edit.Type">
                     @foreach (var type in SystemResource.ValidSystemTypes)
                     {
@@ -112,7 +110,7 @@
                            transition-colors duration-150
                            cursor-text"
                     data-testid="system-os-input"
-                       @bind="_edit.Os"/>
+                    @bind="_edit.Os"/>
             }
             else if (!string.IsNullOrWhiteSpace(System.Os))
             {
@@ -218,9 +216,9 @@
 
                         <div class="flex gap-2 group-hover:opacity-100 transition">
                             <button data-testid=@($"drive-item-{drive.Type}-{drive.Size}")
-                                class="hover:text-emerald-400"
-                                title="Edit Drive"
-                                @onclick="() => OpenEditDrives(drive)">
+                                    class="hover:text-emerald-400"
+                                    title="Edit Drive"
+                                    @onclick="() => OpenEditDrives(drive)">
                                 @drive.Type — @drive.Size GB
                             </button>
                         </div>
@@ -228,7 +226,7 @@
                 }
             }
         </div>
-        <ResourceTagEditor Resource="System" />
+        <ResourceTagEditor Resource="System"/>
 
         <div class="md:col-span-2">
             <div class="text-zinc-400 mb-1">Notes</div>
@@ -237,16 +235,16 @@
             {
                 <MarkdownEditor
                     @bind-Value="_edit.Notes"
-                    ShowActionButtons="false" />
+                    ShowActionButtons="false"/>
             }
             else
             {
                 <MarkdownViewer
                     Value="@System.Notes"
-                    ShowEditButton="false" />
+                    ShowEditButton="false"/>
             }
         </div>
-        
+
     </div>
 </div>
 
@@ -283,7 +281,7 @@
     Description="Enter a name for the cloned system"
     Label="New system name"
     Value="@($"{System.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
 
 @code {
     [Parameter] [EditorRequired] public SystemResource System { get; set; } = default!;
@@ -387,7 +385,7 @@
     Description="Enter a new name for this system"
     Label="New system name"
     Value="@System.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 
 @code {
     private bool _confirmDeleteOpen;

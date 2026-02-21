@@ -1,7 +1,7 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.Servers;
+namespace RackPeek.Domain.Resources.Servers;
 
 public record ServerDescription(
     string Name,

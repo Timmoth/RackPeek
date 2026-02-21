@@ -1,26 +1,24 @@
 ﻿@page "/resources/hardware/{HardwareName}"
-@using RackPeek.Domain.Persistence
-@using RackPeek.Domain.Resources.Hardware
-@using RackPeek.Domain.Resources.Hardware.AccessPoints
-@using RackPeek.Domain.Resources.Hardware.Desktops
-@using RackPeek.Domain.Resources.Hardware.Firewalls
-@using RackPeek.Domain.Resources.Hardware.Laptops
-@using RackPeek.Domain.Resources.Hardware.Servers
-@using RackPeek.Domain.Resources.Hardware.Switches
-@using RackPeek.Domain.Resources.Hardware.UpsUnits
-@using RackPeek.Domain.Resources.SystemResources
 
-@using Router = RackPeek.Domain.Resources.Hardware.Routers.Router
-@using Shared.Rcl.Components
-@using Shared.Rcl.Servers
-@using Shared.Rcl.Desktops
+@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources.AccessPoints
+@using RackPeek.Domain.Resources.Desktops
+@using RackPeek.Domain.Resources.Firewalls
+@using RackPeek.Domain.Resources.Hardware
+@using RackPeek.Domain.Resources.Laptops
+@using RackPeek.Domain.Resources.Servers
+@using RackPeek.Domain.Resources.Switches
+@using RackPeek.Domain.Resources.SystemResources
+@using RackPeek.Domain.Resources.UpsUnits
 @using Shared.Rcl.AccessPoints
-@using Shared.Rcl.Switches
+@using Shared.Rcl.Desktops
 @using Shared.Rcl.Firewalls
 @using Shared.Rcl.Laptops
 @using Shared.Rcl.Routers
+@using Shared.Rcl.Servers
+@using Shared.Rcl.Switches
 @using Shared.Rcl.Ups
-@using Shared.Rcl.Systems
+@using Router = RackPeek.Domain.Resources.Routers.Router
 @inject IResourceCollection Repo
 @inject GetHardwareSystemTreeUseCase GetHardwareSystemTreeUseCase
 @inject NavigationManager Nav
@@ -99,9 +97,9 @@
         <div class="m-4">
             <AddResourceComponent TResource="SystemResource"
                                   Placeholder="System name"
-                                  OnCreated="NavigateToNewResource" 
+                                  OnCreated="NavigateToNewResource"
                                   RunsOn="@HardwareName"/>
-            </div>
+        </div>
     }
 </div>
 
@@ -127,9 +125,9 @@
 
     private async Task DeleteCallback(string obj)
     {
-        Nav.NavigateTo($"/hardware/tree");
+        Nav.NavigateTo("/hardware/tree");
     }
-    
+
     private Task NavigateToNewResource(string serverName)
     {
         Nav.NavigateTo($"resources/systems/{serverName}");

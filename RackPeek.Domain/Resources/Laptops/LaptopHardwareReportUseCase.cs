@@ -1,6 +1,6 @@
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.Laptops;
+namespace RackPeek.Domain.Resources.Laptops;
 
 public class LaptopHardwareReportUseCase(IResourceCollection repository) : IUseCase
 {

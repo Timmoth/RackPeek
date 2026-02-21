@@ -1,9 +1,9 @@
-using RackPeek.Domain.Resources.Hardware.Servers;
+using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.SubResources;
 
-namespace RackPeek.Domain.Resources.Hardware.Desktops;
+namespace RackPeek.Domain.Resources.Desktops;
 
-public class Desktop : Hardware, ICpuResource, IDriveResource, IGpuResource, INicResource
+public class Desktop : Hardware.Hardware, ICpuResource, IDriveResource, IGpuResource, INicResource
 {
     public const string KindLabel = "Desktop";
     public Ram? Ram { get; set; }

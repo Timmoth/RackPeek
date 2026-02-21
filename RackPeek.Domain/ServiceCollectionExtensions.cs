@@ -3,13 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
-using RackPeek.Domain.Resources.Hardware.Desktops.Nics;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 using RackPeek.Domain.UseCases;
 using RackPeek.Domain.UseCases.Cpus;
 using RackPeek.Domain.UseCases.Drives;
 using RackPeek.Domain.UseCases.Gpus;
+using RackPeek.Domain.UseCases.Nics;
 using RackPeek.Domain.UseCases.Ports;
 using RackPeek.Domain.UseCases.Tags;
 

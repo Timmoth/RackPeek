@@ -1,7 +1,7 @@
 using Tests.EndToEnd.Infra;
 using Xunit.Abstractions;
 
-namespace Tests.EndToEnd;
+namespace Tests.EndToEnd.UpsTests;
 
 [Collection("Yaml CLI tests")]
 public class UpsErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)

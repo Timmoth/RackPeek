@@ -1,10 +1,9 @@
-﻿@using RackPeek.Domain.Resources.Hardware.Desktops
-@using RackPeek.Domain.Resources.Hardware.Desktops.Nics
+﻿@using RackPeek.Domain.Resources.Desktops
 @using RackPeek.Domain.Resources.SubResources
 @using RackPeek.Domain.UseCases.Cpus
 @using RackPeek.Domain.UseCases.Drives
 @using RackPeek.Domain.UseCases.Gpus
-@using Shared.Rcl.Modals
+@using RackPeek.Domain.UseCases.Nics
 @inject IGetAllResourcesByKindUseCase<Desktop> GetAllUseCase
 @inject IGetResourceByNameUseCase<Desktop> GetByNameUseCase
 
@@ -218,10 +217,10 @@
             }
         </div>
 
-        <ResourceTagEditor Resource="Desktop" />
+        <ResourceTagEditor Resource="Desktop"/>
 
     </div>
-    
+
     <div class="md:col-span-2">
         <div class="text-zinc-400 mb-1">Notes</div>
 
@@ -230,7 +229,7 @@
             <MarkdownViewer
                 Value="@Desktop.Notes"
                 ShowEditButton="true"
-                OnEdit="BeginNotesEdit" />
+                OnEdit="BeginNotesEdit"/>
         }
         else
         {
@@ -238,10 +237,10 @@
                 @bind-Value="_notesDraft"
                 ShowActionButtons="true"
                 OnSave="SaveNotes"
-                OnCancel="CancelNotesEdit" />
+                OnCancel="CancelNotesEdit"/>
         }
     </div>
-    
+
 </div>
 <CpuModal
     IsOpen="@_cpuModalOpen"
@@ -296,7 +295,7 @@
     Description="Enter a new name for this desktop"
     Label="New desktop name"
     Value="@Desktop.Name"
-    OnSubmit="HandleRenameSubmit" />
+    OnSubmit="HandleRenameSubmit"/>
 <StringValueModal
     IsOpen="_cloneOpen"
     IsOpenChanged="v => _cloneOpen = v"
@@ -304,7 +303,7 @@
     Description="Enter a name for the cloned resource"
     Label="New resource name"
     Value="@($"{Desktop.Name}-copy")"
-    OnSubmit="HandleCloneSubmit" />
+    OnSubmit="HandleCloneSubmit"/>
 
 @code {
     [Parameter] [EditorRequired] public Desktop Desktop { get; set; } = default!;
@@ -566,6 +565,7 @@
     }
 
 }
+
 @code
 {
     bool _cloneOpen;
@@ -616,5 +616,5 @@
         _notesDraft = null;
     }
 
-    
+
 }

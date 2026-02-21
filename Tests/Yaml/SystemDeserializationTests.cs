@@ -15,10 +15,11 @@ public class SystemDeserializationTests
 
         Directory.CreateDirectory(tempDir);
 
-        var filePath = Path.Combine(tempDir, "config.yaml"); 
+        var filePath = Path.Combine(tempDir, "config.yaml");
         await File.WriteAllTextAsync(filePath, yaml);
 
-        var yamlResourceCollection = new YamlResourceCollection(filePath, new PhysicalTextFileStore(), new ResourceCollection());
+        var yamlResourceCollection =
+            new YamlResourceCollection(filePath, new PhysicalTextFileStore(), new ResourceCollection());
         await yamlResourceCollection.LoadAsync();
 
 

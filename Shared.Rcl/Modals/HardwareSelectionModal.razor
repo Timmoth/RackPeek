@@ -89,7 +89,7 @@
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
 
-    [Parameter][EditorRequired] public string Title { get; set; } = "Select hardware";
+    [Parameter] [EditorRequired] public string Title { get; set; } = "Select hardware";
 
     /// <summary>
     ///     Default / pre-selected hardware name (may be null)

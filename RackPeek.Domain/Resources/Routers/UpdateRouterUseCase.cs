@@ -1,7 +1,7 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.Routers;
+namespace RackPeek.Domain.Resources.Routers;
 
 public class UpdateRouterUseCase(IResourceCollection repository) : IUseCase
 {

@@ -1,15 +1,16 @@
-namespace Tests.E2e.PageObjectModels;
 using Microsoft.Playwright;
+
+namespace Tests.E2e.PageObjectModels;
 
 public class MainLayoutPom(IPage page)
 {
     public ILocator AppRoot => page.GetByTestId("app-root");
     public ILocator Header => page.GetByTestId("app-header");
     public ILocator PageContent => page.GetByTestId("page-content");
-    
+
     public ILocator BrandLink => page.GetByTestId("brand-link");
     public ILocator BrandText => page.GetByTestId("brand-text");
-    
+
     public ILocator NavHome => page.GetByTestId("nav-home");
     public ILocator NavCli => page.GetByTestId("nav-cli");
     public ILocator NavYaml => page.GetByTestId("nav-yaml");
@@ -60,7 +61,7 @@ public class MainLayoutPom(IPage page)
         await NavDocs.ClickAsync();
         await page.WaitForURLAsync("**/docs/**");
     }
-    
+
     public async Task AssertLoadedAsync()
     {
         await Assertions.Expect(AppRoot).ToBeVisibleAsync();

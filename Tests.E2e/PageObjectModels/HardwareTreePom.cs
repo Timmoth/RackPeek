@@ -1,6 +1,6 @@
 using Microsoft.Playwright;
 
-namespace Tests.E2e.Pages;
+namespace Tests.E2e.PageObjectModels;
 
 public class HardwareTreePom(IPage page)
 {
@@ -51,10 +51,14 @@ public class HardwareTreePom(IPage page)
     // -------------------------------------------------
 
     public ILocator HardwareGroup(string kind)
-        => page.GetByTestId($"hardware-group-{kind}");
+    {
+        return page.GetByTestId($"hardware-group-{kind}");
+    }
 
     public ILocator HardwareGroupTitle(string kind)
-        => page.GetByTestId($"hardware-group-title-{kind}");
+    {
+        return page.GetByTestId($"hardware-group-title-{kind}");
+    }
 
     public async Task AssertHardwareGroupExists(string kind)
     {
@@ -66,13 +70,19 @@ public class HardwareTreePom(IPage page)
     // -------------------------------------------------
 
     public ILocator HardwareItem(string hardwareName)
-        => page.GetByTestId($"hardware-item-{hardwareName}");
+    {
+        return page.GetByTestId($"hardware-item-{hardwareName}");
+    }
 
     public ILocator HardwareLink(string hardwareName)
-        => page.GetByTestId($"hardware-link-{hardwareName}");
+    {
+        return page.GetByTestId($"hardware-link-{hardwareName}");
+    }
 
     public ILocator HardwareName(string hardwareName)
-        => page.GetByTestId($"hardware-name-{hardwareName}");
+    {
+        return page.GetByTestId($"hardware-name-{hardwareName}");
+    }
 
     public async Task OpenHardwareAsync(string hardwareName)
     {
@@ -85,13 +95,19 @@ public class HardwareTreePom(IPage page)
     // -------------------------------------------------
 
     public ILocator SystemList(string hardwareName)
-        => page.GetByTestId($"system-list-{hardwareName}");
+    {
+        return page.GetByTestId($"system-list-{hardwareName}");
+    }
 
     public ILocator SystemItem(string systemName)
-        => page.GetByTestId($"system-item-{systemName}");
+    {
+        return page.GetByTestId($"system-item-{systemName}");
+    }
 
     public ILocator SystemLink(string systemName)
-        => page.GetByTestId($"system-link-{systemName}");
+    {
+        return page.GetByTestId($"system-link-{systemName}");
+    }
 
     public async Task OpenSystemAsync(string systemName)
     {
@@ -109,13 +125,19 @@ public class HardwareTreePom(IPage page)
     // -------------------------------------------------
 
     public ILocator ServiceList(string systemName)
-        => page.GetByTestId($"service-list-{systemName}");
+    {
+        return page.GetByTestId($"service-list-{systemName}");
+    }
 
     public ILocator ServiceItem(string serviceName)
-        => page.GetByTestId($"service-item-{serviceName}");
+    {
+        return page.GetByTestId($"service-item-{serviceName}");
+    }
 
     public ILocator ServiceLink(string serviceName)
-        => page.GetByTestId($"service-link-{serviceName}");
+    {
+        return page.GetByTestId($"service-link-{serviceName}");
+    }
 
     public async Task OpenServiceAsync(string serviceName)
     {

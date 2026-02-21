@@ -1,6 +1,6 @@
 using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.Resources.Hardware.Routers;
+namespace RackPeek.Domain.Resources.Routers;
 
 public record RouterHardwareReport(
     IReadOnlyList<RouterHardwareRow> Routers

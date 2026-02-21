@@ -1,5 +1,5 @@
 ﻿@page "/ups/list"
-@using RackPeek.Domain.Resources.Hardware.UpsUnits
+@using RackPeek.Domain.Resources.UpsUnits
 @inject NavigationManager Nav
 
 <ResourcesListComponent TResource="Ups"
@@ -9,7 +9,7 @@
 
     <ItemTemplate Context="ups">
         <UpsCardComponent Ups="ups"
-                          OnDeleted="Reload" />
+                          OnDeleted="Reload"/>
     </ItemTemplate>
 
 </ResourcesListComponent>
