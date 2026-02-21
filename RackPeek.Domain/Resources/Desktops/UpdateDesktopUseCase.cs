@@ -9,7 +9,7 @@ public class UpdateDesktopUseCase(IResourceCollection repository) : IUseCase
     public async Task ExecuteAsync(
         string name,
         string? model = null,
-        int? ramGb = null,
+        double? ramGb = null,
         int? ramMts = null,
         string? notes = null
     )
@@ -38,6 +38,24 @@ public class UpdateDesktopUseCase(IResourceCollection repository) : IUseCase
         {
             desktop.Ram ??= new Ram();
             desktop.Ram.Mts = ramMts.Value;
+        }
+        
+        if (desktop.Ram != null)
+        {
+            if (desktop.Ram.Size == 0)
+            {
+                desktop.Ram.Size = null;
+            }
+            
+            if (desktop.Ram.Mts == 0)
+            {
+                desktop.Ram.Mts = null;
+            }
+
+            if (desktop.Ram.Size == null && desktop.Ram.Mts == null)
+            {
+                desktop.Ram = null;
+            }
         }
 
         if (notes != null) desktop.Notes = notes;

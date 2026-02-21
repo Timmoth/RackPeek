@@ -175,7 +175,9 @@
 
     </div>
 
-    <ResourceTagEditor Resource="Laptop" />
+    <ResourceTagEditor Resource="Laptop" 
+                       TestIdPrefix="laptop" />
+
 
     <div class="md:col-span-2"
          data-testid="laptop-notes-section">
@@ -205,24 +207,32 @@
           IsOpenChanged="v => _cpuModalOpen = v"
           Value="@_editingCpu"
           OnSubmit="HandleCpuSubmit"
-          OnDelete="HandleCpuDelete" />
+          OnDelete="HandleCpuDelete" 
+          TestIdPrefix="laptop"/>
+
 
 <RamModal IsOpen="@_isRamModalOpen"
           IsOpenChanged="v => _isRamModalOpen = v"
           Value="@Laptop.Ram"
-          OnSubmit="HandleRamSubmit" />
+          OnSubmit="HandleRamSubmit" 
+          TestIdPrefix="laptop"/>
+
 
 <DriveModal IsOpen="@_driveModalOpen"
             IsOpenChanged="v => _driveModalOpen = v"
             Value="@_editingDrive"
             OnSubmit="HandleDriveSubmit"
-            OnDelete="HandleDriveDelete" />
+            OnDelete="HandleDriveDelete" 
+            TestIdPrefix="laptop"/>
+
 
 <GpuModal IsOpen="@_gpuModalOpen"
           IsOpenChanged="v => _gpuModalOpen = v"
           Value="@_editingGpu"
           OnSubmit="HandleGpuSubmit"
-          OnDelete="HandleGpuDelete" />
+          OnDelete="HandleGpuDelete" 
+          TestIdPrefix="laptop"/>
+
 
 <ConfirmModal IsOpen="_confirmDeleteOpen"
               IsOpenChanged="v => _confirmDeleteOpen = v"
@@ -264,10 +274,10 @@
         _isRamModalOpen = true;
     }
 
-    private async Task HandleRamSubmit(Ram value)
+    private async Task HandleRamSubmit(Ram? value)
     {
         _isRamModalOpen = false;
-        await UpdateUseCase.ExecuteAsync(Laptop.Name, Laptop.Model, value.Size, value.Mts, Laptop.Notes);
+        await UpdateUseCase.ExecuteAsync(Laptop.Name, Laptop.Model, value?.Size ?? 0, value?.Mts ?? 0, Laptop.Notes);
         Laptop = await GetByNameUseCase.ExecuteAsync(Laptop.Name);
     }
 

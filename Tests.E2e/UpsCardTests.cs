@@ -173,4 +173,72 @@ public class UpsCardTests(
             await context.CloseAsync();
         }
     }
+    
+    
+    [Fact]
+    public async Task User_Can_Add_And_Remove_Tags_From_Ups_Card()
+    {
+        var (context, page) = await CreatePageAsync();
+        var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
+
+        try
+        {
+            await page.GotoAsync(fixture.BaseUrl);
+
+            var layout = new MainLayoutPom(page);
+            await layout.AssertLoadedAsync();
+            await layout.GotoHardwareAsync();
+
+            var hardwareTree = new HardwareTreePom(page);
+            await hardwareTree.AssertLoadedAsync();
+            await hardwareTree.GotoUpsListAsync();
+
+            var list = new UpsListPom(page);
+            await list.AssertLoadedAsync();
+
+            await list.AddUpsAsync(name);
+            await page.WaitForURLAsync($"**/resources/hardware/{name}");
+
+            var card = new UpsCardPom(page);
+            await card.AssertVisibleAsync(name);
+
+            var tags = card.Tags;
+
+            // -------------------------------------------------
+            // Add multiple tags in one modal interaction
+            // -------------------------------------------------
+
+            await tags.AddTagsAsync("ups", "Foo", "Bar", "Baz");
+
+            await tags.AssertTagVisibleAsync("ups", "Foo");
+            await tags.AssertTagVisibleAsync("ups", "Bar");
+            await tags.AssertTagVisibleAsync("ups", "Baz");
+
+            // -------------------------------------------------
+            // Remove a single tag
+            // -------------------------------------------------
+
+            await tags.RemoveTagAsync("ups", "Bar");
+
+            await tags.AssertTagNotVisibleAsync("ups", "Bar");
+            await tags.AssertTagVisibleAsync("ups", "Foo");
+            await tags.AssertTagVisibleAsync("ups", "Baz");
+
+            // -------------------------------------------------
+            // Reload to verify persistence
+            // -------------------------------------------------
+
+            await page.ReloadAsync();
+
+            await tags.AssertTagVisibleAsync("ups", "Foo");
+            await tags.AssertTagVisibleAsync("ups", "Baz");
+            await tags.AssertTagNotVisibleAsync("ups", "Bar");
+
+            await context.CloseAsync();
+        }
+        finally
+        {
+            await context.CloseAsync();
+        }
+    }
 }

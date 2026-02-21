@@ -3,7 +3,9 @@ namespace Tests.E2e.PageObjectModels;
 using Microsoft.Playwright;
 
 public class DesktopCardPom(IPage page)
-{
+{    
+    public TagsPom Tags => new(page);
+
     // -------------------------------------------------
     // Root + Navigation
     // -------------------------------------------------

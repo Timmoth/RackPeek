@@ -178,4 +178,64 @@ public class ServiceCardTests(
             await context.CloseAsync();
         }
     }
+    
+    
+    [Fact]
+    public async Task User_Can_Add_And_Remove_Tags_From_Service_Card()
+    {
+        var (context, page) = await CreatePageAsync();
+        var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
+
+        try
+        {
+            await page.GotoAsync($"{fixture.BaseUrl}/services/list");
+
+            var list = new ServicesListPom(page);
+            await list.AssertLoadedAsync();
+
+            await list.AddServiceAsync(name);
+            await page.WaitForURLAsync($"**/resources/services/{name}");
+
+            var card = new ServiceCardPom(page);
+            await card.AssertVisibleAsync(name);
+
+            var tags = card.Tags;
+
+            // -------------------------------------------------
+            // Add multiple tags in one modal interaction
+            // -------------------------------------------------
+
+            await tags.AddTagsAsync("service", "Foo", "Bar", "Baz");
+
+            await tags.AssertTagVisibleAsync("service", "Foo");
+            await tags.AssertTagVisibleAsync("service", "Bar");
+            await tags.AssertTagVisibleAsync("service", "Baz");
+
+            // -------------------------------------------------
+            // Remove a single tag
+            // -------------------------------------------------
+
+            await tags.RemoveTagAsync("service", "Bar");
+
+            await tags.AssertTagNotVisibleAsync("service", "Bar");
+            await tags.AssertTagVisibleAsync("service", "Foo");
+            await tags.AssertTagVisibleAsync("service", "Baz");
+
+            // -------------------------------------------------
+            // Reload to verify persistence
+            // -------------------------------------------------
+
+            await page.ReloadAsync();
+
+            await tags.AssertTagVisibleAsync("service", "Foo");
+            await tags.AssertTagVisibleAsync("service", "Baz");
+            await tags.AssertTagNotVisibleAsync("service", "Bar");
+
+            await context.CloseAsync();
+        }
+        finally
+        {
+            await context.CloseAsync();
+        }
+    }
 }

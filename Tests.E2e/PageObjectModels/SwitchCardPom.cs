@@ -4,6 +4,8 @@ using Microsoft.Playwright;
 
 public class SwitchCardPom(IPage page)
 {
+    public TagsPom Tags => new(page);
+
     // -------------------------------------------------
     // Dynamic Switch Item (root)
     // -------------------------------------------------

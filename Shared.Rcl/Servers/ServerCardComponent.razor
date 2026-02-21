@@ -231,7 +231,9 @@
 
 
     </div>
-    <ResourceTagEditor Resource="Server"/>
+    <ResourceTagEditor Resource="Server"
+                       TestIdPrefix="server" />
+
 
     <div class="md:col-span-2">
         <div class="text-zinc-400 mb-1">Notes</div>
@@ -346,10 +348,10 @@
         _isRamModalOpen = true;
     }
 
-    private async Task HandleRamSubmit(Ram value)
+    private async Task HandleRamSubmit(Ram? value)
     {
         _isRamModalOpen = false;
-        await UpdateUseCase.ExecuteAsync(Server.Name, value.Size, value.Mts, Server.Ipmi);
+        await UpdateUseCase.ExecuteAsync(Server.Name, value?.Size ?? 0, value?.Mts ?? 0, Server.Ipmi);
         Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 

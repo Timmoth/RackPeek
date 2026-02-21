@@ -8,7 +8,7 @@ public record ServerDescription(
     string CpuSummary,
     int TotalCores,
     int TotalThreads,
-    int RamGb,
+    double RamGb,
     int TotalStorageGb,
     int NicPorts,
     bool Ipmi

@@ -9,7 +9,7 @@ public class UpdateLaptopUseCase(IResourceCollection repository) : IUseCase
     public async Task ExecuteAsync(
         string name,
         string? model = null,
-        int? ramGb = null,
+        double? ramGb = null,
         int? ramMts = null,
         string? notes = null
     )
@@ -39,6 +39,25 @@ public class UpdateLaptopUseCase(IResourceCollection repository) : IUseCase
             laptop.Ram ??= new Ram();
             laptop.Ram.Mts = ramMts.Value;
         }
+        
+        if (laptop.Ram != null)
+        {
+            if (laptop.Ram.Size == 0)
+            {
+                laptop.Ram.Size = null;
+            }
+            
+            if (laptop.Ram.Mts == 0)
+            {
+                laptop.Ram.Mts = null;
+            }
+
+            if (laptop.Ram.Size == null && laptop.Ram.Mts == null)
+            {
+                laptop.Ram = null;
+            }
+        }
+
 
         if (notes != null) laptop.Notes = notes;
         await repository.UpdateAsync(laptop);

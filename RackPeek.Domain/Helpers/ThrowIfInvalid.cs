@@ -22,7 +22,7 @@ public static class ThrowIfInvalid
             throw new ValidationException("Model name is too long.");
     }
 
-    public static void RamGb(int? value)
+    public static void RamGb(double? value)
     {
         if (value is null) throw new ValidationException("RAM value must be specified.");
 

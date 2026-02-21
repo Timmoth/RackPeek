@@ -8,7 +8,7 @@ public sealed class SystemEditModel
     public string? Type { get; set; }
     public string? Os { get; set; }
     public int? Cores { get; set; }
-    public int? Ram { get; set; }
+    public double? Ram { get; set; }
     public string? RunsOn { get; set; }
     public string? Notes { get; set; }
 

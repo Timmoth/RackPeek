@@ -39,7 +39,7 @@ resources:
     name: home-virtualization-host
     os: proxmox     
     cores: 2
-    ram: 12gb
+    ram: 12.5gb
     drives:
         - size: 2Tb
         - size: 1tb   
@@ -59,7 +59,7 @@ resources:
         Assert.Equal("home-virtualization-host", system.Name);
         Assert.Equal("proxmox", system.Os);
         Assert.Equal(2, system.Cores);
-        Assert.Equal(12, system.Ram);
+        Assert.Equal(12.5, system.Ram);
 
         // Drives
         Assert.NotNull(system.Drives);

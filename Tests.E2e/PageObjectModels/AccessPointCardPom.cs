@@ -4,6 +4,8 @@ using Microsoft.Playwright;
 
 public class AccessPointCardPom(IPage page)
 {
+    public TagsPom Tags => new(page);
+
     // Root
     public ILocator Card(string accessPointName)
         => page.GetByTestId($"accesspoint-item-{Sanitize(accessPointName)}");

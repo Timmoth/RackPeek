@@ -70,7 +70,19 @@
                 <div class="flex justify-between items-center mt-5"
                      data-testid="@($"{BaseTestId}-actions")">
 
-                    <span></span>
+                    @if (IsEdit)
+                    {
+                        <button type="button"
+                                class="text-red-400 hover:text-red-300 text-sm"
+                                data-testid="@($"{BaseTestId}-clear")"
+                                @onclick="HandleClear">
+                            Clear RAM
+                        </button>
+                    }
+                    else
+                    {
+                        <span></span>
+                    }
 
                     <div class="flex gap-2">
 
@@ -90,6 +102,7 @@
                     </div>
                 </div>
 
+
             </EditForm>
         </div>
     </div>
@@ -101,7 +114,7 @@
 
     [Parameter] public Ram? Value { get; set; }
 
-    [Parameter] public EventCallback<Ram> OnSubmit { get; set; }
+    [Parameter] public EventCallback<Ram?> OnSubmit { get; set; }
 
     [Parameter] public string? TestIdPrefix { get; set; }
 
@@ -127,6 +140,14 @@
                 };
         }
     }
+    
+    private async Task HandleClear()
+    {
+        await OnSubmit.InvokeAsync(null);
+        await Close();
+    }
+
+    
 
     private async Task HandleValidSubmit()
     {
@@ -153,7 +174,7 @@
 
     private class RamFormModel
     {
-        [Range(1, 1024)] public int? Size { get; set; }
+        [Range(0, 1024)] public double? Size { get; set; }
 
         [Range(1, 10000)] public int? Mts { get; set; }
     }

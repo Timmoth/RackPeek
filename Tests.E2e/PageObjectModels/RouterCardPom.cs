@@ -4,6 +4,8 @@ using Microsoft.Playwright;
 
 public class RouterCardPom(IPage page)
 {
+    public TagsPom Tags => new(page);
+
     // -------------------------------------------------
     // Dynamic Router Item (root)
     // -------------------------------------------------

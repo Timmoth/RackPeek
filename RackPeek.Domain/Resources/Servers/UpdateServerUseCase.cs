@@ -8,7 +8,7 @@ public class UpdateServerUseCase(IResourceCollection repository) : IUseCase
 {
     public async Task ExecuteAsync(
         string name,
-        int? ramGb = null,
+        double? ramGb = null,
         int? ramMts = null,
         bool? ipmi = null,
         string? notes = null
@@ -36,6 +36,24 @@ public class UpdateServerUseCase(IResourceCollection repository) : IUseCase
         {
             server.Ram ??= new Ram();
             server.Ram.Mts = ramMts.Value;
+        }
+
+        if (server.Ram != null)
+        {
+            if (server.Ram.Size == 0)
+            {
+                server.Ram.Size = null;
+            }
+            
+            if (server.Ram.Mts == 0)
+            {
+                server.Ram.Mts = null;
+            }
+
+            if (server.Ram.Size == null && server.Ram.Mts == null)
+            {
+                server.Ram = null;
+            }
         }
 
         // ---- IPMI ----

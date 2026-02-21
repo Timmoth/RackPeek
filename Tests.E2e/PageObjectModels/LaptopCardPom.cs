@@ -4,6 +4,8 @@ using Microsoft.Playwright;
 
 public class LaptopCardPom(IPage page)
 {
+    public TagsPom Tags => new(page);
+
     // -------------------------------------------------
     // Root + Navigation
     // -------------------------------------------------

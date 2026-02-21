@@ -11,7 +11,7 @@ public record SystemReportRow(
     string? Type,
     string? Os,
     int Cores,
-    int RamGb,
+    double RamGb,
     int TotalStorageGb,
     string? RunsOn
 );

@@ -203,5 +203,65 @@ public class SystemCardTests(
             await context.CloseAsync();
         }
     }
+    
+    
+    [Fact]
+    public async Task User_Can_Add_And_Remove_Tags_From_System_Card()
+    {
+        var (context, page) = await CreatePageAsync();
+        var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
+
+        try
+        {
+            await page.GotoAsync($"{fixture.BaseUrl}/systems/list");
+
+            var list = new SystemsListPom(page);
+            await list.AssertLoadedAsync();
+
+            await list.AddSystemAsync(name);
+            await page.WaitForURLAsync($"**/resources/systems/{name}");
+
+            var card = new SystemCardPom(page);
+            await card.AssertVisibleAsync(name);
+
+            var tags = card.Tags;
+
+            // -------------------------------------------------
+            // Add multiple tags in one modal interaction
+            // -------------------------------------------------
+
+            await tags.AddTagsAsync("system", "Foo", "Bar", "Baz");
+
+            await tags.AssertTagVisibleAsync("system", "Foo");
+            await tags.AssertTagVisibleAsync("system", "Bar");
+            await tags.AssertTagVisibleAsync("system", "Baz");
+
+            // -------------------------------------------------
+            // Remove a single tag
+            // -------------------------------------------------
+
+            await tags.RemoveTagAsync("system", "Bar");
+
+            await tags.AssertTagNotVisibleAsync("system", "Bar");
+            await tags.AssertTagVisibleAsync("system", "Foo");
+            await tags.AssertTagVisibleAsync("system", "Baz");
+
+            // -------------------------------------------------
+            // Reload to verify persistence
+            // -------------------------------------------------
+
+            await page.ReloadAsync();
+
+            await tags.AssertTagVisibleAsync("system", "Foo");
+            await tags.AssertTagVisibleAsync("system", "Baz");
+            await tags.AssertTagNotVisibleAsync("system", "Bar");
+
+            await context.CloseAsync();
+        }
+        finally
+        {
+            await context.CloseAsync();
+        }
+    }
 
 }

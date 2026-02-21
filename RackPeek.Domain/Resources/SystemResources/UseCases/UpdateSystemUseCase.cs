@@ -10,7 +10,7 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         string? type = null,
         string? os = null,
         int? cores = null,
-        int? ram = null,
+        double? ram = null,
         string? runsOn = null,
         string? notes = null
     )

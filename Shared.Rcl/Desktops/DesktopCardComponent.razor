@@ -204,7 +204,9 @@
             }
         </div>
 
-        <ResourceTagEditor Resource="Desktop"/>
+        <ResourceTagEditor Resource="Desktop"
+                           TestIdPrefix="desktop" />
+
 
     </div>
 
@@ -257,6 +259,46 @@
                   OnSubmit="HandleCloneSubmit"
                   TestIdPrefix="desktop-clone"/>
 
+
+<CpuModal IsOpen="@_cpuModalOpen"
+          IsOpenChanged="v => _cpuModalOpen = v"
+          Value="@_editingCpu"
+          OnSubmit="HandleCpuSubmit"
+          OnDelete="HandleCpuDelete" 
+          TestIdPrefix="desktop"/>
+
+
+<RamModal IsOpen="@_isRamModalOpen"
+          IsOpenChanged="v => _isRamModalOpen = v"
+          Value="@Desktop.Ram"
+          OnSubmit="HandleRamSubmit" 
+          TestIdPrefix="desktop"/>
+
+
+<DriveModal IsOpen="@_driveModalOpen"
+            IsOpenChanged="v => _driveModalOpen = v"
+            Value="@_editingDrive"
+            OnSubmit="HandleDriveSubmit"
+            OnDelete="HandleDriveDelete" 
+            TestIdPrefix="desktop"/>
+
+
+<GpuModal IsOpen="@_gpuModalOpen"
+          IsOpenChanged="v => _gpuModalOpen = v"
+          Value="@_editingGpu"
+          OnSubmit="HandleGpuSubmit"
+          OnDelete="HandleGpuDelete" 
+          TestIdPrefix="desktop"/>
+
+
+<NicModal
+    IsOpen="@_nicModalOpen"
+    IsOpenChanged="v => _nicModalOpen = v"
+    Value="@_editingNic"
+    OnSubmit="HandleNicSubmit"
+    OnDelete="HandleNicDelete"
+    TestIdPrefix="desktop-nic"/>
+
 @code {
     [Parameter] [EditorRequired] public Desktop Desktop { get; set; } = default!;
 
@@ -269,10 +311,10 @@
         _isRamModalOpen = true;
     }
 
-    private async Task HandleRamSubmit(Ram value)
+    private async Task HandleRamSubmit(Ram? value)
     {
         _isRamModalOpen = false;
-        await UpdateUseCase.ExecuteAsync(Desktop.Name, Desktop.Model, value.Size, value.Mts);
+        await UpdateUseCase.ExecuteAsync(Desktop.Name, Desktop.Model, value?.Size ?? 0, value?.Mts ?? 0);
         Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
     }
 

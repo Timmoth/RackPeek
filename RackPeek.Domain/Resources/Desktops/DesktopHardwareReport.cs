@@ -11,7 +11,7 @@ public record DesktopHardwareRow(
     string CpuSummary,
     int TotalCores,
     int TotalThreads,
-    int RamGb,
+    double RamGb,
     int TotalStorageGb,
     int SsdStorageGb,
     int HddStorageGb,

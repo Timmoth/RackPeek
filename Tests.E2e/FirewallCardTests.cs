@@ -228,4 +228,71 @@ public class FirewallCardTests(
             await context.CloseAsync();
         }
     }
+    
+    
+    [Fact]
+    public async Task User_Can_Add_And_Remove_Tags_From_Firewall_Card()
+    {
+        var (context, page) = await CreatePageAsync();
+        var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
+
+        try
+        {
+            await page.GotoAsync(fixture.BaseUrl);
+
+            var layout = new MainLayoutPom(page);
+            await layout.AssertLoadedAsync();
+            await layout.GotoHardwareAsync();
+
+            var hardwareTree = new HardwareTreePom(page);
+            await hardwareTree.AssertLoadedAsync();
+            await hardwareTree.GotoFirewallsListAsync();
+
+            var list = new FirewallsListPom(page);
+            await list.AssertLoadedAsync();
+
+            await list.AddFirewallAsync(name);
+            await page.WaitForURLAsync($"**/resources/hardware/{name}");
+
+            var card = new FirewallCardPom(page);
+
+            var tags = card.Tags;
+
+            // -------------------------------------------------
+            // Add multiple tags in one modal interaction
+            // -------------------------------------------------
+
+            await tags.AddTagsAsync("firewall", "Foo", "Bar", "Baz");
+
+            await tags.AssertTagVisibleAsync("firewall", "Foo");
+            await tags.AssertTagVisibleAsync("firewall", "Bar");
+            await tags.AssertTagVisibleAsync("firewall", "Baz");
+
+            // -------------------------------------------------
+            // Remove a single tag
+            // -------------------------------------------------
+
+            await tags.RemoveTagAsync("firewall", "Bar");
+
+            await tags.AssertTagNotVisibleAsync("firewall", "Bar");
+            await tags.AssertTagVisibleAsync("firewall", "Foo");
+            await tags.AssertTagVisibleAsync("firewall", "Baz");
+
+            // -------------------------------------------------
+            // Reload to verify persistence
+            // -------------------------------------------------
+
+            await page.ReloadAsync();
+
+            await tags.AssertTagVisibleAsync("firewall", "Foo");
+            await tags.AssertTagVisibleAsync("firewall", "Baz");
+            await tags.AssertTagNotVisibleAsync("firewall", "Bar");
+
+            await context.CloseAsync();
+        }
+        finally
+        {
+            await context.CloseAsync();
+        }
+    }
 }

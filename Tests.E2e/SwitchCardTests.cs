@@ -228,4 +228,71 @@ public class SwitchCardTests(
             await context.CloseAsync();
         }
     }
+    
+    
+    [Fact]
+    public async Task User_Can_Add_And_Remove_Tags_From_Switch_Card()
+    {
+        var (context, page) = await CreatePageAsync();
+        var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
+
+        try
+        {
+            await page.GotoAsync(fixture.BaseUrl);
+
+            var layout = new MainLayoutPom(page);
+            await layout.AssertLoadedAsync();
+            await layout.GotoHardwareAsync();
+
+            var hardwareTree = new HardwareTreePom(page);
+            await hardwareTree.AssertLoadedAsync();
+            await hardwareTree.GotoSwitchesListAsync();
+
+            var list = new SwitchListPom(page);
+            await list.AssertLoadedAsync();
+
+            await list.AddSwitchAsync(name);
+            await page.WaitForURLAsync($"**/resources/hardware/{name}");
+
+            var card = new SwitchCardPom(page);
+
+            var tags = card.Tags;
+
+            // -------------------------------------------------
+            // Add multiple tags in one modal interaction
+            // -------------------------------------------------
+
+            await tags.AddTagsAsync("switch", "Foo", "Bar", "Baz");
+
+            await tags.AssertTagVisibleAsync("switch", "Foo");
+            await tags.AssertTagVisibleAsync("switch", "Bar");
+            await tags.AssertTagVisibleAsync("switch", "Baz");
+
+            // -------------------------------------------------
+            // Remove a single tag
+            // -------------------------------------------------
+
+            await tags.RemoveTagAsync("switch", "Bar");
+
+            await tags.AssertTagNotVisibleAsync("switch", "Bar");
+            await tags.AssertTagVisibleAsync("switch", "Foo");
+            await tags.AssertTagVisibleAsync("switch", "Baz");
+
+            // -------------------------------------------------
+            // Reload to verify persistence
+            // -------------------------------------------------
+
+            await page.ReloadAsync();
+
+            await tags.AssertTagVisibleAsync("switch", "Foo");
+            await tags.AssertTagVisibleAsync("switch", "Baz");
+            await tags.AssertTagNotVisibleAsync("switch", "Bar");
+
+            await context.CloseAsync();
+        }
+        finally
+        {
+            await context.CloseAsync();
+        }
+    }
 }
