@@ -80,7 +80,7 @@ public class DesktopErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHe
             "--model", "Xeon"
         );
 
-        Assert.Contains("invalid", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 
     // Drive errors

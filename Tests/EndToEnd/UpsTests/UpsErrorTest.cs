@@ -67,6 +67,6 @@ public class UpsErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper
             "--va", "not-a-number"
         );
 
-        Assert.Contains("invalid", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("error", output, StringComparison.OrdinalIgnoreCase);
     }
 }

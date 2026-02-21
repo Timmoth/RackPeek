@@ -1,0 +1,46 @@
+name: WebUi Tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 10.0.x
+
+      # Restore all projects
+      - name: Restore
+        run: dotnet restore
+
+      # Build solution
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      # Install Playwright CLI
+      - name: Install Playwright CLI
+        run: dotnet tool install --global Microsoft.Playwright.CLI
+
+      # Install browser binaries + Linux deps
+      - name: Install Playwright Browsers
+        run: |
+          playwright install --with-deps
+
+      # Build Docker image used by Testcontainers
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -t rackpeek:ci \
+            -f RackPeek.Web/Dockerfile \
+            .
+
+      # Run E2E tests
+      - name: Run E2E Tests
+        run: dotnet test Tests.E2e --configuration Release --verbosity normal

@@ -33,7 +33,7 @@ public class SwitchSetCommand(
             settings.Managed,
             settings.Poe);
 
-        AnsiConsole.MarkupLine($"[green]Server '{settings.Name}' updated.[/]");
+        AnsiConsole.MarkupLine($"[green]Switch '{settings.Name}' updated.[/]");
         return 0;
     }
 }

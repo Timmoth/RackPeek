@@ -22,6 +22,7 @@ public class AccessPointSetCommand(
     IServiceProvider serviceProvider
 ) : AsyncCommand<AccessPointSetSettings>
 {
+    
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         AccessPointSetSettings settings,

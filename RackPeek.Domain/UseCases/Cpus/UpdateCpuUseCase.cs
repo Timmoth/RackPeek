@@ -36,10 +36,17 @@ public class UpdateCpuUseCase<T>(IResourceCollection repo) : IUpdateCpuUseCase<T
 
         if (resource is not ICpuResource cpuResource) return;
 
+        
         cpuResource.Cpus ??= [];
 
-        if (index < 0 || index >= cpuResource.Cpus.Count)
-            throw new ArgumentOutOfRangeException(nameof(index), "CPU index out of range.");
+        if (index < 0)
+            throw new NotFoundException($"Please pick a CPU index >= 0 for '{name}'.");
+        
+        if (cpuResource.Cpus.Count == 0)
+            throw new NotFoundException($"'{name}' has no CPUs.");
+        
+        if (index >= cpuResource.Cpus.Count)
+            throw new NotFoundException($"Please pick a CPU index < {cpuResource.Cpus.Count} for '{name}'.");
 
         var cpu = cpuResource.Cpus[index];
         cpu.Model = model;

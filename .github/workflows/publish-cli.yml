@@ -1,4 +1,4 @@
-name: RackPeek Release
+name: CLI Publish
 
 on:
   workflow_dispatch:

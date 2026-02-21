@@ -36,7 +36,7 @@ public class SwitchYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
 
         (output, yaml) = await ExecuteAsync("switches", "set", "sw01", "--Model", "Netgear GS108", "--managed", "true",
             "--poe", "true");
-        Assert.Equal("Server 'sw01' updated.\n", output);
+        Assert.Equal("Switch 'sw01' updated.\n", output);
         Assert.Equal("""
                      resources:
                      - kind: Switch
@@ -53,7 +53,7 @@ public class SwitchYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
 
         (output, yaml) = await ExecuteAsync("switches", "set", "sw02", "--Model", "TP-Link TL-SG108E", "--managed",
             "false", "--poe", "false");
-        Assert.Equal("Server 'sw02' updated.\n", output);
+        Assert.Equal("Switch 'sw02' updated.\n", output);
 
         Assert.Equal("""
                      resources:

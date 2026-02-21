@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -37,8 +38,8 @@ public static class YamlCliTestHost
         var console = new TestConsole();
 
         var registrar = new TypeRegistrar(services.BuildServiceProvider());
+        
         var app = new CommandApp(registrar);
-
         AnsiConsole.Console = console;
         app.Configure(c => c.Settings.Console = console);
 

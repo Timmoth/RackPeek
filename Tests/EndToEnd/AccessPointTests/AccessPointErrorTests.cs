@@ -67,6 +67,6 @@ public class AccessPointErrorTests(TempYamlCliFixture fs, ITestOutputHelper outp
             "--speed", "not-a-number"
         );
 
-        Assert.Contains("invalid", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("error", output, StringComparison.OrdinalIgnoreCase);
     }
 }

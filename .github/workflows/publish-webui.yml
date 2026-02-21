@@ -1,8 +1,6 @@
-name: Deploy Blazor WASM to GitHub Pages
+name: WebUi Publish
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:

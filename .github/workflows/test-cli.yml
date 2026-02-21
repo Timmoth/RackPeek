@@ -1,4 +1,4 @@
-name: Test
+name: CLI Tests
 
 on:
   pull_request:
