@@ -34,7 +34,7 @@ jobs:
       # patch base href FIRST
       - name: Fix base href for Pages
         run: |
-          sed -i 's|<base href="/" />|<base href="/RackPeek/" />|g' publish/wwwroot/index.html
+          sed -i 's|<base href="/"|<base href="/RackPeek/"|g' publish/wwwroot/index.html
 
       # THEN copy to 404.html
       - name: SPA fallback
