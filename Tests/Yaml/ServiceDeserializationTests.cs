@@ -53,7 +53,7 @@ resources:
 
         Assert.Equal("immich", service.Name);
         Assert.Equal("Service", service.Kind);
-        Assert.Equal("proxmox-host", service.RunsOn);
+        Assert.Contains("proxmox-host", service.RunsOn);
 
         Assert.NotNull(service.Network);
         Assert.Equal("192.168.0.4", service.Network.Ip);

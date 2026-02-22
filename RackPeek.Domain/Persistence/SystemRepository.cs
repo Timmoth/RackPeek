@@ -48,7 +48,7 @@ public class YamlSystemRepository(IResourceCollection resources) : ISystemReposi
     {
         var physicalHostNameLower = physicalHostName.ToLower().Trim();
         var results = resources.SystemResources
-            .Where(s => s.RunsOn != null && s.RunsOn.ToLower().Equals(physicalHostNameLower)).ToList();
+            .Where(s => s.RunsOn.Select(sys => sys.ToLower().Equals(physicalHostNameLower)).ToList().Count > 0).ToList();
         return Task.FromResult<IReadOnlyList<SystemResource>>(results);
     }
 

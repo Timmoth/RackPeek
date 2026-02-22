@@ -11,7 +11,7 @@ public class UpdateServiceUseCase(IResourceCollection repository) : IUseCase
         int? port = null,
         string? protocol = null,
         string? url = null,
-        string? runsOn = null,
+        List<string>? runsOn = null,
         string? notes = null
     )
     {
@@ -48,12 +48,18 @@ public class UpdateServiceUseCase(IResourceCollection repository) : IUseCase
             service.Network.Port = port.Value;
         }
 
-        if (!string.IsNullOrWhiteSpace(runsOn))
+        if (runsOn is not null)
         {
-            ThrowIfInvalid.ResourceName(runsOn);
-            var parentSystem = await repository.GetByNameAsync(runsOn);
-            if (parentSystem == null) throw new NotFoundException($"Parent system '{runsOn}' not found.");
-            service.RunsOn = runsOn;
+            foreach (var parent in runsOn)
+            {
+                ThrowIfInvalid.ResourceName(parent);
+
+                var parentSystem = await repository.GetByNameAsync(parent);
+
+                if (parentSystem == null) throw new NotFoundException($"Parent system '{parent}' not found.");
+
+                if (!service.RunsOn.Contains(parent)) service.RunsOn.Add(parent);
+            }
         }
 
         if (notes != null) service.Notes = notes;

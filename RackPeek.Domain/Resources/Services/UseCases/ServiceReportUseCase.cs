@@ -12,8 +12,8 @@ public record ServiceReportRow(
     int? Port,
     string? Protocol,
     string? Url,
-    string? RunsOnSystemHost,
-    string? RunsOnPhysicalHost
+    List<string>? RunsOnSystemHost,
+    List<string>? RunsOnPhysicalHost
 );
 
 public class ServiceReportUseCase(IResourceCollection repository) : IUseCase
@@ -24,11 +24,20 @@ public class ServiceReportUseCase(IResourceCollection repository) : IUseCase
 
         var rows = services.Select(async s =>
         {
-            string? runsOnPhysicalHost = null;
-            if (!string.IsNullOrEmpty(s.RunsOn))
+            List<string> runsOnPhysicalHost = new List<string>();
+            if (s.RunsOn is not null)
             {
-                var systemResource = await repository.GetByNameAsync(s.RunsOn);
-                runsOnPhysicalHost = systemResource?.RunsOn;
+                foreach (var system in s.RunsOn)
+                {
+                    var systemResource = await repository.GetByNameAsync(system);
+                    if (systemResource?.RunsOn is not null)
+                    {
+                        foreach (var parent in systemResource.RunsOn)
+                        {
+                            if (!runsOnPhysicalHost.Contains(parent)) runsOnPhysicalHost.Add(parent);
+                        }
+                    }
+                }
             }
 
             return new ServiceReportRow(

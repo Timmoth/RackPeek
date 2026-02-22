@@ -79,7 +79,15 @@ public class ServiceSubnetsCommand(
                 .AddColumn("Runs On");
 
             foreach (var s in services)
-                table.AddRow(s.Name, s.Ip, s.RunsOn ?? "Unknown");
+            {
+                var runsOn = "";
+                if (s.RunsOn?.Count > 0)
+                {
+                    runsOn = string.Join(", ", s.RunsOn);
+                }
+
+                table.AddRow(s.Name, s.Ip, runsOn);
+            }
 
             AnsiConsole.MarkupLine($"[green]Services in {result.FilteredCidr}[/]");
             AnsiConsole.Write(table);

@@ -46,7 +46,7 @@
 
     [Parameter] public EventCallback<string> OnCreated { get; set; }
     [Parameter] public string? Placeholder { get; set; }
-    [Parameter] public string? RunsOn { get; set; }
+    [Parameter] public List<string>? RunsOn { get; set; }
 
     private string _name = string.Empty;
     private string? _error;

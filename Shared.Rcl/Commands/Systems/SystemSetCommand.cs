@@ -31,13 +31,19 @@ public class SystemSetCommand(
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<UpdateSystemUseCase>();
 
+        List<string> runsOn = new List<string>();
+        if (settings.RunsOn is not null)
+        {
+            runsOn.Add(settings.RunsOn);
+        }
+
         await useCase.ExecuteAsync(
             settings.Name,
             settings.Type,
             settings.Os,
             settings.Cores,
             settings.Ram,
-            settings.RunsOn
+            runsOn
         );
 
         AnsiConsole.MarkupLine($"[green]System '{settings.Name}' updated.[/]");

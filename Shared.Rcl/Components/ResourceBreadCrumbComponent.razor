@@ -48,12 +48,15 @@
     {
         var system = await Repo.GetByNameAsync(systemName);
 
-        if (system?.RunsOn is not null)
+        if (system?.RunsOn?.Count > 0)
         {
-            Breadcrumbs.Add(new Breadcrumb(
-                system.RunsOn,
-                $"resources/hardware/{system.RunsOn}"
-            ));
+            foreach(string parent in system.RunsOn)
+            {
+                Breadcrumbs.Add(new Breadcrumb(
+                    parent,
+                    $"resources/hardware/{parent}"
+                ));
+            }
         }
 
         Breadcrumbs.Add(new Breadcrumb(
@@ -66,22 +69,28 @@
     {
         var service = await Repo.GetByNameAsync(serviceName);
 
-        if (service?.RunsOn is not null)
+        if (service?.RunsOn?.Count > 0)
         {
-            var system = await Repo.GetByNameAsync(service.RunsOn);
-
-            if (system?.RunsOn is not null)
+            foreach (var sys in service.RunsOn)
             {
-                Breadcrumbs.Add(new Breadcrumb(
-                    system.RunsOn,
-                    $"resources/hardware/{system.RunsOn}"
-                ));
-            }
+              var system = await Repo.GetByNameAsync(sys);
 
-            Breadcrumbs.Add(new Breadcrumb(
-                service.RunsOn,
-                $"resources/systems/{service.RunsOn}"
-            ));
+              if (system?.RunsOn?.Count > 0)
+              {
+                  foreach(string parent in system.RunsOn)
+                  {
+                      Breadcrumbs.Add(new Breadcrumb(
+                          parent,
+                          $"resources/hardware/{parent}"
+                      ));
+                  }
+              }
+
+              Breadcrumbs.Add(new Breadcrumb(
+                  sys,
+                  $"resources/systems/{sys}"
+              ));
+            }
         }
 
         Breadcrumbs.Add(new Breadcrumb(

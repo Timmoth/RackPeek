@@ -33,7 +33,7 @@ public class ServiceDescribeCommand(
         grid.AddRow("Protocol:", service.Protocol ?? "Unknown");
         grid.AddRow("Url:", service.Url ?? "Unknown");
         grid.AddRow("Runs On:",
-            ServicesFormatExtensions.FormatRunsOn(service.RunsOnSystemHost, service.RunsOnPhysicalHost));
+            ServicesFormatExtensions.FormatRunsOn(string.Join(", ", service.RunsOnSystemHost), string.Join(", ", service.RunsOnPhysicalHost)));
 
         AnsiConsole.Write(
             new Panel(grid)

@@ -22,7 +22,7 @@ public class ServiceRepository(IResourceCollection resources) : IServiceReposito
     {
         var systemHostNameLower = systemHostName.ToLower().Trim();
         var results = resources.ServiceResources
-            .Where(s => s.RunsOn != null && s.RunsOn.ToLower().Equals(systemHostNameLower)).ToList();
+            .Where(s => s.RunsOn.Select(p => p.ToLower().Equals(systemHostNameLower)).ToList().Count > 0).ToList();
         return Task.FromResult<IReadOnlyList<Service>>(results);
     }
 

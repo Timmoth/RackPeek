@@ -65,8 +65,9 @@ public class SystemYamlE2ETests(TempYamlCliFixture fs, ITestOutputHelper outputH
                        os: ubuntu-22.04
                        cores: 4
                        ram: 8192
+                       runsOn:
+                       - hypervisor01
                        name: host01
-                       runsOn: hypervisor01
 
                      """, yaml);
 
