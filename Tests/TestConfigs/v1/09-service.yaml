@@ -1,0 +1,10 @@
+version: 1
+resources:
+  - kind: Service
+    name: example-service
+    runsOn: example-system
+    network:
+      ip: 192.168.1.10
+      port: 8080
+      protocol: TCP
+      url: http://example.local:8080

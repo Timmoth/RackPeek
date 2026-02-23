@@ -1,0 +1,8 @@
+version: 1
+resources:
+  - kind: AccessPoint
+    name: example-accesspoint
+    tags:
+      - wireless
+    model: UniFi-U6-Pro
+    speed: 2.5

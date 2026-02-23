@@ -1,0 +1,32 @@
+version: 1
+resources:
+  - kind: Server
+    name: example-server
+    tags:
+      - production
+      - compute
+    notes: Primary hypervisor host
+    runsOn: rack-a1
+    ram:
+      size: 128
+      mts: 3200
+    ipmi: true
+    cpus:
+      - model: AMD EPYC 7302P
+        cores: 16
+        threads: 32
+    drives:
+      - type: nvme
+        size: 1024
+      - type: ssd
+        size: 2048
+    gpus:
+      - model: NVIDIA RTX 4000
+        vram: 16
+    nics:
+      - type: rj45
+        speed: 1
+        ports: 2
+      - type: sfp+
+        speed: 10
+        ports: 2

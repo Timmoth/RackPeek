@@ -1,0 +1,14 @@
+version: 1
+resources:
+  - kind: Switch
+    name: example-switch
+    model: UniFi-USW-Enterprise-24
+    managed: true
+    poe: true
+    ports:
+      - type: rj45
+        speed: 1
+        count: 12
+      - type: sfp+
+        speed: 10
+        count: 4

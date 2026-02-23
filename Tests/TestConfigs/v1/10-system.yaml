@@ -1,0 +1,13 @@
+version: 1
+resources:
+  - kind: System
+    name: example-system
+    notes: Virtual machine instance
+    runsOn: example-server
+    type: VM
+    os: ubuntu-22.04
+    cores: 4
+    ram: 8
+    drives:
+      - size: 128
+      - size: 256

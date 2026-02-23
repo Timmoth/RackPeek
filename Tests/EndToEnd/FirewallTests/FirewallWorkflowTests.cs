@@ -1,7 +1,7 @@
 using Tests.EndToEnd.Infra;
 using Xunit.Abstractions;
 
-namespace Tests.EndToEnd;
+namespace Tests.EndToEnd.FirewallTests;
 
 [Collection("Yaml CLI tests")]
 public class FirewallWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)

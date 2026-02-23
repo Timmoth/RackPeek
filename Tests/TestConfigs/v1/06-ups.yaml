@@ -1,0 +1,8 @@
+version: 1
+resources:
+  - kind: Ups
+    name: example-ups
+    tags:
+      - power
+    model: APC-SmartUPS-2200
+    va: 2200

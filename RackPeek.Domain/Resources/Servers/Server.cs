@@ -12,28 +12,3 @@ public class Server : Hardware.Hardware, ICpuResource, IDriveResource, IGpuResou
     public List<Gpu>? Gpus { get; set; }
     public List<Nic>? Nics { get; set; }
 }
-
-public interface ICpuResource
-{
-    public List<Cpu>? Cpus { get; set; }
-}
-
-public interface IDriveResource
-{
-    public List<Drive>? Drives { get; set; }
-}
-
-public interface IPortResource
-{
-    public List<Port>? Ports { get; set; }
-}
-
-public interface IGpuResource
-{
-    public List<Gpu>? Gpus { get; set; }
-}
-
-public interface INicResource
-{
-    public List<Nic>? Nics { get; set; }
-}

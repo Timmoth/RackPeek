@@ -1,7 +1,7 @@
 using Tests.EndToEnd.Infra;
 using Xunit.Abstractions;
 
-namespace Tests.EndToEnd;
+namespace Tests.EndToEnd.SystemTests;
 
 [Collection("Yaml CLI tests")]
 public class SystemErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
