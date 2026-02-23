@@ -1,4 +1,18 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+﻿# -----------------------------
+# Runtime base
+# -----------------------------
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+
+ARG APP_UID=1000
+ENV APP_UID=$APP_UID
+
+WORKDIR /app
+EXPOSE 8080
+
+# -----------------------------
+# Build stage
+# -----------------------------
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
@@ -11,30 +25,36 @@ RUN dotnet restore "RackPeek.Web/RackPeek.Web.csproj"
 
 COPY . .
 
-# Build Web
+# Publish Web
 WORKDIR "/src/RackPeek.Web"
 RUN dotnet publish "./RackPeek.Web.csproj" -c $BUILD_CONFIGURATION -o /app/web-publish /p:UseAppHost=false
 
-# Build CLI
+# Publish CLI
 WORKDIR "/src/RackPeek"
 RUN dotnet publish "./RackPeek.csproj" -c $BUILD_CONFIGURATION -o /app/cli-publish /p:UseAppHost=false
+
+
+# -----------------------------
+# Final runtime image
+# -----------------------------
 FROM base AS final
 
 WORKDIR /app
 
 USER root
 
-# Create shared config dir
-RUN mkdir -p /app/config && chown -R $APP_UID /app/config
+# Create shared config directory safely
+RUN mkdir -p /app/config \
+    && chown -R ${APP_UID}:0 /app/config \
+    && chmod -R g=u /app/config
+
 VOLUME ["/app/config"]
 
-# Copy Web app
+# Copy published outputs
 COPY --from=build /app/web-publish .
-
-# Copy CLI publish output
 COPY --from=build /app/cli-publish /usr/local/bin/rpk-dir
 
-# If AppHost exists, use it. Otherwise create wrapper.
+# Create CLI wrapper
 RUN if [ -f /usr/local/bin/rpk-dir/RackPeek ]; then \
         mv /usr/local/bin/rpk-dir/RackPeek /usr/local/bin/rpk; \
     else \
@@ -42,9 +62,11 @@ RUN if [ -f /usr/local/bin/rpk-dir/RackPeek ]; then \
         chmod +x /usr/local/bin/rpk; \
     fi
 
-# Set environment variable so CLI uses shared config
+# Make sure ASP.NET binds correctly in containers
+ENV ASPNETCORE_URLS=http://+:8080
 ENV RPK_YAML_DIR=/app/config
 
-USER $APP_UID
+# Drop privileges
+USER ${APP_UID}
 
 ENTRYPOINT ["dotnet", "RackPeek.Web.dll"]
