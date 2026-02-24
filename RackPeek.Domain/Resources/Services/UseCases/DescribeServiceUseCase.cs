@@ -10,8 +10,8 @@ public record ServiceDescription(
     int? Port,
     string? Protocol,
     string? Url,
-    string? RunsOnSystemHost,
-    string? RunsOnPhysicalHost,
+    List<string> RunsOnSystemHost,
+    List<string> RunsOnPhysicalHost,
     Dictionary<string, string> Labels
 );
 
@@ -25,11 +25,20 @@ public class DescribeServiceUseCase(IResourceCollection repository) : IUseCase
         if (service is null)
             throw new NotFoundException($"Service '{name}' not found.");
 
-        string? runsOnPhysicalHost = null;
-        if (!string.IsNullOrEmpty(service.RunsOn))
+        List<string> runsOnPhysicalHost = new List<string>();
+        foreach (var systemName in service.RunsOn)
         {
-            var systemResource = await repository.GetByNameAsync(service.RunsOn) as SystemResource;
-            runsOnPhysicalHost = systemResource?.RunsOn;
+            var systemResource = await repository.GetByNameAsync(systemName) as SystemResource;
+            if (systemResource is not null)
+            {
+                foreach(var physicalName in systemResource.RunsOn)
+                {
+                    if (!runsOnPhysicalHost.Contains(physicalName))
+                    {
+                        runsOnPhysicalHost.Add(physicalName);
+                    }
+                }
+            }
         }
 
         return new ServiceDescription(

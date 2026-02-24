@@ -11,7 +11,7 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         string? os = null,
         int? cores = null,
         double? ram = null,
-        string? runsOn = null,
+        List<string>? runsOn = null,
         string? notes = null
     )
     {
@@ -44,14 +44,20 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
 
         if (notes != null) system.Notes = notes;
 
-        if (!string.IsNullOrWhiteSpace(runsOn))
+        if (runsOn?.Count > 0)
         {
-            ThrowIfInvalid.ResourceName(runsOn);
-            var parentHardware = await repository.GetByNameAsync(runsOn) as Hardware.Hardware;
-            if (parentHardware == null) throw new NotFoundException($"Parent hardware '{runsOn}' not found.");
-            system.RunsOn = runsOn;
-        }
+            foreach(string parent in runsOn) {
+                if (!string.IsNullOrWhiteSpace(parent)) {
+                    ThrowIfInvalid.ResourceName(parent);
+                    var parentHardware = await repository.GetByNameAsync(parent) as Hardware.Hardware;
 
+                    if (parentHardware == null) throw new NotFoundException($"Parent hardware '{parent}' not found.");
+
+                    if (!system.RunsOn.Contains(parent)) system.RunsOn.Add(parent);
+
+                }
+            }
+        }
 
         await repository.UpdateAsync(system);
     }

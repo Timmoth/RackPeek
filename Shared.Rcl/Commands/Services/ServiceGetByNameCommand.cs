@@ -19,8 +19,11 @@ public class ServiceGetByNameCommand(
 
         var service = await useCase.ExecuteAsync(settings.Name);
 
+        var sys = string.Join(", ", service.RunsOnSystemHost);
+        var phys = string.Join(", ", service.RunsOnPhysicalHost);
+
         AnsiConsole.MarkupLine(
-            $"[green]{service.Name}[/]  Ip: {service.Ip ?? "Unknown"}, Port: {service.Port.ToString() ?? "Unknown"}, Protocol: {service.Protocol ?? "Unknown"}, Url: {service.Url ?? "Unknown"}, RunsOn: {ServicesFormatExtensions.FormatRunsOn(service.RunsOnSystemHost, service.RunsOnPhysicalHost)}");
+            $"[green]{service.Name}[/]  Ip: {service.Ip ?? "Unknown"}, Port: {service.Port.ToString() ?? "Unknown"}, Protocol: {service.Protocol ?? "Unknown"}, Url: {service.Url ?? "Unknown"}, RunsOn: {ServicesFormatExtensions.FormatRunsOn(sys, phys)}");
         return 0;
     }
 }

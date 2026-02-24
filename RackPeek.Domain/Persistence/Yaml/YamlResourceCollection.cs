@@ -31,7 +31,7 @@ public sealed class YamlResourceCollection(
     : IResourceCollection
 {
     // Bump this when your YAML schema changes, and add a migration step below.
-    private const int CurrentSchemaVersion = 1;
+    private static readonly int CurrentSchemaVersion = RackPeekConfigMigrationDeserializer.ListOfMigrations.Count;
 
     public Task<bool> Exists(string name)
     {
@@ -58,7 +58,7 @@ public sealed class YamlResourceCollection(
     public Task<IReadOnlyList<Resource>> GetDependantsAsync(string name)
     {
         return Task.FromResult<IReadOnlyList<Resource>>(resourceCollection.Resources
-            .Where(r => r.RunsOn?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false)
+            .Where(r => r.RunsOn.Select(p => p.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList().Count > 0 )
             .ToList());
     }
 
@@ -123,7 +123,8 @@ public sealed class YamlResourceCollection(
         if (version < CurrentSchemaVersion)
         {
             await BackupOriginalAsync(yaml);
-            root = await _deserializer.Deserialize(yaml);
+
+            root = await _deserializer.Deserialize(yaml) ?? new YamlRoot();
             
             // Ensure we persist the migrated root (with updated version)
             await SaveRootAsync(root);

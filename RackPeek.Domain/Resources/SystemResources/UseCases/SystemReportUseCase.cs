@@ -13,7 +13,7 @@ public record SystemReportRow(
     int Cores,
     double RamGb,
     int TotalStorageGb,
-    string? RunsOn
+    List<string> RunsOn
 );
 
 public class SystemReportUseCase(IResourceCollection repository) : IUseCase
