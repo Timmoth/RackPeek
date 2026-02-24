@@ -29,17 +29,17 @@
         <div class="grid grid-cols-2 gap-y-2">
 
             <div class="hover:text-emerald-300">
-                <NavLink href="@("/hardware/tree")">→ Hardware</NavLink>
+                <NavLink href="@("hardware/tree")">→ Hardware</NavLink>
             </div>
             <div class="text-right">@_hardware!.TotalHardware</div>
 
             <div class="hover:text-emerald-300">
-                <NavLink href="@("/systems/list")">→ Systems</NavLink>
+                <NavLink href="@("systems/list")">→ Systems</NavLink>
             </div>
             <div class="text-right">@_system!.TotalSystems</div>
 
             <div class="hover:text-emerald-300">
-                <NavLink href="@("/services/list")">→ Services</NavLink>
+                <NavLink href="@("services/list")">→ Services</NavLink>
             </div>
             <div class="text-right">@_service!.TotalServices</div>
         </div>

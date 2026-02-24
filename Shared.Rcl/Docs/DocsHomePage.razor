@@ -27,7 +27,7 @@
             </h1>
         </div>
 
-        <NavLink href="/docs"
+        <NavLink href="docs"
                  Match="NavLinkMatch.All"
                  class="text-sm text-emerald-400 hover:text-emerald-300 transition"
                  data-testid="docs-home-link">
@@ -66,7 +66,7 @@
                     {
                         foreach (var item in FilteredIndex())
                         {
-                            <NavLink href="@($"/docs/{ToRouteSlug(item)}")"
+                            <NavLink href="@($"docs/{ToRouteSlug(item)}")"
                                      class="block text-sm text-zinc-300 hover:text-emerald-300 transition"
                                      activeClass="text-emerald-400 font-semibold"
                                      data-testid="@($"docs-index-link-{Sanitize(item)}")">
