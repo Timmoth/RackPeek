@@ -4,6 +4,9 @@ using RackPeek.Domain;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Web.Components;
+using DocMigrator.Yaml;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 using Shared.Rcl;
 
 namespace RackPeek.Web;
@@ -45,6 +48,24 @@ public class Program
 
         builder.Services.AddScoped<ITextFileStore, PhysicalTextFileStore>();
 
+        builder.Services.AddSingleton<RackPeekConfigMigrationDeserializer>(sp => 
+        {
+            var logger = sp.GetRequiredService<ILogger<YamlMigrationDeserializer<YamlRoot>>>();
+
+            // TODO: Add options
+            var deserializerBuilder = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .IgnoreUnmatchedProperties();
+
+            var serializerBuilder = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance);
+
+            return new RackPeekConfigMigrationDeserializer(
+                    sp,
+                    logger,
+                    deserializerBuilder,
+                    serializerBuilder);
+        });
 
         builder.Services.AddScoped(sp =>
         {
@@ -63,7 +84,8 @@ public class Program
             new YamlResourceCollection(
                 yamlFilePath,
                 sp.GetRequiredService<ITextFileStore>(),
-                sp.GetRequiredService<ResourceCollection>()));
+                sp.GetRequiredService<ResourceCollection>(),
+                sp.GetRequiredService<RackPeekConfigMigrationDeserializer>()));
 
         // Infrastructure
         builder.Services.AddYamlRepos();

@@ -27,10 +27,45 @@ public class ResourceCollection
     public List<Resource> Resources { get; } = new();
 }
 
+public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<YamlRoot>
+{
+    public RackPeekConfigMigrationDeserializer(IServiceProvider serviceProvider,
+            ILogger<YamlMigrationDeserializer<YamlRoot>> logger,
+            DeserializerBuilder deserializerBuilder,
+            SerializerBuilder serializerBuilder) :
+        base(serviceProvider, logger, new List<Func<IServiceProvider, Dictionary<object,object>, ValueTask>>{
+                // List migrations here
+                EnsureSchemaVersionExists,
+            },
+            deserializerBuilder, serializerBuilder) {}
+
+    #region Migrations
+
+    // Define migration functions here
+
+    public static ValueTask EnsureSchemaVersionExists(IServiceProvider serviceProvider, Dictionary<object, object> obj)
+    {
+        if (!obj.ContainsKey("schemaVersion"))
+        {
+            obj["schemaVersion"] = 0;
+            if (obj.ContainsKey("version"))
+            {
+                obj["schemaVersion"] = obj["version"];
+            }
+        }
+
+        obj.Remove("version");
+        return ValueTask.CompletedTask;
+    }
+
+    #endregion
+}
+
 public sealed class YamlResourceCollection(
     string filePath,
     ITextFileStore fileStore,
-    ResourceCollection resourceCollection)
+    ResourceCollection resourceCollection,
+    RackPeekConfigMigrationDeserializer _deserializer)
     : IResourceCollection
 {
     // Bump this when your YAML schema changes, and add a migration step below.
@@ -132,7 +167,8 @@ public sealed class YamlResourceCollection(
         {
             await BackupOriginalAsync(yaml);
 
-            root = await MigrateAsync(root);
+            root = await _deserializer.Deserialize(yaml);
+            // root = await MigrateAsync(root);
 
             // Ensure we persist the migrated root (with updated version)
             await SaveRootAsync(root);
@@ -357,50 +393,6 @@ public sealed class YamlResourceCollection(
         return map;
     }
 
-    public YamlMigrator Setup(DeserializerBuilder deserializerBuilder)
-    {
-        var services = new ServiceCollection();
-        services.AddLogging();
-        services.AddYamlMigrator(Assembly.GetExecutingAssembly());
-        var scope = services.BuildServiceProvider().CreateScope();
-        return scope.ServiceProvider.GetRequiredService<YamlMigrator>();
-        // return new YamlRootDeserializer(scope.ServiceProvider, scope.ServiceProvider.GetRequiredService<ILogger<YamlRootDeserializer>>(), deserializerBuilder);
-    }
-
-    // TODO: Wrap this in an 'instance' so we don't needlessly rebuild this?
-    //       Similar to CamelCaseNamingConvention.instance
-    public class YamlRootDeserializer : YamlMigrationDeserializer<YamlRoot>
-    {
-        public YamlRootDeserializer(IServiceProvider serviceProvider,
-                ILogger<YamlRootDeserializer> logger,
-                DeserializerBuilder deserializerBuilder) :
-            base(serviceProvider, logger, new List<Func<IServiceProvider, Dictionary<object,object>, ValueTask>>{
-                    // List migrations here
-                    EnsureSchemaVersionExists,
-                },
-                deserializerBuilder) {}
-
-        #region Migrations
-
-        // Define migration functions here
-
-        public static ValueTask EnsureSchemaVersionExists(IServiceProvider serviceProvider, Dictionary<object, object> obj)
-        {
-            if (!obj.ContainsKey("schemaVersion"))
-            {
-                obj["schemaVersion"] = 0;
-                if (obj.ContainsKey("version"))
-                {
-                    obj["schemaVersion"] = obj["version"];
-                }
-            }
-
-            obj.Remove("version");
-            return ValueTask.CompletedTask;
-        }
-
-        #endregion
-    }
 }
 
 public class YamlRoot

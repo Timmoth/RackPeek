@@ -9,6 +9,12 @@ using RackPeek.Domain.Resources.Routers;
 using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.Switches;
 using RackPeek.Domain.Resources.UpsUnits;
+using DocMigrator.Yaml;
+using System.Reflection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Tests.Yaml;
 
@@ -26,8 +32,30 @@ public class HardwareDeserializationTests
         var filePath = Path.Combine(tempDir, "config.yaml");
         await File.WriteAllTextAsync(filePath, yaml);
 
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton<RackPeekConfigMigrationDeserializer>(sp => 
+        {
+            var logger = sp.GetRequiredService<ILogger<YamlMigrationDeserializer<YamlRoot>>>();
+
+            // TODO: Add options
+            var deserializerBuilder = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .IgnoreUnmatchedProperties();
+
+            var serializerBuilder = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance);
+
+            return new RackPeekConfigMigrationDeserializer(
+                    sp,
+                    logger,
+                    deserializerBuilder,
+                    serializerBuilder);
+        });
+        var scope = services.BuildServiceProvider().CreateScope();
+
         var yamlResourceCollection =
-            new YamlResourceCollection(filePath, new PhysicalTextFileStore(), new ResourceCollection());
+            new YamlResourceCollection(filePath, new PhysicalTextFileStore(), new ResourceCollection(), scope.ServiceProvider.GetRequiredService<RackPeekConfigMigrationDeserializer>());
         await yamlResourceCollection.LoadAsync();
         return yamlResourceCollection;
     }

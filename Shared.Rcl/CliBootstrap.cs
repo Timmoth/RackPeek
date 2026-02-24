@@ -1,4 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+using DocMigrator.Yaml;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain;
@@ -68,10 +72,31 @@ public static class CliBootstrap
 
         if (!File.Exists(fullYamlPath)) await File.WriteAllTextAsync(fullYamlPath, "");
 
+        services.AddSingleton<RackPeekConfigMigrationDeserializer>(sp => 
+        {
+            var logger = sp.GetRequiredService<ILogger<YamlMigrationDeserializer<YamlRoot>>>();
+
+            // TODO: Add options
+            var deserializerBuilder = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .IgnoreUnmatchedProperties();
+
+            var serializerBuilder = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance);
+
+            return new RackPeekConfigMigrationDeserializer(
+                    sp,
+                    logger,
+                    deserializerBuilder,
+                    serializerBuilder);
+        });
+
         var collection = new YamlResourceCollection(
             fullYamlPath,
             new PhysicalTextFileStore(),
-            new ResourceCollection());
+            new ResourceCollection(),
+            // TODO: Is this right?
+            services.BuildServiceProvider().GetRequiredService<RackPeekConfigMigrationDeserializer>());
 
         await collection.LoadAsync();
         services.AddSingleton<IResourceCollection>(collection);
@@ -492,7 +517,7 @@ public static class CliBootstrap
         });
     }
 
-    private static int HandleException(Exception ex, ITypeResolver? arg2)
+    private static int HandleException(Exception ex, Spectre.Console.Cli.ITypeResolver? arg2)
     {
         switch (ex)
         {

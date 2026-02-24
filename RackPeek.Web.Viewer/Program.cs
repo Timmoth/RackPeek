@@ -5,6 +5,9 @@ using RackPeek.Domain;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using Shared.Rcl;
+using DocMigrator.Yaml;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace RackPeek.Web.Viewer;
 
@@ -34,6 +37,25 @@ public class Program
         var resources = new ResourceCollection();
         builder.Services.AddSingleton(resources);
 
+        builder.Services.AddSingleton<RackPeekConfigMigrationDeserializer>(sp => 
+        {
+            var logger = sp.GetRequiredService<ILogger<YamlMigrationDeserializer<YamlRoot>>>();
+
+            // TODO: Add options
+            var deserializerBuilder = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .IgnoreUnmatchedProperties();
+
+            var serializerBuilder = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance);
+
+            return new RackPeekConfigMigrationDeserializer(
+                    sp,
+                    logger,
+                    deserializerBuilder,
+                    serializerBuilder);
+        });
+
         var yamlDir = builder.Configuration.GetValue<string>("RPK_YAML_DIR") ?? "config";
         var yamlFilePath = $"{yamlDir}/config.yaml";
 
@@ -41,7 +63,8 @@ public class Program
             new YamlResourceCollection(
                 yamlFilePath,
                 sp.GetRequiredService<ITextFileStore>(),
-                sp.GetRequiredService<ResourceCollection>()));
+                sp.GetRequiredService<ResourceCollection>(),
+                sp.GetRequiredService<RackPeekConfigMigrationDeserializer>()));
 
         builder.Services.AddYamlRepos();
         builder.Services.AddCommands();
