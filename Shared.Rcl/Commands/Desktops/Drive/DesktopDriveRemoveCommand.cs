@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Desktops;
 using RackPeek.Domain.UseCases.Drives;
@@ -5,6 +6,17 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Desktops.Drive;
+
+public class DesktopDriveRemoveSettings : CommandSettings
+{
+    [CommandArgument(0, "<desktop>")]
+    [Description("The name of the desktop.")]
+    public string DesktopName { get; set; } = default!;
+
+    [CommandArgument(1, "<index>")]
+    [Description("The index of the drive to remove.")]
+    public int Index { get; set; }
+}
 
 public class DesktopDriveRemoveCommand(IServiceProvider provider)
     : AsyncCommand<DesktopDriveRemoveSettings>

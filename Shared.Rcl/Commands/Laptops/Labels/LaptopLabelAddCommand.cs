@@ -14,7 +14,8 @@ public class LaptopLabelAddSettings : LaptopNameSettings
 
 public class LaptopLabelAddCommand(IServiceProvider serviceProvider) : AsyncCommand<LaptopLabelAddSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, LaptopLabelAddSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, LaptopLabelAddSettings settings,
+        CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<IAddLabelUseCase<Laptop>>();

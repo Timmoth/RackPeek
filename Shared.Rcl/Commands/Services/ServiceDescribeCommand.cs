@@ -33,7 +33,8 @@ public class ServiceDescribeCommand(
         grid.AddRow("Protocol:", service.Protocol ?? "Unknown");
         grid.AddRow("Url:", service.Url ?? "Unknown");
         grid.AddRow("Runs On:",
-            ServicesFormatExtensions.FormatRunsOn(string.Join(", ", service.RunsOnSystemHost), string.Join(", ", service.RunsOnPhysicalHost)));
+            ServicesFormatExtensions.FormatRunsOn(string.Join(", ", service.RunsOnSystemHost),
+                string.Join(", ", service.RunsOnPhysicalHost)));
 
         if (service.Labels.Count > 0)
             grid.AddRow("Labels:", string.Join(", ", service.Labels.Select(kvp => $"{kvp.Key}: {kvp.Value}")));

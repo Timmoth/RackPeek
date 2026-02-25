@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using UpsUnit = RackPeek.Domain.Resources.UpsUnits.Ups;
 using RackPeek.Domain.UseCases.Labels;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using UpsUnit = RackPeek.Domain.Resources.UpsUnits.Ups;
 
 namespace Shared.Rcl.Commands.Ups.Labels;
 
@@ -14,7 +14,8 @@ public class UpsLabelAddSettings : UpsNameSettings
 
 public class UpsLabelAddCommand(IServiceProvider serviceProvider) : AsyncCommand<UpsLabelAddSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, UpsLabelAddSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, UpsLabelAddSettings settings,
+        CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<IAddLabelUseCase<UpsUnit>>();

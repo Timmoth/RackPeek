@@ -14,7 +14,8 @@ public class FirewallLabelAddSettings : FirewallNameSettings
 
 public class FirewallLabelAddCommand(IServiceProvider serviceProvider) : AsyncCommand<FirewallLabelAddSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, FirewallLabelAddSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, FirewallLabelAddSettings settings,
+        CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<IAddLabelUseCase<Firewall>>();

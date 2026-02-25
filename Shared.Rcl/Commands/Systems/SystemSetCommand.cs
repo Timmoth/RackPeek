@@ -20,7 +20,6 @@ public class SystemSetSettings : ServerNameSettings
     [CommandOption("--runs-on <RUNSON>")]
     [Description("The physical machine(s) the service is running on.")]
     public string[]? RunsOn { get; set; }
-    
 }
 
 public class SystemSetCommand(

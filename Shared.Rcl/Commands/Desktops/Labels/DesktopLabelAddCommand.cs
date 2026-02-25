@@ -14,7 +14,8 @@ public class DesktopLabelAddSettings : DesktopNameSettings
 
 public class DesktopLabelAddCommand(IServiceProvider serviceProvider) : AsyncCommand<DesktopLabelAddSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, DesktopLabelAddSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, DesktopLabelAddSettings settings,
+        CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<IAddLabelUseCase<Desktop>>();

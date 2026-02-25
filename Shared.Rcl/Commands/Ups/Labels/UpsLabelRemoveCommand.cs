@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using UpsUnit = RackPeek.Domain.Resources.UpsUnits.Ups;
 using RackPeek.Domain.UseCases.Labels;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using UpsUnit = RackPeek.Domain.Resources.UpsUnits.Ups;
 
 namespace Shared.Rcl.Commands.Ups.Labels;
 
@@ -13,7 +13,8 @@ public class UpsLabelRemoveSettings : UpsNameSettings
 
 public class UpsLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<UpsLabelRemoveSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, UpsLabelRemoveSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, UpsLabelRemoveSettings settings,
+        CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<UpsUnit>>();

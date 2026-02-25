@@ -38,14 +38,8 @@ public class ServiceReportCommand(
             string? sys = null;
             string? phys = null;
 
-            if (s.RunsOnSystemHost?.Count > 0 )
-            {
-                sys = string.Join(", ", s.RunsOnSystemHost);
-            }
-            if (s.RunsOnPhysicalHost?.Count > 0 )
-            {
-                phys = string.Join(", ", s.RunsOnPhysicalHost);
-            }
+            if (s.RunsOnSystemHost?.Count > 0) sys = string.Join(", ", s.RunsOnSystemHost);
+            if (s.RunsOnPhysicalHost?.Count > 0) phys = string.Join(", ", s.RunsOnPhysicalHost);
 
             table.AddRow(
                 s.Name,

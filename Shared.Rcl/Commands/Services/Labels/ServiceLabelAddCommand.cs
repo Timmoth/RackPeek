@@ -14,7 +14,8 @@ public class ServiceLabelAddSettings : ServiceNameSettings
 
 public class ServiceLabelAddCommand(IServiceProvider serviceProvider) : AsyncCommand<ServiceLabelAddSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, ServiceLabelAddSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, ServiceLabelAddSettings settings,
+        CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<IAddLabelUseCase<Service>>();

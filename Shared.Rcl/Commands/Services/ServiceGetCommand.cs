@@ -37,15 +37,9 @@ public class ServiceGetCommand(
         {
             string? sys = null;
             string? phys = null;
-            
-            if (s.RunsOnSystemHost is not null)
-            {
-                sys = string.Join(", ", s.RunsOnSystemHost);
-            }
-            if (s.RunsOnPhysicalHost is not null)
-            {
-                phys = string.Join(", ", s.RunsOnPhysicalHost);
-            }
+
+            if (s.RunsOnSystemHost is not null) sys = string.Join(", ", s.RunsOnSystemHost);
+            if (s.RunsOnPhysicalHost is not null) phys = string.Join(", ", s.RunsOnPhysicalHost);
 
             table.AddRow(
                 s.Name,

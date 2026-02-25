@@ -11,9 +11,11 @@ public class AccessPointLabelRemoveSettings : AccessPointNameSettings
     [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
 }
 
-public class AccessPointLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<AccessPointLabelRemoveSettings>
+public class AccessPointLabelRemoveCommand(IServiceProvider serviceProvider)
+    : AsyncCommand<AccessPointLabelRemoveSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, AccessPointLabelRemoveSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, AccessPointLabelRemoveSettings settings,
+        CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<AccessPoint>>();

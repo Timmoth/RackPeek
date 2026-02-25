@@ -1,9 +1,8 @@
-using RackPeek.Domain.Resources.Desktops;
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
+using RackPeek.Domain.UseCases.Ansible;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using System.ComponentModel;
-using RackPeek.Domain.UseCases.Ansible;
 
 namespace Shared.Rcl.Commands.Ansible;
 
@@ -26,7 +25,6 @@ public sealed class GenerateAnsibleInventorySettings : CommandSettings
     public string? OutputPath { get; init; }
 }
 
-
 public sealed class GenerateAnsibleInventoryCommand(IServiceProvider provider)
     : AsyncCommand<GenerateAnsibleInventorySettings>
 {
@@ -44,7 +42,7 @@ public sealed class GenerateAnsibleInventoryCommand(IServiceProvider provider)
         {
             GroupByTags = ParseCsv(settings.GroupTags),
             GroupByLabelKeys = ParseCsv(settings.GroupLabels),
-            GlobalVars = ParseGlobalVars(settings.GlobalVars),
+            GlobalVars = ParseGlobalVars(settings.GlobalVars)
         };
 
         var result = await useCase.ExecuteAsync(options);
@@ -88,9 +86,9 @@ public sealed class GenerateAnsibleInventoryCommand(IServiceProvider provider)
             return [];
 
         return raw.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                  .Select(x => x.Trim())
-                  .Where(x => !string.IsNullOrWhiteSpace(x))
-                  .ToArray();
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToArray();
     }
 
     private static IDictionary<string, string> ParseGlobalVars(string[] vars)

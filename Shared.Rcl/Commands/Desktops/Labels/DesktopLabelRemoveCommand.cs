@@ -13,7 +13,8 @@ public class DesktopLabelRemoveSettings : DesktopNameSettings
 
 public class DesktopLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<DesktopLabelRemoveSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, DesktopLabelRemoveSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, DesktopLabelRemoveSettings settings,
+        CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<Desktop>>();

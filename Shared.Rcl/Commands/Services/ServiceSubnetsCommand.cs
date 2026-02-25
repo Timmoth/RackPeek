@@ -81,10 +81,7 @@ public class ServiceSubnetsCommand(
             foreach (var s in services)
             {
                 var runsOn = "";
-                if (s.RunsOn?.Count > 0)
-                {
-                    runsOn = string.Join(", ", s.RunsOn);
-                }
+                if (s.RunsOn?.Count > 0) runsOn = string.Join(", ", s.RunsOn);
 
                 table.AddRow(s.Name, s.Ip, runsOn);
             }

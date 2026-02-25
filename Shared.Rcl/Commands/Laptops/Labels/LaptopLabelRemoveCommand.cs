@@ -13,7 +13,8 @@ public class LaptopLabelRemoveSettings : LaptopNameSettings
 
 public class LaptopLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<LaptopLabelRemoveSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, LaptopLabelRemoveSettings settings, CancellationToken cancellationToken)
+    public override async Task<int> ExecuteAsync(CommandContext context, LaptopLabelRemoveSettings settings,
+        CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         var useCase = scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<Laptop>>();

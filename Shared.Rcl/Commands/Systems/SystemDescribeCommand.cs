@@ -30,7 +30,7 @@ public class SystemDescribeCommand(
         grid.AddRow("RAM (GB):", system.RamGb.ToString());
         grid.AddRow("Total Storage (GB):", system.TotalStorageGb.ToString());
         grid.AddRow("Runs On:", string.Join(", ", system.RunsOn) ?? "Unknown");
-                
+
 
         if (system.Labels.Count > 0)
             grid.AddRow("Labels:", string.Join(", ", system.Labels.Select(kvp => $"{kvp.Key}: {kvp.Value}")));

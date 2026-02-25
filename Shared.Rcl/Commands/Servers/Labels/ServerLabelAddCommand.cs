@@ -8,11 +8,9 @@ namespace Shared.Rcl.Commands.Servers.Labels;
 
 public class ServerLabelAddSettings : ServerNameSettings
 {
-    [CommandOption("--key <KEY>")]
-    public string Key { get; set; } = default!;
+    [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
 
-    [CommandOption("--value <VALUE>")]
-    public string Value { get; set; } = default!;
+    [CommandOption("--value <VALUE>")] public string Value { get; set; } = default!;
 }
 
 public class ServerLabelAddCommand(IServiceProvider serviceProvider)

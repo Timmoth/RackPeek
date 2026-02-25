@@ -8,8 +8,7 @@ namespace Shared.Rcl.Commands.Servers.Labels;
 
 public class ServerLabelRemoveSettings : ServerNameSettings
 {
-    [CommandOption("--key <KEY>")]
-    public string Key { get; set; } = default!;
+    [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
 }
 
 public class ServerLabelRemoveCommand(IServiceProvider serviceProvider)
