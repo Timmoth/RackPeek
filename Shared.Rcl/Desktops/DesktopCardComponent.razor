@@ -29,7 +29,7 @@
     <div class="flex justify-between items-center mb-3">
 
         <div class="text-zinc-100 hover:text-emerald-300">
-            <NavLink href="@($"resources/hardware/{Desktop.Name}")"
+            <NavLink href="@($"resources/hardware/{Uri.EscapeDataString(Desktop.Name)}")"
                      class="block"
                      data-testid=@($"desktop-item-{Desktop.Name.Replace(" ", "-")}-link")>
                 @Desktop.Name
@@ -558,7 +558,7 @@
     async Task HandleRenameSubmit(string newName)
     {
         await RenameUseCase.ExecuteAsync(Desktop.Name, newName);
-        Nav.NavigateTo($"resources/hardware/{newName}");
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(newName)}");
     }
 
 }
@@ -576,7 +576,7 @@
     {
         await CloneUseCase.ExecuteAsync(Desktop.Name, newName);
 
-        Nav.NavigateTo($"resources/hardware/{newName}");
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(newName)}");
     }
 
 }

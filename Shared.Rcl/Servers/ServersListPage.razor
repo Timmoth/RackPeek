@@ -20,7 +20,7 @@
 
     private Task NavigateToNewResource(string name)
     {
-        Nav.NavigateTo($"resources/hardware/{name}");
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(name)}");
         return Task.CompletedTask;
     }
 
