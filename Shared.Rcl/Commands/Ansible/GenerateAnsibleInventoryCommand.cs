@@ -1,9 +1,9 @@
 using RackPeek.Domain.Resources.Desktops;
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.Ansible;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using System.ComponentModel;
+using RackPeek.Domain.UseCases.Ansible;
 
 namespace Shared.Rcl.Commands.Ansible;
 

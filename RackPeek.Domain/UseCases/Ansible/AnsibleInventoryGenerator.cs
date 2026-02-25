@@ -1,7 +1,7 @@
-namespace RackPeek.Domain.Ansible;
-
 using System.Text;
-using Resources;
+using RackPeek.Domain.Resources;
+
+namespace RackPeek.Domain.UseCases.Ansible;
 
 public sealed record InventoryOptions
 {
@@ -166,20 +166,12 @@ public static class AnsibleInventoryGenerator
             }
         }
 
-        // Record your relationship info if present
-        if (!string.IsNullOrWhiteSpace(r.RunsOn))
-            vars["rackpeek_runs_on"] = r.RunsOn!;
-
-        // If you want tags/labels available to playbooks, export them too:
-        // vars["rackpeek_kind"] = r.Kind;
-        // vars["rackpeek_tags"] = string.Join(",", r.Tags ?? Array.Empty<string>());
-
         return vars;
     }
 
     private static string SanitizeGroup(string s)
     {
-        // Ansible group names: keep it simple: letters/digits/underscore
+        // Ansible group names: letters/digits/underscore
         var sb = new StringBuilder(s.Length);
         foreach (var ch in s.Trim().ToLowerInvariant())
         {
@@ -196,7 +188,7 @@ public static class AnsibleInventoryGenerator
 
     private static string EscapeIniValue(string value)
     {
-        // Keep simple: quote if it contains spaces or special chars
+        // quote if it contains spaces or special chars
         if (string.IsNullOrEmpty(value)) return "\"\"";
 
         var needsQuotes = value.Any(ch => char.IsWhiteSpace(ch) || ch is '"' or '\'' or '=');

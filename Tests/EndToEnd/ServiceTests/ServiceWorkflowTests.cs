@@ -46,9 +46,10 @@ public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
             "--runs-on", "sys01"
         );
         Assert.Equal("Service 'svc01' updated.\n", output);
+        outputHelper.WriteLine(yaml);
 
         Assert.Equal("""
-                     version: 1
+                     version: 2
                      resources:
                      - kind: System
                        name: sys01
@@ -59,7 +60,8 @@ public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
                          protocol: http
                          url: http://10.0.0.5:8080
                        name: svc01
-                       runsOn: sys01
+                       runsOn:
+                       - sys01
 
                      """, yaml);
 

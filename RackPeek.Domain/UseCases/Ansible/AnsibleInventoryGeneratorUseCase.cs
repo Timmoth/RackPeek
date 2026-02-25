@@ -1,9 +1,7 @@
-using RackPeek.Domain.Ansible;
-using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
-using RackPeek.Domain.Resources.SubResources;
+using RackPeek.Domain.Resources;
 
-namespace RackPeek.Domain.Resources.Desktops;
+namespace RackPeek.Domain.UseCases.Ansible;
 
 public class AnsibleInventoryGeneratorUseCase(IResourceCollection repository) : IUseCase
 {

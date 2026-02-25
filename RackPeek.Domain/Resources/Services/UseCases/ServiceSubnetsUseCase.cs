@@ -54,7 +54,7 @@ public class ServiceSubnetsUseCase(IResourceCollection repo) : IUseCase
 
 public record SubnetSummary(string Cidr, int Count);
 
-public record ServiceSummary(string Name, string Ip, string? RunsOn);
+public record ServiceSummary(string Name, string Ip, List<string>? RunsOn);
 
 public class ServiceSubnetsResult
 {

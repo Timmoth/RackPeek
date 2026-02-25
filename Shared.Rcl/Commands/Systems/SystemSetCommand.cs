@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.SystemResources.UseCases;
 using Shared.Rcl.Commands.Servers;
@@ -16,7 +17,10 @@ public class SystemSetSettings : ServerNameSettings
 
     [CommandOption("--ram")] public int? Ram { get; set; }
 
-    [CommandOption("--runs-on")] public string? RunsOn { get; set; }
+    [CommandOption("--runs-on <RUNSON>")]
+    [Description("The physical machine(s) the service is running on.")]
+    public string[]? RunsOn { get; set; }
+    
 }
 
 public class SystemSetCommand(
@@ -37,7 +41,7 @@ public class SystemSetCommand(
             settings.Os,
             settings.Cores,
             settings.Ram,
-            settings.RunsOn
+            settings.RunsOn?.ToList()
         );
 
         AnsiConsole.MarkupLine($"[green]System '{settings.Name}' updated.[/]");

@@ -25,9 +25,9 @@ public class ServiceSetSettings : ServerNameSettings
     [Description("The service URL.")]
     public string? Url { get; set; }
 
-    [CommandOption("--runs-on")]
-    [Description("The system the service is running on.")]
-    public string? RunsOn { get; set; }
+    [CommandOption("--runs-on <RUNSON>")]
+    [Description("The system(s) the service is running on.")]
+    public string[]? RunsOn { get; set; }
 }
 
 public class ServiceSetCommand(
@@ -48,7 +48,7 @@ public class ServiceSetCommand(
             settings.Port,
             settings.Protocol,
             settings.Url,
-            settings.RunsOn
+            settings.RunsOn?.ToList()
         );
 
         AnsiConsole.MarkupLine($"[green]Service '{settings.Name}' updated.[/]");

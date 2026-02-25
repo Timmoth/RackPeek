@@ -2,10 +2,14 @@
 @using RackPeek.Domain.Persistence
 @inject NavigationManager Nav
 
+<!-- TODO: Get rid of First -->
 <ResourcesListComponent TResource="Service"
                         Title="Services"
                         TestId="services"
-                        GroupBy="@(s => s.RunsOn)"
+                        GroupBy="@(s => {
+                          if (s.RunsOn is null) return "Unkown";
+                          return s.RunsOn.FirstOrDefault();
+                        })"
                         ShouldGroup="true"
                         OnCreated="NavigateToNewResource">
 

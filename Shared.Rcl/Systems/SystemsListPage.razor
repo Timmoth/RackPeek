@@ -4,12 +4,16 @@
 @using RackPeek.Domain.Resources.SystemResources.UseCases
 @inject NavigationManager Nav
 
+<!-- TODO: Get rid of First -->
 <ResourcesListComponent TResource="SystemResource"
                         Title="@PageTitle"
                         TestId="systems"
                         Resources="@Systems"
                         ShouldGroup="true"
-                        GroupBy="@(s => s.RunsOn)"
+                        GroupBy="@(s => {
+                          if (s.RunsOn is null) return "Unkown";
+                          return s.RunsOn.FirstOrDefault();
+                        })"
                         OnCreated="NavigateToNewResource">
 
     <ItemTemplate Context="systemResource">

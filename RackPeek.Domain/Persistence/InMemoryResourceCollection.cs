@@ -99,7 +99,7 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         lock (_lock)
         {
             return Task.FromResult<IReadOnlyList<Resource>>(_resources
-                .Where(r => r.RunsOn?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false).ToList());
+                .Where(r => r.RunsOn.Select(p => p.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList().Count != 0).ToList());
         }
     }
 

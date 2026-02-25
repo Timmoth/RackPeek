@@ -12,22 +12,22 @@ public class GetHardwareSystemTreeUseCase(
     {
         ThrowIfInvalid.ResourceName(hardwareName);
 
-        var server = await repo.GetByNameAsync(hardwareName) as Hardware;
-        if (server is null)
+        var hardware = await repo.GetByNameAsync(hardwareName) as Hardware;
+        if (hardware is null)
             throw new NotFoundException($"Hardware '{hardwareName}' not found.");
 
-        return await BuildDependencyTreeAsync(server);
+        return await BuildDependencyTreeAsync(hardware);
     }
 
-    private async Task<HardwareDependencyTree> BuildDependencyTreeAsync(Hardware server)
+    private async Task<HardwareDependencyTree> BuildDependencyTreeAsync(Hardware hardware)
     {
-        var systems = await repo.GetDependantsAsync(server.Name);
+        var systems = await repo.GetDependantsAsync(hardware.Name);
 
         var systemTrees = new List<SystemDependencyTree>();
         foreach (var system in systems.OfType<SystemResource>())
             systemTrees.Add(await BuildSystemDependencyTreeAsync(system));
 
-        return new HardwareDependencyTree(server, systemTrees);
+        return new HardwareDependencyTree(hardware, systemTrees);
     }
 
     private async Task<SystemDependencyTree> BuildSystemDependencyTreeAsync(SystemResource system)

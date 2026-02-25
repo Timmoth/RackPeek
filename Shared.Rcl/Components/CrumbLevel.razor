@@ -1,0 +1,41 @@
+﻿<div class="flex flex-col justify-center">
+    @if (Items is null || Items.Count == 0)
+    {
+        
+    }
+    else if (Items.Count == 1)
+    {
+        <div class="flex items-center h-full">
+            <a class="hover:text-white transition-colors"
+               href="@Items[0].Href">
+                @Items[0].Label
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- Multi-parent stack -->
+        <div class="flex flex-col gap-0.5">
+            @for (var i = 0; i < Items.Count; i++)
+            {
+                var crumb = Items[i];
+                var isLast = i == Items.Count - 1;
+
+                <div class="flex items-center gap-1">
+                    <span class="text-zinc-600 select-none">
+                        @(isLast ? "└─" : "├─")
+                    </span>
+
+                    <a class="hover:text-white transition-colors"
+                       href="@crumb.Href">
+                        @crumb.Label
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public List<ResourceBreadCrumbComponent.Breadcrumb> Items { get; set; } = new();
+}

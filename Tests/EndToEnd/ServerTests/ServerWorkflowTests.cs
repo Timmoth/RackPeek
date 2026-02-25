@@ -43,7 +43,7 @@ public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
         Assert.Equal("Server 'srv01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 1
+                     version: 2
                      resources:
                      - kind: Server
                        ram:

@@ -167,31 +167,47 @@
 
         <!-- Runs On -->
         <div>
-            <div class="text-zinc-400 mb-1">Runs On</div>
+            <div class="text-zinc-400 mb-1">
+              Runs On
+
+              <button
+                  class="hover:text-emerald-400 pr-4"
+                  title="Add Runs On"
+                  @onclick="() => _selectParentOpen = true">
+                      @("+")
+              </button>
+            </div>
+
             @if (_isEditing)
             {
-                <button
-                    class="hover:text-emerald-400"
-                    title="Edit Runs On"
-                    data-testid="system-runs-on-button"
-                    @onclick="() => _selectParentOpen = true">
-                    @if (!string.IsNullOrWhiteSpace(System.RunsOn))
-                    {
-                        @($"{System.RunsOn} +")
-                    }
-                    else
-                    {
-                        @("Edit parent")
-                    }
-
-                </button>
+                  @if (System.RunsOn?.Count > 0)
+                  {
+                      @foreach(var parent in System.RunsOn)
+                      {
+                        <button
+                            class="hover:text-emerald-400"
+                            title="Edit Runs On"
+                            @onclick="() => _selectParentOpen = true">
+                                  @($"{parent}")
+                        </button>
+                        <button
+                            class="text-red-400 hover:text-red-300 pr-4"
+                            title="Remove"
+                            @onclick="() => HandleParentDeleted(parent)">
+                                  @($"✕")
+                        </button>
+                      }
+                  }
             }
-            else if (!string.IsNullOrWhiteSpace(System.RunsOn))
+            else if (System.RunsOn?.Count > 0)
             {
-                <NavLink href="@($"resources/hardware/{Uri.EscapeDataString(System.RunsOn)}")"
-                         class="text-emerald-400 text-sm">
-                    @System.RunsOn
-                </NavLink>
+                @foreach(var parent in System.RunsOn)
+                {
+                  <NavLink href="@($"resources/hardware/{Uri.EscapeDataString(parent)}")"
+                           class="text-emerald-400 text-sm pr-4">
+                      @parent
+                  </NavLink>
+                }
             }
         </div>
 
@@ -334,7 +350,23 @@
             System.Os,
             System.Cores,
             System.Ram,
-            name,
+            new List<string>{name},
+            System.Notes);
+        System = await GetByNameUseCase.ExecuteAsync(System.Name);
+        _edit = SystemEditModel.From(System);
+    }
+
+    async Task HandleParentDeleted(string? name)
+    {
+        SelectedParentName = name;
+        System.RunsOn.Remove(SelectedParentName);
+        await UpdateUseCase.ExecuteAsync(
+            System.Name,
+            System.Type,
+            System.Os,
+            System.Cores,
+            System.Ram,
+            System.RunsOn,
             System.Notes);
         System = await GetByNameUseCase.ExecuteAsync(System.Name);
         _edit = SystemEditModel.From(System);

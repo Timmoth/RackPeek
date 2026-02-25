@@ -20,7 +20,7 @@ public class SystemGetByNameCommand(
         var system = await useCase.ExecuteAsync(settings.Name);
         AnsiConsole.MarkupLine(
             $"[green]{system.Name}[/]  Type: {system.Type ?? "Unknown"}, OS: {system.Os ?? "Unknown"}, " +
-            $"Cores: {system.Cores}, RAM: {system.RamGb}GB, Storage: {system.TotalStorageGb}GB, RunsOn: {system.RunsOn ?? "Unknown"}");
+            $"Cores: {system.Cores}, RAM: {system.RamGb}GB, Storage: {system.TotalStorageGb}GB, RunsOn: {string.Join(", ", system.RunsOn!)}");
 
         return 0;
     }

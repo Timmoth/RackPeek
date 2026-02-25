@@ -19,16 +19,36 @@ public class YamlHardwareRepository(IResourceCollection resources) : IHardwareRe
     public Task<List<HardwareTree>> GetTreeAsync()
     {
         var hardwareTree = new List<HardwareTree>();
+        
+            var systemGroups = resources.SystemResources
+                .Where(s => s.RunsOn.Count != 0)
+                .SelectMany(
+                    s => s.RunsOn,
+                    (system, hardwareName) => new
+                    {
+                        Hardware = hardwareName.Trim(),
+                        System = system
+                    })
+                .GroupBy(x => x.Hardware, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(x => x.System).ToList(),
+                    StringComparer.OrdinalIgnoreCase);
 
-        var systemGroups = resources.SystemResources
-            .Where(s => !string.IsNullOrWhiteSpace(s.RunsOn))
-            .GroupBy(s => s.RunsOn!.Trim(), StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
-
-        var serviceGroups = resources.ServiceResources
-            .Where(s => !string.IsNullOrWhiteSpace(s.RunsOn))
-            .GroupBy(s => s.RunsOn!.Trim(), StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
+            var serviceGroups = resources.ServiceResources
+                .Where(s => s.RunsOn.Count != 0)
+                .SelectMany(
+                    s => s.RunsOn,
+                    (service, systemName) => new
+                    {
+                        System = systemName.Trim(),
+                        Service = service
+                    })
+                .GroupBy(x => x.System, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(x => x.Service).ToList(),
+                    StringComparer.OrdinalIgnoreCase);
 
         foreach (var hardware in resources.HardwareResources)
         {

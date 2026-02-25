@@ -46,7 +46,7 @@
             <AddResourceComponent TResource="Service"
                                   Placeholder="Service name"
                                   OnCreated="NavigateToNewResource"
-                                  RunsOn="@SystemName"/>
+                                  RunsOn="@(new List<string>{SystemName})"/>
         </div>
     }
 </div>

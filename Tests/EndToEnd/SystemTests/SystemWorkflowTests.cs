@@ -47,8 +47,9 @@ public class SystemWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
         );
         Assert.Equal("System 'sys01' updated.\n", output);
 
+        outputHelper.WriteLine(yaml);
         Assert.Equal("""
-                     version: 1
+                     version: 2
                      resources:
                      - kind: Server
                        name: proxmox-node01
@@ -58,7 +59,8 @@ public class SystemWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
                        cores: 2
                        ram: 4
                        name: sys01
-                       runsOn: proxmox-node01
+                       runsOn:
+                       - proxmox-node01
 
                      """, yaml);
 
