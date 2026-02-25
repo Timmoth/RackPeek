@@ -1,104 +1,105 @@
 ﻿@using RackPeek.Domain.Persistence
 @inject IResourceCollection Repo
 
-<div class="text-sm text-zinc-300 flex gap-1 items-center">
-    @foreach (var crumb in Breadcrumbs)
+<div class="text-sm text-zinc-300 flex items-stretch gap-3">
+    @for (var i = 0; i < Levels.Count; i++)
     {
-        <span class="text-zinc-500">/</span>
-        <a class="hover:text-white transition-colors"
-           href="@crumb.Href">
-            @crumb.Label
-        </a>
+        if (i > 0)
+        {
+            <div class="flex items-center text-zinc-500">/</div>
+        }
+
+        <div class="flex">
+            <CrumbLevel Items="Levels[i]" />
+        </div>
     }
 </div>
 
 @code {
     [Parameter] [EditorRequired] public ResourceType ResourceType { get; set; }
-
     [Parameter] [EditorRequired] public string ResourceName { get; set; } = default!;
-
-    private List<Breadcrumb> Breadcrumbs { get; } = new();
+    
+    private List<List<Breadcrumb>> Levels { get; } = new();
 
     protected override async Task OnParametersSetAsync()
     {
-        Breadcrumbs.Clear();
+        Levels.Clear();
 
         switch (ResourceType)
         {
             case ResourceType.Hardware:
-                await BuildHardwarePath(ResourceName);
+                AddLevel(new Breadcrumb(ResourceName, $"resources/hardware/{Uri.EscapeDataString(ResourceName)}"));
                 break;
 
             case ResourceType.System:
-                await BuildSystemPath(ResourceName);
+                await BuildSystem(ResourceName);
                 break;
 
             case ResourceType.Service:
-                await BuildServicePath(ResourceName);
+                await BuildService(ResourceName);
                 break;
         }
     }
 
-    private async Task BuildHardwarePath(string hardwareName)
+    private void AddLevel(params Breadcrumb[] items)
+        => Levels.Add(items.ToList());
+
+    private void AddLevel(IEnumerable<Breadcrumb> items)
     {
-        Breadcrumbs.Add(new Breadcrumb(hardwareName, $"resources/hardware/{hardwareName}"));
+        var list = items.ToList();
+        if (list.Count > 0)
+            Levels.Add(list);
     }
 
-    private async Task BuildSystemPath(string systemName)
+    private async Task BuildSystem(string systemName)
     {
         var system = await Repo.GetByNameAsync(systemName);
 
-        if (system?.RunsOn?.Count > 0)
-        {
-            foreach(string parent in system.RunsOn)
-            {
-                Breadcrumbs.Add(new Breadcrumb(
-                    parent,
-                    $"resources/hardware/{parent}"
-                ));
-            }
-        }
+        var hwParents = (system?.RunsOn ?? new List<string>())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(hw => new Breadcrumb(hw, $"resources/hardware/{Uri.EscapeDataString(hw)}"))
+            .OrderBy(b => b.Label, StringComparer.OrdinalIgnoreCase);
 
-        Breadcrumbs.Add(new Breadcrumb(
-            systemName,
-            $"resources/systems/{systemName}"
-        ));
+        AddLevel(hwParents);
+
+        AddLevel(new Breadcrumb(systemName, $"resources/systems/{Uri.EscapeDataString(systemName)}"));
     }
 
-    private async Task BuildServicePath(string serviceName)
+    private async Task BuildService(string serviceName)
     {
         var service = await Repo.GetByNameAsync(serviceName);
 
-        if (service?.RunsOn?.Count > 0)
+        var systemParents = (service?.RunsOn ?? new List<string>())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        
+        var hwSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var sysName in systemParents)
         {
-            foreach (var sys in service.RunsOn)
+            var sys = await Repo.GetByNameAsync(sysName);
+            if (sys?.RunsOn is { Count: > 0 })
             {
-              var system = await Repo.GetByNameAsync(sys);
-
-              if (system?.RunsOn?.Count > 0)
-              {
-                  foreach(string parent in system.RunsOn)
-                  {
-                      Breadcrumbs.Add(new Breadcrumb(
-                          parent,
-                          $"resources/hardware/{parent}"
-                      ));
-                  }
-              }
-
-              Breadcrumbs.Add(new Breadcrumb(
-                  sys,
-                  $"resources/systems/{sys}"
-              ));
+                foreach (var hw in sys.RunsOn.Where(x => !string.IsNullOrWhiteSpace(x)))
+                    hwSet.Add(hw);
             }
         }
 
-        Breadcrumbs.Add(new Breadcrumb(
-            serviceName,
-            $"resources/services/{serviceName}"
-        ));
+        var hwParents = hwSet
+            .Select(hw => new Breadcrumb(hw, $"resources/hardware/{Uri.EscapeDataString(hw)}"))
+            .OrderBy(b => b.Label, StringComparer.OrdinalIgnoreCase);
+
+        var sysCrumbs = systemParents
+            .Select(sys => new Breadcrumb(sys, $"resources/systems/{Uri.EscapeDataString(sys)}"))
+            .OrderBy(b => b.Label, StringComparer.OrdinalIgnoreCase);
+
+        AddLevel(hwParents);
+        AddLevel(sysCrumbs);
+
+        AddLevel(new Breadcrumb(serviceName, $"resources/services/{Uri.EscapeDataString(serviceName)}"));
     }
 
-    private record Breadcrumb(string Label, string Href);
-
+    public record Breadcrumb(string Label, string Href);
 }
