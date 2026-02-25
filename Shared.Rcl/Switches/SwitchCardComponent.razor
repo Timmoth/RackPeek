@@ -17,7 +17,7 @@
     <div class="flex justify-between items-center mb-3">
 
         <div class="text-zinc-100 hover:text-emerald-300">
-            <NavLink href="@($"resources/hardware/{Switch.Name}")"
+            <NavLink href="@($"resources/hardware/{Uri.EscapeDataString(Switch.Name)}")"
                      class="block"
                      data-testid=@($"switch-item-{Switch.Name.Replace(" ", "-")}-link")>
                 @Switch.Name
@@ -369,7 +369,7 @@
     async Task HandleRenameSubmit(string newName)
     {
         await RenameUseCase.ExecuteAsync(Switch.Name, newName);
-        Nav.NavigateTo($"resources/hardware/{newName}");
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(newName)}");
     }
 
 }
@@ -387,7 +387,7 @@
     {
         await CloneUseCase.ExecuteAsync(Switch.Name, newName);
 
-        Nav.NavigateTo($"resources/hardware/{newName}");
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(newName)}");
     }
 
 }

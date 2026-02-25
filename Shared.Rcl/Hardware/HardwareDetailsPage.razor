@@ -133,7 +133,7 @@
 
     private Task NavigateToNewResource(string serverName)
     {
-        Nav.NavigateTo($"resources/systems/{serverName}");
+        Nav.NavigateTo($"resources/systems/{Uri.EscapeDataString(serverName)}");
         return Task.CompletedTask;
     }
 

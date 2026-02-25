@@ -66,15 +66,15 @@
     {
         if (resource.Kind == SystemResource.KindLabel)
         {
-            return $"resources/systems/{resource.Name}";
+            return $"resources/systems/{Uri.EscapeDataString(resource.Name)}";
         }
 
         if (resource.Kind == Service.KindLabel)
         {
-            return $"resources/services/{resource.Name}";
+            return $"resources/services/{Uri.EscapeDataString(resource.Name)}";
         }
 
-        return $"resources/hardware/{resource.Name}";
+        return $"resources/hardware/{Uri.EscapeDataString(resource.Name)}";
     }
 
 }

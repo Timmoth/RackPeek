@@ -65,7 +65,7 @@
                             <li data-testid=@($"hardware-item-{hardware.HardwareName}")>
 
                                 <!-- Hardware -->
-                                <NavLink href="@($"resources/hardware/{hardware.HardwareName}")"
+                                <NavLink href="@($"resources/hardware/{Uri.EscapeDataString(hardware.HardwareName)}")"
                                          class="block"
                                          data-testid=@($"hardware-link-{hardware.HardwareName}")>
 
@@ -88,7 +88,7 @@
                                             <li data-testid=@($"system-item-{system.SystemName}")>
 
                                                 <!-- System -->
-                                                <NavLink href="@($"resources/systems/{system.SystemName}")"
+                                                <NavLink href="@($"resources/systems/{Uri.EscapeDataString(system.SystemName)}")"
                                                          class="block"
                                                          data-testid=@($"system-link-{system.SystemName}")>
 
@@ -106,7 +106,7 @@
                                                         @foreach (var service in system.Services.OrderBy(s => s))
                                                         {
                                                             <li data-testid=@($"service-item-{service}")>
-                                                                <NavLink href="@($"resources/services/{service}")"
+                                                                <NavLink href="@($"resources/services/{Uri.EscapeDataString(service)}")"
                                                                          class="block hover:text-emerald-300"
                                                                          data-testid=@($"service-link-{service}")>
                                                                     > @service

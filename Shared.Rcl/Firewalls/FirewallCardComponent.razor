@@ -17,7 +17,7 @@
     <div class="flex justify-between items-center mb-3">
 
         <div class="text-zinc-100 hover:text-emerald-300">
-            <NavLink href="@($"resources/hardware/{Firewall.Name}")"
+            <NavLink href="@($"resources/hardware/{Uri.EscapeDataString(Firewall.Name)}")"
                      class="block"
                      data-testid=@($"firewall-item-{Firewall.Name.Replace(" ", "-")}-link")>
                 @Firewall.Name
@@ -368,7 +368,7 @@
     async Task HandleRenameSubmit(string newName)
     {
         await RenameUseCase.ExecuteAsync(Firewall.Name, newName);
-        Nav.NavigateTo($"resources/hardware/{newName}");
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(newName)}");
     }
 
 }
@@ -386,7 +386,7 @@
     {
         await CloneUseCase.ExecuteAsync(Firewall.Name, newName);
 
-        Nav.NavigateTo($"resources/hardware/{newName}");
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(newName)}");
     }
 
 }

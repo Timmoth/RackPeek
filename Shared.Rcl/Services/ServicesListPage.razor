@@ -24,7 +24,7 @@
 
     private Task NavigateToNewResource(string name)
     {
-        Nav.NavigateTo($"resources/services/{name}");
+        Nav.NavigateTo($"resources/services/{Uri.EscapeDataString(name)}");
         return Task.CompletedTask;
     }
 

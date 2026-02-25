@@ -112,7 +112,7 @@
                             @foreach (var (kind, count) in _hardware.HardwareByKind.OrderByDescending(x => x.Value))
                             {
                                 var pluralKind = Resource.KindToPlural(kind);
-                                <NavLink href="@($"{pluralKind}/list")" class="block">
+                                <NavLink href="@($"{Uri.EscapeDataString(pluralKind)}/list")" class="block">
                                     <li class="text-zinc-500 hover:text-emerald-300">
                                         └─ @pluralKind (@count)
                                     </li>
@@ -143,7 +143,7 @@
                                 @foreach (var (type, count) in _system.SystemsByType.OrderByDescending(x => x.Value))
                                 {
                                     <li class="text-zinc-500 hover:text-emerald-300">
-                                        <NavLink href="@($"systems/list?type={type}")" class="block">
+                                        <NavLink href="@($"systems/list?type={Uri.EscapeDataString(type)}")" class="block">
                                             └─ @type (@count)
                                         </NavLink>
                                     </li>
@@ -158,7 +158,7 @@
                                 @foreach (var (os, count) in _system.SystemsByOs.OrderByDescending(x => x.Value))
                                 {
                                     <li class="text-zinc-500 hover:text-emerald-300">
-                                        <NavLink href="@($"systems/list?os={os}")" class="block">
+                                        <NavLink href="@($"systems/list?os={Uri.EscapeDataString(os)}")" class="block">
                                             └─ @os (@count)
                                         </NavLink>
                                     </li>
