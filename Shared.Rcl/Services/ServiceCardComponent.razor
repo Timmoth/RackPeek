@@ -8,7 +8,7 @@
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900"
      data-testid=@($"service-item-{Service.Name.Replace(" ", "-")}")>
     <div class="flex justify-between items-center mb-3">
-        <NavLink href="@($"resources/services/{Service.Name}")" class="block"
+        <NavLink href="@($"resources/services/{Uri.EscapeDataString(Service.Name)}")" class="block"
                  data-testid=@($"service-item-{Service.Name.Replace(" ", "-")}-link")>
 
             <div class="text-zinc-100 hover:text-emerald-300">
@@ -179,7 +179,7 @@
             }
             else if (!string.IsNullOrWhiteSpace(Service.RunsOn))
             {
-                <NavLink href="@($"resources/systems/{Service.RunsOn}")"
+                <NavLink href="@($"resources/systems/{Uri.EscapeDataString(Service.RunsOn)}")"
                          data-testid="service-runson-link"
                          class="text-emerald-400">
                     @Service.RunsOn
@@ -270,7 +270,7 @@
     {
         await CloneUseCase.ExecuteAsync(Service.Name, newName);
 
-        Nav.NavigateTo($"resources/services/{newName}");
+        Nav.NavigateTo($"resources/services/{Uri.EscapeDataString(newName)}");
     }
 
 }
@@ -364,7 +364,7 @@
     async Task HandleRenameSubmit(string newName)
     {
         await RenameUseCase.ExecuteAsync(Service.Name, newName);
-        Nav.NavigateTo($"resources/services/{newName}");
+        Nav.NavigateTo($"resources/services/{Uri.EscapeDataString(newName)}");
     }
 
 }

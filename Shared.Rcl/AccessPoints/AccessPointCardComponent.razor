@@ -11,7 +11,7 @@
     <div class="flex justify-between items-center mb-3">
 
         <div class="text-zinc-100 hover:text-emerald-300">
-            <NavLink href="@($"resources/hardware/{AccessPoint.Name}")"
+            <NavLink href="@($"resources/hardware/{Uri.EscapeDataString(AccessPoint.Name)}")"
                      class="block"
                      data-testid="@($"open-accesspoint-{AccessPoint.Name.Replace(" ", "-")}-link")">
                 @AccessPoint.Name
@@ -225,7 +225,7 @@
     async Task HandleRenameSubmit(string newName)
     {
         await RenameUseCase.ExecuteAsync(AccessPoint.Name, newName);
-        Nav.NavigateTo($"resources/hardware/{newName}");
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(newName)}");
     }
 
     void OpenClone()
@@ -236,7 +236,7 @@
     async Task HandleCloneSubmit(string newName)
     {
         await CloneUseCase.ExecuteAsync(AccessPoint.Name, newName);
-        Nav.NavigateTo($"resources/hardware/{newName}");
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(newName)}");
     }
 
     public class AccessPointEditModel
