@@ -1,0 +1,25 @@
+version: 2
+resources:
+  - kind: Desktop
+    name: example-desktop
+    notes: Engineering workstation
+    ram:
+      size: 64
+      mts: 3600
+    cpus:
+      - model: Intel Core i9-13900K
+        cores: 24
+        threads: 32
+    drives:
+      - type: ssd
+        size: 2048
+    gpus:
+      - model: NVIDIA RTX 4090
+        vram: 24
+    nics:
+      - type: rj45
+        speed: 1
+        ports: 1
+    runsOn:
+      - rack-a1
+      - rack-a2

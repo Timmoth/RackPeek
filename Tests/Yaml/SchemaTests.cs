@@ -6,9 +6,9 @@ namespace Tests.Yaml;
 
 public class SchemaConformanceTests
 {
-    private static JsonSchema LoadSchema()
+    private static JsonSchema LoadSchema(int version)
     {
-        var schemaText = File.ReadAllText("schemas/schema.v1.json");
+        var schemaText = File.ReadAllText($"schemas/schema.v{version}.json");
         return JsonSchema.FromText(schemaText);
     }
     private static JsonElement ConvertYamlToJsonElement(string yaml)
@@ -65,16 +65,19 @@ public class SchemaConformanceTests
 
         return "null";
     }
-    [Fact]
-    public void All_v1_yaml_files_conform_to_schema()
+    
+    [Theory]
+    [InlineData(1)]
+    //[InlineData(2)]
+    public void All_yaml_files_conform_to_schema(int version)
     {
         // Arrange
-        var schema = LoadSchema();
+        var schema = LoadSchema(version);
         
         var yamlFolder = Path.Combine(
             AppContext.BaseDirectory,
             "TestConfigs",
-            "v1");
+            $"v{version}");
 
         var yamlFiles = Directory
             .EnumerateFiles(yamlFolder, "*.yaml", SearchOption.AllDirectories)

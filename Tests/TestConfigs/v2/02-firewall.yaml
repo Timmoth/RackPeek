@@ -1,0 +1,17 @@
+version: 2
+resources:
+  - kind: Firewall
+    name: example-firewall
+    model: Netgate-6100
+    managed: true
+    poe: false
+    ports:
+      - type: rj45
+        speed: 1
+        count: 4
+      - type: sfp+
+        speed: 10
+        count: 2
+    runsOn:
+      - rack-a1
+      - rack-a2

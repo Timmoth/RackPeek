@@ -34,56 +34,7 @@
       <Folder Include="EndToEnd\ServiceTests\" />
     </ItemGroup>
     <ItemGroup>
-        <None Include="TestConfigs\**\*.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Include="schemas\schema.v1.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\valid-config-1.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\01-server.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\02-firewall.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\03-router.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\04-switch.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\05-accesspoint.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\06-ups.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\07-desktop.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\08-laptop.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\09-service.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-
-        <None Update="TestConfigs\v1\10-system.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+        <None Include="schemas\**\*.json" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="TestConfigs\**\*.yaml" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 </Project>
