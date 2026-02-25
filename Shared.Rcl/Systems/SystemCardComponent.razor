@@ -180,24 +180,27 @@
 
             @if (_isEditing)
             {
-                  @if (System.RunsOn?.Count > 0)
-                  {
-                      @foreach(var parent in System.RunsOn)
-                      {
+                @if (_edit.RunsOn?.Count > 0)
+                {
+                    @foreach (var parent in _edit.RunsOn)
+                    {
                         <button
+                            type="button"
                             class="hover:text-emerald-400"
                             title="Edit Runs On"
                             @onclick="() => _selectParentOpen = true">
-                                  @($"{parent}")
+                            @parent
                         </button>
+
                         <button
+                            type="button"
                             class="text-red-400 hover:text-red-300 pr-4"
                             title="Remove"
-                            @onclick="() => HandleParentDeleted(parent)">
-                                  @($"✕")
+                            @onclick="async () => await HandleParentDeleted(parent)">
+                            ✕
                         </button>
-                      }
-                  }
+                    }
+                }
             }
             else if (System.RunsOn?.Count > 0)
             {
@@ -290,7 +293,7 @@
 
 
 <ConfirmModal
-    IsOpen="_confirmDeleteOpen"
+    IsOpen="@_confirmDeleteOpen"
     IsOpenChanged="v => _confirmDeleteOpen = v"
     Title="Delete system"
     ConfirmText="Delete"
@@ -298,7 +301,7 @@
     OnConfirm="DeleteServer"
     TestIdPrefix="system-delete">
     Are you sure you want to delete <strong>@System.Name</strong>?
-    <br/>
+    <br />
     This will detach all dependent systems.
 </ConfirmModal>
 
@@ -341,36 +344,74 @@
     bool _selectParentOpen;
     string? SelectedParentName;
 
-    async Task HandleParentSelected(string? name)
-    {
-        SelectedParentName = name;
-        await UpdateUseCase.ExecuteAsync(
-            System.Name,
-            System.Type,
-            System.Os,
-            System.Cores,
-            System.Ram,
-            new List<string>{name},
-            System.Notes);
-        System = await GetByNameUseCase.ExecuteAsync(System.Name);
-        _edit = SystemEditModel.From(System);
-    }
+  async Task HandleParentSelected(string? name)
+{
+    SelectedParentName = name;
 
-    async Task HandleParentDeleted(string? name)
-    {
-        SelectedParentName = name;
-        System.RunsOn.Remove(SelectedParentName);
-        await UpdateUseCase.ExecuteAsync(
-            System.Name,
-            System.Type,
-            System.Os,
-            System.Cores,
-            System.Ram,
-            System.RunsOn,
-            System.Notes);
-        System = await GetByNameUseCase.ExecuteAsync(System.Name);
+    // Start from the edit buffer when editing, otherwise from the persisted model
+    var runsOn = (_isEditing ? _edit.RunsOn : System.RunsOn) ?? new List<string>();
+    runsOn = runsOn.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+
+    if (!string.IsNullOrWhiteSpace(name) && !runsOn.Contains(name))
+        runsOn.Add(name);
+
+    // IMPORTANT: use _edit values when editing so we don't wipe typed fields
+    var type  = _isEditing ? _edit.Type  : System.Type;
+    var os    = _isEditing ? _edit.Os    : System.Os;
+    var cores = _isEditing ? _edit.Cores : System.Cores;
+    var ram   = _isEditing ? _edit.Ram   : System.Ram;
+    var notes = _isEditing ? _edit.Notes : System.Notes;
+
+    await UpdateUseCase.ExecuteAsync(
+        System.Name,
+        type,
+        os,
+        cores,
+        ram,
+        runsOn,
+        notes);
+
+    System = await GetByNameUseCase.ExecuteAsync(System.Name);
+
+    if (_isEditing)
+        _edit.RunsOn = runsOn;
+    else
         _edit = SystemEditModel.From(System);
-    }
+}
+
+async Task HandleParentDeleted(string? name)
+{
+    if (string.IsNullOrWhiteSpace(name))
+        return;
+
+    SelectedParentName = name;
+
+    var runsOn = (_isEditing ? _edit.RunsOn : System.RunsOn) ?? new List<string>();
+    System.RunsOn = runsOn = runsOn.Where(x => !string.IsNullOrWhiteSpace(x) && x != name).ToList();
+
+    var type  = _isEditing ? _edit.Type  : System.Type;
+    var os    = _isEditing ? _edit.Os    : System.Os;
+    var cores = _isEditing ? _edit.Cores : System.Cores;
+    var ram   = _isEditing ? _edit.Ram   : System.Ram;
+    var notes = _isEditing ? _edit.Notes : System.Notes;
+
+    await UpdateUseCase.ExecuteAsync(
+        System.Name,
+        type,
+        os,
+        cores,
+        ram,
+        runsOn,
+        notes);
+
+    System = await GetByNameUseCase.ExecuteAsync(System.Name);
+
+    if (_isEditing)
+        _edit.RunsOn = runsOn;
+    else
+        _edit = SystemEditModel.From(System);
+}
+  
 
 
     #region Drives

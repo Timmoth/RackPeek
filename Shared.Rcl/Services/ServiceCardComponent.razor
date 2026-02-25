@@ -104,10 +104,24 @@
             }
             else if (Service.Network?.Port.HasValue == true)
             {
-                <div class="text-zinc-300"
-                     data-testid="service-port-value">
-                    @Service.Network.Port
-                </div>
+                var href = GetBrowsableHref();
+
+                if (href is not null)
+                {
+                    <a href="@href"
+                       data-testid="service-port-value"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="text-emerald-400 hover:text-emerald-300 hover:underline transition">
+                        @Service.Network.Port
+                    </a>
+                }
+                else
+                {
+                    <div class="text-zinc-300" data-testid="service-port-value">
+                        @Service.Network.Port
+                    </div>
+                }
             }
         </div>
 
@@ -334,32 +348,59 @@
     async Task HandleParentSelected(string? name)
     {
         SelectedParentName = name;
-        await UpdateUseCase.ExecuteAsync(
-            Service.Name,
-            Service.Network?.Ip,
-            Service.Network?.Port,
-            Service.Network?.Protocol,
-            Service.Network?.Url,
-            new List<string>{name},
-            Service.Notes);
+
+        var runsOn = (_isEditing ? _edit.RunsOn : Service.RunsOn) ?? new List<string>();
+        runsOn = runsOn.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+
+        if (!string.IsNullOrWhiteSpace(name) && !runsOn.Contains(name))
+            runsOn.Add(name);
+
+        var ip       = _isEditing ? _edit.Ip       : Service.Network?.Ip;
+        var port     = _isEditing ? _edit.Port     : Service.Network?.Port;
+        var protocol = _isEditing ? _edit.Protocol : Service.Network?.Protocol;
+        var url      = _isEditing ? _edit.Url      : Service.Network?.Url;
+        var notes    = _isEditing ? _edit.Notes    : Service.Notes;
+
+        await UpdateUseCase.ExecuteAsync(Service.Name, ip, port, protocol, url, runsOn, notes);
+
+        // Refresh service from backend (optional, but if you do it, DO NOT nuke the edit buffer)
         Service = await GetByNameUseCase.ExecuteAsync(Service.Name);
-        _edit = ServiceEditModel.From(Service);
+
+        if (_isEditing)
+        {
+            // keep whatever the user typed; just sync RunsOn
+            _edit.RunsOn = runsOn;
+        }
+        else
+        {
+            _edit = ServiceEditModel.From(Service);
+        }
     }
 
     async Task HandleParentDeleted(string? name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            return;
+
         SelectedParentName = name;
-        Service.RunsOn.Remove(SelectedParentName);
-        await UpdateUseCase.ExecuteAsync(
-            Service.Name,
-            Service.Network?.Ip,
-            Service.Network?.Port,
-            Service.Network?.Protocol,
-            Service.Network?.Url,
-            Service.RunsOn,
-            Service.Notes);
+
+        var runsOn = (_isEditing ? _edit.RunsOn : Service.RunsOn) ?? new List<string>();
+        runsOn = runsOn.Where(x => !string.IsNullOrWhiteSpace(x) && x != name).ToList();
+
+        var ip       = _isEditing ? _edit.Ip       : Service.Network?.Ip;
+        var port     = _isEditing ? _edit.Port     : Service.Network?.Port;
+        var protocol = _isEditing ? _edit.Protocol : Service.Network?.Protocol;
+        var url      = _isEditing ? _edit.Url      : Service.Network?.Url;
+        var notes    = _isEditing ? _edit.Notes    : Service.Notes;
+
+        await UpdateUseCase.ExecuteAsync(Service.Name, ip, port, protocol, url, runsOn, notes);
+
         Service = await GetByNameUseCase.ExecuteAsync(Service.Name);
-        _edit = ServiceEditModel.From(Service);
+
+        if (_isEditing)
+            _edit.RunsOn = runsOn;
+        else
+            _edit = ServiceEditModel.From(Service);
     }
 
 }
@@ -401,4 +442,25 @@
         Nav.NavigateTo($"resources/services/{Uri.EscapeDataString(newName)}");
     }
 
+    private string? GetBrowsableHref()
+    {
+        var ip = Service.Network?.Ip;
+        var port = Service.Network?.Port;
+
+        if (string.IsNullOrWhiteSpace(ip) || port is null)
+            return null;
+
+        var proto = Service.Network?.Protocol?.Trim().ToLowerInvariant();
+
+        var scheme = proto switch
+        {
+            "https" => "https",
+            "http" => "http",
+            _ => "http"
+        };
+
+        // Build a correct absolute URL
+        var ub = new UriBuilder(scheme, ip) { Port = port.Value };
+        return ub.Uri.ToString();
+    }
 }

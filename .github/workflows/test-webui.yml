@@ -6,34 +6,44 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pin for consistency (22.04 is also fine)
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      # Restore all projects
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Cache Playwright browsers (Chromium)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-pw-chromium-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-pw-chromium-
+
       - name: Restore
         run: dotnet restore
 
-      # Build solution
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      # Install Playwright CLI
-      - name: Install Playwright CLI
-        run: dotnet tool install --global Microsoft.Playwright.CLI
-
-      # Install browser binaries + Linux deps
-      - name: Install Playwright Browsers
+      # Prefer the Playwright script that comes with the NuGet package (no global tool install)
+      - name: Install Playwright Browsers (Chromium only)
+        shell: bash
         run: |
-          playwright install --with-deps
+          pwsh Tests.E2e/bin/Release/net*/playwright.ps1 install --with-deps chromium
 
-      # Build Docker image used by Testcontainers
       - name: Build Docker Image
         run: |
           docker build \
@@ -41,6 +51,5 @@ jobs:
             -f RackPeek.Web/Dockerfile \
             .
 
-      # Run E2E tests
       - name: Run E2E Tests
         run: dotnet test Tests.E2e --configuration Release --verbosity normal

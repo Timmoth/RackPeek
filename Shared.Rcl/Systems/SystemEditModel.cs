@@ -5,7 +5,15 @@ namespace Shared.Rcl.Systems;
 public sealed class SystemEditModel
 {
     public string Name { get; init; } = default!;
-    public string? Type { get; set; }
+    private string? _type;
+    public string? Type
+    {
+        get => _type;
+        set => _type = string.IsNullOrWhiteSpace(value)
+            ? null
+            : value.Trim().ToLowerInvariant();
+    }
+    
     public string? Os { get; set; }
     public int? Cores { get; set; }
     public double? Ram { get; set; }
