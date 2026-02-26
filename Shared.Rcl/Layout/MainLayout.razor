@@ -1,17 +1,29 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.VisualBasic
+@using RackPeek.Domain
+@inherits LayoutComponentBase
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono"
      data-testid="app-root">
 
     <header class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900"
             data-testid="app-header">
-
         <NavLink href=""
                  data-testid="brand-link"
                  class="hover:text-emerald-400"
                  activeClass="text-emerald-400 font-semibold">
-            <div class="text-xl font-bold text-emerald-400 tracking-wider"
+
+            <div class="flex items-center gap-3"
                  data-testid="brand-text">
-                rackpeek
+
+                <span class="text-xl font-bold text-emerald-400 tracking-wider">
+                    rackpeek
+                </span>
+
+                <span class="text-[10px]
+                     text-zinc-500
+                     tracking-wide">
+                    @RpkConstants.Version
+                </span>
+
             </div>
         </NavLink>
 

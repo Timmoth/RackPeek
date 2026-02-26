@@ -1,15 +1,19 @@
 [![RackPeek demo](./assets/rackpeek_banner_thin.png)](./assets/rackpeek_banner_thin.png)
 
+![Version](https://img.shields.io/badge/Version-1.0.0-2ea44f) ![Status](https://img.shields.io/badge/Status-Stable-success)
 [![Join our Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/egXRPdesee) [![Live Demo](https://img.shields.io/badge/Live%20Demo-Try%20RackPeek%20Online-2ea44f?logo=githubpages&logoColor=white)](https://timmoth.github.io/RackPeek/) [![Docker Hub](https://img.shields.io/badge/Docker%20Hub-rackpeek-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/aptacode/rackpeek/)
 
+```
+Announcing v1.0.0, officially out of beta.  
+
+Thanks to everyone who tried early versions, opened issues, suggested changes, or used it in their lab and shared feedback.  
+   
+Appreciate all the support.
+```
 
 RackPeek is a lightweight, opinionated CLI tool / webui for documenting and managing home lab and small-scale IT infrastructure.
 
 It helps you track hardware, services, networks, and their relationships in a clear, scriptable, and reusable way without enterprise bloat or proprietary lock-in or drowning in unnecessary metadata or process.
-
-RackPeek is open source and community-driven.
-Code, docs, ideas, bug reports, and real-world usage feedback are all massively appreciated.
-If you run a home lab, you belong here.
 
 
 [![DB Tech — Finally Document Your Home Lab the Easy Way (Docker Install)](https://img.shields.io/badge/DB%20Tech%20[video]-Finally%20Document%20Your%20Home%20Lab%20the%20Easy%20Way%20(Docker%20Install)-blue?style=for-the-badge)](https://www.youtube.com/watch?v=RJtMO8kIsqU)
@@ -74,14 +78,6 @@ volumes:
 * 
   [**CLI Commands Reference**](https://timmoth.github.io/RackPeek/docs/cli-commands)
 
-## Release Status
-```
-[x] Ideation
-[x] Development
-[x] Alpha Release
-[~] Beta Release
-[ ] v1.0.0 Release
-```
 
 ## POST V1.0.0 Roadmap
 - Support for IoT and networked devices
