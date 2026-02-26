@@ -87,6 +87,14 @@ public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
             "--ports", "2"
         );
         Assert.Equal("NIC added to 'srv01'.\n", output);
+        
+        (output, yaml) = await ExecuteAsync(
+            "servers", "nic", "add", "srv01",
+            "--type", "RJ45",
+            "--speed", "2.5",
+            "--ports", "2"
+        );
+        Assert.Equal("NIC added to 'srv01'.\n", output);
 
         // Get server
         (output, yaml) = await ExecuteAsync("servers", "get", "srv01");
@@ -101,14 +109,14 @@ public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
         (output, yaml) = await ExecuteAsync("servers", "summary");
         
         Assert.Equal("""
-                     ╭───────┬────────────┬───────┬────────┬────────────┬───────┬────────────┬──────╮
-                     │ Name  │ CPU        │ C/T   │ RAM    │ Storage    │ NICs  │ GPUs       │ IPMI │
-                     ├───────┼────────────┼───────┼────────┼────────────┼───────┼────────────┼──────┤
-                     │ srv01 │ 1× Intel   │ 12/24 │ 128 GB │ 1024 GB    │ 2×10G │ 1× NVIDIA  │ yes  │
-                     │       │ Xeon       │       │        │ (SSD 1024  │       │ A2000 (6   │      │
-                     │       │ Silver     │       │        │ / HDD 0)   │       │ GB VRAM)   │      │
-                     │       │ 4310       │       │        │            │       │            │      │
-                     ╰───────┴────────────┴───────┴────────┴────────────┴───────┴────────────┴──────╯
+                     ╭───────┬───────────┬───────┬────────┬───────────┬───────────┬──────────┬──────╮
+                     │ Name  │ CPU       │ C/T   │ RAM    │ Storage   │ NICs      │ GPUs     │ IPMI │
+                     ├───────┼───────────┼───────┼────────┼───────────┼───────────┼──────────┼──────┤
+                     │ srv01 │ 1× Intel  │ 12/24 │ 128 GB │ 1024 GB   │ 2×10G,    │ 1×       │ yes  │
+                     │       │ Xeon      │       │        │ (SSD 1024 │ 2×2.5G    │ NVIDIA   │      │
+                     │       │ Silver    │       │        │ / HDD 0)  │           │ A2000 (6 │      │
+                     │       │ 4310      │       │        │           │           │ GB VRAM) │      │
+                     ╰───────┴───────────┴───────┴────────┴───────────┴───────────┴──────────┴──────╯
                      
                      """, output);
                      

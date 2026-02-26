@@ -1,4 +1,5 @@
 using RackPeek.Domain.Persistence;
+using RackPeek.Domain.Resources.SubResources;
 
 namespace RackPeek.Domain.Resources.Servers;
 
@@ -20,8 +21,25 @@ public record ServerHardwareRow(
     int GpuCount,
     int TotalGpuVramGb,
     string GpuSummary,
-    bool Ipmi
+    bool Ipmi, 
+    IReadOnlyList<Nic> Nics
+)
+{        
+public string NicSummary =>
+string.Join(", ",
+    (Nics ?? [])
+    .SelectMany(n =>
+    {
+        var ports = n.Ports ?? 1;
+        var speed = n.Speed ?? 0;
+        return Enumerable.Repeat(speed, ports);
+    })
+    .GroupBy(speed => speed)
+    .OrderByDescending(g => g.Key)
+    .Select(g => $"{g.Count()}×{g.Key}G")
+    .DefaultIfEmpty("none")
 );
+}
 
 public class ServerHardwareReportUseCase(IResourceCollection repository) : IUseCase
 {
@@ -81,7 +99,8 @@ public class ServerHardwareReportUseCase(IResourceCollection repository) : IUseC
                 gpuCount,
                 totalGpuVram,
                 gpuSummary,
-                server.Ipmi ?? false
+                server.Ipmi ?? false,
+                server.Nics ?? new List<Nic>()
             );
         }).ToList();
 

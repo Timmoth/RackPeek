@@ -40,7 +40,7 @@ public class ServerReportCommand(ILogger<ServerReportCommand> logger, IServicePr
                 $"{s.TotalCores}/{s.TotalThreads}",
                 $"{s.RamGb} GB",
                 $"{s.TotalStorageGb} GB (SSD {s.SsdStorageGb} / HDD {s.HddStorageGb})",
-                $"{s.TotalNicPorts}×{s.MaxNicSpeedGb}G",
+                s.NicSummary,
                 s.GpuCount == 0
                     ? "[grey]none[/]"
                     : $"{s.GpuSummary} ({s.TotalGpuVramGb} GB VRAM)",
