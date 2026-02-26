@@ -1,8 +1,6 @@
 name: Generate CLI Docs
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:

@@ -57,6 +57,9 @@ chmod +x webui_capture.sh
 Run:
 
 ```bash
+cd vhs
+npm install
+node capture.js 
 ./webui_capture.sh
 ```
 

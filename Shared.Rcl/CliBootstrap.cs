@@ -111,7 +111,7 @@ public static class CliBootstrap
         {
             config.SetApplicationName("rpk");
             config.ValidateExamples();
-            config.SetApplicationVersion("0.0.3");
+            config.SetApplicationVersion(RpkConstants.Version);
 
             config.SetExceptionHandler(HandleException);
 
