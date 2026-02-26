@@ -1,0 +1,109 @@
+name: Internal Work
+description: Propose improvements to testing, docs, migrations, clean-ups, or tech debt
+title: "[Internal]: "
+labels: ["internal", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Spotted something that could make RackPeek better? This template is for **internal improvements** — testing, docs, clean-ups, migrations, tech debt — anything that isn't a user-facing feature or bug fix. Great for contributors looking for a way to help!
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What kind of improvement is this?
+      options:
+        - Testing
+        - Schema / migration
+        - Documentation
+        - Code clean-up / refactor
+        - Tech debt
+        - CI / CD / DevOps
+        - Tooling / developer experience
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Urgency
+      description: When would it be nice to have this? (Helps contributors decide what to pick up.)
+      options:
+        - Low (nice to have when someone has time)
+        - Medium (would help soon)
+        - High (blocking or painful without it)
+    validations:
+      required: true
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Rough size
+      description: Helps contributors gauge if they can pick this up in an afternoon or need to block more time.
+      options:
+        - Small (an afternoon or less)
+        - Medium (a few days)
+        - Large (a week or more)
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs attention?
+      description: A brief description. What's broken, outdated, or missing?
+      placeholder: e.g. Add E2E tests for Systems UI; migrate YAML schema v1 to v2; update dev-setup.md for the new Docker workflow...
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why does this matter?
+      description: A bit of context helps. What problem does it solve? Who benefits?
+      placeholder: e.g. Schema v1 doesn't support labels; new contributors hit outdated setup steps; tests would catch regressions...
+    validations:
+      required: true
+  - type: checkboxes
+    id: affected-areas
+    attributes:
+      label: Affected areas
+      description: Which parts of the codebase? (Helps anyone picking this up know where to look.)
+      options:
+        - label: RackPeek.Domain
+          required: false
+        - label: Shared.Rcl
+          required: false
+        - label: RackPeek (CLI)
+          required: false
+        - label: RackPeek.Web
+          required: false
+        - label: RackPeek.Web.Viewer
+          required: false
+        - label: Tests
+          required: false
+        - label: Tests.E2e
+          required: false
+        - label: docs/
+          required: false
+        - label: .github / CI
+          required: false
+        - label: Other
+          required: false
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: What would "done" look like?
+      description: A few bullet points help whoever picks this up (and reviewers) know when it's complete.
+      placeholder: |
+        - [ ] Unit tests added for X, Y, Z
+        - [ ] Schema migration runs without data loss
+        - [ ] docs/dev-setup.md reflects current workflow
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: Helpful links (optional)
+      description: Files, docs, or related issues that might help whoever picks this up.
+      placeholder: e.g. RackPeek.Domain/UseCases/Labels/AddLabelUseCase.cs, docs/development/dev-setup.md, #42
+    validations:
+      required: false
