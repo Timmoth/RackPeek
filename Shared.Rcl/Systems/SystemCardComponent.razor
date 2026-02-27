@@ -1,3 +1,4 @@
+@using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources.SubResources
 @using RackPeek.Domain.Resources.SystemResources
 @using RackPeek.Domain.Resources.SystemResources.UseCases
@@ -11,6 +12,7 @@
 @inject ICloneResourceUseCase<SystemResource> CloneUseCase
 @inject NavigationManager Nav
 @inject IRenameResourceUseCase<SystemResource> RenameUseCase
+@inject IResourceCollection ResourceCollection
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900"
      data-testid=@($"system-item-{System.Name.Replace(" ", "-")}")>
@@ -166,54 +168,41 @@
         </div>
 
         <!-- Runs On -->
-        <div>
+        <div class="text-sm">
             <div class="text-zinc-400 mb-1">
-              Runs On
-
-              <button
-                  class="hover:text-emerald-400 pr-4"
-                  title="Add Runs On"
-                  @onclick="() => _selectParentOpen = true">
-                      @("+")
-              </button>
+                Runs On
+                <button class="hover:text-emerald-400 pl-2"
+                        @onclick="() => _selectParentOpen = true">+</button>
             </div>
 
-            @if (_isEditing)
+            @if (System.RunsOn?.Count > 0)
             {
-                @if (_edit.RunsOn?.Count > 0)
+                @foreach (var parent in System.RunsOn)
                 {
-                    @foreach (var parent in _edit.RunsOn)
-                    {
-                        <button
-                            type="button"
-                            class="hover:text-emerald-400"
-                            title="Edit Runs On"
-                            @onclick="() => _selectParentOpen = true">
-                            @parent
-                        </button>
+                    var kind = _parentKinds.TryGetValue(parent, out var k) ? k : null;
 
-                        <button
-                            type="button"
-                            class="text-red-400 hover:text-red-300 pr-4"
-                            title="Remove"
-                            @onclick="async () => await HandleParentDeleted(parent)">
+                    var url = kind switch
+                    {
+                        "Hardware" => $"resources/hardware/{Uri.EscapeDataString(parent)}",
+                        "System" => $"resources/systems/{Uri.EscapeDataString(parent)}",
+                        _ => "#"
+                    };
+
+                    <NavLink href="@url"
+                             class="text-emerald-400 text-sm pr-4">
+                        @parent
+                    </NavLink>
+
+                    @if (_isEditing)
+                    {
+                        <button class="text-red-400 hover:text-red-300 pr-4"
+                                @onclick="async () => await HandleParentDeleted(parent)">
                             ✕
                         </button>
                     }
                 }
             }
-            else if (System.RunsOn?.Count > 0)
-            {
-                @foreach(var parent in System.RunsOn)
-                {
-                  <NavLink href="@($"resources/hardware/{Uri.EscapeDataString(parent)}")"
-                           class="text-emerald-400 text-sm pr-4">
-                      @parent
-                  </NavLink>
-                }
-            }
         </div>
-
         <div>
             <div class="flex items-center justify-between mb-1 group">
                 <div class="text-zinc-400">Drives
@@ -277,12 +266,13 @@
     </div>
 </div>
 
-<HardwareSelectionModal
+<!-- Parent Selector -->
+<HardwareOrSystemSelectionModal
     IsOpen="@_selectParentOpen"
     IsOpenChanged="v => _selectParentOpen = v"
-    Title="Select a parent"
+    Title="Select a parent resource"
     Value="@SelectedParentName"
-    OnAccept="HandleParentSelected"/>
+    OnAccept="HandleParentSelected" />
 <DriveModal
     IsOpen="@_driveModalOpen"
     IsOpenChanged="v => _driveModalOpen = v"
@@ -343,9 +333,34 @@
 
     bool _selectParentOpen;
     string? SelectedParentName;
+    private Dictionary<string, string> _parentKinds = new();
 
+    protected override async Task OnParametersSetAsync()
+    {
+        await RefreshParentKinds();
+    }
+    
+    private async Task RefreshParentKinds()
+    {
+        _parentKinds.Clear();
+
+        if (System.RunsOn == null)
+            return;
+
+        foreach (var parent in System.RunsOn)
+        {
+            var kind = await ResourceCollection.GetKind(parent);
+            _parentKinds[parent] = kind;
+        }
+    }
+    
   async Task HandleParentSelected(string? name)
 {
+    if (name == System.Name)
+    {
+        return;
+    }
+    
     SelectedParentName = name;
 
     // Start from the edit buffer when editing, otherwise from the persisted model
@@ -377,6 +392,9 @@
         _edit.RunsOn = runsOn;
     else
         _edit = SystemEditModel.From(System);
+    
+    await RefreshParentKinds();
+
 }
 
 async Task HandleParentDeleted(string? name)
@@ -410,6 +428,9 @@ async Task HandleParentDeleted(string? name)
         _edit.RunsOn = runsOn;
     else
         _edit = SystemEditModel.From(System);
+    
+    await RefreshParentKinds();
+
 }
   
 

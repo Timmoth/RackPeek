@@ -49,10 +49,15 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
             foreach(string parent in runsOn) {
                 if (!string.IsNullOrWhiteSpace(parent)) {
                     ThrowIfInvalid.ResourceName(parent);
-                    var parentHardware = await repository.GetByNameAsync(parent) as Hardware.Hardware;
+                    var parentHardware = await repository.GetByNameAsync(parent);
 
-                    if (parentHardware == null) throw new NotFoundException($"Parent hardware '{parent}' not found.");
-
+                    
+                    if (parentHardware == null) throw new NotFoundException($"Parent '{parent}' not found.");
+                    if (parentHardware is not Hardware.Hardware and not SystemResource)
+                    {
+                        throw new Exception("System cannot run on this resource.");
+                    }
+                    
                     if (!system.RunsOn.Contains(parent)) system.RunsOn.Add(parent);
 
                 }

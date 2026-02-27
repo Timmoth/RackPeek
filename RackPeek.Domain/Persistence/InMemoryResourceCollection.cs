@@ -60,6 +60,16 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         }
     }
 
+    public Task<string?> GetKind(string name)
+    {
+        lock (_lock)
+        {
+            return Task.FromResult(_resources.FirstOrDefault(r =>
+                r.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Kind);
+        }
+        
+    }
+
     public Task LoadAsync()
     {
         return Task.CompletedTask;

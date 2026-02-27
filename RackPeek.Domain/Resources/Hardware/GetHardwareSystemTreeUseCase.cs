@@ -34,7 +34,7 @@ public class GetHardwareSystemTreeUseCase(
     {
         var services = await repo.GetDependantsAsync(system.Name);
 
-        return new SystemDependencyTree(system, services.OfType<Service>());
+        return new SystemDependencyTree(system, services);
     }
 }
 
@@ -44,8 +44,8 @@ public sealed class HardwareDependencyTree(Hardware hardware, IEnumerable<System
     public IEnumerable<SystemDependencyTree> Systems { get; } = systems;
 }
 
-public sealed class SystemDependencyTree(SystemResource system, IEnumerable<Service> services)
+public sealed class SystemDependencyTree(SystemResource system, IEnumerable<Resource> childResources)
 {
     public SystemResource System { get; } = system;
-    public IEnumerable<Service> Services { get; } = services;
+    public IEnumerable<Resource> ChildResources { get; } = childResources;
 }

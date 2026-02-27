@@ -24,7 +24,7 @@ public sealed class ServerTreeCommand(GetHardwareSystemTreeUseCase useCase) : As
         foreach (var system in tree.Systems)
         {
             var systemNode = root.AddNode($"[green]System:[/] {system.System.Name}");
-            foreach (var service in system.Services) systemNode.AddNode($"[green]Service:[/] {service.Name}");
+            foreach (var service in system.ChildResources) systemNode.AddNode($"[green]Service:[/] {service.Name}");
         }
 
         AnsiConsole.Write(root);

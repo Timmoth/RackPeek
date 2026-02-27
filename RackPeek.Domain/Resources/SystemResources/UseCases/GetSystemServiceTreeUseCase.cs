@@ -16,6 +16,6 @@ public class GetSystemServiceTreeUseCase(
         if (system is null) throw new NotFoundException($"System '{name}' not found.");
         var services = await repo.GetDependantsAsync(system.Name);
 
-        return new SystemDependencyTree(system, services.OfType<Service>());
+        return new SystemDependencyTree(system, services.OfType<Resource>());
     }
 }

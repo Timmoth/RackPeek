@@ -19,6 +19,9 @@ public interface IResourceCollection
 
     Resource? GetByName(string name);
     Task<bool> Exists(string name);
+    
+    Task<string?> GetKind(string? name);
+
 
     Task LoadAsync(); // required for WASM startup
     Task<IReadOnlyList<Resource>> GetByTagAsync(string name);
