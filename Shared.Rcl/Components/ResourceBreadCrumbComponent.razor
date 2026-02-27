@@ -1,4 +1,5 @@
 ﻿@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources
 @inject IResourceCollection Repo
 
 <div class="text-sm text-zinc-300 flex items-stretch gap-3">
@@ -16,9 +17,12 @@
 </div>
 
 @code {
-    [Parameter] [EditorRequired] public ResourceType ResourceType { get; set; }
-    [Parameter] [EditorRequired] public string ResourceName { get; set; } = default!;
-    
+    [Parameter, EditorRequired] 
+    public ResourceType ResourceType { get; set; }
+
+    [Parameter, EditorRequired] 
+    public string ResourceName { get; set; } = default!;
+
     private List<List<Breadcrumb>> Levels { get; } = new();
 
     protected override async Task OnParametersSetAsync()
@@ -28,77 +32,117 @@
         switch (ResourceType)
         {
             case ResourceType.Hardware:
-                AddLevel(new Breadcrumb(ResourceName, $"resources/hardware/{Uri.EscapeDataString(ResourceName)}"));
+                AddLevel(new Breadcrumb(
+                    ResourceName,
+                    Resource.GetResourceUrl("hardware", ResourceName)));
                 break;
 
             case ResourceType.System:
-                await BuildSystem(ResourceName);
+                await BuildFromNode(ResourceName, "system");
                 break;
 
             case ResourceType.Service:
-                await BuildService(ResourceName);
+                await BuildFromNode(ResourceName, "service");
                 break;
         }
     }
 
+    private async Task BuildFromNode(string name, string kind)
+    {
+        var resource = await Repo.GetByNameAsync(name);
+        var parents = resource?.RunsOn ?? Enumerable.Empty<string>();
+
+        var byDistance = await BuildAncestorGraph(parents);
+
+        RenderLevels(byDistance);
+
+        AddLevel(new Breadcrumb(
+            name,
+            Resource.GetResourceUrl(kind, name)));
+    }
+
+    private void RenderLevels(Dictionary<int, List<(string Name, string Kind)>> byDistance)
+    {
+        foreach (var dist in byDistance.Keys.OrderByDescending(x => x))
+        {
+            var items = byDistance[dist];
+
+            var hardware = items
+                .Where(x => Resource.IsHardware(x.Kind))
+                .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                .Select(x => new Breadcrumb(
+                    x.Name,
+                    Resource.GetResourceUrl(x.Kind, x.Name)));
+
+            var systems = items
+                .Where(x => x.Kind == "system")
+                .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                .Select(x => new Breadcrumb(
+                    x.Name,
+                    Resource.GetResourceUrl(x.Kind, x.Name)));
+
+            AddLevel(hardware);
+            AddLevel(systems);
+        }
+    }
+
+    private async Task<Dictionary<int, List<(string Name, string Kind)>>> 
+        BuildAncestorGraph(IEnumerable<string> startingNodes)
+    {
+        var byDistance = new Dictionary<int, List<(string, string)>>();
+        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var queue = new Queue<(string Name, int Dist)>();
+
+        foreach (var node in startingNodes
+                     .Where(x => !string.IsNullOrWhiteSpace(x))
+                     .Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            queue.Enqueue((node, 1));
+        }
+
+        while (queue.Count > 0)
+        {
+            var (name, dist) = queue.Dequeue();
+            if (!visited.Add(name))
+                continue;
+
+            var kind = await Repo.GetKind(name);
+            if (kind is null)
+                continue;
+
+            kind = kind.Trim().ToLowerInvariant();
+
+            if (!byDistance.TryGetValue(dist, out var list))
+            {
+                list = new List<(string, string)>();
+                byDistance[dist] = list;
+            }
+
+            list.Add((name, kind));
+
+            if (kind == "system")
+            {
+                var res = await Repo.GetByNameAsync(name);
+                foreach (var parent in (res?.RunsOn ?? Enumerable.Empty<string>())
+                         .Where(x => !string.IsNullOrWhiteSpace(x))
+                         .Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    queue.Enqueue((parent, dist + 1));
+                }
+            }
+        }
+
+        return byDistance;
+    }
+
     private void AddLevel(params Breadcrumb[] items)
-        => Levels.Add(items.ToList());
+        => AddLevel((IEnumerable<Breadcrumb>)items);
 
     private void AddLevel(IEnumerable<Breadcrumb> items)
     {
         var list = items.ToList();
         if (list.Count > 0)
             Levels.Add(list);
-    }
-
-    private async Task BuildSystem(string systemName)
-    {
-        var system = await Repo.GetByNameAsync(systemName);
-
-        var hwParents = (system?.RunsOn ?? new List<string>())
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Select(hw => new Breadcrumb(hw, $"resources/hardware/{Uri.EscapeDataString(hw)}"))
-            .OrderBy(b => b.Label, StringComparer.OrdinalIgnoreCase);
-
-        AddLevel(hwParents);
-
-        AddLevel(new Breadcrumb(systemName, $"resources/systems/{Uri.EscapeDataString(systemName)}"));
-    }
-
-    private async Task BuildService(string serviceName)
-    {
-        var service = await Repo.GetByNameAsync(serviceName);
-
-        var systemParents = (service?.RunsOn ?? new List<string>())
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-        
-        var hwSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var sysName in systemParents)
-        {
-            var sys = await Repo.GetByNameAsync(sysName);
-            if (sys?.RunsOn is { Count: > 0 })
-            {
-                foreach (var hw in sys.RunsOn.Where(x => !string.IsNullOrWhiteSpace(x)))
-                    hwSet.Add(hw);
-            }
-        }
-
-        var hwParents = hwSet
-            .Select(hw => new Breadcrumb(hw, $"resources/hardware/{Uri.EscapeDataString(hw)}"))
-            .OrderBy(b => b.Label, StringComparer.OrdinalIgnoreCase);
-
-        var sysCrumbs = systemParents
-            .Select(sys => new Breadcrumb(sys, $"resources/systems/{Uri.EscapeDataString(sys)}"))
-            .OrderBy(b => b.Label, StringComparer.OrdinalIgnoreCase);
-
-        AddLevel(hwParents);
-        AddLevel(sysCrumbs);
-
-        AddLevel(new Breadcrumb(serviceName, $"resources/services/{Uri.EscapeDataString(serviceName)}"));
     }
 
     public record Breadcrumb(string Label, string Href);

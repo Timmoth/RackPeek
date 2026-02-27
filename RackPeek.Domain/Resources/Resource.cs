@@ -13,6 +13,30 @@ namespace RackPeek.Domain.Resources;
 
 public abstract class Resource
 {
+    private static readonly string[] HardwareTypes =
+        ["server", "switch", "firewall", "router", "accesspoint", "desktop", "laptop", "ups"];
+    
+    public static bool IsHardware(string kind) => HardwareTypes.Contains(kind.Trim().ToLower());
+        
+    public static string GetResourceUrl(string kind, string name)
+    {
+        var encoded = Uri.EscapeDataString(name);
+
+        kind = kind.Trim().ToLower();
+        if (IsHardware(kind))
+        {
+            return $"resources/hardware/{encoded}";
+        }else if (kind == "system")
+        {
+            return $"resources/systems/{encoded}";
+        }else if (kind == "service")
+        {
+            return $"resources/services/{encoded}";
+        }
+
+        return "#";
+    }
+    
     private static readonly Dictionary<string, string> KindToPluralDictionary = new()
     {
         { "hardware", "hardware" },

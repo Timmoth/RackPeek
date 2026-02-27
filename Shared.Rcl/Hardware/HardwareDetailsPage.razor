@@ -94,15 +94,12 @@
             </div>
         }
 
-<!---
-TODO: Figure out how lists work
         <div class="m-4">
             <AddResourceComponent TResource="SystemResource"
                                   Placeholder="System name"
                                   OnCreated="NavigateToNewResource"
-                                  RunsOn="@HardwareName"/>
+                                  RunsOn="@(new List<string>(){HardwareName})"/>
         </div>
---->
     }
 </div>
 
