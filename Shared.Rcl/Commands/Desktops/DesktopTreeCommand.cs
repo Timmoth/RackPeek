@@ -19,7 +19,7 @@ public sealed class DesktopTreeCommand(GetHardwareSystemTreeUseCase useCase)
         foreach (var system in tree.Systems)
         {
             var systemNode = root.AddNode($"[green]System:[/] {system.System.Name}");
-            foreach (var service in system.Services)
+            foreach (var service in system.ChildResources)
                 systemNode.AddNode($"[green]Service:[/] {service.Name}");
         }
 

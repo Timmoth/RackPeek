@@ -3,5 +3,6 @@
   "install-guide.md",
   "ansible-generator-guide.md",
   "cli-commands.md",
-  "cli-commands-index.md"
+  "cli-commands-index.md",
+  "versioning.md"
 ]

@@ -1,0 +1,191 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources.Hardware
+@using RackPeek.Domain.Resources.SystemResources
+@inject IResourceCollection Repo
+
+@if (IsOpen)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/70" @onclick="Cancel"></div>
+
+        <!-- Modal -->
+        <div class="relative bg-zinc-900 border border-zinc-800 rounded w-full max-w-lg p-4">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-zinc-100 text-sm font-medium">
+                    @Title
+                </div>
+
+                <button class="text-zinc-400 hover:text-zinc-200" @onclick="Cancel">
+                    ✕
+                </button>
+            </div>
+
+            <EditForm Model="_model" OnValidSubmit="HandleAccept">
+                <DataAnnotationsValidator />
+
+                <div class="space-y-3 text-sm">
+                    <!-- Search -->
+                    <div>
+                        <InputText class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                   placeholder="Search hardware or systems…"
+                                   Value="@_search"
+                                   ValueChanged="OnSearchChanged"
+                                   ValueExpression="() => _search"
+                                   @oninput="OnSearchInput" />
+                    </div>
+
+                    <!-- Selection -->
+                    <div>
+                        <InputSelect class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                     @bind-Value="_model.Value">
+                            <option value="">Select hardware or system…</option>
+
+                            @foreach (var group in FilteredItems)
+                            {
+                                <optgroup label="@group.Key">
+                                    @foreach (var item in group.Value)
+                                    {
+                                        <option value="@item.Value">@item.Label</option>
+                                    }
+                                </optgroup>
+                            }
+                        </InputSelect>
+
+                        @* Optional helper text *@
+                        @if (!string.IsNullOrWhiteSpace(_model.Value) && _lookup.TryGetValue(_model.Value!, out var selected))
+                        {
+                            <div class="mt-2 text-xs text-zinc-400">
+                                Selected: <span class="text-zinc-200">@selected.Type</span>
+                                <span class="text-zinc-600">•</span>
+                                <span>@selected.Group</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end items-center mt-5 gap-2">
+                    <button type="button"
+                            class="px-3 py-1 rounded border border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                            @onclick="Cancel">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="px-3 py-1 rounded bg-emerald-600 text-black hover:bg-emerald-500"
+                            disabled="@(!CanAccept)">
+                        Accept
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    /* ---------- Parameters ---------- */
+
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public string Title { get; set; } = "Select hardware or system";
+
+    [Parameter] public string? Value { get; set; }
+    
+    [Parameter] public EventCallback<string?> OnAccept { get; set; }
+    
+    private SelectionFormModel _model = new();
+    private string _search = string.Empty;
+
+    private List<SelectionItem> _items = new();
+
+    private Dictionary<string, SelectionItem> _lookup = new();
+
+    private bool CanAccept => !string.IsNullOrWhiteSpace(_model.Value);
+
+    /* ---------- Lifecycle ---------- */
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!IsOpen) return;
+
+        // Load both sets
+        var hardware = (await Repo.GetAllOfTypeAsync<Hardware>())
+            .Select(h => SelectionItem.Hardware(h.Name, h.Kind))
+            .ToList();
+
+        var systems = (await Repo.GetAllOfTypeAsync<SystemResource>())
+            .Select(s => SelectionItem.System(s.Name, string.IsNullOrWhiteSpace(s.Type) ? "System" : s.Type!))
+            .ToList();
+
+        _items = hardware
+            .Concat(systems)
+            .OrderBy(i => i.TypeSort)
+            .ThenBy(i => i.Group)
+            .ThenBy(i => i.Label)
+            .ToList();
+
+        _lookup = _items.ToDictionary(i => i.Value, i => i);
+
+        _model = new SelectionFormModel { Value = Value };
+        _search = string.Empty;
+    }
+    
+    private IReadOnlyDictionary<string, List<SelectionItem>> FilteredItems =>
+        _items
+            .Where(i =>
+                string.IsNullOrWhiteSpace(_search) ||
+                i.Label.Contains(_search.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                i.Group.Contains(_search.Trim(), StringComparison.OrdinalIgnoreCase))
+            .GroupBy(i => $"{i.Type} — {i.Group}")
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderBy(i => i.Label).ToList());
+    
+    private async Task HandleAccept()
+    {
+        await OnAccept.InvokeAsync(_model.Value);
+        await Close();
+    }
+
+    private async Task Cancel() => await Close();
+
+    private async Task Close()
+    {
+        _model = new SelectionFormModel();
+        _search = string.Empty;
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private void OnSearchChanged(string? value) => _search = value ?? string.Empty;
+
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        _search = e.Value?.ToString() ?? string.Empty;
+
+        if (FilteredItems.SelectMany(g => g.Value).All(i => i.Value != _model.Value))
+            _model.Value = null;
+    }
+    
+    private sealed class SelectionFormModel
+    {
+        [Required] public string? Value { get; set; }
+    }
+    
+    private sealed record SelectionItem(
+        string Type,
+        string Group,
+        string Label,
+        string Value,
+        int TypeSort)
+    {
+        public static SelectionItem Hardware(string name, string kind) =>
+            new("Hardware", kind, name, $"{name}", 0);
+
+        public static SelectionItem System(string name, string category) =>
+            new("System", category, name, $"{name}", 1);
+    }
+}

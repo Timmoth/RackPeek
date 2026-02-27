@@ -39,6 +39,13 @@ public sealed class YamlResourceCollection(
             r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
     }
 
+    public Task<string?> GetKind(string? name)
+    {
+        return Task.FromResult(resourceCollection.Resources.FirstOrDefault(r =>
+            r.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Kind);
+        
+    }
+
     public Task<Dictionary<string, int>> GetTagsAsync()
     {
         var result = resourceCollection.Resources

@@ -112,4 +112,75 @@ public class SystemWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
 
                      """, output);
     }
+    
+    [Fact]
+public async Task systems_cli_workflow_runs_on_hardware_and_systems_test()
+{
+    await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
+
+    // Create hardware (server)
+    await ExecuteAsync("servers", "add", "proxmox-node01");
+
+    // Add first system
+    var (output, yaml) = await ExecuteAsync("systems", "add", "sys01");
+    Assert.Equal("System 'sys01' added.\n", output);
+    Assert.Contains("name: sys01", yaml);
+
+    // Set sys01 to run on the created hardware
+    (output, yaml) = await ExecuteAsync(
+        "systems", "set", "sys01",
+        "--type", "VM",
+        "--os", "debian-12",
+        "--cores", "2",
+        "--ram", "4",
+        "--runs-on", "proxmox-node01"
+    );
+    Assert.Equal("System 'sys01' updated.\n", output);
+
+    // Add second system
+    (output, yaml) = await ExecuteAsync("systems", "add", "sys02");
+    Assert.Equal("System 'sys02' added.\n", output);
+    Assert.Contains("name: sys02", yaml);
+
+    // Set sys02 to run on BOTH: hardware + sys01
+    // NOTE: '--runs-on' accepts multiple values via repeated options.
+    (output, yaml) = await ExecuteAsync(
+        "systems", "set", "sys02",
+        "--type", "VM",
+        "--os", "debian-12",
+        "--cores", "4",
+        "--ram", "8",
+        "--runs-on", "proxmox-node01",
+        "--runs-on", "sys01"
+    );
+    Assert.Equal("System 'sys02' updated.\n", output);
+
+    outputHelper.WriteLine(yaml);
+
+    // Assert resulting YAML
+    Assert.Equal("""
+                 version: 2
+                 resources:
+                 - kind: Server
+                   name: proxmox-node01
+                 - kind: System
+                   type: vm
+                   os: debian-12
+                   cores: 2
+                   ram: 4
+                   name: sys01
+                   runsOn:
+                   - proxmox-node01
+                 - kind: System
+                   type: vm
+                   os: debian-12
+                   cores: 4
+                   ram: 8
+                   name: sys02
+                   runsOn:
+                   - proxmox-node01
+                   - sys01
+
+                 """, yaml);
+}
 }

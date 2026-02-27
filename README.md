@@ -78,6 +78,9 @@ volumes:
 * 
   [**CLI Commands Reference**](https://timmoth.github.io/RackPeek/docs/cli-commands)
 
+* 
+  [**Versioning**](https://timmoth.github.io/RackPeek/docs/versioning)
+
 
 ## POST V1.0.0 Roadmap
 - Support for IoT and networked devices

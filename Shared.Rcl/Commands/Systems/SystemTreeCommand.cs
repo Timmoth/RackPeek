@@ -15,7 +15,7 @@ public sealed class SystemTreeCommand(GetSystemServiceTreeUseCase useCase) : Asy
 
         var root = new Tree($"[bold]{tree.System.Name}[/]");
 
-        foreach (var system in tree.Services)
+        foreach (var system in tree.ChildResources)
         {
             var systemNode = root.AddNode($"[green]Service:[/] {system.Name}");
         }

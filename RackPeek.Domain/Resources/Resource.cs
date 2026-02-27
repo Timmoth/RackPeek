@@ -79,6 +79,10 @@ public abstract class Resource
         // System -> Hardware
         if (childKind == "system" && parent is Hardware.Hardware)
             return true;
+        
+        // System -> System
+        if (childKind == "system" && parent is SystemResource)
+            return true;
 
         return false;
     }
