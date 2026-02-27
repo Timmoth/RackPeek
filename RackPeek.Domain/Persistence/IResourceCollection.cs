@@ -26,6 +26,10 @@ public interface IResourceCollection
     Task LoadAsync(); // required for WASM startup
     Task<IReadOnlyList<Resource>> GetByTagAsync(string name);
     public Task<Dictionary<string, int>> GetTagsAsync();
+    
+    Task<IReadOnlyList<(Resource, string)>> GetByLabelAsync(string name);
+    public Task<Dictionary<string, int>> GetLabelsAsync();
+    
 
     Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>();
     Task<IReadOnlyList<Resource>> GetDependantsAsync(string name);

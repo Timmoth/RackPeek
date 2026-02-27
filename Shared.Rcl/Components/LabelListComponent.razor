@@ -1,0 +1,50 @@
+﻿@using RackPeek.Domain.Persistence
+@inject IResourceCollection LabelRepository
+
+<div>
+    <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
+        Labels
+    </div>
+
+    @if (_labels is null)
+    {
+        <div class="text-zinc-500">loading labels…</div>
+    }
+    else if (_labels.Count == 0)
+    {
+        <div class="text-zinc-500">no labels found</div>
+    }
+    else
+    {
+        <ul class="space-y-3">
+            <li>
+                <div class="text-zinc-100">
+                    ├─ Labels (@_labels.Count)
+                </div>
+
+                <ul class="ml-4 mt-2 border-l border-zinc-800 pl-4 space-y-1">
+                    @foreach (var (label, count) in _labels
+                                  .OrderByDescending(x => x.Value)
+                                  .ThenBy(x => x.Key))
+                    {
+                        <li class="text-zinc-500 hover:text-emerald-300 transition">
+                            <NavLink href="@($"labels/{Uri.EscapeDataString(label)}")"
+                                     class="block">
+                                └─ @label (@count)
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+            </li>
+        </ul>
+    }
+</div>
+
+@code {
+    private Dictionary<string, int>? _labels;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _labels = await LabelRepository.GetLabelsAsync();
+    }
+}
