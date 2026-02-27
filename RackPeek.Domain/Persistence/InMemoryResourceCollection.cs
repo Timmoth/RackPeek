@@ -96,6 +96,41 @@ public sealed class InMemoryResourceCollection(IEnumerable<Resource>? seed = nul
         }
     }
 
+    public Task<IReadOnlyList<(Resource, string)>> GetByLabelAsync(string name)
+    {
+        lock (_lock)
+        {
+            var result = _resources
+                .Select(r =>
+                {
+                    if (r.Labels != null && r.Labels.TryGetValue(name, out var value))
+                        return (found: true, pair: (r, value));
+
+                    return (found: false, pair: default);
+                })
+                .Where(x => x.found)
+                .Select(x => x.pair)
+                .ToList()
+                .AsReadOnly();
+
+            return Task.FromResult<IReadOnlyList<(Resource, string)>>(result);
+        }
+    }
+
+    public Task<Dictionary<string, int>> GetLabelsAsync()
+    {
+        lock (_lock)
+        {
+            var result = _resources
+                .SelectMany(r => r.Labels ?? Enumerable.Empty<KeyValuePair<string, string>>())
+                .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
+                .GroupBy(kvp => kvp.Key)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            return Task.FromResult(result);
+        }
+    }
+
     public Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>()
     {
         lock (_lock)

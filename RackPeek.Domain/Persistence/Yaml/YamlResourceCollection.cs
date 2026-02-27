@@ -45,7 +45,26 @@ public sealed class YamlResourceCollection(
             r.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Kind);
         
     }
+    public Task<IReadOnlyList<(Resource, string)>> GetByLabelAsync(string name)
+    {
+        var result = resourceCollection.Resources
+            .Where(r => r.Labels != null && r.Labels.TryGetValue(name, out _))
+            .Select(r => (r, r.Labels![name]))
+            .ToList()
+            .AsReadOnly();
 
+        return Task.FromResult<IReadOnlyList<(Resource, string)>>(result);
+    }
+    public Task<Dictionary<string, int>> GetLabelsAsync()
+    {
+        var result = resourceCollection.Resources
+            .SelectMany(r => r.Labels ?? Enumerable.Empty<KeyValuePair<string, string>>())
+            .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
+            .GroupBy(kvp => kvp.Key)
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        return Task.FromResult(result);
+    }
     public Task<Dictionary<string, int>> GetTagsAsync()
     {
         var result = resourceCollection.Resources
