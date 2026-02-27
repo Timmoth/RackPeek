@@ -15,9 +15,19 @@ RackPeek is a lightweight, opinionated CLI tool / webui for documenting and mana
 
 It helps you track hardware, services, networks, and their relationships in a clear, scriptable, and reusable way without enterprise bloat or proprietary lock-in or drowning in unnecessary metadata or process.
 
+## Roadmap
+- Proxmox config / auto system creation
+- docker-gen ingestion / auto service creation
+- Support for IoT and networked devices (amongst other new hardware types)
+- Enhanced networking and port mapping
+- Git integration (version-controlled, shared configuration)
+- Diagramming tools
 
-[![DB Tech — Finally Document Your Home Lab the Easy Way (Docker Install)](https://img.shields.io/badge/DB%20Tech%20[video]-Finally%20Document%20Your%20Home%20Lab%20the%20Easy%20Way%20(Docker%20Install)-blue?style=for-the-badge)](https://www.youtube.com/watch?v=RJtMO8kIsqU)
-[![Brandon Lee — I’m Documenting My Entire Home Lab as Code with RackPeek](https://img.shields.io/badge/Brandon%20Lee%20[article]-I%E2%80%99m%20Documenting%20My%20Entire%20Home%20Lab%20as%20Code%20with%20RackPeek-blue?style=for-the-badge)](https://www.virtualizationhowto.com/2026/02/im-documenting-my-entire-home-lab-as-code-with-rackpeek/)
+### The roadmap for the next wave of features is actively being discussed, please make your voice heard! 
+
+[![DB Tech — Finally Document Your Home Lab the Easy Way (Docker Install)](https://img.shields.io/badge/DB%20Tech%20[video]-Finally%20Document%20Your%20Home%20Lab%20the%20Easy%20Way-blue?style=for-the-badge)](https://www.youtube.com/watch?v=RJtMO8kIsqU)
+[![Brandon Lee — I’m Documenting My Entire Home Lab as Code \[video\]](https://img.shields.io/badge/Brandon%20Lee%20\[video\]-I%E2%80%99m%20Documenting%20My%20Entire%20Home%20Lab%20as%20Code-blue?style=for-the-badge)](https://www.youtube.com/watch?v=wY1DgT3GD6U)
+[![Brandon Lee — I’m Documenting My Entire Home Lab](https://img.shields.io/badge/Brandon%20Lee%20[article]-I%E2%80%99m%20Documenting%20My%20Entire%20Home%20Lab%20as%20Code-blue?style=for-the-badge)](https://www.virtualizationhowto.com/2026/02/im-documenting-my-entire-home-lab-as-code-with-rackpeek/)
 [![Jared Heinrichs — How to Document Your Entire Homelab](https://img.shields.io/badge/Jared%20Heinrichs%20[article]-How%20to%20Document%20Your%20Entire%20Homelab-blue?style=for-the-badge)](https://jaredheinrichs.substack.com/p/how-to-document-your-entire-homelab)
 
 
@@ -81,14 +91,6 @@ volumes:
 * 
   [**Versioning**](https://timmoth.github.io/RackPeek/docs/versioning)
 
-
-## POST V1.0.0 Roadmap
-- Support for IoT and networked devices
-- Enhanced networking and port mapping
-- Git integration (version-controlled, shared configuration)
-- Diagramming tools
-- Ansible inventory generator
-### The roadmap for the next wave of features is actively being discussed, please make your voice heard! 
 
 ## Contribution Guide
 
