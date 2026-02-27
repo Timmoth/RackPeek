@@ -15,8 +15,12 @@ public abstract class Resource
 {
     private static readonly string[] HardwareTypes =
         ["server", "switch", "firewall", "router", "accesspoint", "desktop", "laptop", "ups"];
-    
-    public static bool IsHardware(string kind) => HardwareTypes.Contains(kind.Trim().ToLower());
+
+    public static bool IsHardware(string kind)
+    {
+        kind = kind.Trim().ToLower();
+        return kind == "hardware" || HardwareTypes.Contains(kind);
+    } 
         
     public static string GetResourceUrl(string kind, string name)
     {

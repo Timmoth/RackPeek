@@ -19,6 +19,8 @@
 @code {
     [Parameter, EditorRequired] 
     public ResourceType ResourceType { get; set; }
+    
+    public string Kind { get; set; }
 
     [Parameter, EditorRequired] 
     public string ResourceName { get; set; } = default!;
@@ -27,6 +29,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        Kind = await Repo.GetKind(ResourceName) ?? "";
         Levels.Clear();
 
         switch (ResourceType)
@@ -34,6 +37,7 @@
             case ResourceType.Hardware:
                 AddLevel(new Breadcrumb(
                     ResourceName,
+                    Kind,
                     Resource.GetResourceUrl("hardware", ResourceName)));
                 break;
 
@@ -58,6 +62,7 @@
 
         AddLevel(new Breadcrumb(
             name,
+            kind,
             Resource.GetResourceUrl(kind, name)));
     }
 
@@ -72,6 +77,7 @@
                 .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
                 .Select(x => new Breadcrumb(
                     x.Name,
+                    x.Kind,
                     Resource.GetResourceUrl(x.Kind, x.Name)));
 
             var systems = items
@@ -79,6 +85,7 @@
                 .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
                 .Select(x => new Breadcrumb(
                     x.Name,
+                    x.Kind,
                     Resource.GetResourceUrl(x.Kind, x.Name)));
 
             AddLevel(hardware);
@@ -145,5 +152,5 @@
             Levels.Add(list);
     }
 
-    public record Breadcrumb(string Label, string Href);
+    public record Breadcrumb(string Label, string Kind, string Href);
 }
