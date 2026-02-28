@@ -65,6 +65,100 @@ public sealed class YamlResourceCollection(
 
         return Task.FromResult(result);
     }
+    public Task<IReadOnlyList<(Resource, string)>> GetResourceIpsAsync()
+    {
+        var result = new List<(Resource, string)>();
+
+        var allResources = resourceCollection.Resources;
+
+        // Build fast lookup for systems
+        var systemsByName = allResources
+            .OfType<SystemResource>()
+            .ToDictionary(s => s.Name, StringComparer.OrdinalIgnoreCase);
+
+        // Cache resolved system IPs (prevents repeated recursion)
+        var resolvedSystemIps = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var resource in allResources)
+        {
+            switch (resource)
+            {
+                case SystemResource system:
+                {
+                    var ip = ResolveSystemIp(system, systemsByName, resolvedSystemIps);
+                    if (!string.IsNullOrWhiteSpace(ip))
+                        result.Add((system, ip));
+                    break;
+                }
+
+                case Service service:
+                {
+                    var ip = ResolveServiceIp(service, systemsByName, resolvedSystemIps);
+                    if (!string.IsNullOrWhiteSpace(ip))
+                        result.Add((service, ip));
+                    break;
+                }
+            }
+        }
+
+        return Task.FromResult((IReadOnlyList<(Resource, string)>)result);
+    }
+    private string? ResolveSystemIp(
+        SystemResource system,
+        Dictionary<string, SystemResource> systemsByName,
+        Dictionary<string, string?> cache)
+    {
+        // Return cached result if already resolved
+        if (cache.TryGetValue(system.Name, out var cached))
+            return cached;
+
+        // Direct IP wins
+        if (!string.IsNullOrWhiteSpace(system.Ip))
+        {
+            cache[system.Name] = system.Ip;
+            return system.Ip;
+        }
+
+        // Must have exactly one parent
+        if (system.RunsOn?.Count != 1)
+        {
+            cache[system.Name] = null;
+            return null;
+        }
+
+        var parentName = system.RunsOn.First();
+
+        if (!systemsByName.TryGetValue(parentName, out var parent))
+        {
+            cache[system.Name] = null;
+            return null;
+        }
+
+        var resolved = ResolveSystemIp(parent, systemsByName, cache);
+        cache[system.Name] = resolved;
+
+        return resolved;
+    }
+    private string? ResolveServiceIp(
+        Service service,
+        Dictionary<string, SystemResource> systemsByName,
+        Dictionary<string, string?> cache)
+    {
+        // Direct IP wins
+        if (!string.IsNullOrWhiteSpace(service.Network?.Ip))
+            return service.Network!.Ip;
+
+        // Must have exactly one parent
+        if (service.RunsOn?.Count != 1)
+            return null;
+
+        var parentName = service.RunsOn.First();
+
+        if (!systemsByName.TryGetValue(parentName, out var parent))
+            return null;
+
+        return ResolveSystemIp(parent, systemsByName, cache);
+    }
     public Task<Dictionary<string, int>> GetTagsAsync()
     {
         var result = resourceCollection.Resources

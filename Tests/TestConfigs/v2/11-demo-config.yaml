@@ -317,6 +317,7 @@ resources:
     os: proxmox
     cores: 16
     ram: 128
+    ip: 10.0.20.10
     drives:
       - size: 1024
       - size: 1024

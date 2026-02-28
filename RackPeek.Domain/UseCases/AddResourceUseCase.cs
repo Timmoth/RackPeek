@@ -23,7 +23,6 @@ public class AddResourceUseCase<T>(IResourceCollection repo) : IAddResourceUseCa
 
         if (runsOn != null)
         {
-
             foreach (var parent in runsOn) {
                 var normalizedParent = Normalize.HardwareName(parent);
                 ThrowIfInvalid.ResourceName(normalizedParent);

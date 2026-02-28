@@ -23,4 +23,6 @@ public class SystemResource : Resource, IDriveResource
     public int? Cores { get; set; }
     public double? Ram { get; set; }
     public List<Drive>? Drives { get; set; }
+    
+    public string? Ip { get; set; }
 }

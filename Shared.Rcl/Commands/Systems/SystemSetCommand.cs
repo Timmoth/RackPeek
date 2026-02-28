@@ -20,6 +20,10 @@ public class SystemSetSettings : ServerNameSettings
     [CommandOption("--runs-on <RUNSON>")]
     [Description("The physical machine(s) the service is running on.")]
     public string[]? RunsOn { get; set; }
+    
+    [CommandOption("--ip")]
+    [Description("The ip address of the system.")]
+    public string? Ip { get; set; }
 }
 
 public class SystemSetCommand(
@@ -40,6 +44,7 @@ public class SystemSetCommand(
             settings.Os,
             settings.Cores,
             settings.Ram,
+            settings.Ip,
             settings.RunsOn?.ToList()
         );
 

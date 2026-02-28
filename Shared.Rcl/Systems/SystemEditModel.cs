@@ -14,6 +14,7 @@ public sealed class SystemEditModel
             : value.Trim().ToLowerInvariant();
     }
     
+    public string? Ip { get; set; }
     public string? Os { get; set; }
     public int? Cores { get; set; }
     public double? Ram { get; set; }
@@ -29,6 +30,7 @@ public sealed class SystemEditModel
             Os = system.Os,
             Cores = system.Cores,
             Ram = system.Ram,
+            Ip = system.Ip,
             RunsOn = system.RunsOn,
             Notes = system.Notes
         };

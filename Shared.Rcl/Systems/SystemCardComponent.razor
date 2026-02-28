@@ -168,6 +168,27 @@
             }
         </div>
 
+        <!-- IP -->
+        <div>
+            <div class="text-zinc-400 mb-1">IP Address</div>
+            @if (_isEditing)
+            {
+                <input class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
+                       data-testid="system-ip-input"
+                       @bind="_edit.Ip" />
+            }
+            else if (!string.IsNullOrWhiteSpace(EffectiveIp))
+            {
+                <div class="text-zinc-300">
+                    @EffectiveIp
+                    @if (string.IsNullOrWhiteSpace(System.Ip))
+                    {
+                        <span class="text-zinc-500 text-xs ml-2">(inherited)</span>
+                    }
+                </div>
+            }
+        </div>
+        
         <!-- Runs On -->
         <div class="text-sm">
             <div class="text-zinc-400 mb-1">
@@ -341,6 +362,7 @@
     protected override async Task OnParametersSetAsync()
     {
         await RefreshParentKinds();
+        await ResolveEffectiveIp();
     }
     
     private async Task RefreshParentKinds()
@@ -375,6 +397,7 @@
     var os    = _isEditing ? _edit.Os    : System.Os;
     var cores = _isEditing ? _edit.Cores : System.Cores;
     var ram   = _isEditing ? _edit.Ram   : System.Ram;
+    var ip    = _isEditing ? _edit.Ip    : System.Ip;
     var notes = _isEditing ? _edit.Notes : System.Notes;
 
     await UpdateUseCase.ExecuteAsync(
@@ -383,6 +406,7 @@
         os,
         cores,
         ram,
+        ip,
         runsOn,
         notes);
 
@@ -411,6 +435,7 @@ async Task HandleParentDeleted(string? name)
     var os    = _isEditing ? _edit.Os    : System.Os;
     var cores = _isEditing ? _edit.Cores : System.Cores;
     var ram   = _isEditing ? _edit.Ram   : System.Ram;
+    var ip    = _isEditing ? _edit.Ip    : System.Ip;
     var notes = _isEditing ? _edit.Notes : System.Notes;
 
     await UpdateUseCase.ExecuteAsync(
@@ -419,6 +444,7 @@ async Task HandleParentDeleted(string? name)
         os,
         cores,
         ram,
+        ip,
         runsOn,
         notes);
 
@@ -550,4 +576,43 @@ async Task HandleParentDeleted(string? name)
         Nav.NavigateTo($"resources/systems/{Uri.EscapeDataString(newName)}");
     }
 
+}
+
+@code{
+
+    private string? EffectiveIp;
+
+    private async Task ResolveEffectiveIp()
+    {
+        // If system has its own IP, use it
+        if (!string.IsNullOrWhiteSpace(System.Ip))
+        {
+            EffectiveIp = System.Ip;
+            return;
+        }
+
+        // Must have exactly one parent
+        if (System.RunsOn?.Count != 1)
+        {
+            EffectiveIp = null;
+            return;
+        }
+
+        var parentName = System.RunsOn.First();
+
+        // Must be a system
+        if (!_parentKinds.TryGetValue(parentName, out var kind) ||
+            kind?.ToLower() != "system")
+        {
+            EffectiveIp = null;
+            return;
+        }
+
+        // Load parent system
+        var parent = await GetByNameUseCase.ExecuteAsync(parentName);
+
+        EffectiveIp = string.IsNullOrWhiteSpace(parent?.Ip)
+            ? null
+            : parent.Ip;
+    }
 }

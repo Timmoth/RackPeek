@@ -1,8 +1,10 @@
+@using RackPeek.Domain.Resources.SystemResources
 @inject UpdateServiceUseCase UpdateUseCase
 @inject IGetResourceByNameUseCase<Service> GetByNameUseCase
 @inject IDeleteResourceUseCase<Service> DeleteUseCase
 @inject ICloneResourceUseCase<Service> CloneUseCase
 @inject IRenameResourceUseCase<Service> RenameUseCase
+@inject IGetResourceByNameUseCase<SystemResource> GetSystemByNameUseCase
 @inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900"
@@ -82,11 +84,16 @@
                    border border-zinc-600"
                     @bind="_edit.Ip"/>
             }
-            else if (!string.IsNullOrWhiteSpace(Service.Network?.Ip))
+            else if (!string.IsNullOrWhiteSpace(EffectiveIp))
             {
                 <div class="text-zinc-300"
                      data-testid="service-ip-value">
-                    @Service.Network!.Ip
+                    @EffectiveIp
+
+                    @if (string.IsNullOrWhiteSpace(Service.Network?.Ip))
+                    {
+                        <span class="text-zinc-500 text-xs ml-2">(inherited)</span>
+                    }
                 </div>
             }
         </div>
@@ -333,8 +340,10 @@
             _edit.RunsOn,
             _edit.Notes
         );
-
+        
         await OnSave.InvokeAsync(Service.Name);
+        await ResolveEffectiveIp();
+
     }
 
     void Cancel()
@@ -444,7 +453,7 @@
 
     private string? GetBrowsableHref()
     {
-        var ip = Service.Network?.Ip;
+        var ip = Service.Network?.Ip ?? EffectiveIp;
         var port = Service.Network?.Port;
 
         if (string.IsNullOrWhiteSpace(ip) || port is null)
@@ -462,5 +471,41 @@
         // Build a correct absolute URL
         var ub = new UriBuilder(scheme, ip) { Port = port.Value };
         return ub.Uri.ToString();
+    }
+}
+
+@code
+{
+    private string? EffectiveIp;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ResolveEffectiveIp();
+    }
+
+    private async Task ResolveEffectiveIp()
+    {
+        // If service has its own IP, use it
+        if (!string.IsNullOrWhiteSpace(Service.Network?.Ip))
+        {
+            EffectiveIp = Service.Network!.Ip;
+            return;
+        }
+
+        // Must have exactly one parent
+        if (Service.RunsOn?.Count != 1)
+        {
+            EffectiveIp = null;
+            return;
+        }
+
+        var parentName = Service.RunsOn.First();
+
+        // Load parent system
+        var parent = await GetSystemByNameUseCase.ExecuteAsync(parentName);
+
+        EffectiveIp = string.IsNullOrWhiteSpace(parent?.Ip)
+            ? null
+            : parent.Ip;
     }
 }

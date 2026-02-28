@@ -10,6 +10,7 @@ resources:
     os: ubuntu-22.04
     cores: 4
     ram: 8
+    ip: 10.0.20.10
     drives:
       - size: 128
       - size: 256
