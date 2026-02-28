@@ -39,13 +39,14 @@ public class Program
         var yamlDir = builder.Configuration.GetValue<string>("RPK_YAML_DIR") ?? "config";
         var yamlFilePath = $"{yamlDir}/config.yaml";
         builder.Services.AddScoped<RackPeekConfigMigrationDeserializer>();
-
+        builder.Services.AddScoped<IResourceYamlMigrationService, ResourceYamlMigrationService>();
+        
         builder.Services.AddScoped<IResourceCollection>(sp =>
             new YamlResourceCollection(
                 yamlFilePath,
                 sp.GetRequiredService<ITextFileStore>(),
                 sp.GetRequiredService<ResourceCollection>(),
-                sp.GetRequiredService<RackPeekConfigMigrationDeserializer>()));
+                sp.GetRequiredService<IResourceYamlMigrationService>()));
 
         builder.Services.AddYamlRepos();
         builder.Services.AddCommands();
