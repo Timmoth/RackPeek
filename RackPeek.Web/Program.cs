@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using RackPeek.Domain;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
+using RackPeek.Web.Api;
 using RackPeek.Web.Components;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -91,11 +92,15 @@ public class Program
             app.UseHsts();
         }
 
-        app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+        app.UseWhen(
+            context => !context.Request.Path.StartsWithSegments("/api"),
+            appBuilder => appBuilder.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true));
         app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         app.UseAntiforgery();
+
+        app.MapInventoryApi();
 
         app.MapStaticAssets();
 

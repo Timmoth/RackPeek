@@ -17,6 +17,7 @@
         <PackageReference Include="Spectre.Console.Testing" Version="0.54.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.3"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.3"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -25,6 +26,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj"/>
+        <ProjectReference Include="..\RackPeek.Web\RackPeek.Web.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
