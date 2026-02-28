@@ -1,0 +1,305 @@
+﻿@page "/yaml/import"
+<PageTitle>Yaml Import</PageTitle>
+
+@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Persistence.Yaml
+@using RackPeek.Domain.Resources
+@using YamlDotNet.Serialization
+@using YamlDotNet.Serialization.NamingConventions
+
+@inject IResourceCollection Resources
+@inject IResourceYamlMigrationService MigrationService
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900 mt-6">
+
+    <div class="text-zinc-100 mb-3">
+        Import YAML
+    </div>
+
+    <!-- Mode selector -->
+    <div class="mb-4 flex gap-6 text-xs">
+
+        <label class="flex items-start gap-2 cursor-pointer">
+            <input type="radio"
+                   name="mergeMode"
+                   checked="@(_mode == MergeMode.Merge)"
+                   @onchange="() => OnModeChanged(MergeMode.Merge)" />
+
+            <div>
+                <div class="text-emerald-400">Merge</div>
+                <div class="text-zinc-500">
+                    Update matching resources. Properties not specified remain unchanged.
+                </div>
+            </div>
+        </label>
+
+        <label class="flex items-start gap-2 cursor-pointer">
+            <input type="radio"
+                   name="mergeMode"
+                   checked="@(_mode == MergeMode.Replace)"
+                   @onchange="() => OnModeChanged(MergeMode.Replace)" />
+
+            <div>
+                <div class="text-red-400">Replace</div>
+                <div class="text-zinc-500">
+                    Completely replace matching resources.
+                </div>
+            </div>
+        </label>
+
+    </div>
+
+    <!-- YAML Input -->
+    <textarea class="w-full input font-mono text-xs mb-3"
+              style="min-height: 18rem"
+              placeholder="Paste YAML here..."
+              @bind="_inputYaml"
+              @bind:event="oninput"
+              @bind:after="ComputeDiff">
+    </textarea>
+
+    @if (!string.IsNullOrEmpty(_validationError))
+    {
+        <div class="text-red-400 text-xs mb-3">
+            @_validationError
+        </div>
+    }
+
+    <!-- Apply -->
+    <div class="flex gap-3 text-xs mb-4">
+        <button class="text-amber-400 hover:text-amber-300 disabled:opacity-40"
+                disabled="@(!_isValid)"
+                @onclick="Apply">
+            Apply
+        </button>
+    </div>
+
+    <!-- Summary + Diff -->
+    @if (_isValid)
+    {
+        <div class="mt-4 text-xs">
+
+            <div class="mb-2 text-zinc-400">
+                Import Summary
+            </div>
+
+            @if (!_added.Any() && !_updated.Any() && !_replaced.Any())
+            {
+                <div class="text-zinc-500 italic mt-2">
+                    No changes detected.
+                </div>
+            }
+
+            @if (_added.Any())
+            {
+                <div class="text-emerald-400 mb-2">
+                    + @_added.Count added
+                </div>
+
+                @foreach (var name in _added)
+                {
+                    <div class="ml-4 text-zinc-300 mb-4">
+                        <div class="font-bold">+ @name</div>
+                        <pre class="bg-zinc-800 p-2 rounded text-xs overflow-x-auto">
+@_newYaml[name]
+                        </pre>
+                    </div>
+                }
+            }
+
+            @if (_updated.Any())
+            {
+                <div class="text-amber-400 mt-4 mb-2">
+                    ~ @_updated.Count updated
+                </div>
+
+                @foreach (var name in _updated)
+                {
+                    <div class="ml-4 mb-6">
+                        <div class="font-bold text-zinc-300 mb-2">~ @name</div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <div class="text-zinc-500 mb-1">Current</div>
+                                <pre class="bg-zinc-800 p-2 rounded text-xs overflow-x-auto">
+@_oldYaml[name]
+                                </pre>
+                            </div>
+
+                            <div>
+                                <div class="text-emerald-500 mb-1">Incoming (Merged)</div>
+                                <pre class="bg-zinc-800 p-2 rounded text-xs overflow-x-auto">
+@_newYaml[name]
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+            @if (_replaced.Any())
+            {
+                <div class="text-red-400 mt-4 mb-2">
+                    ! @_replaced.Count replaced
+                </div>
+
+                @foreach (var name in _replaced)
+                {
+                    <div class="ml-4 mb-6">
+                        <div class="font-bold text-zinc-300 mb-2">! @name</div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <div class="text-zinc-500 mb-1">Current</div>
+                                <pre class="bg-zinc-800 p-2 rounded text-xs overflow-x-auto">
+@_oldYaml[name]
+                                </pre>
+                            </div>
+
+                            <div>
+                                <div class="text-red-400 mb-1">Incoming (Replacement)</div>
+                                <pre class="bg-zinc-800 p-2 rounded text-xs overflow-x-auto">
+@_newYaml[name]
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private List<string> _added = new();
+    private List<string> _updated = new();
+    private List<string> _replaced = new();
+
+    private Dictionary<string, string> _oldYaml = new(StringComparer.OrdinalIgnoreCase);
+    private Dictionary<string, string> _newYaml = new(StringComparer.OrdinalIgnoreCase);
+
+    private string _inputYaml = "";
+    private string? _validationError;
+    private bool _isValid = false;
+
+    private MergeMode _mode = MergeMode.Merge;
+
+    async Task OnModeChanged(MergeMode mode)
+    {
+        _mode = mode;
+        await ComputeDiff();
+    }
+
+    async Task ComputeDiff()
+    {
+        _validationError = null;
+        _isValid = false;
+
+        _added.Clear();
+        _updated.Clear();
+        _replaced.Clear();
+        _oldYaml.Clear();
+        _newYaml.Clear();
+
+        if (string.IsNullOrWhiteSpace(_inputYaml))
+            return;
+
+        try
+        {
+            // Force deserialization to throw if invalid
+            var incomingRoot = await MigrationService.DeserializeAsync(_inputYaml);
+
+            if (incomingRoot?.Resources == null)
+                throw new Exception("YAML structure invalid or missing 'resources' section.");
+
+            var incomingResources = incomingRoot.Resources;
+            var currentResources = await Resources.GetAllOfTypeAsync<Resource>();
+
+            var currentDict = currentResources
+                .ToDictionary(r => r.Name, StringComparer.OrdinalIgnoreCase);
+
+            var serializer = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .ConfigureDefaultValuesHandling(
+                    DefaultValuesHandling.OmitNull |
+                    DefaultValuesHandling.OmitEmptyCollections)
+                .Build();
+
+            // SNAPSHOT current BEFORE merge
+            var oldSnapshots = currentResources
+                .ToDictionary(
+                    r => r.Name,
+                    r => serializer.Serialize(r),
+                    StringComparer.OrdinalIgnoreCase);
+
+            // Perform merge
+            var mergedResources = ResourceCollectionMerger.Merge(
+                currentResources,
+                incomingResources,
+                _mode);
+
+            var mergedDict = mergedResources
+                .ToDictionary(r => r.Name, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var incoming in incomingResources)
+            {
+                if (!mergedDict.TryGetValue(incoming.Name, out var merged))
+                    continue;
+
+                var newYaml = serializer.Serialize(merged);
+                _newYaml[incoming.Name] = newYaml;
+
+                if (!currentDict.ContainsKey(incoming.Name))
+                {
+                    _added.Add(incoming.Name);
+                    continue;
+                }
+
+                var oldYaml = oldSnapshots[incoming.Name];
+                _oldYaml[incoming.Name] = oldYaml;
+
+                if (_mode == MergeMode.Replace)
+                {
+                    _replaced.Add(incoming.Name);
+                }
+                else if (oldYaml != newYaml)
+                {
+                    _updated.Add(incoming.Name);
+                }
+            }
+
+            _isValid = true;
+        }
+        catch (Exception ex)
+        {
+            _validationError = $"YAML invalid: {ex.Message}";
+        }
+    }
+
+    async Task Apply()
+    {
+        if (!_isValid)
+            return;
+
+        try
+        {
+            await Resources.Merge(_inputYaml, _mode);
+
+            _inputYaml = "";
+            _isValid = false;
+
+            _added.Clear();
+            _updated.Clear();
+            _replaced.Clear();
+            _oldYaml.Clear();
+            _newYaml.Clear();
+        }
+        catch (Exception ex)
+        {
+            _validationError = $"Apply failed: {ex.Message}";
+        }
+    }
+}

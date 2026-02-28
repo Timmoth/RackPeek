@@ -62,13 +62,14 @@ public class Program
         var resources = new ResourceCollection();
         builder.Services.AddSingleton(resources);
         builder.Services.AddScoped<RackPeekConfigMigrationDeserializer>();
+        builder.Services.AddScoped<IResourceYamlMigrationService, ResourceYamlMigrationService>();
 
         builder.Services.AddScoped<IResourceCollection>(sp =>
             new YamlResourceCollection(
                 yamlFilePath,
                 sp.GetRequiredService<ITextFileStore>(),
                 sp.GetRequiredService<ResourceCollection>(),
-                sp.GetRequiredService<RackPeekConfigMigrationDeserializer>()));
+                sp.GetRequiredService<IResourceYamlMigrationService>()));
 
         // Infrastructure
         builder.Services.AddYamlRepos();

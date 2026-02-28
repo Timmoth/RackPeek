@@ -85,13 +85,16 @@ public static class CliBootstrap
 
         services.AddLogging();
         services.AddScoped<RackPeekConfigMigrationDeserializer>();
+        services.AddScoped<IResourceYamlMigrationService, ResourceYamlMigrationService>();
 
+        var b = services.BuildServiceProvider();
+        
         var collection = new YamlResourceCollection(
             fullYamlPath,
             new PhysicalTextFileStore(),
             new ResourceCollection(),
-            // TODO: Is this right?
-            services.BuildServiceProvider().GetRequiredService<RackPeekConfigMigrationDeserializer>());
+                    b.GetRequiredService<IResourceYamlMigrationService>());
+            
 
         await collection.LoadAsync();
         services.AddSingleton<IResourceCollection>(collection);

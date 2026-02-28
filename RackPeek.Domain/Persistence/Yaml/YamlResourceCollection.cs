@@ -17,6 +17,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace RackPeek.Domain.Persistence.Yaml;
 
+
 public class ResourceCollection
 {
     public readonly SemaphoreSlim FileLock = new(1, 1);
@@ -27,7 +28,7 @@ public sealed class YamlResourceCollection(
     string filePath,
     ITextFileStore fileStore,
     ResourceCollection resourceCollection,
-    RackPeekConfigMigrationDeserializer _deserializer)
+    IResourceYamlMigrationService migrationService)
     : IResourceCollection
 {
     // Bump this when your YAML schema changes, and add a migration step below.
@@ -184,6 +185,39 @@ public sealed class YamlResourceCollection(
         return Task.FromResult<IReadOnlyList<Resource>>(result);
     }
 
+    public async Task Merge(string incomingYaml, MergeMode mode)
+    {
+        if (string.IsNullOrWhiteSpace(incomingYaml))
+            return;
+
+        await resourceCollection.FileLock.WaitAsync();
+        try
+        {
+            var incomingRoot = await migrationService.DeserializeAsync(incomingYaml);
+
+            var incomingResources = incomingRoot.Resources ?? new List<Resource>();
+            var merged = ResourceCollectionMerger.Merge(
+                resourceCollection.Resources,
+                incomingResources,
+                mode);
+
+            resourceCollection.Resources.Clear();
+            resourceCollection.Resources.AddRange(merged);
+
+            var rootToSave = new YamlRoot
+            {
+                Version = RackPeekConfigMigrationDeserializer.ListOfMigrations.Count,
+                Resources = resourceCollection.Resources
+            };
+
+            await SaveRootAsync(rootToSave);
+        }
+        finally
+        {
+            resourceCollection.FileLock.Release();
+        }
+    }
+
     public Task<IReadOnlyList<Resource>> GetByTagAsync(string name)
     {
         return Task.FromResult<IReadOnlyList<Resource>>(
@@ -223,46 +257,20 @@ public sealed class YamlResourceCollection(
 
     public async Task LoadAsync()
     {
-        // Read raw YAML so we can back it up exactly before any migration writes.
         var yaml = await fileStore.ReadAllTextAsync(filePath);
-        if (string.IsNullOrWhiteSpace(yaml))
-        {
-            resourceCollection.Resources.Clear();
-            return;
-        }
 
-        var version = _deserializer.GetSchemaVersion(yaml); 
-        
-        // Guard: config is newer than this app understands.
-        if (version > CurrentSchemaVersion)
-        {
-            throw new InvalidOperationException(
-                $"Config schema version {version} is newer than this application supports ({CurrentSchemaVersion}).");
-        }
+        var root = await migrationService.DeserializeAsync(
+            yaml,
+            async originalYaml => await BackupOriginalAsync(originalYaml),
+            async migratedRoot => await SaveRootAsync(migratedRoot)
+        );
 
-        YamlRoot? root;
-        // If older, backup first, then migrate step-by-step, then save.
-        if (version < CurrentSchemaVersion)
-        {
-            await BackupOriginalAsync(yaml);
-
-            root = await _deserializer.Deserialize(yaml) ?? new YamlRoot();
-            
-            // Ensure we persist the migrated root (with updated version)
-            await SaveRootAsync(root);
-        }
-        else
-        {
-            root = await _deserializer.Deserialize(yaml);
-        }
-        
         resourceCollection.Resources.Clear();
-        if (root?.Resources != null)
-        {
-            resourceCollection.Resources.AddRange(root.Resources);
-        }
-    }
 
+        if (root.Resources != null)
+            resourceCollection.Resources.AddRange(root.Resources);
+    }
+    
     public Task AddAsync(Resource resource)
     {
         return UpdateWithLockAsync(list =>
