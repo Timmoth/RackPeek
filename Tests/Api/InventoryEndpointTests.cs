@@ -154,4 +154,50 @@ public class InventoryEndpointTests : IClassFixture<WebApplicationFactory<RackPe
 
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Returns_401_when_api_key_has_wrong_case()
+    {
+        var client = CreateClient();
+        client.DefaultRequestHeaders.Add("X-Api-Key", "Test-Key-123");
+
+        var response = await client.PostAsJsonAsync("/api/inventory", new InventoryRequest
+        {
+            Hostname = "srv-case",
+            HardwareType = "server"
+        });
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Returns_400_for_empty_hostname()
+    {
+        var client = CreateClient();
+        client.DefaultRequestHeaders.Add("X-Api-Key", "test-key-123");
+
+        var response = await client.PostAsJsonAsync("/api/inventory", new InventoryRequest
+        {
+            Hostname = "  ",
+            HardwareType = "server"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Returns_400_for_negative_drive_size()
+    {
+        var client = CreateClient();
+        client.DefaultRequestHeaders.Add("X-Api-Key", "test-key-123");
+
+        var response = await client.PostAsJsonAsync("/api/inventory", new InventoryRequest
+        {
+            Hostname = "srv-negdrive",
+            HardwareType = "server",
+            Drives = [new InventoryDrive { Type = "ssd", Size = -100 }]
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }

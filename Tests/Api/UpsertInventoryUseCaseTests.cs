@@ -395,4 +395,248 @@ public class UpsertInventoryUseCaseTests
         Assert.Equal("prod", server.Labels["env"]);
         Assert.Equal("primary", server.Labels["site"]);
     }
+
+    // ── Boundary-value tests ────────────────────────────────────────────
+
+    [Fact]
+    public async Task Accepts_zero_ram()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv-zero-ram",
+            HardwareType = "server",
+            RamGb = 0,
+            RamMts = 0
+        };
+
+        var result = await _sut.ExecuteAsync(request);
+
+        Assert.Equal("created", result.Hardware.Action);
+
+        var server = await _repo.GetByNameAsync<Server>("srv-zero-ram");
+        Assert.NotNull(server);
+        Assert.Equal(0, server.Ram?.Size);
+        Assert.Equal(0, server.Ram?.Mts);
+    }
+
+    [Fact]
+    public async Task Accepts_zero_drive_size()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv-zero-drive",
+            HardwareType = "server",
+            Drives = [new InventoryDrive { Type = "ssd", Size = 0 }]
+        };
+
+        var result = await _sut.ExecuteAsync(request);
+
+        Assert.Equal("created", result.Hardware.Action);
+    }
+
+    [Fact]
+    public async Task Throws_on_negative_drive_size()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv01",
+            HardwareType = "server",
+            Drives = [new InventoryDrive { Type = "ssd", Size = -1 }]
+        };
+
+        await Assert.ThrowsAsync<ValidationException>(() => _sut.ExecuteAsync(request));
+    }
+
+    [Fact]
+    public async Task Throws_on_negative_nic_speed()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv01",
+            HardwareType = "server",
+            Nics = [new InventoryNic { Type = "rj45", Speed = -1.0 }]
+        };
+
+        await Assert.ThrowsAsync<ValidationException>(() => _sut.ExecuteAsync(request));
+    }
+
+    [Fact]
+    public async Task Throws_on_negative_nic_ports()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv01",
+            HardwareType = "server",
+            Nics = [new InventoryNic { Type = "rj45", Ports = -1 }]
+        };
+
+        await Assert.ThrowsAsync<ValidationException>(() => _sut.ExecuteAsync(request));
+    }
+
+    [Fact]
+    public async Task Accepts_zero_nic_speed_and_ports()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv-zero-nic",
+            HardwareType = "server",
+            Nics = [new InventoryNic { Type = "rj45", Speed = 0, Ports = 0 }]
+        };
+
+        var result = await _sut.ExecuteAsync(request);
+
+        Assert.Equal("created", result.Hardware.Action);
+    }
+
+    // ── Whitespace / normalization tests ────────────────────────────────
+
+    [Fact]
+    public async Task Trims_whitespace_from_hostname()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "  srv-padded  ",
+            HardwareType = "server",
+            RamGb = 16
+        };
+
+        var result = await _sut.ExecuteAsync(request);
+
+        Assert.Equal("srv-padded", result.Hardware.Name);
+
+        var server = await _repo.GetByNameAsync<Server>("srv-padded");
+        Assert.NotNull(server);
+    }
+
+    [Fact]
+    public async Task Throws_on_hostname_exceeding_max_length()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = new string('a', 51),
+            HardwareType = "server"
+        };
+
+        await Assert.ThrowsAsync<ValidationException>(() => _sut.ExecuteAsync(request));
+    }
+
+    [Fact]
+    public async Task Normalizes_drive_type_case()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv-case",
+            HardwareType = "server",
+            Drives = [new InventoryDrive { Type = "NVMe", Size = 512 }]
+        };
+
+        await _sut.ExecuteAsync(request);
+
+        var server = await _repo.GetByNameAsync<Server>("srv-case");
+        Assert.NotNull(server?.Drives);
+        Assert.Equal("nvme", server.Drives[0].Type);
+    }
+
+    [Fact]
+    public async Task Normalizes_nic_type_case()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv-nic-case",
+            HardwareType = "server",
+            Nics = [new InventoryNic { Type = "SFP+", Speed = 10.0 }]
+        };
+
+        await _sut.ExecuteAsync(request);
+
+        var server = await _repo.GetByNameAsync<Server>("srv-nic-case");
+        Assert.NotNull(server?.Nics);
+        Assert.Equal("sfp+", server.Nics[0].Type);
+    }
+
+    // ── SystemName edge cases ───────────────────────────────────────────
+
+    [Fact]
+    public async Task Throws_on_empty_system_name()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv-sysname",
+            HardwareType = "server",
+            SystemName = "",
+            Os = "Ubuntu 24.04"
+        };
+
+        await Assert.ThrowsAsync<ValidationException>(() => _sut.ExecuteAsync(request));
+    }
+
+    [Fact]
+    public async Task Creates_laptop_without_model()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "laptop-nomodel",
+            HardwareType = "laptop",
+            RamGb = 16
+        };
+
+        var result = await _sut.ExecuteAsync(request);
+
+        Assert.Equal("Laptop", result.Hardware.Kind);
+        Assert.Equal("created", result.Hardware.Action);
+
+        var laptop = await _repo.GetByNameAsync<Laptop>("laptop-nomodel");
+        Assert.NotNull(laptop);
+        Assert.Null(laptop.Model);
+    }
+
+    [Fact]
+    public async Task System_fields_from_cores_only()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv-cores-only",
+            HardwareType = "server",
+            Cores = 8
+        };
+
+        var result = await _sut.ExecuteAsync(request);
+
+        Assert.NotNull(result.System);
+        Assert.Equal("srv-cores-only-system", result.System.Name);
+
+        var system = await _repo.GetByNameAsync<SystemResource>("srv-cores-only-system");
+        Assert.NotNull(system);
+        Assert.Equal(8, system.Cores);
+    }
+
+    [Fact]
+    public async Task System_fields_from_system_ram_only()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv-sysram",
+            HardwareType = "server",
+            SystemRam = 32.0
+        };
+
+        var result = await _sut.ExecuteAsync(request);
+
+        Assert.NotNull(result.System);
+    }
+
+    [Fact]
+    public async Task System_fields_from_system_drives_only()
+    {
+        var request = new InventoryRequest
+        {
+            Hostname = "srv-sysdrv",
+            HardwareType = "server",
+            SystemDrives = [new InventoryDrive { Type = "ssd", Size = 100 }]
+        };
+
+        var result = await _sut.ExecuteAsync(request);
+
+        Assert.NotNull(result.System);
+    }
 }
