@@ -1,0 +1,24 @@
+# GMKtec Nucbox M7 Ultra Mini PC
+# https://de.gmktec.com/en/products/gmktec-nucboxm7-ultra-amd-ryzen-7-pro-6850u
+# CPU: AMD Ryzen 7 PRO 6850U (8C/16T, 2.7–4.7 GHz, TSMC 6nm)
+# Dual PCIe 4.0 SSD | Dual 2.5G RJ45 (Intel I226V) | OCuLink | Dual USB4 | Wi-Fi 6E
+kind: Server
+name: GMKtec-NucBox-M7-Ultra
+cpus:
+  - model: AMD Ryzen 7 PRO 6850U
+    cores: 8
+    threads: 16
+ram:
+  size: 16
+  mts: 4800
+drives:
+  - type: nvme
+    size: 512
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: AMD Radeon 680M
+    vram: 0
+ipmi: false

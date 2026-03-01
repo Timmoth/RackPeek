@@ -1,0 +1,12 @@
+kind: Switch
+name: UniFi-USW-Pro-48-PoE
+model: UniFi-USW-Pro-48-PoE
+ports:
+  - type: rj45
+    speed: 1
+    count: 48
+  - type: sfp+
+    speed: 10
+    count: 4
+managed: true
+poe: true

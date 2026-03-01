@@ -1,0 +1,7 @@
+# UniFi Access Point U7 Lite
+# https://eu.store.ui.com/eu/en/category/wifi-flagship/products/u7-lite
+# WiFi 7 | 4 spatial streams | Compact ceiling-mount | 2.5 GbE uplink
+kind: AccessPoint
+name: UniFi-U7-Lite
+model: UniFi-U7-Lite
+speed: 2.5

@@ -1,0 +1,7 @@
+# UniFi Access Point U7 Long-Range
+# https://eu.store.ui.com/eu/en/category/wifi-flagship/products/u7-lr
+# WiFi 7 | 5 spatial streams | Extended range | 2.5 GbE uplink
+kind: AccessPoint
+name: UniFi-U7-Long-Range
+model: UniFi-U7-Long-Range
+speed: 2.5

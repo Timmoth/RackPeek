@@ -1,0 +1,18 @@
+# UniFi Switch Pro HD 24
+# https://eu.store.ui.com/eu/en/category/switching-professional-max-xg/products/usw-pro-hd-24
+# Layer 3 Etherlighting switch: (22) 2.5 GbE + (2) 10 GbE + (4) 10G SFP+
+kind: Switch
+name: UniFi-USW-Pro-HD-24
+model: UniFi-USW-Pro-HD-24
+ports:
+  - type: rj45
+    speed: 2.5
+    count: 22
+  - type: rj45
+    speed: 10
+    count: 2
+  - type: sfp+
+    speed: 10
+    count: 4
+managed: true
+poe: false

@@ -1,0 +1,30 @@
+# Minisforum MS-02 Ultra Mini Workstation
+# https://www.minisforum.uk/products/minisforum-ms-02-ultra
+# CPU options: Ultra 9 285HX (24C/24T) | Ultra 9 275HX (24C/24T) | Ultra 5 235HX (14C/14T)
+# 285HX: Dual 25GbE SFP+ | 10GbE + 2.5GbE RJ45 | Intel vPro | ECC
+kind: Server
+name: Minisforum-MS-02-Ultra
+cpus:
+  - model: Intel Core Ultra 9 285HX
+    cores: 24
+    threads: 24
+ram:
+  size: 32
+  mts: 4800
+drives:
+  - type: nvme
+    size: 1024
+nics:
+  - type: sfp28
+    speed: 25
+    ports: 2
+  - type: rj45
+    speed: 10
+    ports: 1
+  - type: rj45
+    speed: 2.5
+    ports: 1
+gpus:
+  - model: Intel Graphics
+    vram: 0
+ipmi: true

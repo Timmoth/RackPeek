@@ -1,0 +1,26 @@
+# Minisforum MS-01 Mini Workstation
+# https://www.minisforum.uk/products/minisforum-ms-01
+# Dual 10G SFP+ | Dual 2.5G RJ45 | Intel vPro (AMT remote KVM)
+kind: Server
+name: Minisforum-MS-01
+cpus:
+  - model: Intel Core i5-12600H
+    cores: 14
+    threads: 20
+ram:
+  size: 32
+  mts: 5200
+drives:
+  - type: nvme
+    size: 1024
+nics:
+  - type: sfp+
+    speed: 10
+    ports: 2
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: Intel Iris Xe Graphics
+    vram: 0
+ipmi: true

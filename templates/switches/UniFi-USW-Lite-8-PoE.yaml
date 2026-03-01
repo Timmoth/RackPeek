@@ -1,0 +1,12 @@
+# UniFi Switch Lite 8 PoE (52W)
+# https://eu.store.ui.com/eu/en/category/switching-utility/products/usw-lite-8-poe
+# Layer 2 PoE switch, fanless: (8) 1 GbE (4 PoE)
+kind: Switch
+name: UniFi-USW-Lite-8-PoE
+model: UniFi-USW-Lite-8-PoE
+ports:
+  - type: rj45
+    speed: 1
+    count: 8
+managed: true
+poe: true

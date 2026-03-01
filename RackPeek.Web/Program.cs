@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using RackPeek.Domain;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
+using RackPeek.Domain.Templates;
 using RackPeek.Web.Components;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -70,6 +71,11 @@ public class Program
                 sp.GetRequiredService<ITextFileStore>(),
                 sp.GetRequiredService<ResourceCollection>(),
                 sp.GetRequiredService<IResourceYamlMigrationService>()));
+
+        // Templates
+        var templatesDir = builder.Configuration.GetValue<string>("RPK_TEMPLATES_DIR")
+                           ?? Path.Combine(AppContext.BaseDirectory, "templates");
+        builder.Services.AddSingleton<IHardwareTemplateStore>(new BundledHardwareTemplateStore(templatesDir));
 
         // Infrastructure
         builder.Services.AddYamlRepos();

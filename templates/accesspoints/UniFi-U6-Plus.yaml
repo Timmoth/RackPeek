@@ -1,0 +1,7 @@
+# UniFi Access Point U6+
+# https://eu.store.ui.com/eu/en/category/wifi-flagship/products/u6-plus
+# WiFi 6 | 4 spatial streams | Compact ceiling-mount | 1 GbE uplink
+kind: AccessPoint
+name: UniFi-U6-Plus
+model: UniFi-U6-Plus
+speed: 1

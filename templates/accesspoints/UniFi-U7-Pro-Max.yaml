@@ -1,0 +1,7 @@
+# UniFi Access Point U7 Pro Max
+# https://eu.store.ui.com/eu/en/category/wifi-flagship/products/u7-pro-max
+# WiFi 7 | 8 spatial streams | 6 GHz | Dedicated spectral scanning engine | 2.5 GbE uplink
+kind: AccessPoint
+name: UniFi-U7-Pro-Max
+model: UniFi-U7-Pro-Max
+speed: 2.5

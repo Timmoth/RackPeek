@@ -1,0 +1,24 @@
+# GMKtec NucBox G10 Mini PC
+# https://de.gmktec.com/products/gmktec-nucbox-g10-amd-ryzen-5-3500u-mini-pc-black
+# CPU: AMD Ryzen 5 3500U (4C/8T, up to 3.7 GHz, 12nm)
+# 1x 2.5G RJ45 | Wi-Fi 5 | BT 5.0 | Triple 4K display (HDMI 2.1 + DP 1.4 + Type-C)
+kind: Server
+name: GMKtec-NucBox-G10
+cpus:
+  - model: AMD Ryzen 5 3500U
+    cores: 4
+    threads: 8
+ram:
+  size: 16
+  mts: 2400
+drives:
+  - type: nvme
+    size: 256
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 1
+gpus:
+  - model: AMD Radeon Vega 8
+    vram: 0
+ipmi: false

@@ -1,0 +1,15 @@
+# UniFi Switch Flex XG (10 GbE)
+# https://eu.store.ui.com/eu/en/category/switching-utility/products/usw-flex-xg
+# Compact Layer 2 switch: (4) 10 GbE RJ45 + (1) 10G SFP+, PoE or USB-C powered
+kind: Switch
+name: UniFi-USW-Flex-XG
+model: UniFi-USW-Flex-XG
+ports:
+  - type: rj45
+    speed: 10
+    count: 4
+  - type: sfp+
+    speed: 10
+    count: 1
+managed: true
+poe: false

@@ -1,0 +1,16 @@
+# UniFi Cloud Gateway Ultra
+# https://eu.store.ui.com/eu/en/category/cloud-gateways-compact/products/ucg-ultra
+# Compact Cloud Gateway | 1 Gbps IPS | 30+ devices / 300+ clients | USB-C powered
+# (1) 2.5G RJ45 WAN + (4) 1G RJ45 LAN
+kind: Router
+name: UniFi-UCG-Ultra
+model: UniFi-UCG-Ultra
+ports:
+  - type: rj45
+    speed: 1
+    count: 4
+  - type: rj45
+    speed: 2.5
+    count: 1
+managed: true
+poe: false

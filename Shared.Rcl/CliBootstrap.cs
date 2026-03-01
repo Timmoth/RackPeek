@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain;
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
+using RackPeek.Domain.Templates;
 using RackPeek.Domain.Persistence.Yaml;
 using Shared.Rcl.Commands;
 using Shared.Rcl.Commands.AccessPoints;
@@ -43,6 +44,7 @@ using Shared.Rcl.Commands.Switches.Labels;
 using Shared.Rcl.Commands.Switches.Ports;
 using Shared.Rcl.Commands.Systems;
 using Shared.Rcl.Commands.Systems.Labels;
+using Shared.Rcl.Commands.Templates;
 using Shared.Rcl.Commands.Ups;
 using Shared.Rcl.Commands.Ups.Labels;
 using Spectre.Console;
@@ -98,6 +100,11 @@ public static class CliBootstrap
 
         await collection.LoadAsync();
         services.AddSingleton<IResourceCollection>(collection);
+
+        // Templates
+        var templatesDir = configuration.GetValue<string>("RPK_TEMPLATES_DIR")
+                           ?? Path.Combine(appBasePath, "templates");
+        services.AddSingleton<IHardwareTemplateStore>(new BundledHardwareTemplateStore(templatesDir));
 
         // Infrastructure
         services.AddYamlRepos();
@@ -596,6 +603,23 @@ public static class CliBootstrap
 
                 ansible.AddCommand<GenerateAnsibleInventoryCommand>("inventory")
                     .WithDescription("Generate an Ansible inventory.");
+            });
+
+            // ----------------------------
+            // Templates
+            // ----------------------------
+            config.AddBranch("templates", templates =>
+            {
+                templates.SetDescription("Browse, inspect and validate hardware templates.");
+
+                templates.AddCommand<TemplateListCommand>("list")
+                    .WithDescription("List available hardware templates, optionally filtered by kind.");
+
+                templates.AddCommand<TemplateShowCommand>("show")
+                    .WithDescription("Display details of a specific hardware template.");
+
+                templates.AddCommand<TemplateValidateCommand>("validate")
+                    .WithDescription("Validate a hardware template YAML file against the resource schema.");
             });
             
         });

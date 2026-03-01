@@ -5,6 +5,7 @@ using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
+using RackPeek.Domain.Templates;
 using RackPeek.Domain.UseCases;
 using RackPeek.Domain.UseCases.Cpus;
 using RackPeek.Domain.UseCases.Drives;
@@ -49,6 +50,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
     {
         services.AddScoped(typeof(IAddResourceUseCase<>), typeof(AddResourceUseCase<>));
+        services.AddScoped(typeof(IAddResourceFromTemplateUseCase<>), typeof(AddResourceFromTemplateUseCase<>));
         services.AddScoped(typeof(IAddLabelUseCase<>), typeof(AddLabelUseCase<>));
         services.AddScoped(typeof(IAddTagUseCase<>), typeof(AddTagUseCase<>));
         services.AddScoped(typeof(ICloneResourceUseCase<>), typeof(CloneResourceUseCase<>));

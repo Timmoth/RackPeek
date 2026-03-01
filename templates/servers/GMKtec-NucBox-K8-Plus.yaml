@@ -1,0 +1,24 @@
+# GMKtec NucBox K8 Plus Mini PC
+# https://de.gmktec.com/en/products/gmktec-nucbox-k8-plus-amd-ryzen-7-8845hs-mini-pc
+# CPU: AMD Ryzen 7 8845HS (8C/16T, up to 5.1 GHz, TSMC 4nm)
+# Dual PCIe 4.0 SSD | Dual 2.5G RJ45 (Intel I226V) | OCuLink | Dual USB4
+kind: Server
+name: GMKtec-NucBox-K8-Plus
+cpus:
+  - model: AMD Ryzen 7 8845HS
+    cores: 8
+    threads: 16
+ram:
+  size: 32
+  mts: 5600
+drives:
+  - type: nvme
+    size: 1024
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: AMD Radeon 780M
+    vram: 0
+ipmi: false

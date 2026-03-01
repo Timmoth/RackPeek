@@ -1,0 +1,12 @@
+kind: Firewall
+name: Netgate-6100
+model: Netgate-6100
+ports:
+  - type: rj45
+    speed: 1
+    count: 4
+  - type: sfp+
+    speed: 10
+    count: 2
+managed: true
+poe: false

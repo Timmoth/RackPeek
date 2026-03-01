@@ -1,0 +1,24 @@
+# Beelink ME mini 6-Slot NAS Mini PC (N150 variant)
+# https://www.bee-link.com/products/beelink-me-mini-n150?variant=48027613921522
+# CPU: Intel N150 (4C/4T, up to 3.6 GHz)
+# 6x M.2 SSD slots (max 24TB) | Dual 2.5G RJ45 (Intel I226-V) | Wi-Fi 6 | NAS-oriented
+kind: Server
+name: Beelink-ME-Mini-N150
+cpus:
+  - model: Intel N150
+    cores: 4
+    threads: 4
+ram:
+  size: 16
+  mts: 4800
+drives:
+  - type: nvme
+    size: 1024
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: Intel UHD Graphics
+    vram: 0
+ipmi: false

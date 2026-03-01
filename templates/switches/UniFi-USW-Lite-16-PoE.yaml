@@ -1,0 +1,12 @@
+# UniFi Switch Lite 16 PoE (45W)
+# https://eu.store.ui.com/eu/en/category/switching-utility/products/usw-lite-16-poe
+# Wall-mountable, Layer 2 PoE switch, fanless: (16) 1 GbE (8 PoE)
+kind: Switch
+name: UniFi-USW-Lite-16-PoE
+model: UniFi-USW-Lite-16-PoE
+ports:
+  - type: rj45
+    speed: 1
+    count: 16
+managed: true
+poe: true

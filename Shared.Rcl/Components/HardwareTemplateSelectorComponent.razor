@@ -1,0 +1,41 @@
+@using RackPeek.Domain.Resources
+@using RackPeek.Domain.Templates
+@typeparam TResource where TResource : RackPeek.Domain.Resources.Resource
+
+@inject IHardwareTemplateStore TemplateStore
+
+@if (_templates is { Count: > 0 })
+{
+    <select class="bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-zinc-600"
+            value="@_selectedId"
+            @onchange="OnSelectionChanged"
+            data-testid=@($"template-selector-{ResourceKindLower}")>
+        <option value="">-- blank --</option>
+        @foreach (var t in _templates)
+        {
+            <option value="@t.Id">@t.Model</option>
+        }
+    </select>
+}
+
+@code {
+    private string ResourceKindLower => Resource.GetKind<TResource>().ToLower();
+
+    [Parameter] public EventCallback<string?> OnTemplateSelected { get; set; }
+
+    private IReadOnlyList<HardwareTemplate>? _templates;
+    private string _selectedId = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var kind = Resource.GetKind<TResource>();
+        _templates = await TemplateStore.GetAllByKindAsync(kind);
+    }
+
+    private async Task OnSelectionChanged(ChangeEventArgs e)
+    {
+        _selectedId = e.Value?.ToString() ?? string.Empty;
+        var templateId = string.IsNullOrEmpty(_selectedId) ? null : _selectedId;
+        await OnTemplateSelected.InvokeAsync(templateId);
+    }
+}

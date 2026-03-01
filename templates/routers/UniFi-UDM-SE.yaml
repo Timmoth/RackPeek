@@ -1,0 +1,19 @@
+# UniFi Dream Machine Special Edition (180W PoE)
+# https://eu.store.ui.com/eu/en/category/cloud-gateways-large-scale/products/udm-se
+# 1U rack-mount | 3.5 Gbps IPS | 100+ devices / 1,000+ clients | Built-in PoE switching
+# WAN: (1) 10G SFP+ + (1) 2.5G RJ45 | LAN: (8) 1G RJ45 PoE + (1) 10G SFP+
+kind: Router
+name: UniFi-UDM-SE
+model: UniFi-UDM-SE
+ports:
+  - type: rj45
+    speed: 1
+    count: 8
+  - type: rj45
+    speed: 2.5
+    count: 1
+  - type: sfp+
+    speed: 10
+    count: 2
+managed: true
+poe: true

@@ -1,0 +1,16 @@
+# UniFi Dream Router 7 (15W PoE)
+# https://eu.store.ui.com/eu/en/category/cloud-gateways-wifi-integrated/products/udr7
+# Desktop 10G Cloud Gateway | Integrated WiFi 7 | PoE switch | microSD NVR
+# WAN: (1) 10G SFP+ + (1) 2.5G RJ45 | LAN: (3) 2.5G RJ45 (1 PoE)
+kind: Router
+name: UniFi-UDR7
+model: UniFi-UDR7
+ports:
+  - type: rj45
+    speed: 2.5
+    count: 4
+  - type: sfp+
+    speed: 10
+    count: 1
+managed: true
+poe: true

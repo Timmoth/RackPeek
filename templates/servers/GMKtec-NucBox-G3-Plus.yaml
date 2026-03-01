@@ -1,0 +1,24 @@
+# GMKtec NucBox G3 Plus Mini PC
+# https://de.gmktec.com/products/gmktec-nucbox-g3-plus-intel-twin-lake-n150
+# CPU: Intel N150 (4C/4T, up to 3.6 GHz, 7nm, TDP 6W)
+# 1x 2.5G RJ45 | Wi-Fi 6 | BT 5.2 | Dual HDMI 4K
+kind: Server
+name: GMKtec-NucBox-G3-Plus
+cpus:
+  - model: Intel N150
+    cores: 4
+    threads: 4
+ram:
+  size: 8
+  mts: 3200
+drives:
+  - type: nvme
+    size: 256
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 1
+gpus:
+  - model: Intel UHD Graphics
+    vram: 0
+ipmi: false

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -36,5 +36,6 @@
     <ItemGroup>
         <None Include="schemas\**\*.json" CopyToOutputDirectory="PreserveNewest" />
         <None Include="TestConfigs\**\*.yaml" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="..\templates\**\*.yaml" LinkBase="templates" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 </Project>

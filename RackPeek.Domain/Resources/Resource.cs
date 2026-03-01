@@ -95,6 +95,19 @@ public abstract class Resource
             $"No kind mapping defined for type {typeof(T).Name}");
     }
 
+    /// <summary>
+    /// Resolves the kind label for a resource instance at runtime.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the resource type has no kind mapping.</exception>
+    public static string GetKind(Resource resource)
+    {
+        if (TypeToKindMap.TryGetValue(resource.GetType(), out var kind))
+            return kind;
+
+        throw new InvalidOperationException(
+            $"No kind mapping defined for type {resource.GetType().Name}");
+    }
+
     public static bool CanRunOn<T>(Resource parent) where T : Resource
     {
         var childKind = GetKind<T>().ToLowerInvariant();

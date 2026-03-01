@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Firewalls;
 using RackPeek.Domain.UseCases;
@@ -9,6 +10,10 @@ namespace Shared.Rcl.Commands.Firewalls;
 public class FirewallAddSettings : CommandSettings
 {
     [CommandArgument(0, "<name>")] public string Name { get; set; } = default!;
+
+    [CommandOption("--template|-t")]
+    [Description("Create from a known hardware template (e.g. Netgate-6100).")]
+    public string? Template { get; set; }
 }
 
 public class FirewallAddCommand(
@@ -21,11 +26,20 @@ public class FirewallAddCommand(
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Firewall>>();
 
-        await useCase.ExecuteAsync(
-            settings.Name
-        );
+        if (!string.IsNullOrWhiteSpace(settings.Template))
+        {
+            var templateUseCase = scope.ServiceProvider
+                .GetRequiredService<IAddResourceFromTemplateUseCase<Firewall>>();
+            var templateId = $"Firewall/{settings.Template}";
+            await templateUseCase.ExecuteAsync(settings.Name, templateId);
+        }
+        else
+        {
+            var useCase = scope.ServiceProvider
+                .GetRequiredService<IAddResourceUseCase<Firewall>>();
+            await useCase.ExecuteAsync(settings.Name);
+        }
 
         AnsiConsole.MarkupLine($"[green]Firewall '{settings.Name}' added.[/]");
         return 0;

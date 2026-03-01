@@ -1,3 +1,4 @@
+using Microsoft.Playwright;
 using Tests.E2e.Infra;
 using Tests.E2e.PageObjectModels;
 using Xunit.Abstractions;
@@ -267,6 +268,94 @@ public class ServerCardTests(
             await labels.AssertLabelDisplaysAsync("server", "environment", "staging");
 
             await context.CloseAsync();
+        }
+        finally
+        {
+            await context.CloseAsync();
+        }
+    }
+
+    [Fact]
+    public async Task User_Can_Copy_Server_As_Template()
+    {
+        var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions
+        {
+            Permissions = ["clipboard-read", "clipboard-write"]
+        });
+        var page = await context.NewPageAsync();
+
+        page.Console += (_, msg) =>
+            _output.WriteLine($"[BrowserConsole] {msg.Type}: {msg.Text}");
+        page.PageError += (_, msg) =>
+            _output.WriteLine($"[PageError] {msg}");
+
+        var name = $"e2e-srv-tpl-{Guid.NewGuid():N}"[..16];
+
+        try
+        {
+            await page.GotoAsync(fixture.BaseUrl);
+
+            var layout = new MainLayoutPom(page);
+            await layout.AssertLoadedAsync();
+            await layout.GotoHardwareAsync();
+
+            var hardwareTree = new HardwareTreePom(page);
+            await hardwareTree.AssertLoadedAsync();
+            await hardwareTree.GotoServersListAsync();
+
+            var list = new ServersListPom(page);
+            await list.AssertLoadedAsync();
+
+            await list.AddServerAsync(name);
+            await page.WaitForURLAsync($"**/resources/hardware/{name}");
+
+            var card = new ServerCardPom(page);
+            await card.AssertVisibleAsync(name);
+
+            var officialName = "Official-Server-Template";
+
+            // Button should be visible
+            await Assertions.Expect(card.CopyAsTemplateButton(name)).ToBeVisibleAsync();
+            await Assertions.Expect(card.CopyAsTemplateButton(name)).ToHaveTextAsync("Copy as Template");
+
+            // Click the button — opens the template name modal
+            await card.CopyAsTemplateButton(name).ClickAsync();
+
+            // Modal should appear
+            await Assertions.Expect(card.CopyTemplateModal).ToBeVisibleAsync();
+
+            // Fill in the official hardware name and submit
+            await card.CopyTemplateInput.FillAsync(officialName);
+            await card.CopyTemplateSubmit.ClickAsync();
+
+            // Button text should change to "Copied!"
+            await Assertions.Expect(card.CopyAsTemplateButton(name)).ToHaveTextAsync("Copied!");
+
+            // Verify clipboard contains valid template YAML with the official name
+            var clipboardText = await page.EvaluateAsync<string>("() => navigator.clipboard.readText()");
+
+            Assert.Contains("kind: Server", clipboardText);
+            Assert.Contains($"name: {officialName}", clipboardText);
+            Assert.DoesNotContain($"name: {name}", clipboardText);
+            Assert.DoesNotContain("tags:", clipboardText);
+            Assert.DoesNotContain("labels:", clipboardText);
+            Assert.DoesNotContain("runsOn:", clipboardText);
+
+            // After delay, button text should revert
+            await page.WaitForTimeoutAsync(2500);
+            await Assertions.Expect(card.CopyAsTemplateButton(name)).ToHaveTextAsync("Copy as Template");
+        }
+        catch (Exception)
+        {
+            _output.WriteLine("TEST FAILED — Capturing diagnostics");
+            _output.WriteLine($"Current URL: {page.Url}");
+
+            var html = await page.ContentAsync();
+            _output.WriteLine("==== DOM SNAPSHOT START ====");
+            _output.WriteLine(html);
+            _output.WriteLine("==== DOM SNAPSHOT END ====");
+
+            throw;
         }
         finally
         {

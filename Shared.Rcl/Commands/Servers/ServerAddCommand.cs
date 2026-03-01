@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.UseCases;
@@ -9,6 +10,10 @@ namespace Shared.Rcl.Commands.Servers;
 public class ServerAddSettings : CommandSettings
 {
     [CommandArgument(0, "<name>")] public string Name { get; set; } = default!;
+
+    [CommandOption("--template|-t")]
+    [Description("Create from a known hardware template (e.g. Intel-NUC-13-Pro).")]
+    public string? Template { get; set; }
 }
 
 public class ServerAddCommand(
@@ -21,11 +26,20 @@ public class ServerAddCommand(
         CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Server>>();
 
-        await useCase.ExecuteAsync(
-            settings.Name
-        );
+        if (!string.IsNullOrWhiteSpace(settings.Template))
+        {
+            var templateUseCase = scope.ServiceProvider
+                .GetRequiredService<IAddResourceFromTemplateUseCase<Server>>();
+            var templateId = $"Server/{settings.Template}";
+            await templateUseCase.ExecuteAsync(settings.Name, templateId);
+        }
+        else
+        {
+            var useCase = scope.ServiceProvider
+                .GetRequiredService<IAddResourceUseCase<Server>>();
+            await useCase.ExecuteAsync(settings.Name);
+        }
 
         AnsiConsole.MarkupLine($"[green]Server '{settings.Name}' added.[/]");
         return 0;

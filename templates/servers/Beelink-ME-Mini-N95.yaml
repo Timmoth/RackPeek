@@ -1,0 +1,24 @@
+# Beelink ME mini 6-Slot NAS Mini PC (N95 variant)
+# https://www.bee-link.com/products/beelink-me-mini-n150?variant=48678160204018
+# CPU: Intel N95 (4C/4T, up to 3.4 GHz)
+# 6x M.2 SSD slots (max 24TB) | Dual 2.5G RJ45 (Intel I226-V) | 64GB eMMC | NAS-oriented
+kind: Server
+name: Beelink-ME-Mini-N95
+cpus:
+  - model: Intel N95
+    cores: 4
+    threads: 4
+ram:
+  size: 16
+  mts: 4800
+drives:
+  - type: ssd
+    size: 64
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: Intel UHD Graphics
+    vram: 0
+ipmi: false

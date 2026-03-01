@@ -1,0 +1,24 @@
+# Minisforum MS-R1 ARM Mini Workstation
+# https://www.minisforum.uk/products/minisforum-ms-r1
+# World's first ARM mini workstation with UEFI | CIX CP8180 (12C/12T, 2.6GHz, 28W)
+# Dual 10GbE RJ45 | PCIe x16 slot | LPDDR5 5500 ECC
+kind: Server
+name: Minisforum-MS-R1
+cpus:
+  - model: CIX CP8180
+    cores: 12
+    threads: 12
+ram:
+  size: 64
+  mts: 5500
+drives:
+  - type: nvme
+    size: 1024
+nics:
+  - type: rj45
+    speed: 10
+    ports: 2
+gpus:
+  - model: Arm Immortalis-G720 MC10
+    vram: 0
+ipmi: false

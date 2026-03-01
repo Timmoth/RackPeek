@@ -1,0 +1,16 @@
+# UniFi Express 7
+# https://eu.store.ui.com/eu/en/category/cloud-gateways-wifi-integrated/products/ux7
+# Mesh-scalable compact 10G Cloud Gateway | Integrated WiFi 7 | USB-C powered
+# (1) 10G RJ45 WAN + (1) 2.5G RJ45 LAN
+kind: Router
+name: UniFi-UX7
+model: UniFi-UX7
+ports:
+  - type: rj45
+    speed: 2.5
+    count: 1
+  - type: rj45
+    speed: 10
+    count: 1
+managed: true
+poe: false

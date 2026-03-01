@@ -1,0 +1,24 @@
+# GMKtec NucBox K15 Mini PC
+# https://de.gmktec.com/products/gmktec-nucbox-k15-intel-core-ultra-5-125u
+# CPU: Intel Core Ultra 5 125U (12C/14T, up to 4.3 GHz, Intel 4)
+# 3x M.2 PCIe 4.0 SSD | Dual 2.5G RJ45 | OCuLink | USB4 | Wi-Fi 6E | NPU 11 TOPS
+kind: Server
+name: GMKtec-NucBox-K15
+cpus:
+  - model: Intel Core Ultra 5 125U
+    cores: 12
+    threads: 14
+ram:
+  size: 16
+  mts: 4800
+drives:
+  - type: nvme
+    size: 1024
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: Intel Graphics
+    vram: 0
+ipmi: false

@@ -1,0 +1,24 @@
+# GMKtec NucBox M5 Ultra Mini PC
+# https://de.gmktec.com/en/products/gmktec-nucbox-m5-ultra-amd-ryzen-7-7730u
+# CPU: AMD Ryzen 7 7730U (8C/16T, 2.0–4.5 GHz, Zen 3, 7nm)
+# Dual M.2 SSD | Dual 2.5G RJ45 | Wi-Fi 6E | BT 5.2 | Up to 8K display
+kind: Server
+name: GMKtec-NucBox-M5-Ultra
+cpus:
+  - model: AMD Ryzen 7 7730U
+    cores: 8
+    threads: 16
+ram:
+  size: 16
+  mts: 3200
+drives:
+  - type: nvme
+    size: 512
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: AMD Radeon Graphics
+    vram: 0
+ipmi: false

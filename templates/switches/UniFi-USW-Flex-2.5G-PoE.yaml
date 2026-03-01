@@ -1,0 +1,15 @@
+# UniFi Switch Flex 2.5G PoE (196W)
+# https://eu.store.ui.com/eu/en/category/switching-utility/products/usw-flex-2-5g-8-poe
+# Flexible Layer 2 PoE++ switch: (8) 2.5 GbE PoE++ + (1) 10G combo uplink
+kind: Switch
+name: UniFi-USW-Flex-2.5G-PoE
+model: UniFi-USW-Flex-2.5G-PoE
+ports:
+  - type: rj45
+    speed: 2.5
+    count: 8
+  - type: sfp+
+    speed: 10
+    count: 1
+managed: true
+poe: true

@@ -1,0 +1,7 @@
+# UniFi Access Point U7 Pro
+# https://eu.store.ui.com/eu/en/category/wifi-flagship/products/u7-pro
+# WiFi 7 | 6 spatial streams | 6 GHz | Ceiling-mounted | 2.5 GbE uplink
+kind: AccessPoint
+name: UniFi-U7-Pro
+model: UniFi-U7-Pro
+speed: 2.5

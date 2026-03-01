@@ -1,0 +1,24 @@
+# Beelink EQ14 Mini PC
+# https://www.bee-link.com/products/beelink-eq14-n150
+# CPU: Intel N150 (4C/4T, up to 3.6 GHz, Twin Lake, 6MB L3, TDP 25W)
+# Dual M.2 PCIe 3.0 SSD | Dual LAN (1G or 2.5G variants) | Wi-Fi 6 | BT 5.2 | Built-in PSU
+kind: Server
+name: Beelink-EQ14
+cpus:
+  - model: Intel N150
+    cores: 4
+    threads: 4
+ram:
+  size: 16
+  mts: 3200
+drives:
+  - type: sata
+    size: 500
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: Intel UHD Graphics
+    vram: 0
+ipmi: false

@@ -102,4 +102,8 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="..\templates\**\*.yaml" LinkBase="templates" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>

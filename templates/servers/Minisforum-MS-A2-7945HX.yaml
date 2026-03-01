@@ -1,0 +1,26 @@
+# Minisforum MS-A2 Mini Workstation
+# https://www.minisforum.uk/products/minisforum-ms-a2
+# Dual 10G SFP+ | Dual 2.5G RJ45 | PCIe x16 slot
+kind: Server
+name: Minisforum-MS-A2
+cpus:
+  - model: AMD Ryzen 9 7945HX
+    cores: 16
+    threads: 32
+ram:
+  size: 32
+  mts: 5600
+drives:
+  - type: nvme
+    size: 1024
+nics:
+  - type: sfp+
+    speed: 10
+    ports: 2
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: AMD Radeon 610M
+    vram: 0
+ipmi: false

@@ -33,6 +33,9 @@ public class ServerCardPom(IPage page)
     public ILocator DeleteButton(string name)
         => ServerItem(name).GetByTestId("delete-server-button");
 
+    public ILocator CopyAsTemplateButton(string name)
+        => ServerItem(name).GetByTestId("server-copy-as-template-button");
+
     // -------------------------------------------------
     // CPU section + modal (TestIdPrefix="server-cpu")
     // -------------------------------------------------
@@ -133,6 +136,14 @@ public class ServerCardPom(IPage page)
     public ILocator CloneInput => page.GetByTestId("server-clone-string-value-modal-input");
     public ILocator CloneAccept => page.GetByTestId("server-clone-string-value-modal-submit");
     public ILocator CloneCancel => page.GetByTestId("server-clone-string-value-modal-cancel");
+
+    // -------------------------------------------------
+    // Copy-as-template modal (TestIdPrefix="server-copy-template")
+    // -------------------------------------------------
+
+    public ILocator CopyTemplateModal => page.GetByTestId("server-copy-template-string-value-modal");
+    public ILocator CopyTemplateInput => page.GetByTestId("server-copy-template-string-value-modal-input");
+    public ILocator CopyTemplateSubmit => page.GetByTestId("server-copy-template-string-value-modal-submit");
 
     // -------------------------------------------------
     // Helpers / Common actions

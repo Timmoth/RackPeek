@@ -1,0 +1,15 @@
+# UniFi Switch Pro Max 16
+# https://eu.store.ui.com/eu/en/category/switching-professional-max-xg/products/usw-pro-max-16
+# Layer 3 Etherlighting switch: (16) 2.5 GbE + (2) 10G SFP+
+kind: Switch
+name: UniFi-USW-Pro-Max-16
+model: UniFi-USW-Pro-Max-16
+ports:
+  - type: rj45
+    speed: 2.5
+    count: 16
+  - type: sfp+
+    speed: 10
+    count: 2
+managed: true
+poe: false

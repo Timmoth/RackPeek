@@ -1,0 +1,24 @@
+# GMKtec NucBox M5 Plus Mini PC
+# https://de.gmktec.com/en/products/gmktec-nucbox-m5-plus-amd-ryzen-7-5825u-mini-pc
+# CPU: AMD Ryzen 7 5825U (8C/16T, 2.0–4.5 GHz, 7nm)
+# Dual 2.5G RJ45 | Wi-Fi 6E | BT 5.2 | Triple 4K display
+kind: Server
+name: GMKtec-NucBox-M5-Plus
+cpus:
+  - model: AMD Ryzen 7 5825U
+    cores: 8
+    threads: 16
+ram:
+  size: 16
+  mts: 3200
+drives:
+  - type: nvme
+    size: 512
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: AMD Radeon Graphics
+    vram: 0
+ipmi: false

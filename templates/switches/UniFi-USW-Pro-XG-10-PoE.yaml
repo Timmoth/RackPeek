@@ -1,0 +1,15 @@
+# UniFi Switch Pro XG 10 PoE (400W)
+# https://eu.store.ui.com/eu/en/category/switching-professional-max-xg/products/usw-pro-xg-10-poe
+# 1U Layer 3 Etherlighting PoE+++ switch: (10) 10 GbE + (2) 10G SFP+
+kind: Switch
+name: UniFi-USW-Pro-XG-10-PoE
+model: UniFi-USW-Pro-XG-10-PoE
+ports:
+  - type: rj45
+    speed: 10
+    count: 10
+  - type: sfp+
+    speed: 10
+    count: 2
+managed: true
+poe: true

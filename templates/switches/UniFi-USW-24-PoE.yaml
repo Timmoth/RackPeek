@@ -1,0 +1,16 @@
+# UniFi Switch 24 PoE (95W)
+# https://eu.store.ui.com/eu/en/category/switching-standard/products/usw-24-poe
+# 24-port Layer 2 PoE switch | Fanless cooling
+# (24) 1 GbE RJ45 + (2) 1G SFP
+kind: Switch
+name: UniFi-USW-24-PoE
+model: UniFi-USW-24-PoE
+ports:
+  - type: rj45
+    speed: 1
+    count: 24
+  - type: sfp
+    speed: 1
+    count: 2
+managed: true
+poe: true

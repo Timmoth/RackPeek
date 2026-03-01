@@ -1,0 +1,24 @@
+# Minisforum AI X1 Mini PC
+# https://www.minisforum.uk/products/minisforum-ai-x1-mini-pc
+# CPU options: Ryzen AI 9 HX 470 (12C/24T) | Ryzen 7 255 (8C/16T) | Ryzen 7 260 (8C/16T)
+# Radeon 890M (HX470) / 780M (others) | 2.5G RJ45 | OCuLink | Wi-Fi 7
+kind: Server
+name: Minisforum-AI-X1
+cpus:
+  - model: AMD Ryzen AI 9 HX 470
+    cores: 12
+    threads: 24
+ram:
+  size: 32
+  mts: 5600
+drives:
+  - type: nvme
+    size: 1024
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 1
+gpus:
+  - model: AMD Radeon 890M
+    vram: 0
+ipmi: false

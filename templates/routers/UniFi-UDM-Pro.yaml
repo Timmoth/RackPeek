@@ -1,0 +1,16 @@
+# UniFi Dream Machine Pro
+# https://eu.store.ui.com/eu/en/category/cloud-gateways-large-scale/products/udm-pro
+# 1U rack-mount | 3.5 Gbps IPS | 100+ devices / 1,000+ clients
+# WAN: (1) 10G SFP+ + (1) 1G RJ45 | LAN: (8) 1G RJ45 + (1) 10G SFP+
+kind: Router
+name: UniFi-UDM-Pro
+model: UniFi-UDM-Pro
+ports:
+  - type: rj45
+    speed: 1
+    count: 9
+  - type: sfp+
+    speed: 10
+    count: 2
+managed: true
+poe: false

@@ -1,0 +1,48 @@
+@using RackPeek.Domain.Helpers
+@using RackPeek.Domain.Resources
+@inject IJSRuntime JS
+
+<button
+    data-testid="@($"{TestIdPrefix}-copy-as-template-button")"
+    class="text-xs text-yellow-400 hover:text-yellow-300 transition"
+    @onclick="OpenModal">
+    @(_copied ? "Copied!" : "Copy as Template")
+</button>
+
+<StringValueModal
+    IsOpen="_modalOpen"
+    IsOpenChanged="v => _modalOpen = v"
+    Title="Copy as Template"
+    Description="Enter the official hardware name from the vendor (e.g. Minisforum-MS-01)."
+    Label="Template name"
+    Value="@Resource.Name"
+    OnSubmit="HandleSubmit"
+    TestIdPrefix="@($"{TestIdPrefix}-copy-template")" />
+
+@code {
+    [Parameter] [EditorRequired] public Resource Resource { get; set; } = default!;
+    [Parameter] public string TestIdPrefix { get; set; } = "resource";
+
+    private bool _modalOpen;
+    private bool _copied;
+
+    private void OpenModal()
+    {
+        _modalOpen = true;
+    }
+
+    private async Task HandleSubmit(string templateName)
+    {
+        _modalOpen = false;
+
+        var yaml = ResourceTemplateSerializer.Serialize(Resource, templateName);
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", yaml);
+
+        _copied = true;
+        StateHasChanged();
+
+        await Task.Delay(2000);
+        _copied = false;
+        StateHasChanged();
+    }
+}

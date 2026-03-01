@@ -1,0 +1,13 @@
+# UniFi Cloud Gateway Max
+# https://eu.store.ui.com/eu/en/category/cloud-gateways-compact/collections/cloud-gateway-max/products/ucg-max-ns
+# Compact 2.5G Cloud Gateway | 1.5 Gbps IPS | 30+ devices / 300+ clients
+# (5) 2.5G RJ45 (1 WAN + 4 LAN)
+kind: Router
+name: UniFi-UCG-Max
+model: UniFi-UCG-Max
+ports:
+  - type: rj45
+    speed: 2.5
+    count: 5
+managed: true
+poe: false

@@ -1,0 +1,24 @@
+# GMKtec Nucbox M8 Mini PC
+# https://de.gmktec.com/en/products/gmktec-nucbox-m8-amd-ryzen-5-pro-6650h-mini-pc
+# CPU: AMD Ryzen 5 PRO 6650H (6C/12T, 3.3–4.5 GHz, TSMC 6nm)
+# Dual PCIe 4.0 SSD | Dual 2.5G RJ45 (RTL8125BG) | OCuLink | USB4 | Wi-Fi 6E
+kind: Server
+name: GMKtec-NucBox-M8
+cpus:
+  - model: AMD Ryzen 5 PRO 6650H
+    cores: 6
+    threads: 12
+ram:
+  size: 16
+  mts: 6400
+drives:
+  - type: nvme
+    size: 512
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: AMD Radeon 660M
+    vram: 0
+ipmi: false

@@ -1,0 +1,23 @@
+# Minisforum UM890 Pro Mini PC
+# https://www.minisforum.uk/products/minisforum-um890pro
+# AMD Ryzen 9 8945HS (8C/16T) | Radeon 780M | Dual 2.5G RJ45 | OCuLink
+kind: Server
+name: Minisforum-UM890-Pro
+cpus:
+  - model: AMD Ryzen 9 8945HS
+    cores: 8
+    threads: 16
+ram:
+  size: 32
+  mts: 5600
+drives:
+  - type: nvme
+    size: 1024
+nics:
+  - type: rj45
+    speed: 2.5
+    ports: 2
+gpus:
+  - model: AMD Radeon 780M
+    vram: 0
+ipmi: false

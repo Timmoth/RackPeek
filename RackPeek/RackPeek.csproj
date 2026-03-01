@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -24,6 +24,10 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\templates\**\*.yaml" LinkBase="templates" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,19 @@
+# UniFi Cloud Gateway Fiber (30W PoE)
+# https://eu.store.ui.com/eu/en/category/cloud-gateways-compact/collections/cloud-gateway-fiber/products/ucg-fiber
+# Desktop 10G Cloud Gateway | 5 Gbps IPS | Integrated 4-port 2.5 GbE PoE switch
+# (2) 10G SFP+ + (1) 10G RJ45 + (4) 2.5G RJ45
+kind: Router
+name: UniFi-UCG-Fiber
+model: UniFi-UCG-Fiber
+ports:
+  - type: rj45
+    speed: 2.5
+    count: 4
+  - type: rj45
+    speed: 10
+    count: 1
+  - type: sfp+
+    speed: 10
+    count: 2
+managed: true
+poe: true

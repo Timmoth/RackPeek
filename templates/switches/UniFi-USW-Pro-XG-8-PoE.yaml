@@ -1,0 +1,16 @@
+# UniFi Switch Pro XG 8 PoE (155W)
+# https://eu.store.ui.com/eu/en/category/switching-utility/products/usw-pro-xg-8-poe
+# Compact desktop/wall-mount Layer 3 Etherlighting PoE++ switch
+# (8) 10 GbE RJ45 + (2) 10G SFP+
+kind: Switch
+name: UniFi-USW-Pro-XG-8-PoE
+model: UniFi-USW-Pro-XG-8-PoE
+ports:
+  - type: rj45
+    speed: 10
+    count: 8
+  - type: sfp+
+    speed: 10
+    count: 2
+managed: true
+poe: true
