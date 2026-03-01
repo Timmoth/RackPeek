@@ -2,10 +2,6 @@
 using Microsoft.Extensions.Logging;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources.UpsUnits;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using YamlDotNet.Core;
 
 namespace Tests.Yaml;
 
@@ -66,29 +62,5 @@ public class SchemaMigrationTests
         Assert.NotNull(result.Resources);
         var ups = Assert.IsType<Ups>(result.Resources[0]);
         Assert.Equal(ups.RunsOn, ["rack-a1"]);
-    }
-
-    [Fact]
-    public async Task Test3()
-    {
-        // Arrange
-        var sut = Setup();
-
-        var yaml = """
-                   version: 1
-                   resources:
-                   - kind: Ups
-                     name: example-ups
-                     runsOn: 
-                        - name: rack-a1
-                          location: test
-                        - name: rack-a2
-                          location: somewhere else
-                   """;
-
-        // Act
-        var result = await sut.Deserialize(yaml);
-
-
     }
 }
