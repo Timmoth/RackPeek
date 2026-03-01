@@ -165,15 +165,20 @@
                     class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
                     @bind="_edit.Url"/>
             }
-            else if (!string.IsNullOrWhiteSpace(Service.Network?.Url))
+            else if (!string.IsNullOrWhiteSpace(EffectiveUrl))
             {
-                <a href="@Service.Network!.Url"
+                <a href="@EffectiveUrl"
                    data-testid="service-url-value"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="text-emerald-400 hover:underline break-all">
-                    @Service.Network.Url
+                    @EffectiveUrl
                 </a>
+
+                @if (string.IsNullOrWhiteSpace(Service.Network?.Url))
+                {
+                    <span class="text-zinc-500 text-xs ml-2">(derived)</span>
+                }
             }
         </div>
 
@@ -476,6 +481,11 @@
 
 @code
 {
+    private string? EffectiveUrl =>
+        !string.IsNullOrWhiteSpace(Service.Network?.Url)
+            ? Service.Network!.Url
+            : GetBrowsableHref();
+    
     private string? EffectiveIp;
 
     protected override async Task OnParametersSetAsync()

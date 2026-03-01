@@ -30,13 +30,13 @@ public class UpdateServiceUseCase(IResourceCollection repository) : IUseCase
             service.Network.Ip = ip;
         }
 
-        if (!string.IsNullOrWhiteSpace(protocol))
+        if (protocol != null)
         {
             service.Network ??= new Network();
             service.Network.Protocol = protocol;
         }
 
-        if (!string.IsNullOrWhiteSpace(url))
+        if (url != null)
         {
             service.Network ??= new Network();
             service.Network.Url = url;
