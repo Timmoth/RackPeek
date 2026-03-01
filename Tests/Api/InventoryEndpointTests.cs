@@ -473,4 +473,239 @@ public class InventoryEndpointTests(ITestOutputHelper output) : ApiTestBase(outp
         Assert.Single(result!.Replaced);
     }
     
+    
+    [Fact]
+    public async Task Providing_Both_Yaml_And_Json_Returns_400()
+    {
+        var client = CreateClient(withApiKey: true);
+
+        var response = await client.PostAsJsonAsync("/api/inventory",
+            new
+            {
+                yaml = "resources: []",
+                json = new { resources = Array.Empty<object>() }
+            });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+    
+    [Fact]
+    public async Task Empty_Request_Returns_400()
+    {
+        var client = CreateClient(withApiKey: true);
+
+        var response = await client.PostAsJsonAsync("/api/inventory", new { });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+    
+    [Fact]
+    public async Task Version_1_Config_Is_Accepted()
+    {
+        var client = CreateClient(withApiKey: true);
+
+        var yaml = """
+                   version: 1
+                   resources:
+                     - kind: Server
+                       name: v1-server
+                   """;
+
+        var response = await client.PostAsJsonAsync("/api/inventory", new { yaml });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var result = await response.Content.ReadFromJsonAsync<ImportYamlResponse>();
+        Assert.Single(result!.Added);
+    }
+    
+    [Fact]
+    public async Task Replace_Removes_Existing_Fields()
+    {
+        var client = CreateClient(withApiKey: true);
+
+        var initial = """
+                      resources:
+                        - kind: Server
+                          name: destructive-test
+                          ipmi: true
+                      """;
+
+        await client.PostAsJsonAsync("/api/inventory", new { yaml = initial });
+
+        var replace = """
+                      resources:
+                        - kind: Server
+                          name: destructive-test
+                      """;
+
+        var response = await client.PostAsJsonAsync("/api/inventory",
+            new { yaml = replace, mode = "Replace" });
+
+        var result = await response.Content.ReadFromJsonAsync<ImportYamlResponse>();
+
+        Assert.Single(result!.Replaced);
+
+        Assert.Contains("destructive-test", result.OldYaml.Keys);
+        Assert.Contains("destructive-test", result.NewYaml.Keys);
+    }
+    
+    [Fact]
+    public async Task Merge_Does_Not_Affect_Unspecified_Resources()
+    {
+        var client = CreateClient(withApiKey: true);
+
+        var full = await File.ReadAllTextAsync("TestConfigs/v2/11-demo-config.yaml");
+        await client.PostAsJsonAsync("/api/inventory", new { yaml = full });
+
+        var update = """
+                     resources:
+                       - kind: Server
+                         name: proxmox-node01
+                         ipmi: false
+                     """;
+
+        var response = await client.PostAsJsonAsync("/api/inventory",
+            new { yaml = update, mode = "Merge" });
+
+        var result = await response.Content.ReadFromJsonAsync<ImportYamlResponse>();
+
+        Assert.Single(result!.Updated);
+        Assert.DoesNotContain("proxmox-node02", result.Updated);
+    }
+    
+    [Fact]
+    public async Task Json_Input_Resolves_Polymorphic_Resource()
+    {
+        var client = CreateClient(withApiKey: true);
+
+        var response = await client.PostAsJsonAsync("/api/inventory",
+            new
+            {
+                json = new
+                {
+                    version = 2,
+                    resources = new[]
+                    {
+                        new { kind = "Firewall", name = "json-fw", model = "Test" }
+                    }
+                }
+            });
+
+        var result = await response.Content.ReadFromJsonAsync<ImportYamlResponse>();
+
+        Assert.Single(result!.Added);
+        Assert.Contains("json-fw", result.Added);
+    }
+    
+    [Fact]
+    public async Task Large_Config_Is_Fully_Idempotent()
+    {
+        var client = CreateClient(withApiKey: true);
+        var yaml = await File.ReadAllTextAsync("TestConfigs/v2/11-demo-config.yaml");
+
+        await client.PostAsJsonAsync("/api/inventory", new { yaml });
+
+        var response = await client.PostAsJsonAsync("/api/inventory",
+            new { yaml });
+
+        var result = await response.Content.ReadFromJsonAsync<ImportYamlResponse>();
+
+        Assert.Empty(result!.Added);
+        Assert.Empty(result.Updated);
+        Assert.Empty(result.Replaced);
+    }
+    
+    [Fact]
+    public async Task Unknown_Kind_Returns_400()
+    {
+        var client = CreateClient(withApiKey: true);
+
+        var yaml = """
+                   resources:
+                     - kind: UnknownThing
+                       name: mystery
+                   """;
+
+        var response = await client.PostAsJsonAsync("/api/inventory", new { yaml });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+    
+    [Fact]
+    public async Task DryRun_Does_Not_Persist_Snapshots()
+    {
+        var client = CreateClient(withApiKey: true);
+
+        var yaml = """
+                   resources:
+                     - kind: Server
+                       name: dry-snapshot
+                   """;
+
+        var response = await client.PostAsJsonAsync("/api/inventory",
+            new { yaml, dryRun = true });
+
+        var result = await response.Content.ReadFromJsonAsync<ImportYamlResponse>();
+
+        Assert.Empty(result!.OldYaml);
+    }
+    
+    
+    [Fact]
+    public async Task Reordering_List_Does_Not_Count_As_Update()
+    {
+        var client = CreateClient(withApiKey: true);
+
+        var initial = """
+                      resources:
+                        - kind: Server
+                          name: order-test
+                          drives:
+                            - type: ssd
+                              size: 1024
+                            - type: hdd
+                              size: 4096
+                      """;
+
+        await client.PostAsJsonAsync("/api/inventory", new { yaml = initial });
+
+        var reordered = """
+                        resources:
+                          - kind: Server
+                            name: order-test
+                            drives:
+                              - type: hdd
+                                size: 4096
+                              - type: ssd
+                                size: 1024
+                        """;
+
+        var response = await client.PostAsJsonAsync("/api/inventory",
+            new { yaml = reordered });
+
+        var result = await response.Content.ReadFromJsonAsync<ImportYamlResponse>();
+
+        Assert.Single(result!.Updated);
+        Assert.Contains("order-test", result.Updated);
+        
+    }
+    
+    [Fact]
+    public async Task Duplicate_Names_In_Same_Request_Returns_400()
+    {
+        var client = CreateClient(withApiKey: true);
+
+        var yaml = """
+                   resources:
+                     - kind: Server
+                       name: dup
+                     - kind: Server
+                       name: dup
+                   """;
+
+        var response = await client.PostAsJsonAsync("/api/inventory", new { yaml });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }

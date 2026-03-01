@@ -31,6 +31,10 @@ public class UpsertInventoryUseCase(
         if (string.IsNullOrWhiteSpace(request.Yaml) && request.Json == null)
             throw new ValidationException("Either 'yaml' or 'json' must be provided.");
         
+        if (!string.IsNullOrWhiteSpace(request.Yaml) && request.Json != null)
+            throw new ValidationException("Provide either 'yaml' or 'json', not both.");
+        
+        
         YamlRoot incomingRoot;
         string yamlInput;
 
@@ -66,13 +70,18 @@ public class UpsertInventoryUseCase(
         if (incomingRoot.Resources == null)
             throw new ValidationException("Missing 'resources' section.");
 
-        // -------------------------------------------------------
-        // 2️⃣ Compute Diff
-        // -------------------------------------------------------
+        // 2️Compute Diff
 
         var incomingResources = incomingRoot.Resources;
         var currentResources = await repo.GetAllOfTypeAsync<Resource>();
 
+        var duplicate = incomingResources
+            .GroupBy(r => r.Name, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault(g => g.Count() > 1);
+
+        if (duplicate != null)
+            throw new ValidationException($"Duplicate resource name: {duplicate.Key}");
+        
         var currentDict = currentResources
             .ToDictionary(r => r.Name, StringComparer.OrdinalIgnoreCase);
 

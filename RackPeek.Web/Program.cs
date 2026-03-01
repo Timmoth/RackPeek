@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using RackPeek.Domain;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
-using RackPeek.Web.Api;               // <-- needed for MapInventoryApi
+using RackPeek.Web.Api;
 using RackPeek.Web.Components;
 using Shared.Rcl;
 
