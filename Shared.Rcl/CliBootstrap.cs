@@ -75,8 +75,7 @@ public static class CliBootstrap
         var resolvedYamlDir = Path.IsPathRooted(yamlDir)
             ? yamlDir
             : Path.Combine(appBasePath, yamlDir);
-
-
+        
         Directory.CreateDirectory(resolvedYamlDir);
 
         var fullYamlPath = Path.Combine(resolvedYamlDir, yamlFile);

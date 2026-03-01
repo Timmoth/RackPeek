@@ -1,14 +1,10 @@
 ﻿@page "/yaml/import"
 <PageTitle>Yaml Import</PageTitle>
 
+@using RackPeek.Domain.Api
 @using RackPeek.Domain.Persistence
-@using RackPeek.Domain.Persistence.Yaml
-@using RackPeek.Domain.Resources
-@using YamlDotNet.Serialization
-@using YamlDotNet.Serialization.NamingConventions
 
-@inject IResourceCollection Resources
-@inject IResourceYamlMigrationService MigrationService
+@inject UpsertInventoryUseCase ImportUseCase
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900 mt-6">
 
@@ -192,7 +188,6 @@
         _mode = mode;
         await ComputeDiff();
     }
-
     async Task ComputeDiff()
     {
         _validationError = null;
@@ -209,67 +204,19 @@
 
         try
         {
-            // Force deserialization to throw if invalid
-            var incomingRoot = await MigrationService.DeserializeAsync(_inputYaml);
-
-            if (incomingRoot?.Resources == null)
-                throw new Exception("YAML structure invalid or missing 'resources' section.");
-
-            var incomingResources = incomingRoot.Resources;
-            var currentResources = await Resources.GetAllOfTypeAsync<Resource>();
-
-            var currentDict = currentResources
-                .ToDictionary(r => r.Name, StringComparer.OrdinalIgnoreCase);
-
-            var serializer = new SerializerBuilder()
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                .ConfigureDefaultValuesHandling(
-                    DefaultValuesHandling.OmitNull |
-                    DefaultValuesHandling.OmitEmptyCollections)
-                .Build();
-
-            // SNAPSHOT current BEFORE merge
-            var oldSnapshots = currentResources
-                .ToDictionary(
-                    r => r.Name,
-                    r => serializer.Serialize(r),
-                    StringComparer.OrdinalIgnoreCase);
-
-            // Perform merge
-            var mergedResources = ResourceCollectionMerger.Merge(
-                currentResources,
-                incomingResources,
-                _mode);
-
-            var mergedDict = mergedResources
-                .ToDictionary(r => r.Name, StringComparer.OrdinalIgnoreCase);
-
-            foreach (var incoming in incomingResources)
+            var result = await ImportUseCase.ExecuteAsync(new ImportYamlRequest
             {
-                if (!mergedDict.TryGetValue(incoming.Name, out var merged))
-                    continue;
+                Yaml = _inputYaml,
+                Mode = _mode,
+                DryRun = true
+            });
 
-                var newYaml = serializer.Serialize(merged);
-                _newYaml[incoming.Name] = newYaml;
+            _added = result.Added;
+            _updated = result.Updated;
+            _replaced = result.Replaced;
 
-                if (!currentDict.ContainsKey(incoming.Name))
-                {
-                    _added.Add(incoming.Name);
-                    continue;
-                }
-
-                var oldYaml = oldSnapshots[incoming.Name];
-                _oldYaml[incoming.Name] = oldYaml;
-
-                if (_mode == MergeMode.Replace)
-                {
-                    _replaced.Add(incoming.Name);
-                }
-                else if (oldYaml != newYaml)
-                {
-                    _updated.Add(incoming.Name);
-                }
-            }
+            _oldYaml = result.OldYaml;
+            _newYaml = result.NewYaml;
 
             _isValid = true;
         }
@@ -286,7 +233,12 @@
 
         try
         {
-            await Resources.Merge(_inputYaml, _mode);
+            await ImportUseCase.ExecuteAsync(new ImportYamlRequest
+            {
+                Yaml = _inputYaml,
+                Mode = _mode,
+                DryRun = false
+            });
 
             _inputYaml = "";
             _isValid = false;
@@ -294,8 +246,6 @@
             _added.Clear();
             _updated.Clear();
             _replaced.Clear();
-            _oldYaml.Clear();
-            _newYaml.Clear();
         }
         catch (Exception ex)
         {
