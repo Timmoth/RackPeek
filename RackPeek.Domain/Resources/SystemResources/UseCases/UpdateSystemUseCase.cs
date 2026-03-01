@@ -11,6 +11,7 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         string? os = null,
         int? cores = null,
         double? ram = null,
+        string? ip = null,
         List<string>? runsOn = null,
         string? notes = null
     )
@@ -42,6 +43,11 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         if (ram.HasValue)
             system.Ram = ram.Value;
 
+        if (ip != null)
+        {
+            system.Ip = ip;
+        }
+        
         if (notes != null) system.Notes = notes;
 
         if (runsOn?.Count > 0)

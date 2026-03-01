@@ -1,0 +1,159 @@
+﻿@page "/subnets"
+@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources
+@inject IResourceCollection ResourceCollection
+
+<div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6"
+     data-testid="subnet-browser-root">
+
+    <h1 class="text-lg text-zinc-100"
+        data-testid="subnet-browser-title">
+        Subnet Browser
+    </h1>
+
+    <!-- Filter -->
+    <div>
+        <input
+            data-testid="subnet-browser-filter"
+            placeholder="Filter by IP (e.g. 10.0.99)"
+            class="w-full px-3 py-2 rounded-md
+           bg-zinc-800 text-zinc-100
+           border border-zinc-700
+           focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            @bind="Filter"
+            @bind:event="oninput" />
+    </div>
+
+    @if (_grouped is null)
+    {
+        <div class="text-zinc-500"
+             data-testid="subnet-browser-loading">
+            loading…
+        </div>
+    }
+    else if (!_grouped.Any())
+    {
+        <div class="text-zinc-500"
+             data-testid="subnet-browser-empty">
+            no matching IPs found
+        </div>
+    }
+    else
+    {
+        <div class="space-y-6"
+             data-testid="subnet-browser-list">
+
+            @foreach (var subnetGroup in _grouped.OrderBy(x => x.Key))
+            {
+                <div data-testid=@($"subnet-group-{subnetGroup.Key.Replace('.', '-')}")>
+
+                    <!-- Subnet Header -->
+                    <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
+                        @subnetGroup.Key
+                    </div>
+
+                    <ul class="ml-2 border-l border-zinc-800 pl-4 space-y-3">
+                        @foreach (var ipGroup in subnetGroup.Value.OrderBy(x => x.Key))
+                        {
+                            <li>
+
+                                <!-- IP -->
+                                <div class="text-zinc-100">
+                                    ├─ @ipGroup.Key
+                                </div>
+
+                                <!-- Resources on this IP -->
+                                <ul class="ml-4 mt-2 border-l border-zinc-800 pl-4 space-y-1">
+                                    @foreach (var (resource, _) in ipGroup.Value)
+                                    {
+                                        var url = GetResourceUrl(resource);
+
+                                        <li class="text-zinc-500 hover:text-emerald-300">
+                                            <NavLink href="@url" class="block">
+                                                └─ @resource.Name (@resource.GetType().Name.Replace("Resource",""))
+                                            </NavLink>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+
+                </div>
+            }
+
+        </div>
+    }
+</div>
+@code {
+
+    private string _filter = string.Empty;
+
+    private IReadOnlyList<(Resource resource, string ip)> _all = [];
+
+    private Dictionary<string, Dictionary<string, List<(Resource, string)>>>? _grouped;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _all = await ResourceCollection.GetResourceIpsAsync();
+        ApplyFilter();
+    }
+
+    private string Filter
+    {
+        get => _filter;
+        set
+        {
+            if (_filter == value)
+                return;
+
+            _filter = value;
+            ApplyFilter();
+        }
+    }
+
+    private void ApplyFilter()
+    {
+        var filtered = string.IsNullOrWhiteSpace(_filter)
+            ? _all
+            : _all.Where(x =>
+                    x.ip.Contains(_filter, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+        _grouped = filtered
+            .Where(x => !string.IsNullOrWhiteSpace(x.ip))
+            .GroupBy(x => GetSubnet(x.ip))
+            .ToDictionary(
+                g => g.Key,
+                g => g.GroupBy(x => x.ip)
+                    .ToDictionary(
+                        ip => ip.Key,
+                        ip => ip.ToList()
+                    )
+            );
+
+        StateHasChanged();
+    }
+
+    private string GetSubnet(string ip)
+    {
+        var parts = ip.Split('.');
+        return parts.Length == 4
+            ? $"{parts[0]}.{parts[1]}.{parts[2]}.x"
+            : "unknown";
+    }
+
+    private string GetResourceUrl(Resource resource)
+    {
+        return resource switch
+        {
+            RackPeek.Domain.Resources.SystemResources.SystemResource
+                => $"resources/systems/{Uri.EscapeDataString(resource.Name)}",
+
+            RackPeek.Domain.Resources.Services.Service
+                => $"resources/services/{Uri.EscapeDataString(resource.Name)}",
+
+            _ => "#"
+        };
+    }
+}

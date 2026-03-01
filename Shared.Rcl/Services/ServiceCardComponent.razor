@@ -1,8 +1,10 @@
+@using RackPeek.Domain.Resources.SystemResources
 @inject UpdateServiceUseCase UpdateUseCase
 @inject IGetResourceByNameUseCase<Service> GetByNameUseCase
 @inject IDeleteResourceUseCase<Service> DeleteUseCase
 @inject ICloneResourceUseCase<Service> CloneUseCase
 @inject IRenameResourceUseCase<Service> RenameUseCase
+@inject IGetResourceByNameUseCase<SystemResource> GetSystemByNameUseCase
 @inject NavigationManager Nav
 
 <div class="border border-zinc-800 rounded p-4 bg-zinc-900"
@@ -82,11 +84,16 @@
                    border border-zinc-600"
                     @bind="_edit.Ip"/>
             }
-            else if (!string.IsNullOrWhiteSpace(Service.Network?.Ip))
+            else if (!string.IsNullOrWhiteSpace(EffectiveIp))
             {
                 <div class="text-zinc-300"
                      data-testid="service-ip-value">
-                    @Service.Network!.Ip
+                    @EffectiveIp
+
+                    @if (string.IsNullOrWhiteSpace(Service.Network?.Ip))
+                    {
+                        <span class="text-zinc-500 text-xs ml-2">(inherited)</span>
+                    }
                 </div>
             }
         </div>
@@ -158,15 +165,20 @@
                     class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
                     @bind="_edit.Url"/>
             }
-            else if (!string.IsNullOrWhiteSpace(Service.Network?.Url))
+            else if (!string.IsNullOrWhiteSpace(EffectiveUrl))
             {
-                <a href="@Service.Network!.Url"
+                <a href="@EffectiveUrl"
                    data-testid="service-url-value"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="text-emerald-400 hover:underline break-all">
-                    @Service.Network.Url
+                    @EffectiveUrl
                 </a>
+
+                @if (string.IsNullOrWhiteSpace(Service.Network?.Url))
+                {
+                    <span class="text-zinc-500 text-xs ml-2">(derived)</span>
+                }
             }
         </div>
 
@@ -333,8 +345,10 @@
             _edit.RunsOn,
             _edit.Notes
         );
-
+        
         await OnSave.InvokeAsync(Service.Name);
+        await ResolveEffectiveIp();
+
     }
 
     void Cancel()
@@ -444,7 +458,7 @@
 
     private string? GetBrowsableHref()
     {
-        var ip = Service.Network?.Ip;
+        var ip = Service.Network?.Ip ?? EffectiveIp;
         var port = Service.Network?.Port;
 
         if (string.IsNullOrWhiteSpace(ip) || port is null)
@@ -462,5 +476,46 @@
         // Build a correct absolute URL
         var ub = new UriBuilder(scheme, ip) { Port = port.Value };
         return ub.Uri.ToString();
+    }
+}
+
+@code
+{
+    private string? EffectiveUrl =>
+        !string.IsNullOrWhiteSpace(Service.Network?.Url)
+            ? Service.Network!.Url
+            : GetBrowsableHref();
+    
+    private string? EffectiveIp;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ResolveEffectiveIp();
+    }
+
+    private async Task ResolveEffectiveIp()
+    {
+        // If service has its own IP, use it
+        if (!string.IsNullOrWhiteSpace(Service.Network?.Ip))
+        {
+            EffectiveIp = Service.Network!.Ip;
+            return;
+        }
+
+        // Must have exactly one parent
+        if (Service.RunsOn?.Count != 1)
+        {
+            EffectiveIp = null;
+            return;
+        }
+
+        var parentName = Service.RunsOn.First();
+
+        // Load parent system
+        var parent = await GetSystemByNameUseCase.ExecuteAsync(parentName);
+
+        EffectiveIp = string.IsNullOrWhiteSpace(parent?.Ip)
+            ? null
+            : parent.Ip;
     }
 }

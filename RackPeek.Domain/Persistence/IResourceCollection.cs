@@ -30,7 +30,12 @@ public interface IResourceCollection
     Task<IReadOnlyList<(Resource, string)>> GetByLabelAsync(string name);
     public Task<Dictionary<string, int>> GetLabelsAsync();
     
+    Task<IReadOnlyList<(Resource, string)>> GetResourceIpsAsync();
 
     Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>();
     Task<IReadOnlyList<Resource>> GetDependantsAsync(string name);
+
+    Task Merge(string incomingYaml, MergeMode mode);
+
+
 }

@@ -24,19 +24,19 @@ public class UpdateServiceUseCase(IResourceCollection repository) : IUseCase
         if (service is null)
             throw new NotFoundException($"Service '{name}' not found.");
 
-        if (!string.IsNullOrWhiteSpace(ip))
+        if (ip != null)
         {
             service.Network ??= new Network();
             service.Network.Ip = ip;
         }
 
-        if (!string.IsNullOrWhiteSpace(protocol))
+        if (protocol != null)
         {
             service.Network ??= new Network();
             service.Network.Protocol = protocol;
         }
 
-        if (!string.IsNullOrWhiteSpace(url))
+        if (url != null)
         {
             service.Network ??= new Network();
             service.Network.Url = url;

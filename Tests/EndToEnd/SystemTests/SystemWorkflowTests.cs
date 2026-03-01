@@ -133,6 +133,7 @@ public async Task systems_cli_workflow_runs_on_hardware_and_systems_test()
         "--os", "debian-12",
         "--cores", "2",
         "--ram", "4",
+        "--ip", "10.0.20.10",
         "--runs-on", "proxmox-node01"
     );
     Assert.Equal("System 'sys01' updated.\n", output);
@@ -168,6 +169,7 @@ public async Task systems_cli_workflow_runs_on_hardware_and_systems_test()
                    os: debian-12
                    cores: 2
                    ram: 4
+                   ip: 10.0.20.10
                    name: sys01
                    runsOn:
                    - proxmox-node01

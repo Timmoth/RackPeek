@@ -323,6 +323,7 @@
                 "container", "embedded", "cloud", "other"
               ]
             },
+            "ip": { "type": "string" },
             "os": { "type": "string" },
             "cores": { "type": "integer", "minimum": 1 },
             "ram": { "type": "number", "minimum": 0 },
