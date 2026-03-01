@@ -137,6 +137,115 @@
 }
 
 /* ============================= */
+/* Alert Blocks / Admonitions */
+/* ============================= */
+
+.markdown .markdown-alert {
+    padding: 0.8em 1em;
+    margin: 1.2em 0;
+    border-left: 4px solid;
+    border-radius: 6px;
+    background: #18181b;
+    color: #e4e4e7;
+}
+
+.markdown .markdown-alert > :first-child {
+    margin-top: 0;
+}
+
+.markdown .markdown-alert > :last-child {
+    margin-bottom: 0;
+}
+
+.markdown .markdown-alert-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.4em;
+}
+
+.markdown .markdown-alert-title svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    fill: currentColor;
+}
+
+.markdown .markdown-alert-note {
+    border-left-color: #60a5fa;
+}
+
+.markdown .markdown-alert-note .markdown-alert-title {
+    color: #60a5fa;
+}
+
+.markdown .markdown-alert-tip {
+    border-left-color: #34d399;
+}
+
+.markdown .markdown-alert-tip .markdown-alert-title {
+    color: #34d399;
+}
+
+.markdown .markdown-alert-important {
+    border-left-color: #c084fc;
+}
+
+.markdown .markdown-alert-important .markdown-alert-title {
+    color: #c084fc;
+}
+
+.markdown .markdown-alert-warning {
+    border-left-color: #fbbf24;
+}
+
+.markdown .markdown-alert-warning .markdown-alert-title {
+    color: #fbbf24;
+}
+
+.markdown .markdown-alert-caution {
+    border-left-color: #f87171;
+}
+
+.markdown .markdown-alert-caution .markdown-alert-title {
+    color: #f87171;
+}
+
+/* ============================= */
+/* Abstract / Summary Container */
+/* ============================= */
+
+.markdown .abstract {
+    padding: 0.8em 1em;
+    margin: 1.2em 0;
+    border-left: 4px solid #22d3ee;
+    border-radius: 6px;
+    background: #18181b;
+    color: #e4e4e7;
+}
+
+.markdown .abstract::before {
+    content: "Abstract";
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.4em;
+    color: #22d3ee;
+}
+
+.markdown .abstract > :first-child {
+    margin-top: 0;
+}
+
+.markdown .abstract > :last-child {
+    margin-bottom: 0;
+}
+
+/* ============================= */
 /* Horizontal Rule */
 /* ============================= */
 
