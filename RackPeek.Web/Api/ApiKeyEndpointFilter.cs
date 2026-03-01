@@ -12,7 +12,7 @@ public class ApiKeyEndpointFilter(IConfiguration configuration) : IEndpointFilte
         EndpointFilterDelegate next)
     {
         var expectedKey = configuration["RPK_API_KEY"];
-
+        
         if (string.IsNullOrWhiteSpace(expectedKey))
             return Results.StatusCode(503);
 
