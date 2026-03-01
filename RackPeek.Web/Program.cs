@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using RackPeek.Domain;
@@ -59,7 +60,6 @@ public class Program
             };
         });
 
-
         var resources = new ResourceCollection();
         builder.Services.AddSingleton(resources);
         builder.Services.AddScoped<RackPeekConfigMigrationDeserializer>();
@@ -83,8 +83,17 @@ public class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
+        builder.Services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.Converters.Add(
+                new JsonStringEnumConverter());
+        });
+        
         var app = builder.Build();
-
+        if (string.IsNullOrWhiteSpace(builder.Configuration["RPK_API_KEY"]))
+        {
+            app.Logger.LogWarning("RPK_API_KEY is not configured. API endpoints will return 503.");
+        }
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
         {
@@ -107,6 +116,7 @@ public class Program
 
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
+        
 
         return app;
     }

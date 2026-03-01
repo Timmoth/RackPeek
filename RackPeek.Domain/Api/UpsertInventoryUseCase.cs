@@ -1,240 +1,139 @@
 using System.ComponentModel.DataAnnotations;
-using RackPeek.Domain.Helpers;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
-using RackPeek.Domain.Resources.Desktops;
-using RackPeek.Domain.Resources.Laptops;
-using RackPeek.Domain.Resources.Servers;
-using RackPeek.Domain.Resources.SubResources;
-using RackPeek.Domain.Resources.SystemResources;
+using RackPeek.Domain.Persistence.Yaml;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace RackPeek.Domain.Api;
 
-public class UpsertInventoryUseCase(IResourceCollection repo) : IUseCase
+public class UpsertInventoryUseCase(
+    IResourceCollection repo,
+    IResourceYamlMigrationService migrationService)
+    : IUseCase
 {
-    public async Task<InventoryResponse> ExecuteAsync(InventoryRequest request)
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        await repo.LoadAsync();
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = false,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        TypeInfoResolver = ResourcePolymorphismResolver.Create()
+    };
 
-        var response = new InventoryResponse();
+    public async Task<ImportYamlResponse> ExecuteAsync(ImportYamlRequest request)
+    {
+        if (request == null)
+            throw new ValidationException("Invalid request.");
 
-        var hostname = Normalize.HardwareName(request.Hostname);
-        ThrowIfInvalid.ResourceName(hostname);
+        if (string.IsNullOrWhiteSpace(request.Yaml) && request.Json == null)
+            throw new ValidationException("Either 'yaml' or 'json' must be provided.");
+        
+        YamlRoot incomingRoot;
+        string yamlInput;
 
-        // Upsert hardware resource
-        var existing = await repo.GetByNameAsync(hostname);
-        var hardwareAction = existing != null ? "updated" : "created";
-
-        var hardware = BuildHardware(request, hostname);
-
-        if (existing != null)
-            await repo.UpdateAsync(hardware);
+        if (!string.IsNullOrWhiteSpace(request.Yaml))
+        {
+            yamlInput = request.Yaml!;
+            incomingRoot = await migrationService.DeserializeAsync(yamlInput)
+                           ?? throw new ValidationException("Invalid YAML structure.");
+        }
         else
-            await repo.AddAsync(hardware);
-
-        response.Hardware = new ResourceResult
         {
-            Name = hostname,
-            Kind = GetKind(hardware.GetType()),
-            Action = hardwareAction
-        };
+            if (request.Json is not JsonElement element)
+                throw new ValidationException("Invalid JSON payload.");
+            
+            var rawJson = element.GetRawText();
+            incomingRoot = JsonSerializer.Deserialize<YamlRoot>(
+                               rawJson,
+                               JsonOptions)
+                           ?? throw new ValidationException("Invalid JSON structure.");
+            // Generate YAML only for persistence layer
+            var yamlSerializer = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .WithTypeConverter(new StorageSizeYamlConverter())
+                .WithTypeConverter(new NotesStringYamlConverter())
+                .ConfigureDefaultValuesHandling(
+                    DefaultValuesHandling.OmitNull |
+                    DefaultValuesHandling.OmitEmptyCollections)
+                .Build();
 
-        // Upsert system resource if system fields are provided
-        if (HasSystemFields(request))
+            yamlInput = yamlSerializer.Serialize(incomingRoot);
+        }
+
+        if (incomingRoot.Resources == null)
+            throw new ValidationException("Missing 'resources' section.");
+
+        // -------------------------------------------------------
+        // 2️⃣ Compute Diff
+        // -------------------------------------------------------
+
+        var incomingResources = incomingRoot.Resources;
+        var currentResources = await repo.GetAllOfTypeAsync<Resource>();
+
+        var currentDict = currentResources
+            .ToDictionary(r => r.Name, StringComparer.OrdinalIgnoreCase);
+
+        var serializerDiff = new SerializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .ConfigureDefaultValuesHandling(
+                DefaultValuesHandling.OmitNull |
+                DefaultValuesHandling.OmitEmptyCollections)
+            .Build();
+
+        var oldSnapshots = currentResources
+            .ToDictionary(
+                r => r.Name,
+                r => serializerDiff.Serialize(r),
+                StringComparer.OrdinalIgnoreCase);
+
+        var mergedResources = ResourceCollectionMerger.Merge(
+            currentResources,
+            incomingResources,
+            request.Mode);
+
+        var mergedDict = mergedResources
+            .ToDictionary(r => r.Name, StringComparer.OrdinalIgnoreCase);
+
+        var response = new ImportYamlResponse();
+
+        foreach (var incoming in incomingResources)
         {
-            var systemName = Normalize.SystemName(request.SystemName ?? $"{hostname}-system");
-            ThrowIfInvalid.ResourceName(systemName);
+            if (!mergedDict.TryGetValue(incoming.Name, out var merged))
+                continue;
 
-            var existingSystem = await repo.GetByNameAsync(systemName);
-            var systemAction = existingSystem != null ? "updated" : "created";
+            var newYaml = serializerDiff.Serialize(merged);
+            response.NewYaml[incoming.Name] = newYaml;
 
-            var system = BuildSystem(request, systemName, hostname);
-
-            if (existingSystem != null)
-                await repo.UpdateAsync(system);
-            else
-                await repo.AddAsync(system);
-
-            response.System = new ResourceResult
+            if (!currentDict.ContainsKey(incoming.Name))
             {
-                Name = systemName,
-                Kind = SystemResource.KindLabel,
-                Action = systemAction
-            };
+                response.Added.Add(incoming.Name);
+                continue;
+            }
+
+            var oldYaml = oldSnapshots[incoming.Name];
+            response.OldYaml[incoming.Name] = oldYaml;
+
+            var existing = currentDict[incoming.Name];
+
+            if (request.Mode == MergeMode.Replace ||
+                existing.GetType() != incoming.GetType())
+            {
+                response.Replaced.Add(incoming.Name);
+            }
+            else if (oldYaml != newYaml)
+            {
+                response.Updated.Add(incoming.Name);
+            }
+        }
+
+        if (!request.DryRun)
+        {
+            await repo.Merge(yamlInput, request.Mode);
         }
 
         return response;
-    }
-
-    private static Resource BuildHardware(InventoryRequest request, string hostname)
-    {
-        var type = request.HardwareType.Trim().ToLowerInvariant();
-
-        var ram = (request.RamGb != null || request.RamMts != null)
-            ? new Ram { Size = request.RamGb, Mts = request.RamMts }
-            : null;
-
-        var cpus = MapCpus(request.Cpus);
-        var drives = MapDrives(request.Drives);
-        var gpus = MapGpus(request.Gpus);
-        var nics = MapNics(request.Nics);
-
-        var tags = request.Tags ?? [];
-        var labels = request.Labels ?? new Dictionary<string, string>();
-
-        return type switch
-        {
-            "server" => new Server
-            {
-                Name = hostname,
-                Ram = ram,
-                Ipmi = request.Ipmi,
-                Cpus = cpus,
-                Drives = drives,
-                Gpus = gpus,
-                Nics = nics,
-                Tags = tags,
-                Labels = labels,
-                Notes = request.Notes
-            },
-            "desktop" => new Desktop
-            {
-                Name = hostname,
-                Ram = ram,
-                Model = request.Model
-                    ?? throw new ValidationException("Model is required for desktop hardware type."),
-                Cpus = cpus,
-                Drives = drives,
-                Gpus = gpus,
-                Nics = nics,
-                Tags = tags,
-                Labels = labels,
-                Notes = request.Notes
-            },
-            "laptop" => new Laptop
-            {
-                Name = hostname,
-                Ram = ram,
-                Model = request.Model,
-                Cpus = cpus,
-                Drives = drives,
-                Gpus = gpus,
-                Tags = tags,
-                Labels = labels,
-                Notes = request.Notes
-            },
-            _ => throw new ValidationException(
-                $"Hardware type '{request.HardwareType}' is not valid. Valid types: server, desktop, laptop.")
-        };
-    }
-
-    private static SystemResource BuildSystem(InventoryRequest request, string systemName, string hostname)
-    {
-        if (request.SystemType != null)
-        {
-            var normalizedType = Normalize.SystemType(request.SystemType);
-            ThrowIfInvalid.SystemType(normalizedType);
-        }
-
-        return new SystemResource
-        {
-            Name = systemName,
-            Type = request.SystemType != null ? Normalize.SystemType(request.SystemType) : null,
-            Os = request.Os,
-            Cores = request.Cores,
-            Ram = request.SystemRam,
-            Drives = MapDrives(request.SystemDrives),
-            RunsOn = [hostname],
-            Tags = request.Tags ?? [],
-            Labels = request.Labels ?? new Dictionary<string, string>(),
-            Notes = request.Notes
-        };
-    }
-
-    private static bool HasSystemFields(InventoryRequest request)
-    {
-        return request.Os != null
-            || request.SystemType != null
-            || request.Cores != null
-            || request.SystemRam != null
-            || request.SystemDrives is { Count: > 0 };
-    }
-
-    private static List<Cpu>? MapCpus(List<InventoryCpu>? cpus)
-    {
-        return cpus?.Select(c => new Cpu
-        {
-            Model = c.Model,
-            Cores = c.Cores,
-            Threads = c.Threads
-        }).ToList();
-    }
-
-    private static List<Drive>? MapDrives(List<InventoryDrive>? drives)
-    {
-        if (drives == null) return null;
-
-        foreach (var d in drives)
-        {
-            if (d.Type != null)
-            {
-                d.Type = Normalize.DriveType(d.Type);
-                ThrowIfInvalid.DriveType(d.Type);
-            }
-
-            if (d.Size.HasValue)
-                ThrowIfInvalid.DriveSize(d.Size.Value);
-        }
-
-        return drives.Select(d => new Drive
-        {
-            Type = d.Type,
-            Size = d.Size
-        }).ToList();
-    }
-
-    private static List<Gpu>? MapGpus(List<InventoryGpu>? gpus)
-    {
-        return gpus?.Select(g => new Gpu
-        {
-            Model = g.Model,
-            Vram = g.Vram
-        }).ToList();
-    }
-
-    private static List<Nic>? MapNics(List<InventoryNic>? nics)
-    {
-        if (nics == null) return null;
-
-        foreach (var n in nics)
-        {
-            if (n.Type != null)
-            {
-                n.Type = Normalize.NicType(n.Type);
-                ThrowIfInvalid.NicType(n.Type);
-            }
-
-            if (n.Speed.HasValue)
-                ThrowIfInvalid.NicSpeed(n.Speed.Value);
-
-            if (n.Ports.HasValue)
-                ThrowIfInvalid.NicPorts(n.Ports.Value);
-        }
-
-        return nics.Select(n => new Nic
-        {
-            Type = n.Type,
-            Speed = n.Speed,
-            Ports = n.Ports
-        }).ToList();
-    }
-
-    private static string GetKind(Type resourceType)
-    {
-        if (resourceType == typeof(Server)) return Server.KindLabel;
-        if (resourceType == typeof(Desktop)) return Desktop.KindLabel;
-        if (resourceType == typeof(Laptop)) return Laptop.KindLabel;
-        if (resourceType == typeof(SystemResource)) return SystemResource.KindLabel;
-        throw new InvalidOperationException($"Unknown resource type: {resourceType.Name}");
     }
 }

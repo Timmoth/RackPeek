@@ -1,14 +1,14 @@
 namespace RackPeek.Domain.Api;
 
-public class InventoryResponse
+public class ImportYamlResponse
 {
-    public ResourceResult Hardware { get; set; } = new();
-    public ResourceResult? System { get; set; }
-}
+    public List<string> Added { get; set; } = new();
+    public List<string> Updated { get; set; } = new();
+    public List<string> Replaced { get; set; } = new();
 
-public class ResourceResult
-{
-    public string Name { get; set; } = string.Empty;
-    public string Kind { get; set; } = string.Empty;
-    public string Action { get; set; } = string.Empty;
+    public Dictionary<string, string> OldYaml { get; set; }
+        = new(StringComparer.OrdinalIgnoreCase);
+
+    public Dictionary<string, string> NewYaml { get; set; }
+        = new(StringComparer.OrdinalIgnoreCase);
 }

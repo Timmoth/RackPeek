@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
+
 namespace RackPeek.Web.Api;
 
 public class ApiKeyEndpointFilter(IConfiguration configuration) : IEndpointFilter
@@ -14,11 +17,19 @@ public class ApiKeyEndpointFilter(IConfiguration configuration) : IEndpointFilte
             return Results.StatusCode(503);
 
         if (!context.HttpContext.Request.Headers.TryGetValue(ApiKeyHeaderName, out var providedKey)
-            || providedKey.ToString() != expectedKey)
+            || !SecureEquals(providedKey.ToString(), expectedKey))
         {
             return Results.Json(new { error = "Unauthorized" }, statusCode: 401);
         }
 
         return await next(context);
     }
+    private static bool SecureEquals(string a, string b)
+    {
+        var aBytes = Encoding.UTF8.GetBytes(a);
+        var bBytes = Encoding.UTF8.GetBytes(b);
+
+        return CryptographicOperations.FixedTimeEquals(aBytes, bBytes);
+    }
+    
 }
