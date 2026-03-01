@@ -1,5 +1,6 @@
 [
   "overview.md",
+  "resource-levels.md",
   "install-guide.md",
   "ansible-generator-guide.md",
   "cli-commands.md",
