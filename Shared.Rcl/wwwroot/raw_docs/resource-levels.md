@@ -92,7 +92,7 @@ Every system has a `runs-on` property that defines where it lives. A system can 
 - **Another system** — a VM running on a hypervisor, or a container running inside a VM.
 
 > [!TIP]
-> You can nest systems. A hypervisor is a system that runs on hardware, and a VM is a system that runs on that hypervisor. There is no artificial limit to how deep you can nest. See [Systems Running on Systems](#systems-running-on-systems) for a full worked example.
+> You can nest systems. A hypervisor is a system that runs on hardware, and a VM is a system that runs on that hypervisor. There is no artificial limit to how deep you can nest. See [Systems Running on Systems](docs/resource-levels#systems-running-on-systems) for a full worked example.
 
 ### Adding Systems
 
@@ -309,5 +309,5 @@ If you are unsure whether something should be hardware, a system, or a service, 
 
 ## Related Pages
 
-- [CLI Commands](cli-commands) for the full command reference
-- [Installation Guide](install-guide) to get started with RackPeek
+- [CLI Commands](docs/cli-commands) for the full command reference
+- [Installation Guide](docs/install-guide) to get started with RackPeek
