@@ -53,7 +53,7 @@ public static class ThrowIfInvalid
 
         var message = suggestions.Any()
             ? $"System type '{systemType}' is not valid. Did you mean: {string.Join(", ", suggestions)}?"
-            : $"System type '{systemType}' is not valid. Valid System types include hypervisor, baremetal vm, container, other etc";
+            : $"System type '{systemType}' is not valid. Valid System types include hypervisor, baremetal vm, container, cluster, other etc";
 
         throw new ValidationException(message);
     }
