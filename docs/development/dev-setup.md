@@ -8,6 +8,10 @@ Please review all commands in this guide carefully before execution and ensure y
 
 This guide is by no means exhaustive, so please feel free to contribute back to it if you have any additional information or tips.
 
+> [!TIP]
+> This repository contains a [devcontainer](/.devcontainer) that can be used to standup an environment with one-click.
+> If you use the devcontainer *all* dependencies and prerequisties are already installed in the container, except for [VHS](#VHS-Installation).
+
 ## Brew Installation
 
 This project leverages the [brew](https://brew.sh) package manager for installation of dependencies on MacOS/Linux
