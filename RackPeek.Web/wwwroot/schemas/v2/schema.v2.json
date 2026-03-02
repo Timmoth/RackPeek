@@ -318,6 +318,7 @@
               "type": "string",
               "enum": [
                 "baremetal", "Baremetal",
+                "cluster", "Cluster",
                 "hypervisor", "Hypervisor",
                 "vm", "VM",
                 "container", "embedded", "cloud", "other"

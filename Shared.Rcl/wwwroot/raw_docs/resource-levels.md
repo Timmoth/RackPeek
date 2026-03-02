@@ -82,6 +82,8 @@ Systems represent the software environments that run on your hardware — or on 
 | `container` | Container or container runtime | Docker container, LXC |
 | `embedded` | Firmware or embedded OS | OPNsense on a firewall appliance |
 | `cloud` | Cloud-hosted instance | AWS EC2, Hetzner VPS |
+| `cluster` | Logical compute cluster | Kubernetes cluster, Docker Swarm cluster |
+
 | `other` | Anything that doesn't fit above | Custom runtime |
 
 ### How Systems Connect

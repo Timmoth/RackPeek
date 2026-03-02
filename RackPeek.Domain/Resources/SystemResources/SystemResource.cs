@@ -15,6 +15,7 @@ public class SystemResource : Resource, IDriveResource
         "container",
         "embedded",
         "cloud",
+        "cluster",
         "other"
     ];
 
