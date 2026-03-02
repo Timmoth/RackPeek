@@ -3,118 +3,159 @@ using RackPeek.Domain.Resources;
 
 namespace RackPeek.Domain.UseCases.Ansible;
 
+public enum InventoryFormat
+{
+    Ini,
+    Yaml
+}
+
 public sealed record InventoryOptions
 {
     /// <summary>
+    /// Output format (default: INI)
+    /// </summary>
+    public InventoryFormat Format { get; init; } = InventoryFormat.Ini;
+
+    /// <summary>
     /// If set, create groups based on these tags.
-    /// Example: ["env", "site"] -> [env], [site]
+    /// Example: ["prod", "staging"] -> [prod], [staging]
     /// </summary>
     public IReadOnlyList<string> GroupByTags { get; init; } = [];
 
     /// <summary>
     /// If set, create groups based on these label keys.
-    /// Example: ["env", "site"] -> [env_prod], [site_london]
+    /// Example: ["env"] -> [env_prod]
     /// </summary>
     public IReadOnlyList<string> GroupByLabelKeys { get; init; } = [];
 
     /// <summary>
-    /// If set, emitted under [all:vars].
+    /// If set, emitted under [all:vars] (INI) or all.vars (YAML).
     /// </summary>
-    public IDictionary<string, string> GlobalVars { get; init; } = new Dictionary<string, string>();
+    public IDictionary<string, string> GlobalVars { get; init; } =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }
 
 public sealed record InventoryResult(string InventoryText, IReadOnlyList<string> Warnings);
 
 public static class AnsibleInventoryGenerator
 {
-    /// <summary>
-    /// Generate an Ansible inventory in INI format from RackPeek resources.
-    /// </summary>
-    public static InventoryResult ToAnsibleInventoryIni(
+    public static InventoryResult ToAnsibleInventory(
         this IReadOnlyList<Resource> resources,
         InventoryOptions? options = null)
     {
         options ??= new InventoryOptions();
 
+        var model = BuildInventoryModel(resources, options);
+
+        return options.Format switch
+        {
+            InventoryFormat.Yaml => RenderYaml(model, options),
+            _ => RenderIni(model, options)
+        };
+    }
+
+    private sealed record HostEntry(
+        string Name,
+        Dictionary<string, string> Vars,
+        Resource Resource);
+
+    private sealed record InventoryModel(
+        Dictionary<string, List<HostEntry>> Groups,
+        List<string> Warnings);
+
+    private static InventoryModel BuildInventoryModel(
+        IReadOnlyList<Resource> resources,
+        InventoryOptions options)
+    {
         var warnings = new List<string>();
         var hosts = new List<HostEntry>();
 
-        // Build host entries (only resources that look addressable)
         foreach (var r in resources)
         {
             var address = GetAddress(r);
 
             if (string.IsNullOrWhiteSpace(address))
-            {
                 continue;
-            }
 
-            var hostVars = BuildHostVars(r, address);
-            hosts.Add(new HostEntry(r, hostVars));
+            var vars = BuildHostVars(r, address);
+            hosts.Add(new HostEntry(r.Name, vars, r));
         }
 
-        // Groups: kind + tags + label-based
-        var groupToHosts = new Dictionary<string, List<HostEntry>>(StringComparer.OrdinalIgnoreCase);
+        var groupToHosts =
+            new Dictionary<string, List<HostEntry>>(StringComparer.OrdinalIgnoreCase);
 
         void AddToGroup(string groupName, HostEntry h)
         {
-            if (string.IsNullOrWhiteSpace(groupName)) return;
+            if (string.IsNullOrWhiteSpace(groupName))
+                return;
+
             groupName = SanitizeGroup(groupName);
 
             if (!groupToHosts.TryGetValue(groupName, out var list))
                 groupToHosts[groupName] = list = new List<HostEntry>();
 
-            // avoid duplicates if multiple rules add the same host
-            if (!list.Any(x => string.Equals(x.Resource.Name, h.Resource.Name, StringComparison.OrdinalIgnoreCase)))
+            if (!list.Any(x => string.Equals(x.Name, h.Name, StringComparison.OrdinalIgnoreCase)))
                 list.Add(h);
         }
 
         foreach (var h in hosts)
         {
-            // Tag groups
-            var tags = options.GroupByTags.Intersect(h.Resource.Tags).ToArray();
-            foreach (var tag in tags)
-            {
-                if (string.IsNullOrWhiteSpace(tag)) continue;
-                AddToGroup(tag, h);
-            }
+            // Tag-based groups
+            var matchingTags = options.GroupByTags
+                .Intersect(h.Resource.Tags ?? [])
+                .ToArray();
 
-            // Label-based groups: e.g. env=prod -> [env_prod]
+            foreach (var tag in matchingTags)
+                AddToGroup(tag, h);
+
+            // Label-based groups
             foreach (var key in options.GroupByLabelKeys)
             {
-                if (string.IsNullOrWhiteSpace(key)) continue;
-
-                if (h.Resource.Labels.TryGetValue(key, out var val) && !string.IsNullOrWhiteSpace(val))
+                if (h.Resource.Labels.TryGetValue(key, out var val)
+                    && !string.IsNullOrWhiteSpace(val))
                 {
                     AddToGroup($"{key}_{val}", h);
                 }
             }
         }
 
-        // Build output
+        return new InventoryModel(groupToHosts, warnings);
+    }
+    
+    private static InventoryResult RenderIni(
+        InventoryModel model,
+        InventoryOptions options)
+    {
         var sb = new StringBuilder();
 
-        // [all:vars]
         if (options.GlobalVars.Count > 0)
         {
             sb.AppendLine("[all:vars]");
-            foreach (var kvp in options.GlobalVars.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
+
+            foreach (var kvp in options.GlobalVars
+                         .OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
+            {
                 sb.AppendLine($"{kvp.Key}={EscapeIniValue(kvp.Value)}");
+            }
+
             sb.AppendLine();
         }
 
-        // Emit groups sorted, hosts sorted
-        foreach (var group in groupToHosts.Keys.OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+        foreach (var group in model.Groups.Keys
+                     .OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
         {
             sb.AppendLine($"[{group}]");
 
-            foreach (var h in groupToHosts[group].OrderBy(x => x.Resource.Name, StringComparer.OrdinalIgnoreCase))
+            foreach (var host in model.Groups[group]
+                         .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
             {
-                sb.Append(h.Resource.Name);
+                sb.Append(host.Name);
 
-                // host vars (inline)
-                foreach (var kvp in h.HostVars.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
+                foreach (var kvp in host.Vars
+                             .OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
+                {
                     sb.Append($" {kvp.Key}={EscapeIniValue(kvp.Value)}");
+                }
 
                 sb.AppendLine();
             }
@@ -122,16 +163,53 @@ public static class AnsibleInventoryGenerator
             sb.AppendLine();
         }
 
-        return new InventoryResult(sb.ToString().TrimEnd(), warnings);
+        return new InventoryResult(sb.ToString().TrimEnd(), model.Warnings);
     }
 
-    // ---------- helpers ----------
+    private static InventoryResult RenderYaml(
+        InventoryModel model,
+        InventoryOptions options)
+    {
+        var sb = new StringBuilder();
 
-    private sealed record HostEntry(Resource Resource, Dictionary<string, string> HostVars);
+        sb.AppendLine("all:");
+
+        if (options.GlobalVars.Count > 0)
+        {
+            sb.AppendLine("  vars:");
+            foreach (var kvp in options.GlobalVars
+                         .OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
+            {
+                sb.AppendLine($"    {kvp.Key}: {kvp.Value}");
+            }
+        }
+
+        sb.AppendLine("  children:");
+
+        foreach (var group in model.Groups.Keys
+                     .OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+        {
+            sb.AppendLine($"    {group}:");
+            sb.AppendLine("      hosts:");
+
+            foreach (var host in model.Groups[group]
+                         .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
+            {
+                sb.AppendLine($"        {host.Name}:");
+
+                foreach (var kvp in host.Vars
+                             .OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
+                {
+                    sb.AppendLine($"          {kvp.Key}: {kvp.Value}");
+                }
+            }
+        }
+
+        return new InventoryResult(sb.ToString().TrimEnd(), model.Warnings);
+    }
 
     private static string? GetAddress(Resource r)
     {
-        // Preferred: ansible_host, else ip, else hostname
         if (r.Labels.TryGetValue("ansible_host", out var ah) && !string.IsNullOrWhiteSpace(ah))
             return ah;
 
@@ -151,19 +229,13 @@ public static class AnsibleInventoryGenerator
             ["ansible_host"] = address
         };
 
-        // Copy any labels prefixed with ansible_
         foreach (var (k, v) in r.Labels)
         {
-            if (string.IsNullOrWhiteSpace(k) || string.IsNullOrWhiteSpace(v)) continue;
+            if (string.IsNullOrWhiteSpace(k) || string.IsNullOrWhiteSpace(v))
+                continue;
 
             if (k.StartsWith("ansible_", StringComparison.OrdinalIgnoreCase))
-            {
-                // don't overwrite ansible_host we already derived unless explicitly present
-                if (string.Equals(k, "ansible_host", StringComparison.OrdinalIgnoreCase))
-                    vars["ansible_host"] = v;
-                else
-                    vars[k] = v;
-            }
+                vars[k] = v;
         }
 
         return vars;
@@ -171,15 +243,14 @@ public static class AnsibleInventoryGenerator
 
     private static string SanitizeGroup(string s)
     {
-        // Ansible group names: letters/digits/underscore
-        var sb = new StringBuilder(s.Length);
+        var sb = new StringBuilder();
+
         foreach (var ch in s.Trim().ToLowerInvariant())
         {
             if (char.IsLetterOrDigit(ch) || ch == '_')
                 sb.Append(ch);
             else if (ch == '-' || ch == '.' || ch == ' ')
                 sb.Append('_');
-            // drop everything else
         }
 
         var result = sb.ToString();
@@ -188,11 +259,14 @@ public static class AnsibleInventoryGenerator
 
     private static string EscapeIniValue(string value)
     {
-        // quote if it contains spaces or special chars
-        if (string.IsNullOrEmpty(value)) return "\"\"";
+        if (string.IsNullOrEmpty(value))
+            return "\"\"";
 
-        var needsQuotes = value.Any(ch => char.IsWhiteSpace(ch) || ch is '"' or '\'' or '=');
-        if (!needsQuotes) return value;
+        var needsQuotes = value.Any(ch =>
+            char.IsWhiteSpace(ch) || ch is '"' or '\'' or '=');
+
+        if (!needsQuotes)
+            return value;
 
         return "\"" + value.Replace("\"", "\\\"") + "\"";
     }
