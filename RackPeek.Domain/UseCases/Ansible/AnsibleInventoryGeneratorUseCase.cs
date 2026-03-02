@@ -8,6 +8,6 @@ public class AnsibleInventoryGeneratorUseCase(IResourceCollection repository) : 
     public async Task<InventoryResult?> ExecuteAsync(InventoryOptions options)
     {
         var resources = await repository.GetAllOfTypeAsync<Resource>();
-        return resources.ToAnsibleInventoryIni(options);
+        return resources.ToAnsibleInventory(options);
     }
 }
