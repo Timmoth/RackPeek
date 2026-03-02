@@ -16,6 +16,34 @@
         </h1>
     </div>
 
+    <!-- Controls -->
+    @if (_resources is not null && _resources.Count > 0)
+    {
+        <div class="flex flex-wrap gap-4 items-center text-xs">
+
+            <!-- Filter -->
+            <input placeholder="filter resources..."
+                   class="bg-zinc-900 border border-zinc-800 px-3 py-1 rounded focus:outline-none focus:border-emerald-600"
+                   @bind="_filter" />
+
+            <!-- Sort By -->
+            <select class="bg-zinc-900 border border-zinc-800 px-2 py-1 rounded"
+                    @bind="_sortBy">
+                <option value="Value">Value</option>
+                <option value="Name">Name</option>
+                <option value="Kind">Kind</option>
+            </select>
+
+            <!-- Direction -->
+            <button class="border border-zinc-800 px-3 py-1 rounded hover:border-emerald-600"
+                    @onclick="ToggleSortDirection">
+                @(_ascending ? "Asc ↑" : "Desc ↓")
+            </button>
+
+        </div>
+    }
+
+    <!-- Content -->
     @if (_resources is null)
     {
         <div class="text-zinc-500">loading resources…</div>
@@ -24,11 +52,18 @@
     {
         <div class="text-zinc-500">no resources found for this label</div>
     }
+    else if (!GetProcessed().Any())
+    {
+        <div class="text-zinc-500">no results match your filter</div>
+    }
     else
     {
         <div class="space-y-3">
-            @foreach (var (resource, value) in _resources.OrderBy(r => r.Item1.Name))
+            @foreach (var item in GetProcessed())
             {
+                var resource = item.Resource;
+                var value = item.Value;
+
                 <div class="border border-zinc-800 rounded p-3 bg-zinc-900 hover:border-emerald-700 transition">
                     <NavLink href="@GetResourceUrl(resource)"
                              class="block hover:text-emerald-300">
@@ -44,8 +79,14 @@
                         </div>
 
                         <!-- Label value -->
-                        <div class="mt-2 text-xs text-emerald-400">
-                            Value: @value
+                        <div class="mt-2 text-xs text-emerald-400 flex items-center gap-2">
+                            <span>
+                                Value: @FormatValue(value)
+                            </span>
+
+                            <span class="text-zinc-500 uppercase text-[10px] tracking-wide">
+                                [@DetectType(value)]
+                            </span>
                         </div>
 
                     </NavLink>
@@ -59,26 +100,125 @@
 @code {
     [Parameter] public string LabelName { get; set; } = string.Empty;
 
-    private IReadOnlyList<(Resource, string)>? _resources;
+    private IReadOnlyList<(Resource Resource, string Value)>? _resources;
+
+    private string _sortBy = "Value";
+    private bool _ascending = true;
+    private string _filter = string.Empty;
 
     protected override async Task OnParametersSetAsync()
     {
         var decoded = Uri.UnescapeDataString(LabelName);
         _resources = await ResourceRepository.GetByLabelAsync(decoded);
     }
+    
+    private IEnumerable<(Resource Resource, string Value)> GetProcessed()
+    {
+        if (_resources is null)
+            return [];
 
+        var query = _resources.AsEnumerable();
+
+        // Filtering
+        if (!string.IsNullOrWhiteSpace(_filter))
+        {
+            query = query.Where(r =>
+                r.Resource.Name.Contains(_filter, StringComparison.OrdinalIgnoreCase) ||
+                r.Value.Contains(_filter, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Sorting
+        query = _sortBy switch
+        {
+            "Value" => query
+                .OrderBy(r => GetSortKey(r.Value))
+                .ThenBy(r => r.Resource.Name),
+            "Kind"  => query.OrderBy(r => r.Resource.Kind),
+            _       => query.OrderBy(r => r.Resource.Name)
+        };
+
+        if (!_ascending)
+            query = query.Reverse();
+
+        return query.ToList();
+    }
+
+    private void ToggleSortDirection()
+    {
+        _ascending = !_ascending;
+    }
+
+    private static string DetectType(string value)
+    {
+        if (DateTime.TryParse(value, out _)) return "DATE";
+        if (bool.TryParse(value, out _)) return "BOOL";
+        if (decimal.TryParse(value, out _)) return "NUMBER";
+        return "TEXT";
+    }
+
+    private static string FormatValue(string value)
+    {
+        if (DateTime.TryParse(value, out var dt))
+            return dt.ToString("yyyy-MM-dd");
+
+        return value;
+    }
+    
     private string GetResourceUrl(Resource resource)
     {
         if (resource.Kind == SystemResource.KindLabel)
-        {
             return $"resources/systems/{Uri.EscapeDataString(resource.Name)}";
-        }
 
         if (resource.Kind == Service.KindLabel)
-        {
             return $"resources/services/{Uri.EscapeDataString(resource.Name)}";
-        }
 
         return $"resources/hardware/{Uri.EscapeDataString(resource.Name)}";
+    }
+    
+    private readonly record struct SortKey(int TypeRank, object Value, string Fallback)
+        : IComparable<SortKey>
+    {
+        public int CompareTo(SortKey other)
+        {
+            var rank = TypeRank.CompareTo(other.TypeRank);
+            if (rank != 0) return rank;
+            
+            var valueCompare = TypeRank switch
+            {
+                0 => ((int)Value).CompareTo((int)other.Value),   
+                1 => ((DateTime)Value).CompareTo((DateTime)other.Value),  
+                2 => ((decimal)Value).CompareTo((decimal)other.Value),   
+                3 => ((bool)Value).CompareTo((bool)other.Value),      
+                _ => string.Compare((string)Value, (string)other.Value, StringComparison.Ordinal)
+            };
+
+            if (valueCompare != 0) return valueCompare;
+
+            // Deterministic tie-breaker
+            return string.Compare(Fallback, other.Fallback, StringComparison.Ordinal);
+        }
+    }
+
+    private static SortKey GetSortKey(string? raw)
+    {
+        var s = raw?.Trim() ?? string.Empty;
+
+        if (string.IsNullOrEmpty(s))
+            return new SortKey(TypeRank: 0, Value: 0, Fallback: "");
+
+        // Date
+        if (DateTime.TryParse(s, out var dt))
+            return new SortKey(TypeRank: 1, Value: dt, Fallback: s);
+
+        // Number
+        if (decimal.TryParse(s, out var dec))
+            return new SortKey(TypeRank: 2, Value: dec, Fallback: s);
+
+        // Bool
+        if (bool.TryParse(s, out var b))
+            return new SortKey(TypeRank: 3, Value: b, Fallback: s);
+
+        // Text (case-insensitive sort by normalizing)
+        return new SortKey(TypeRank: 4, Value: s.ToLowerInvariant(), Fallback: s);
     }
 }
