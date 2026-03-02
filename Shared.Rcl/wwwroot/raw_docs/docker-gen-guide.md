@@ -1,6 +1,6 @@
 # `docker-gen` User Guide
 
-Use [docker-gen](https://github.com/nginx-proxy/docker-gen) on a target machine to generate RackPeek **Services** YAML from existing docker containers.
+Use [docker-gen](https://github.com/nginx-proxy/docker-gen) on a target machine to generate RackPeek [**Services**](/docs/resource-levels#services) YAML from existing docker containers.
 
 The generated YAML can be directly used in RackPeek or with the **Import YAML** tool to merge/replace existing services.
 
@@ -22,7 +22,7 @@ If you created the docker-gen project on the *same machine* Docker is running on
 
 ## Remote Machine
 
- If you want to generate Services from a *remote machine* Docker is running on your will need docker **socket-proxy** container running on the target machine, such as [tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy) or [wollomatic/socket-proxy](https://github.com/wollomatic/socket-proxy).
+ If you want to generate Services from a *remote machine* Docker is running on your will need a docker **socket-proxy** container running on the target machine, such as [tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy) or [wollomatic/socket-proxy](https://github.com/wollomatic/socket-proxy).
 
  The socket-proxy container needs **read-only** access to the **containers** api.
 
@@ -46,7 +46,7 @@ If you created the docker-gen project on the *same machine* Docker is running on
 
  </details>
 
-In the docker-gen `compose.yaml` file uncomment environmental variable `- "DOCKER_HOST=${DOCKER_HOST}"` and in your `.env` add `tcp://HOST:IP` of the target machine IE `tcp://192.168.0.100:2375`
+In the docker-gen `compose.yaml` file uncomment environmental variable `- "DOCKER_HOST=${DOCKER_HOST}"` and in your `.env` set it to `tcp://HOST:IP` of the target machine IE `tcp://192.168.0.100:2375`
 
 ---
 
@@ -62,7 +62,7 @@ Filter should be added to `DOCKER_CONTAINER_FILTERS` in your `.env`. Multiple fi
 
 <summary>Examples</summary>
 
-Only run docker-gen for containers that show up in [homepage](https://gethomepage.dev/) are generated:
+Only run docker-gen for containers that show up in [homepage](https://gethomepage.dev/):
 
 * filter on label `homepage.name`
 
@@ -89,7 +89,7 @@ This step is **optional.**
 
 More RackPeek Service config can be enabled by specifying optional environmental variables in `.env`:
 
-* `RUNS_ON` enables and specifies the name of the **System** the generated Services run on (`runsOn` in YAML)
+* `RUNS_ON` enables and specifies the name of the [**System**](/docs/resource-levels#systems) the generated Services run on (`runsOn` in YAML)
 * `HOST_IP` enables IP and port in the `network` section of a Service. The IP will always be `HOST_IP` (useful for ports published on the bridge network)
   * IP and port will only be generated if the container binds to `0.0.0.0` (no IP specified) or specifically binds the ip from `HOST_IP`
     * docker-gen will first look for ports `80` and `443`. If these ports aren't published then it uses the first published port meeting above conditions
