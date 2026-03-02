@@ -1,0 +1,23 @@
+services:
+  docker-gen:
+    image: nginxproxy/docker-gen
+    container_name: rackpeek_gen
+    volumes:
+      - "./:/etc/docker-gen/templates"
+      # uncomment to generate from docker daemon on the same machine
+      #- "/var/run/docker.sock:/tmp/docker.sock"
+    environment:
+      # uncomment to generate from remote host (comment to disable)
+      - "DOCKER_HOST=${DOCKER_HOST}"
+
+      # Filter containers to use. Multiple filters are comma separated
+      # https://docs.docker.com/engine/reference/commandline/ps/#filter
+      - "DOCKER_CONTAINER_FILTERS=${DOCKER_CONTAINER_FILTERS}"
+      - "RUNS_ON=${RUNS_ON}"
+      - "HOST_IP=${HOST_IP}"
+    command: [
+      "docker-gen",
+     "/etc/docker-gen/templates/rackpeek.tmpl",
+     # uncomment below line to write to file
+     #"/etc/docker-gen/templates/services.yaml"
+    ] 
