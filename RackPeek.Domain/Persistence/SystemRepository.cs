@@ -2,23 +2,17 @@ using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Persistence;
 
-public class YamlSystemRepository(IResourceCollection resources) : ISystemRepository
-{
-    public Task<int> GetSystemCountAsync()
-    {
-        return Task.FromResult(resources.SystemResources.Count);
-    }
+public class YamlSystemRepository(IResourceCollection resources) : ISystemRepository {
+    public Task<int> GetSystemCountAsync() => Task.FromResult(resources.SystemResources.Count);
 
-    public Task<Dictionary<string, int>> GetSystemTypeCountAsync()
-    {
+    public Task<Dictionary<string, int>> GetSystemTypeCountAsync() {
         return Task.FromResult(resources.SystemResources
             .Where(s => !string.IsNullOrEmpty(s.Type))
             .GroupBy(h => h.Type!)
             .ToDictionary(k => k.Key, v => v.Count()));
     }
 
-    public Task<Dictionary<string, int>> GetSystemOsCountAsync()
-    {
+    public Task<Dictionary<string, int>> GetSystemOsCountAsync() {
         return Task.FromResult(resources.SystemResources
             .Where(s => !string.IsNullOrEmpty(s.Os))
             .GroupBy(h => h.Os!)
@@ -27,9 +21,8 @@ public class YamlSystemRepository(IResourceCollection resources) : ISystemReposi
 
     public Task<IReadOnlyList<SystemResource>> GetFilteredAsync(
         string? typeFilter,
-        string? osFilter)
-    {
-        var query = resources.SystemResources.AsQueryable();
+        string? osFilter) {
+        IQueryable<SystemResource> query = resources.SystemResources.AsQueryable();
 
         var type = Normalize(typeFilter);
         var os = Normalize(osFilter);
@@ -44,32 +37,23 @@ public class YamlSystemRepository(IResourceCollection resources) : ISystemReposi
         return Task.FromResult<IReadOnlyList<SystemResource>>(results);
     }
 
-    public Task<IReadOnlyList<SystemResource>> GetByPhysicalHostAsync(string physicalHostName)
-    {
+    public Task<IReadOnlyList<SystemResource>> GetByPhysicalHostAsync(string physicalHostName) {
         var physicalHostNameLower = physicalHostName.ToLower().Trim();
         var results = resources.SystemResources
-            .Where(s => s.RunsOn.Select(sys => sys.ToLower().Equals(physicalHostNameLower)).ToList().Count > 0).ToList();
+            .Where(s => s.RunsOn.Select(sys => sys.ToLower().Equals(physicalHostNameLower)).ToList().Count > 0)
+            .ToList();
         return Task.FromResult<IReadOnlyList<SystemResource>>(results);
     }
 
-    public Task<IReadOnlyList<SystemResource>> GetAllAsync()
-    {
-        return Task.FromResult(resources.SystemResources);
-    }
+    public Task<IReadOnlyList<SystemResource>> GetAllAsync() => Task.FromResult(resources.SystemResources);
 
-    private static string? Normalize(string? value)
-    {
-        return string.IsNullOrWhiteSpace(value) ? null : value.Trim().ToLower();
-    }
+    private static string? Normalize(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim().ToLower();
 
 
-    public Task<SystemResource?> GetByNameAsync(string name)
-    {
-        return Task.FromResult(resources.GetByName(name) as SystemResource);
-    }
+    public Task<SystemResource?> GetByNameAsync(string name) =>
+        Task.FromResult(resources.GetByName(name) as SystemResource);
 
-    public async Task AddAsync(SystemResource systemResource)
-    {
+    public async Task AddAsync(SystemResource systemResource) {
         if (resources.SystemResources.Any(r =>
                 r.Name.Equals(systemResource.Name, StringComparison.OrdinalIgnoreCase)))
             throw new InvalidOperationException(
@@ -78,9 +62,8 @@ public class YamlSystemRepository(IResourceCollection resources) : ISystemReposi
         await resources.AddAsync(systemResource);
     }
 
-    public async Task UpdateAsync(SystemResource systemResource)
-    {
-        var existing = resources.SystemResources
+    public async Task UpdateAsync(SystemResource systemResource) {
+        SystemResource? existing = resources.SystemResources
             .FirstOrDefault(r => r.Name.Equals(systemResource.Name, StringComparison.OrdinalIgnoreCase));
 
         if (existing == null)
@@ -89,9 +72,8 @@ public class YamlSystemRepository(IResourceCollection resources) : ISystemReposi
         await resources.UpdateAsync(systemResource);
     }
 
-    public async Task DeleteAsync(string name)
-    {
-        var existing = resources.SystemResources
+    public async Task DeleteAsync(string name) {
+        SystemResource? existing = resources.SystemResources
             .FirstOrDefault(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
         if (existing == null)

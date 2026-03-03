@@ -6,14 +6,12 @@ using Spectre.Console.Cli;
 
 namespace RackPeek;
 
-public static class Program
-{
-    public static async Task<int> Main(string[] args)
-    {
+public static class Program {
+    public static async Task<int> Main(string[] args) {
         // Configuration
         var appBasePath = AppContext.BaseDirectory;
 
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(appBasePath)
             .AddEnvironmentVariables()
             .AddJsonFile("appsettings.json", true)

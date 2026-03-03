@@ -7,17 +7,16 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Desktops;
 
 public class DesktopGetByNameCommand(IServiceProvider provider)
-    : AsyncCommand<DesktopNameSettings>
-{
+    : AsyncCommand<DesktopNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DesktopNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<Desktop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IGetResourceByNameUseCase<Desktop> useCase =
+            scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<Desktop>>();
 
-        var desktop = await useCase.ExecuteAsync(settings.Name);
+        Desktop desktop = await useCase.ExecuteAsync(settings.Name);
 
         AnsiConsole.MarkupLine($"[green]{desktop.Name}[/] (Model: {desktop.Model ?? "Unknown"})");
         return 0;

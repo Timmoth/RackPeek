@@ -3,15 +3,13 @@ using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.UpsUnits;
 
-public class UpdateUpsUseCase(IResourceCollection repository) : IUseCase
-{
+public class UpdateUpsUseCase(IResourceCollection repository) : IUseCase {
     public async Task ExecuteAsync(
         string name,
         string? model = null,
         int? va = null,
         string? notes = null
-    )
-    {
+    ) {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
         // ToDo validate / normalize all inputs
 

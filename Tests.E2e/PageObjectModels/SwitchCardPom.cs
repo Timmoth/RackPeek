@@ -1,9 +1,8 @@
-namespace Tests.E2e.PageObjectModels;
-
 using Microsoft.Playwright;
 
-public class SwitchCardPom(IPage page)
-{
+namespace Tests.E2e.PageObjectModels;
+
+public class SwitchCardPom(IPage page) {
     public TagsPom Tags => new(page);
     public LabelsPom Labels => new(page);
 
@@ -16,7 +15,7 @@ public class SwitchCardPom(IPage page)
 
     public ILocator OpenLink(string name)
         => page.GetByTestId($"switch-item-{Sanitize(name)}-link");
-    
+
     // -------------------------------------------------
     // Header Actions
     // -------------------------------------------------
@@ -150,8 +149,7 @@ public class SwitchCardPom(IPage page)
     // Navigation helpers
     // -------------------------------------------------
 
-    public async Task OpenSwitchAsync(string name)
-    {
+    public async Task OpenSwitchAsync(string name) {
         await OpenLink(name).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{name}");
     }
@@ -160,16 +158,14 @@ public class SwitchCardPom(IPage page)
     // Actions
     // -------------------------------------------------
 
-    public async Task DeleteSwitchAsync(string name)
-    {
+    public async Task DeleteSwitchAsync(string name) {
         await DeleteButton(name).ClickAsync();
         await DeleteConfirmConfirmButton().ClickAsync();
 
         await Assertions.Expect(SwitchItem(name)).Not.ToBeVisibleAsync();
     }
 
-    public async Task RenameSwitchAsync(string currentName, string newName)
-    {
+    public async Task RenameSwitchAsync(string currentName, string newName) {
         await RenameButton(currentName).ClickAsync();
 
         await Assertions.Expect(RenameModal()).ToBeVisibleAsync();
@@ -180,8 +176,7 @@ public class SwitchCardPom(IPage page)
         await Assertions.Expect(SwitchItem(newName)).ToBeVisibleAsync();
     }
 
-    public async Task CloneSwitchAsync(string currentName, string cloneName)
-    {
+    public async Task CloneSwitchAsync(string currentName, string cloneName) {
         await CloneButton(currentName).ClickAsync();
 
         await Assertions.Expect(CloneModal()).ToBeVisibleAsync();
@@ -192,24 +187,21 @@ public class SwitchCardPom(IPage page)
         await Assertions.Expect(SwitchItem(cloneName)).ToBeVisibleAsync();
     }
 
-    public async Task EnterEditModeAsync(string name)
-    {
+    public async Task EnterEditModeAsync(string name) {
         await EditButton(name).ClickAsync();
         await Assertions.Expect(ModelInput(name)).ToBeVisibleAsync();
         await Assertions.Expect(ManagedCheckbox(name)).ToBeVisibleAsync();
         await Assertions.Expect(PoeCheckbox(name)).ToBeVisibleAsync();
     }
 
-    public async Task SaveEditsAsync(string name)
-    {
+    public async Task SaveEditsAsync(string name) {
         await SaveButton(name).ClickAsync();
 
         // back to view mode
         await Assertions.Expect(EditButton(name)).ToBeVisibleAsync();
     }
 
-    public async Task CancelEditsAsync(string name)
-    {
+    public async Task CancelEditsAsync(string name) {
         await CancelButton(name).ClickAsync();
 
         // back to view mode

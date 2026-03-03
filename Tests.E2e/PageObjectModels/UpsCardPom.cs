@@ -2,10 +2,46 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class UpsCardPom(IPage page)
-{
+public class UpsCardPom(IPage page) {
     public TagsPom Tags => new(page);
     public LabelsPom Labels => new(page);
+
+    // -------------------------------------------------
+    // Notes
+    // -------------------------------------------------
+
+    public ILocator NotesViewer
+        => page.GetByTestId("ups-notes-viewer-container");
+
+    public ILocator NotesEditor
+        => page.GetByTestId("ups-notes-editor-container");
+
+    // -------------------------------------------------
+    // Confirm Modal (TestIdPrefix="Ups")
+    // -------------------------------------------------
+
+    public ILocator ConfirmDeleteButton
+        => page.GetByTestId("Ups-confirm-modal-confirm");
+
+    // -------------------------------------------------
+    // Rename Modal (TestIdPrefix="ups-rename")
+    // -------------------------------------------------
+
+    public ILocator RenameInput
+        => page.GetByTestId("ups-rename-string-value-modal-input");
+
+    public ILocator RenameSubmit
+        => page.GetByTestId("ups-rename-string-value-modal-submit");
+
+    // -------------------------------------------------
+    // Clone Modal (TestIdPrefix="ups-clone")
+    // -------------------------------------------------
+
+    public ILocator CloneInput
+        => page.GetByTestId("ups-clone-string-value-modal-input");
+
+    public ILocator CloneSubmit
+        => page.GetByTestId("ups-clone-string-value-modal-submit");
 
     // -------------------------------------------------
     // Root
@@ -63,50 +99,10 @@ public class UpsCardPom(IPage page)
         => Card(name).GetByTestId("ups-capacity-value");
 
     // -------------------------------------------------
-    // Notes
-    // -------------------------------------------------
-
-    public ILocator NotesViewer
-        => page.GetByTestId("ups-notes-viewer-container");
-
-    public ILocator NotesEditor
-        => page.GetByTestId("ups-notes-editor-container");
-
-    // -------------------------------------------------
-    // Confirm Modal (TestIdPrefix="Ups")
-    // -------------------------------------------------
-
-    public ILocator ConfirmDeleteButton
-        => page.GetByTestId("Ups-confirm-modal-confirm");
-
-    // -------------------------------------------------
-    // Rename Modal (TestIdPrefix="ups-rename")
-    // -------------------------------------------------
-
-    public ILocator RenameInput
-        => page.GetByTestId("ups-rename-string-value-modal-input");
-
-    public ILocator RenameSubmit
-        => page.GetByTestId("ups-rename-string-value-modal-submit");
-
-    // -------------------------------------------------
-    // Clone Modal (TestIdPrefix="ups-clone")
-    // -------------------------------------------------
-
-    public ILocator CloneInput
-        => page.GetByTestId("ups-clone-string-value-modal-input");
-
-    public ILocator CloneSubmit
-        => page.GetByTestId("ups-clone-string-value-modal-submit");
-
-    // -------------------------------------------------
     // Assertions
     // -------------------------------------------------
 
-    public async Task AssertVisibleAsync(string name)
-    {
-        await Assertions.Expect(Card(name)).ToBeVisibleAsync();
-    }
+    public async Task AssertVisibleAsync(string name) => await Assertions.Expect(Card(name)).ToBeVisibleAsync();
 
     // -------------------------------------------------
     // High-Level Actions
@@ -121,8 +117,7 @@ public class UpsCardPom(IPage page)
     public async Task CancelAsync(string name)
         => await CancelButton(name).ClickAsync();
 
-    public async Task RenameAsync(string currentName, string newName)
-    {
+    public async Task RenameAsync(string currentName, string newName) {
         await RenameButton(currentName).ClickAsync();
 
         await RenameInput.FillAsync(newName);
@@ -131,8 +126,7 @@ public class UpsCardPom(IPage page)
         await page.WaitForURLAsync($"**/resources/hardware/{newName}");
     }
 
-    public async Task CloneAsync(string currentName, string cloneName)
-    {
+    public async Task CloneAsync(string currentName, string cloneName) {
         await CloneButton(currentName).ClickAsync();
 
         await CloneInput.FillAsync(cloneName);
@@ -141,8 +135,7 @@ public class UpsCardPom(IPage page)
         await page.WaitForURLAsync($"**/resources/hardware/{cloneName}");
     }
 
-    public async Task DeleteAsync(string name)
-    {
+    public async Task DeleteAsync(string name) {
         await DeleteButton(name).ClickAsync();
         await ConfirmDeleteButton.ClickAsync();
     }

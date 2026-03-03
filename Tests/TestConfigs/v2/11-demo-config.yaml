@@ -188,7 +188,7 @@ resources:
       protocol: TCP
       url: http://homeassistant.lan:8123
     name: home-assistant
-    runsOn: 
+    runsOn:
       - vm-home-assistant
   - kind: Service
     network:
@@ -197,7 +197,7 @@ resources:
       protocol: TCP
       url: http://plex.lan:32400
     name: plex
-    runsOn: 
+    runsOn:
       - vm-media-server
       - vm-home-assistant
   - kind: Service
@@ -207,7 +207,7 @@ resources:
       protocol: TCP
       url: http://jellyfin.lan:8096
     name: jellyfin
-    runsOn: 
+    runsOn:
       - vm-media-server
   - kind: Service
     network:
@@ -216,8 +216,8 @@ resources:
       protocol: TCP
       url: http://immich.lan:8080
     name: immich
-    runsOn: 
-     - vm-media-server
+    runsOn:
+      - vm-media-server
   - kind: Service
     network:
       ip: 192.168.0.30
@@ -225,7 +225,7 @@ resources:
       protocol: TCP
       url: https://truenas.lan
     name: truenas-webui
-    runsOn: 
+    runsOn:
       - truenas-core-os
   - kind: Service
     network:
@@ -234,7 +234,7 @@ resources:
       protocol: TCP
       url: http://minio.lan:9000
     name: minio
-    runsOn: 
+    runsOn:
       - vm-media-server
   - kind: Service
     network:
@@ -243,7 +243,7 @@ resources:
       protocol: TCP
       url: http://prometheus.lan:9090
     name: prometheus
-    runsOn: 
+    runsOn:
       - vm-monitoring
   - kind: Service
     network:
@@ -266,7 +266,7 @@ resources:
       protocol: TCP
       url: http://git.lan:3001
     name: gitea
-    runsOn: 
+    runsOn:
       - vm-monitoring
   - kind: Service
     network:
@@ -275,7 +275,7 @@ resources:
       protocol: TCP
       url: http://registry.lan:5000
     name: docker-registry
-    runsOn: 
+    runsOn:
       - vm-monitoring
   - kind: Service
     network:
@@ -284,7 +284,7 @@ resources:
       protocol: TCP
       url: http://portainer.lan:9000
     name: portainer
-    runsOn: 
+    runsOn:
       - vm-monitoring
       - vm-logging
   - kind: Service
@@ -301,7 +301,7 @@ resources:
       protocol: TCP
       url: https://firewall.lan
     name: firewall-webui
-    runsOn: 
+    runsOn:
       - firewall-os
   - kind: Service
     network:
@@ -310,7 +310,7 @@ resources:
       protocol: TCP
       url: https://router.lan
     name: router-webui
-    runsOn: 
+    runsOn:
       - router-os
   - kind: System
     type: Hypervisor
@@ -322,7 +322,7 @@ resources:
       - size: 1024
       - size: 1024
     name: proxmox-cluster-node01
-    runsOn: 
+    runsOn:
       - proxmox-node01
   - kind: System
     type: Hypervisor
@@ -333,7 +333,7 @@ resources:
       - size: 1024
       - size: 4096
     name: proxmox-cluster-node02
-    runsOn: 
+    runsOn:
       - proxmox-node02
   - kind: System
     type: Baremetal
@@ -346,7 +346,7 @@ resources:
       - size: 8192
       - size: 8192
     name: truenas-core-os
-    runsOn: 
+    runsOn:
       - truenas-storage
   - kind: System
     type: Baremetal
@@ -354,7 +354,7 @@ resources:
     cores: 1
     ram: 1
     name: ipmi-proxmox-node01
-    runsOn: 
+    runsOn:
       - proxmox-node01
   - kind: System
     type: Baremetal
@@ -362,7 +362,7 @@ resources:
     cores: 1
     ram: 1
     name: ipmi-proxmox-node02
-    runsOn: 
+    runsOn:
       - proxmox-node02
   - kind: System
     type: Baremetal
@@ -370,7 +370,7 @@ resources:
     cores: 1
     ram: 1
     name: ipmi-truenas-storage
-    runsOn: 
+    runsOn:
       - truenas-storage
   - kind: System
     type: Baremetal
@@ -380,7 +380,7 @@ resources:
     drives:
       - size: 32
     name: firewall-os
-    runsOn: 
+    runsOn:
       - pfsense-fw
   - kind: System
     type: Baremetal
@@ -390,7 +390,7 @@ resources:
     drives:
       - size: 4
     name: router-os
-    runsOn: 
+    runsOn:
       - core-router
   - kind: System
     type: Baremetal
@@ -400,7 +400,7 @@ resources:
     drives:
       - size: 8
     name: unifi-core-switch-os
-    runsOn: 
+    runsOn:
       - core-switch
   - kind: System
     type: Baremetal
@@ -410,7 +410,7 @@ resources:
     drives:
       - size: 8
     name: unifi-access-switch-os
-    runsOn: 
+    runsOn:
       - access-switch
   - kind: System
     type: Baremetal
@@ -420,7 +420,7 @@ resources:
     drives:
       - size: 4
     name: unifi-lounge-ap-os
-    runsOn: 
+    runsOn:
       - lounge-ap
   - kind: System
     type: VM
@@ -440,7 +440,7 @@ resources:
     drives:
       - size: 500
     name: vm-media-server
-    runsOn: 
+    runsOn:
       - proxmox-node02
   - kind: System
     type: VM
@@ -450,5 +450,5 @@ resources:
     drives:
       - size: 64
     name: vm-monitoring
-    runsOn: 
+    runsOn:
       - proxmox-node01

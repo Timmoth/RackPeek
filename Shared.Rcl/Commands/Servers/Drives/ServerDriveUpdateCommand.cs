@@ -6,25 +6,22 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Drives;
 
-public class ServerDriveUpdateSettings : ServerNameSettings
-{
+public class ServerDriveUpdateSettings : ServerNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 
-    [CommandOption("--type <TYPE>")] public string Type { get; set; }
+    [CommandOption("--type <TYPE>")] public string? Type { get; set; }
 
     [CommandOption("--size <SIZE>")] public int Size { get; set; }
 }
 
 public class ServerDriveUpdateCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<ServerDriveUpdateSettings>
-{
+    : AsyncCommand<ServerDriveUpdateSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerDriveUpdateSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateDriveUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IUpdateDriveUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IUpdateDriveUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

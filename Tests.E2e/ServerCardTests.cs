@@ -1,3 +1,4 @@
+using Microsoft.Playwright;
 using Tests.E2e.Infra;
 using Tests.E2e.PageObjectModels;
 using Xunit.Abstractions;
@@ -6,25 +7,23 @@ namespace Tests.E2e;
 
 public class ServerCardTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) : E2ETestBase(fixture, output)
-{
+    ITestOutputHelper output) : E2ETestBase(fixture, output) {
+    private readonly PlaywrightFixture _fixture = fixture;
     private readonly ITestOutputHelper _output = output;
 
     [Fact]
-    public async Task User_Can_Rename_Clone_And_Delete_Server_From_Details_Page()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Rename_Clone_And_Delete_Server_From_Details_Page() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
 
         var originalName = $"e2e-srv-{Guid.NewGuid():N}"[..16];
-        var renamedName  = $"e2e-srv-rn-{Guid.NewGuid():N}"[..16];
-        var cloneName    = $"e2e-srv-cl-{Guid.NewGuid():N}"[..16];
+        var renamedName = $"e2e-srv-rn-{Guid.NewGuid():N}"[..16];
+        var cloneName = $"e2e-srv-cl-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
+        try {
             // ------------------------------------
             // Navigate to Servers list
             // ------------------------------------
-            await page.GotoAsync(fixture.BaseUrl);
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -44,9 +43,7 @@ public class ServerCardTests(
 
             // If list does not auto-navigate, open it
             if (!page.Url.Contains($"/resources/hardware/{originalName}", StringComparison.OrdinalIgnoreCase))
-            {
                 await listPage.OpenServerAsync(originalName);
-            }
 
             var card = new ServerCardPom(page);
             await card.AssertVisibleAsync(originalName);
@@ -76,7 +73,7 @@ public class ServerCardTests(
             // ====================================
             // DELETE RENAMED ORIGINAL
             // ====================================
-            await page.GotoAsync($"{fixture.BaseUrl}/resources/hardware/{renamedName}");
+            await page.GotoAsync($"{_fixture.BaseUrl}/resources/hardware/{renamedName}");
 
             await card.AssertVisibleAsync(renamedName);
 
@@ -84,8 +81,7 @@ public class ServerCardTests(
 
             await page.WaitForURLAsync("**/hardware/tree");
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
 
@@ -96,22 +92,19 @@ public class ServerCardTests(
 
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
-    
-    
+
+
     [Fact]
-    public async Task User_Can_Add_And_Remove_Tags_From_Server_Card()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Add_And_Remove_Tags_From_Server_Card() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -130,7 +123,7 @@ public class ServerCardTests(
             var card = new ServerCardPom(page);
             await card.AssertVisibleAsync(name);
 
-            var tags = card.Tags;
+            TagsPom tags = card.Tags;
 
             // -------------------------------------------------
             // Add multiple tags in one modal interaction
@@ -164,21 +157,18 @@ public class ServerCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Add_And_Remove_Labels_From_Server_Card()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Add_And_Remove_Labels_From_Server_Card() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-srv-lbl-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -197,7 +187,7 @@ public class ServerCardTests(
             var card = new ServerCardPom(page);
             await card.AssertVisibleAsync(name);
 
-            var labels = card.Labels;
+            LabelsPom labels = card.Labels;
 
             await labels.AddLabelAsync("server", "env", "production");
             await labels.AssertLabelVisibleAsync("server", "env");
@@ -215,21 +205,18 @@ public class ServerCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Edit_Label_From_Server_Card()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Edit_Label_From_Server_Card() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-srv-edit-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -248,7 +235,7 @@ public class ServerCardTests(
             var card = new ServerCardPom(page);
             await card.AssertVisibleAsync(name);
 
-            var labels = card.Labels;
+            LabelsPom labels = card.Labels;
 
             await labels.AddLabelAsync("server", "env", "production");
             await labels.AssertLabelDisplaysAsync("server", "env", "production");
@@ -268,8 +255,7 @@ public class ServerCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }

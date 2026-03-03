@@ -12,14 +12,11 @@ public record UpsHardwareRow(
     int Va
 );
 
-public class UpsHardwareReportUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<UpsHardwareReport> ExecuteAsync()
-    {
-        var upsUnits = await repository.GetAllOfTypeAsync<Ups>();
+public class UpsHardwareReportUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<UpsHardwareReport> ExecuteAsync() {
+        IReadOnlyList<Ups> upsUnits = await repository.GetAllOfTypeAsync<Ups>();
 
-        var rows = upsUnits.Select(ups =>
-        {
+        var rows = upsUnits.Select(ups => {
             return new UpsHardwareRow(
                 ups.Name,
                 ups.Model ?? "Unknown",

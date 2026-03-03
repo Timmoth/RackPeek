@@ -6,25 +6,22 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Gpus;
 
-public class ServerGpuUpdateSettings : ServerNameSettings
-{
+public class ServerGpuUpdateSettings : ServerNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 
-    [CommandOption("--model <MODEL>")] public string Model { get; set; }
+    [CommandOption("--model <MODEL>")] public string? Model { get; set; }
 
     [CommandOption("--vram <VRAM>")] public int Vram { get; set; }
 }
 
 public class ServerGpuUpdateCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<ServerGpuUpdateSettings>
-{
+    : AsyncCommand<ServerGpuUpdateSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerGpuUpdateSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateGpuUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IUpdateGpuUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IUpdateGpuUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

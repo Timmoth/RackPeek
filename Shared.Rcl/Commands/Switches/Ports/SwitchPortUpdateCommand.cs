@@ -6,8 +6,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Switches.Ports;
 
-public class SwitchPortUpdateSettings : SwitchNameSettings
-{
+public class SwitchPortUpdateSettings : SwitchNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 
     [CommandOption("--type")] public string? Type { get; set; }
@@ -18,12 +17,10 @@ public class SwitchPortUpdateSettings : SwitchNameSettings
 }
 
 public class SwitchPortUpdateCommand(IServiceProvider sp)
-    : AsyncCommand<SwitchPortUpdateSettings>
-{
-    public override async Task<int> ExecuteAsync(CommandContext ctx, SwitchPortUpdateSettings s, CancellationToken ct)
-    {
-        using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IUpdatePortUseCase<Switch>>();
+    : AsyncCommand<SwitchPortUpdateSettings> {
+    public override async Task<int> ExecuteAsync(CommandContext ctx, SwitchPortUpdateSettings s, CancellationToken ct) {
+        using IServiceScope scope = sp.CreateScope();
+        IUpdatePortUseCase<Switch> useCase = scope.ServiceProvider.GetRequiredService<IUpdatePortUseCase<Switch>>();
 
         await useCase.ExecuteAsync(s.Name, s.Index, s.Type, s.Speed, s.Count);
 

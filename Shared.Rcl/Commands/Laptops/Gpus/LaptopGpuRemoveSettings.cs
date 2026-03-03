@@ -3,8 +3,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Laptops.Gpus;
 
-public class LaptopGpuRemoveSettings : CommandSettings
-{
+public class LaptopGpuRemoveSettings : CommandSettings {
     [CommandArgument(0, "<Laptop>")]
     [Description("The Laptop name.")]
     public string LaptopName { get; set; } = default!;

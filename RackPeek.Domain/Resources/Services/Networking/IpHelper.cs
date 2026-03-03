@@ -1,9 +1,7 @@
 namespace RackPeek.Domain.Resources.Services.Networking;
 
-public static class IpHelper
-{
-    public static uint ToUInt32(string ip)
-    {
+public static class IpHelper {
+    public static uint ToUInt32(string ip) {
         var parts = ip.Split('.');
         if (parts.Length != 4)
             throw new ArgumentException($"Invalid IPv4 address: {ip}");
@@ -15,8 +13,7 @@ public static class IpHelper
             int.Parse(parts[3]));
     }
 
-    public static string ToIp(uint ip)
-    {
+    public static string ToIp(uint ip) {
         return string.Join('.',
             (ip >> 24) & 0xFF,
             (ip >> 16) & 0xFF,
@@ -24,8 +21,7 @@ public static class IpHelper
             ip & 0xFF);
     }
 
-    public static uint MaskFromPrefix(int prefix)
-    {
+    public static uint MaskFromPrefix(int prefix) {
         if (prefix < 0 || prefix > 32)
             throw new ArgumentException($"Invalid CIDR prefix: {prefix}");
 

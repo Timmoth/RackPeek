@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using RackPeek.Domain.Resources.Services.UseCases;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -7,18 +6,14 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Services;
 
 public class ServiceSubnetsCommand(
-    ILogger<ServiceSubnetsCommand> logger,
     IServiceProvider serviceProvider
-) : AsyncCommand<ServiceSubnetsCommand.Settings>
-{
-    private static string BuildUtilizationBar(double fullness, int width = 30)
-    {
+) : AsyncCommand<ServiceSubnetsCommand.Settings> {
+    private static string BuildUtilizationBar(double fullness, int width = 30) {
         fullness = Math.Clamp(fullness, 0, 100);
         var filled = (int)(width * (fullness / 100.0));
         var empty = width - filled;
 
-        var color = fullness switch
-        {
+        Color color = fullness switch {
             < 50 => Color.Green,
             < 80 => Color.Yellow,
             _ => Color.Red
@@ -30,8 +25,7 @@ public class ServiceSubnetsCommand(
         return $"[{color.ToString().ToLower()}]{filledBar}[/]{emptyBar} {fullness:0}%";
     }
 
-    private static uint IpToUInt32(string ip)
-    {
+    private static uint IpToUInt32(string ip) {
         var parts = ip.Split('.');
         return (uint)(
             (int.Parse(parts[0]) << 24) |
@@ -44,42 +38,37 @@ public class ServiceSubnetsCommand(
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         Settings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<ServiceSubnetsUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        ServiceSubnetsUseCase useCase = scope.ServiceProvider.GetRequiredService<ServiceSubnetsUseCase>();
 
-        var result = await useCase.ExecuteAsync(settings.Cidr, settings.Prefix, cancellationToken);
+        ServiceSubnetsResult result = await useCase.ExecuteAsync(settings.Cidr, settings.Prefix, cancellationToken);
 
         // Handle invalid CIDR
-        if (result.IsInvalidCidr)
-        {
+        if (result.IsInvalidCidr) {
             AnsiConsole.MarkupLine($"[red]Invalid CIDR:[/] {result.InvalidCidrValue}");
             return 1;
         }
 
 
-        if (settings.Cidr is not null)
-        {
+        if (settings.Cidr is not null) {
             var services = result.Services
                 .OrderBy(s => IpToUInt32(s.Ip))
                 .ToList();
 
 
-            if (services.Count == 0)
-            {
+            if (services.Count == 0) {
                 AnsiConsole.MarkupLine($"[yellow]No services found in {settings.Cidr}[/]");
                 return 0;
             }
 
-            var table = new Table()
+            Table table = new Table()
                 .Border(TableBorder.Rounded)
                 .AddColumn("Name")
                 .AddColumn("IP")
                 .AddColumn("Runs On");
 
-            foreach (var s in services)
-            {
+            foreach (ServiceSummary s in services) {
                 var runsOn = "";
                 if (s.RunsOn?.Count > 0) runsOn = string.Join(", ", s.RunsOn);
 
@@ -92,11 +81,10 @@ public class ServiceSubnetsCommand(
         }
 
 
-        var subnets = result.Subnets;
+        List<SubnetSummary> subnets = result.Subnets;
 
         subnets = subnets
-            .OrderByDescending(s =>
-            {
+            .OrderByDescending(s => {
                 var parts = s.Cidr.Split('/');
                 var prefix = int.Parse(parts[1]);
                 var alloc = Math.Pow(2, 32 - prefix) - 2;
@@ -104,20 +92,18 @@ public class ServiceSubnetsCommand(
             })
             .ToList();
 
-        if (subnets.Count == 0)
-        {
+        if (subnets.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No subnets found.[/]");
             return 0;
         }
 
-        var subnetTable = new Table()
+        Table subnetTable = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Subnet")
             .AddColumn("Services")
             .AddColumn("Utilization");
 
-        foreach (var subnet in subnets)
-        {
+        foreach (SubnetSummary subnet in subnets) {
             var parts = subnet.Cidr.Split('/');
             var prefix = int.Parse(parts[1]);
 
@@ -136,8 +122,7 @@ public class ServiceSubnetsCommand(
         return 0;
     }
 
-    public class Settings : CommandSettings
-    {
+    public class Settings : CommandSettings {
         [CommandOption("--cidr <CIDR>")] public string? Cidr { get; set; }
 
         [CommandOption("--prefix <PREFIX>")] public int? Prefix { get; set; }

@@ -1,7 +1,6 @@
 namespace RackPeek.Domain.Resources.SubResources;
 
-public class Drive
-{
+public class Drive {
     public static readonly string[] ValidDriveTypes =
     {
         // Flash storage

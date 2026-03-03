@@ -2,8 +2,7 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class AccessPointsListPom(IPage page)
-{
+public class AccessPointsListPom(IPage page) {
     public AddResourceComponent AddAccessPoint => new(page, "accesspoint");
 
     public ILocator PageRoot => page.GetByTestId("accesspoints-page-root");
@@ -22,36 +21,26 @@ public class AccessPointsListPom(IPage page)
     // Dynamic AccessPoint Items
     // -------------------------------------------------
 
-    public ILocator AccessPointItem(string name)
-    {
-        return page.GetByTestId($"accesspoint-item-{Sanitize(name)}");
-    }
-    
-    public ILocator AccessPointItemLink(string name)
-    {
-        return page.GetByTestId($"open-accesspoint-{Sanitize(name)}-link");
-    }
+    public ILocator AccessPointItem(string name) => page.GetByTestId($"accesspoint-item-{Sanitize(name)}");
 
-    public ILocator DeleteButton(string name)
-    {
+    public ILocator AccessPointItemLink(string name) => page.GetByTestId($"open-accesspoint-{Sanitize(name)}-link");
+
+    public ILocator DeleteButton(string name) {
         return AccessPointItem(name)
             .GetByTestId("delete-accesspoint-button");
     }
 
-    public ILocator EditButton(string name)
-    {
+    public ILocator EditButton(string name) {
         return AccessPointItem(name)
             .GetByTestId("edit-accesspoint-button");
     }
 
-    public ILocator RenameButton(string name)
-    {
+    public ILocator RenameButton(string name) {
         return AccessPointItem(name)
             .GetByTestId("rename-accesspoint-button");
     }
 
-    public ILocator CloneButton(string name)
-    {
+    public ILocator CloneButton(string name) {
         return AccessPointItem(name)
             .GetByTestId("clone-accesspoint-button");
     }
@@ -60,36 +49,29 @@ public class AccessPointsListPom(IPage page)
     // Navigation
     // -------------------------------------------------
 
-    public async Task GotoAsync(string baseUrl)
-    {
+    public async Task GotoAsync(string baseUrl) {
         await page.GotoAsync($"{baseUrl}/accesspoints/list");
         await AssertLoadedAsync();
     }
 
-    public async Task AssertLoadedAsync()
-    {
+    public async Task AssertLoadedAsync() {
         await Assertions.Expect(PageRoot).ToBeVisibleAsync();
         await Assertions.Expect(PageTitle).ToBeVisibleAsync();
     }
 
-    public async Task WaitForListAsync()
-    {
-        await Assertions.Expect(AccessPointsList).ToBeVisibleAsync();
-    }
+    public async Task WaitForListAsync() => await Assertions.Expect(AccessPointsList).ToBeVisibleAsync();
 
     // -------------------------------------------------
     // Actions
     // -------------------------------------------------
 
-    public async Task AddAccessPointAsync(string name)
-    {
+    public async Task AddAccessPointAsync(string name) {
         await AddAccessPoint.AddAsync(name);
         await Assertions.Expect(AccessPointItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task DeleteAccessPointAsync(string name)
-    {
+    public async Task DeleteAccessPointAsync(string name) {
         await DeleteButton(name).ClickAsync();
         await page.GetByTestId("AccessPoint-confirm-modal-confirm").ClickAsync();
 
@@ -97,26 +79,20 @@ public class AccessPointsListPom(IPage page)
             .Not.ToBeVisibleAsync();
     }
 
-    public async Task OpenAccessPointAsync(string name)
-    {
+    public async Task OpenAccessPointAsync(string name) {
         await AccessPointItemLink(name).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{name}");
     }
 
-    public async Task AssertAccessPointExists(string name)
-    {
+    public async Task AssertAccessPointExists(string name) {
         await Assertions.Expect(AccessPointItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task AssertAccessPointDoesNotExist(string name)
-    {
+    public async Task AssertAccessPointDoesNotExist(string name) {
         await Assertions.Expect(AccessPointItem(name))
             .Not.ToBeVisibleAsync();
     }
 
-    private static string Sanitize(string value)
-    {
-        return value.Replace(" ", "-");
-    }
+    private static string Sanitize(string value) => value.Replace(" ", "-");
 }

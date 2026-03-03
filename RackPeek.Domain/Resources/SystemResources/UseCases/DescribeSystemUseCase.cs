@@ -14,10 +14,8 @@ public record SystemDescription(
     Dictionary<string, string> Labels
 );
 
-public class DescribeSystemUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<SystemDescription> ExecuteAsync(string name)
-    {
+public class DescribeSystemUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<SystemDescription> ExecuteAsync(string name) {
         name = Normalize.SystemName(name);
         ThrowIfInvalid.ResourceName(name);
         var system = await repository.GetByNameAsync(name) as SystemResource;

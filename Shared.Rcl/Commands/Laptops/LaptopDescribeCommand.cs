@@ -6,19 +6,17 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Laptops;
 
 public class LaptopDescribeCommand(IServiceProvider provider)
-    : AsyncCommand<LaptopNameSettings>
-{
+    : AsyncCommand<LaptopNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         LaptopNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DescribeLaptopUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        DescribeLaptopUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeLaptopUseCase>();
 
-        var result = await useCase.ExecuteAsync(settings.Name);
+        LaptopDescription result = await useCase.ExecuteAsync(settings.Name);
 
-        var grid = new Grid().AddColumn().AddColumn();
+        Grid grid = new Grid().AddColumn().AddColumn();
 
         grid.AddRow("Name:", result.Name);
         grid.AddRow("CPUs:", result.CpuCount.ToString());

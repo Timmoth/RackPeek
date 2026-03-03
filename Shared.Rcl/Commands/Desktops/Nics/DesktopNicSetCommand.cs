@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Desktops.Nics;
 
-public class DesktopNicSetSettings : CommandSettings
-{
+public class DesktopNicSetSettings : CommandSettings {
     [CommandArgument(0, "<desktop>")]
     [Description("The desktop name.")]
     public string DesktopName { get; set; } = default!;
@@ -31,15 +30,13 @@ public class DesktopNicSetSettings : CommandSettings
 }
 
 public class DesktopNicSetCommand(IServiceProvider provider)
-    : AsyncCommand<DesktopNicSetSettings>
-{
+    : AsyncCommand<DesktopNicSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DesktopNicSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateNicUseCase<Desktop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IUpdateNicUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IUpdateNicUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Index, settings.Type, settings.Speed, settings.Ports);
 

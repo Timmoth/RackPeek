@@ -34,7 +34,7 @@ labels:
 ### What these do
 
 | Label                        | Purpose           |
-| ---------------------------- | ----------------- |
+|------------------------------|-------------------|
 | ansible_host                 | IP or DNS target  |
 | ansible_user                 | SSH user          |
 | ansible_port                 | SSH port          |

@@ -16,14 +16,11 @@ public record SwitchHardwareRow(
     string PortSummary
 );
 
-public class SwitchHardwareReportUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<SwitchHardwareReport> ExecuteAsync()
-    {
-        var switches = await repository.GetAllOfTypeAsync<Switch>();
+public class SwitchHardwareReportUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<SwitchHardwareReport> ExecuteAsync() {
+        IReadOnlyList<Switch> switches = await repository.GetAllOfTypeAsync<Switch>();
 
-        var rows = switches.Select(sw =>
-        {
+        var rows = switches.Select(sw => {
             var totalPorts = sw.Ports?.Sum(p => p.Count ?? 0) ?? 0;
 
             var maxSpeed = sw.Ports?
@@ -35,8 +32,7 @@ public class SwitchHardwareReportUseCase(IResourceCollection repository) : IUseC
                     sw.Ports
                         .GroupBy(p => p.Speed ?? 0)
                         .OrderBy(g => g.Key)
-                        .Select(g =>
-                        {
+                        .Select(g => {
                             var count = g.Sum(p => p.Count ?? 0);
                             return $"{count}×{g.Key}G";
                         }));

@@ -6,18 +6,15 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Firewalls.Ports;
 
-public class FirewallPortRemoveSettings : FirewallNameSettings
-{
+public class FirewallPortRemoveSettings : FirewallNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 }
 
 public class FirewallPortRemoveCommand(IServiceProvider sp)
-    : AsyncCommand<FirewallPortRemoveSettings>
-{
-    public override async Task<int> ExecuteAsync(CommandContext ctx, FirewallPortRemoveSettings s, CancellationToken ct)
-    {
-        using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Firewall>>();
+    : AsyncCommand<FirewallPortRemoveSettings> {
+    public override async Task<int> ExecuteAsync(CommandContext ctx, FirewallPortRemoveSettings s, CancellationToken ct) {
+        using IServiceScope scope = sp.CreateScope();
+        IRemovePortUseCase<Firewall> useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Firewall>>();
 
         await useCase.ExecuteAsync(s.Name, s.Index);
 

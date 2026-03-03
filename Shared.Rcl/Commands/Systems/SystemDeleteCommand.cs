@@ -8,15 +8,14 @@ namespace Shared.Rcl.Commands.Systems;
 
 public class SystemDeleteCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<SystemNameSettings>
-{
+) : AsyncCommand<SystemNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         SystemNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<SystemResource>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IDeleteResourceUseCase<SystemResource> useCase =
+            scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<SystemResource>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

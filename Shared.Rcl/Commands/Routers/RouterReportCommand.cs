@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using RackPeek.Domain.Resources.Routers;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -7,24 +6,20 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Routers;
 
 public class RouterReportCommand(
-    ILogger<RouterReportCommand> logger,
     IServiceProvider serviceProvider
-) : AsyncCommand
-{
-    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<RouterHardwareReportUseCase>();
+) : AsyncCommand {
+    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        RouterHardwareReportUseCase useCase = scope.ServiceProvider.GetRequiredService<RouterHardwareReportUseCase>();
 
-        var report = await useCase.ExecuteAsync();
+        RouterHardwareReport report = await useCase.ExecuteAsync();
 
-        if (report.Routers.Count == 0)
-        {
+        if (report.Routers.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No Routers found.[/]");
             return 0;
         }
 
-        var table = new Table()
+        Table table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Name")
             .AddColumn("Model")
@@ -34,7 +29,7 @@ public class RouterReportCommand(
             .AddColumn("Max Speed")
             .AddColumn("Port Summary");
 
-        foreach (var s in report.Routers)
+        foreach (RouterHardwareRow s in report.Routers)
             table.AddRow(
                 s.Name,
                 s.Model,

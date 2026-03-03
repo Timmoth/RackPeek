@@ -1,78 +1,68 @@
 using RackPeek.Domain.Resources.Hardware;
+using RackPeek.Domain.Resources.Services;
+using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Persistence;
 
-public class YamlHardwareRepository(IResourceCollection resources) : IHardwareRepository
-{
-    public Task<int> GetCountAsync()
-    {
-        return Task.FromResult(resources.HardwareResources.Count);
-    }
+public class YamlHardwareRepository(IResourceCollection resources) : IHardwareRepository {
+    public Task<int> GetCountAsync() => Task.FromResult(resources.HardwareResources.Count);
 
-    public Task<Dictionary<string, int>> GetKindCountAsync()
-    {
+    public Task<Dictionary<string, int>> GetKindCountAsync() {
         return Task.FromResult(resources.HardwareResources
             .GroupBy(h => h.Kind)
             .ToDictionary(k => k.Key, v => v.Count()));
     }
 
-    public Task<List<HardwareTree>> GetTreeAsync()
-    {
+    public Task<List<HardwareTree>> GetTreeAsync() {
         var hardwareTree = new List<HardwareTree>();
-        
-            var systemGroups = resources.SystemResources
-                .Where(s => s.RunsOn.Count != 0)
-                .SelectMany(
-                    s => s.RunsOn,
-                    (system, hardwareName) => new
-                    {
-                        Hardware = hardwareName.Trim(),
-                        System = system
-                    })
-                .GroupBy(x => x.Hardware, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Select(x => x.System).ToList(),
-                    StringComparer.OrdinalIgnoreCase);
 
-            var serviceGroups = resources.ServiceResources
-                .Where(s => s.RunsOn.Count != 0)
-                .SelectMany(
-                    s => s.RunsOn,
-                    (service, systemName) => new
-                    {
-                        System = systemName.Trim(),
-                        Service = service
-                    })
-                .GroupBy(x => x.System, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Select(x => x.Service).ToList(),
-                    StringComparer.OrdinalIgnoreCase);
+        var systemGroups = resources.SystemResources
+            .Where(s => s.RunsOn.Count != 0)
+            .SelectMany(
+                s => s.RunsOn,
+                (system, hardwareName) => new {
+                    Hardware = hardwareName.Trim(),
+                    System = system
+                })
+            .GroupBy(x => x.Hardware, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(x => x.System).ToList(),
+                StringComparer.OrdinalIgnoreCase);
 
-        foreach (var hardware in resources.HardwareResources)
-        {
+        var serviceGroups = resources.ServiceResources
+            .Where(s => s.RunsOn.Count != 0)
+            .SelectMany(
+                s => s.RunsOn,
+                (service, systemName) => new {
+                    System = systemName.Trim(),
+                    Service = service
+                })
+            .GroupBy(x => x.System, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(x => x.Service).ToList(),
+                StringComparer.OrdinalIgnoreCase);
+
+        foreach (Hardware hardware in resources.HardwareResources) {
             var systems = new List<SystemTree>();
             var hardwareKey = hardware.Name.Trim();
 
-            if (systemGroups.TryGetValue(hardwareKey, out var systemResources))
-                foreach (var system in systemResources)
-                {
+            if (systemGroups.TryGetValue(hardwareKey, out List<SystemResource>? systemResources))
+                foreach (SystemResource system in systemResources) {
                     var services = new List<string>();
                     var systemKey = system.Name.Trim();
 
-                    if (serviceGroups.TryGetValue(systemKey, out var serviceResources))
+                    if (serviceGroups.TryGetValue(systemKey, out List<Service>? serviceResources))
                         services.AddRange(serviceResources.Select(s => s.Name));
 
-                    systems.Add(new SystemTree
-                    {
+                    systems.Add(new SystemTree {
                         SystemName = system.Name,
                         Services = services
                     });
                 }
 
-            hardwareTree.Add(new HardwareTree
-            {
+            hardwareTree.Add(new HardwareTree {
                 Kind = hardware.Kind,
                 HardwareName = hardware.Name,
                 Systems = systems

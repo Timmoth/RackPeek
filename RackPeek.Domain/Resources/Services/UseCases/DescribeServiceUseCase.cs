@@ -15,30 +15,21 @@ public record ServiceDescription(
     Dictionary<string, string> Labels
 );
 
-public class DescribeServiceUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<ServiceDescription> ExecuteAsync(string name)
-    {
+public class DescribeServiceUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<ServiceDescription> ExecuteAsync(string name) {
         name = Normalize.ServiceName(name);
         ThrowIfInvalid.ResourceName(name);
         var service = await repository.GetByNameAsync(name) as Service;
         if (service is null)
             throw new NotFoundException($"Service '{name}' not found.");
 
-        List<string> runsOnPhysicalHost = new List<string>();
-        foreach (var systemName in service.RunsOn)
-        {
+        var runsOnPhysicalHost = new List<string>();
+        foreach (var systemName in service.RunsOn) {
             var systemResource = await repository.GetByNameAsync(systemName) as SystemResource;
             if (systemResource is not null)
-            {
-                foreach(var physicalName in systemResource.RunsOn)
-                {
+                foreach (var physicalName in systemResource.RunsOn)
                     if (!runsOnPhysicalHost.Contains(physicalName))
-                    {
                         runsOnPhysicalHost.Add(physicalName);
-                    }
-                }
-            }
         }
 
         return new ServiceDescription(

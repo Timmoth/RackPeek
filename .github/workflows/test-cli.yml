@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -16,5 +17,14 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - name: Restore
+        run: dotnet restore
+
+      - name: Check Formatting
+        run: dotnet format --verify-no-changes
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
       - name: Test
-        run: dotnet test Tests --verbosity normal
+        run: dotnet test Tests --no-build --configuration Release --verbosity normal

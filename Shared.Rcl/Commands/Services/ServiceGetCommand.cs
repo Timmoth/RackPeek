@@ -7,24 +7,21 @@ namespace Shared.Rcl.Commands.Services;
 
 public class ServiceGetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand
-{
+) : AsyncCommand {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<ServiceReportUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        ServiceReportUseCase useCase = scope.ServiceProvider.GetRequiredService<ServiceReportUseCase>();
 
-        var report = await useCase.ExecuteAsync();
+        ServiceReport report = await useCase.ExecuteAsync();
 
-        if (report.Services.Count == 0)
-        {
+        if (report.Services.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No Services found.[/]");
             return 0;
         }
 
-        var table = new Table()
+        Table table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Name")
             .AddColumn("Ip")
@@ -33,8 +30,7 @@ public class ServiceGetCommand(
             .AddColumn("Url")
             .AddColumn("Runs On");
 
-        foreach (var s in report.Services)
-        {
+        foreach (ServiceReportRow s in report.Services) {
             string? sys = null;
             string? phys = null;
 

@@ -6,18 +6,15 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Switches.Ports;
 
-public class SwitchPortRemoveSettings : SwitchNameSettings
-{
+public class SwitchPortRemoveSettings : SwitchNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 }
 
 public class SwitchPortRemoveCommand(IServiceProvider sp)
-    : AsyncCommand<SwitchPortRemoveSettings>
-{
-    public override async Task<int> ExecuteAsync(CommandContext ctx, SwitchPortRemoveSettings s, CancellationToken ct)
-    {
-        using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Switch>>();
+    : AsyncCommand<SwitchPortRemoveSettings> {
+    public override async Task<int> ExecuteAsync(CommandContext ctx, SwitchPortRemoveSettings s, CancellationToken ct) {
+        using IServiceScope scope = sp.CreateScope();
+        IRemovePortUseCase<Switch> useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Switch>>();
 
         await useCase.ExecuteAsync(s.Name, s.Index);
 

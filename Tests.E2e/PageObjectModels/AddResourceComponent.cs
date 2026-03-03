@@ -2,8 +2,7 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class AddResourceComponent(IPage page, string resourceType)
-{
+public class AddResourceComponent(IPage page, string resourceType) {
     private readonly string _resourceType = resourceType.ToLower();
 
     // -------------------------------------------------
@@ -32,22 +31,17 @@ public class AddResourceComponent(IPage page, string resourceType)
     // Actions
     // -------------------------------------------------
 
-    public async Task AddAsync(string name)
-    {
+    public async Task AddAsync(string name) {
         await Assertions.Expect(Root).ToBeVisibleAsync();
 
         await Input.FillAsync(name);
         await Button.ClickAsync();
     }
 
-    public async Task AssertErrorAsync(string message)
-    {
+    public async Task AssertErrorAsync(string message) {
         await Assertions.Expect(Error)
             .ToHaveTextAsync(message);
     }
 
-    public async Task AssertVisibleAsync()
-    {
-        await Assertions.Expect(Root).ToBeVisibleAsync();
-    }
+    public async Task AssertVisibleAsync() => await Assertions.Expect(Root).ToBeVisibleAsync();
 }

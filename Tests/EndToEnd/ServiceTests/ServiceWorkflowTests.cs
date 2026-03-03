@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.ServiceTests;
 
 [Collection("Yaml CLI tests")]
 public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -24,15 +22,14 @@ public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
     }
 
     [Fact]
-    public async Task services_cli_workflow_test()
-    {
+    public async Task services_cli_workflow_test() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         // Add parent system
         await ExecuteAsync("systems", "add", "sys01");
 
         // Add service
-        var (output, yaml) = await ExecuteAsync("services", "add", "svc01");
+        (var output, var yaml) = await ExecuteAsync("services", "add", "svc01");
         Assert.Equal("Service 'svc01' added.\n", output);
         Assert.Contains("name: svc01", yaml);
 
@@ -67,7 +64,8 @@ public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
 
         // Get service
         (output, yaml) = await ExecuteAsync("services", "get", "svc01");
-        Assert.Equal("svc01  Ip: 10.0.0.5, Port: 8080, Protocol: http, Url: http://10.0.0.5:8080, \nRunsOn: sys01\n", output);
+        Assert.Equal("svc01  Ip: 10.0.0.5, Port: 8080, Protocol: http, Url: http://10.0.0.5:8080, \nRunsOn: sys01\n",
+            output);
 
         // List services (strict table)
         (output, yaml) = await ExecuteAsync("services", "list");
@@ -94,13 +92,13 @@ public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
         // Subnets (strict)
         (output, yaml) = await ExecuteAsync("services", "subnets");
         Assert.Equal("""
-                        ╭─────────────┬──────────┬───────────────────────────────────╮
-                        │ Subnet      │ Services │ Utilization                       │
-                        ├─────────────┼──────────┼───────────────────────────────────┤
-                        │ 10.0.0.0/24 │ 1        │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0% │
-                        ╰─────────────┴──────────┴───────────────────────────────────╯
-                        
-                        """, output);
+                     ╭─────────────┬──────────┬───────────────────────────────────╮
+                     │ Subnet      │ Services │ Utilization                       │
+                     ├─────────────┼──────────┼───────────────────────────────────┤
+                     │ 10.0.0.0/24 │ 1        │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0% │
+                     ╰─────────────┴──────────┴───────────────────────────────────╯
+
+                     """, output);
 
         // Describe (strict)
         (output, yaml) = await ExecuteAsync("services", "describe", "svc01");
@@ -113,10 +111,10 @@ public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
                      │ Url:       http://10.0.0.5:8080         │
                      │ Runs On:   sys01                        │
                      ╰─────────────────────────────────────────╯
-                     
-                     """,output);
-                     
-        
+
+                     """, output);
+
+
         // Delete service
         (output, yaml) = await ExecuteAsync("services", "del", "svc01");
         Assert.Equal("""

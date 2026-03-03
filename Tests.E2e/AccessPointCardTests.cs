@@ -8,19 +8,17 @@ namespace Tests.E2e;
 
 public class AccessPointCardTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) : E2ETestBase(fixture, output)
-{
+    ITestOutputHelper output) : E2ETestBase(fixture, output) {
+    private readonly PlaywrightFixture _fixture = fixture;
     private readonly ITestOutputHelper _output = output;
 
     [Fact]
-    public async Task User_Can_Edit_Model_And_Speed_And_Save()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Edit_Model_And_Speed_And_Save() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -48,28 +46,25 @@ public class AccessPointCardTests(
             await card.SaveAsync(name);
 
             await page.ReloadAsync();
-            
+
             await Assertions.Expect(card.ModelValue(name)).ToHaveTextAsync(newModel);
             await Assertions.Expect(card.SpeedValue(name))
                 .ToHaveTextAsync($"{newSpeed.ToString(CultureInfo.InvariantCulture)} Gbps");
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Cancel_Edit_And_Changes_Are_Not_Applied()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Cancel_Edit_And_Changes_Are_Not_Applied() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -105,22 +100,19 @@ public class AccessPointCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Rename_AccessPoint_From_Card()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Rename_AccessPoint_From_Card() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
         var newName = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -146,22 +138,19 @@ public class AccessPointCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Clone_AccessPoint_From_Card()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Clone_AccessPoint_From_Card() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
         var cloneName = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -198,21 +187,18 @@ public class AccessPointCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Delete_AccessPoint_From_Card_And_Is_Redirected()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Delete_AccessPoint_From_Card_And_Is_Redirected() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -241,21 +227,18 @@ public class AccessPointCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
-    
+
     [Fact]
-    public async Task User_Can_Add_And_Remove_Tags_From_AccessPoint_Card()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Add_And_Remove_Tags_From_AccessPoint_Card() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -274,7 +257,7 @@ public class AccessPointCardTests(
             var card = new AccessPointCardPom(page);
             await card.AssertCardVisibleAsync(name);
 
-            var tags = card.Tags;
+            TagsPom tags = card.Tags;
 
             // -------------------------------------------------
             // Add multiple tags in one modal interaction
@@ -308,8 +291,7 @@ public class AccessPointCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }

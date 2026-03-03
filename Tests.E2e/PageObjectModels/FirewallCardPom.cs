@@ -1,9 +1,8 @@
-namespace Tests.E2e.PageObjectModels;
-
 using Microsoft.Playwright;
 
-public class FirewallCardPom(IPage page)
-{
+namespace Tests.E2e.PageObjectModels;
+
+public class FirewallCardPom(IPage page) {
     public TagsPom Tags => new(page);
     public LabelsPom Labels => new(page);
 
@@ -150,8 +149,7 @@ public class FirewallCardPom(IPage page)
     // Navigation helpers
     // -------------------------------------------------
 
-    public async Task OpenFirewallAsync(string name)
-    {
+    public async Task OpenFirewallAsync(string name) {
         await OpenLink(name).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{name}");
     }
@@ -160,16 +158,14 @@ public class FirewallCardPom(IPage page)
     // Actions
     // -------------------------------------------------
 
-    public async Task DeleteFirewallAsync(string name)
-    {
+    public async Task DeleteFirewallAsync(string name) {
         await DeleteButton(name).ClickAsync();
         await DeleteConfirmConfirmButton().ClickAsync();
 
         await Assertions.Expect(FirewallItem(name)).Not.ToBeVisibleAsync();
     }
 
-    public async Task RenameFirewallAsync(string currentName, string newName)
-    {
+    public async Task RenameFirewallAsync(string currentName, string newName) {
         await RenameButton(currentName).ClickAsync();
 
         await Assertions.Expect(RenameModal()).ToBeVisibleAsync();
@@ -180,8 +176,7 @@ public class FirewallCardPom(IPage page)
         await Assertions.Expect(FirewallItem(newName)).ToBeVisibleAsync();
     }
 
-    public async Task CloneFirewallAsync(string currentName, string cloneName)
-    {
+    public async Task CloneFirewallAsync(string currentName, string cloneName) {
         await CloneButton(currentName).ClickAsync();
 
         await Assertions.Expect(CloneModal()).ToBeVisibleAsync();
@@ -192,24 +187,21 @@ public class FirewallCardPom(IPage page)
         await Assertions.Expect(FirewallItem(cloneName)).ToBeVisibleAsync();
     }
 
-    public async Task EnterEditModeAsync(string name)
-    {
+    public async Task EnterEditModeAsync(string name) {
         await EditButton(name).ClickAsync();
         await Assertions.Expect(ModelInput(name)).ToBeVisibleAsync();
         await Assertions.Expect(ManagedCheckbox(name)).ToBeVisibleAsync();
         await Assertions.Expect(PoeCheckbox(name)).ToBeVisibleAsync();
     }
 
-    public async Task SaveEditsAsync(string name)
-    {
+    public async Task SaveEditsAsync(string name) {
         await SaveButton(name).ClickAsync();
 
         // back to view mode
         await Assertions.Expect(EditButton(name)).ToBeVisibleAsync();
     }
 
-    public async Task CancelEditsAsync(string name)
-    {
+    public async Task CancelEditsAsync(string name) {
         await CancelButton(name).ClickAsync();
 
         // back to view mode

@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Desktops.Gpus;
 
-public class DesktopGpuRemoveSettings : CommandSettings
-{
+public class DesktopGpuRemoveSettings : CommandSettings {
     [CommandArgument(0, "<desktop>")]
     [Description("The desktop name.")]
     public string DesktopName { get; set; } = default!;
@@ -19,15 +18,13 @@ public class DesktopGpuRemoveSettings : CommandSettings
 }
 
 public class DesktopGpuRemoveCommand(IServiceProvider provider)
-    : AsyncCommand<DesktopGpuRemoveSettings>
-{
+    : AsyncCommand<DesktopGpuRemoveSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DesktopGpuRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveGpuUseCase<Desktop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IRemoveGpuUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IRemoveGpuUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Index);
 

@@ -24,17 +24,18 @@
             </div>
 
             <EditForm Model="_model" OnValidSubmit="HandleAccept">
-                <DataAnnotationsValidator />
+                <DataAnnotationsValidator/>
 
                 <div class="space-y-3 text-sm">
                     <!-- Search -->
                     <div>
+                        @* ReSharper disable once CSharpWarnings::CS8619 *@
                         <InputText class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
                                    placeholder="Search hardware or systems…"
                                    Value="@_search"
                                    ValueChanged="OnSearchChanged"
                                    ValueExpression="() => _search"
-                                   @oninput="OnSearchInput" />
+                                   @oninput="OnSearchInput"/>
                     </div>
 
                     <!-- Selection -->
@@ -94,9 +95,9 @@
     [Parameter] public string Title { get; set; } = "Select hardware or system";
 
     [Parameter] public string? Value { get; set; }
-    
+
     [Parameter] public EventCallback<string?> OnAccept { get; set; }
-    
+
     private SelectionFormModel _model = new();
     private string _search = string.Empty;
 
@@ -133,7 +134,7 @@
         _model = new SelectionFormModel { Value = Value };
         _search = string.Empty;
     }
-    
+
     private IReadOnlyDictionary<string, List<SelectionItem>> FilteredItems =>
         _items
             .Where(i =>
@@ -144,14 +145,17 @@
             .ToDictionary(
                 g => g.Key,
                 g => g.OrderBy(i => i.Label).ToList());
-    
+
     private async Task HandleAccept()
     {
         await OnAccept.InvokeAsync(_model.Value);
         await Close();
     }
 
-    private async Task Cancel() => await Close();
+    private async Task Cancel()
+    {
+        await Close();
+    }
 
     private async Task Close()
     {
@@ -160,7 +164,10 @@
         await IsOpenChanged.InvokeAsync(false);
     }
 
-    private void OnSearchChanged(string? value) => _search = value ?? string.Empty;
+    private void OnSearchChanged(string? value)
+    {
+        _search = value ?? string.Empty;
+    }
 
     private void OnSearchInput(ChangeEventArgs e)
     {
@@ -169,12 +176,12 @@
         if (FilteredItems.SelectMany(g => g.Value).All(i => i.Value != _model.Value))
             _model.Value = null;
     }
-    
+
     private sealed class SelectionFormModel
     {
         [Required] public string? Value { get; set; }
     }
-    
+
     private sealed record SelectionItem(
         string Type,
         string Group,
@@ -182,10 +189,15 @@
         string Value,
         int TypeSort)
     {
-        public static SelectionItem Hardware(string name, string kind) =>
-            new("Hardware", kind, name, $"{name}", 0);
+        public static SelectionItem Hardware(string name, string kind)
+        {
+            return new SelectionItem("Hardware", kind, name, $"{name}", 0);
+        }
 
-        public static SelectionItem System(string name, string category) =>
-            new("System", category, name, $"{name}", 1);
+        public static SelectionItem System(string name, string category)
+        {
+            return new SelectionItem("System", category, name, $"{name}", 1);
+        }
     }
+
 }

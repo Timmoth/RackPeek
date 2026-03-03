@@ -16,25 +16,25 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace RackPeek.Domain.Persistence.Yaml;
 
-public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<YamlRoot>
-{
+public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<YamlRoot> {
     // List migration functions here
-    public static readonly IReadOnlyList<Func<IServiceProvider, Dictionary<object, object>, ValueTask>> ListOfMigrations = new List<Func<IServiceProvider, Dictionary<object,object>, ValueTask>>{
-        EnsureSchemaVersionExists,
-        ConvertScalarRunsOnToList,
-    };
+    public static readonly IReadOnlyList<Func<IServiceProvider, Dictionary<object, object>, ValueTask>>
+        ListOfMigrations = new List<Func<IServiceProvider, Dictionary<object, object>, ValueTask>>
+        {
+            EnsureSchemaVersionExists,
+            ConvertScalarRunsOnToList
+        };
 
     public RackPeekConfigMigrationDeserializer(IServiceProvider serviceProvider,
         ILogger<YamlMigrationDeserializer<YamlRoot>> logger) :
-        base(serviceProvider, logger, 
+        base(serviceProvider, logger,
             ListOfMigrations,
             "version",
             new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithCaseInsensitivePropertyMatching()
                 .WithTypeConverter(new StorageSizeYamlConverter())
                 .WithTypeConverter(new NotesStringYamlConverter())
-                .WithTypeDiscriminatingNodeDeserializer(options =>
-                {
+                .WithTypeDiscriminatingNodeDeserializer(options => {
                     options.AddKeyValueTypeDiscriminator<Resource>("kind", new Dictionary<string, Type>
                     {
                         { Server.KindLabel, typeof(Server) },
@@ -48,7 +48,7 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
                         { SystemResource.KindLabel, typeof(SystemResource) },
                         { Service.KindLabel, typeof(Service) }
                     });
-                }), 
+                }),
             new SerializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithTypeConverter(new StorageSizeYamlConverter())
@@ -56,24 +56,21 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
                 .ConfigureDefaultValuesHandling(
                     DefaultValuesHandling.OmitNull |
                     DefaultValuesHandling.OmitEmptyCollections
-                )) {}
+                )) {
+    }
 
     #region Migrations
 
     // Define migration functions here
-    public static ValueTask EnsureSchemaVersionExists(IServiceProvider serviceProvider, Dictionary<object, object> obj)
-    {
-        if (!obj.ContainsKey("version"))
-        {
-            obj["version"] = 0;
-        }
-        
+    public static ValueTask EnsureSchemaVersionExists(IServiceProvider serviceProvider, Dictionary<object, object> obj) {
+        if (!obj.ContainsKey("version")) obj["version"] = 0;
+
         return ValueTask.CompletedTask;
     }
+
     public static ValueTask ConvertScalarRunsOnToList(
         IServiceProvider serviceProvider,
-        Dictionary<object, object> obj)
-    {
+        Dictionary<object, object> obj) {
         const string key = "runsOn";
 
         if (!obj.TryGetValue("resources", out var resourceListObj))
@@ -82,16 +79,14 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
         if (resourceListObj is not List<object> resources)
             return ValueTask.CompletedTask;
 
-        foreach (var resourceObj in resources)
-        {
+        foreach (var resourceObj in resources) {
             if (resourceObj is not Dictionary<object, object> resourceDict)
                 continue;
 
             if (!resourceDict.TryGetValue(key, out var runsOn))
                 continue;
 
-            switch (runsOn)
-            {
+            switch (runsOn) {
                 case string single:
                     resourceDict[key] = new List<string> { single };
                     break;
@@ -114,5 +109,6 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
 
         return ValueTask.CompletedTask;
     }
+
     #endregion
 }

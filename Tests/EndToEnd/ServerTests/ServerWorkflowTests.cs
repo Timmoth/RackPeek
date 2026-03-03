@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.ServerTests;
 
 [Collection("Yaml CLI tests")]
 public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -24,12 +22,11 @@ public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
     }
 
     [Fact]
-    public async Task servers_cli_workflow_test()
-    {
+    public async Task servers_cli_workflow_test() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         // Add server
-        var (output, yaml) = await ExecuteAsync("servers", "add", "srv01");
+        (var output, var yaml) = await ExecuteAsync("servers", "add", "srv01");
         Assert.Equal("Server 'srv01' added.\n", output);
         Assert.Contains("name: srv01", yaml);
 
@@ -87,7 +84,7 @@ public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
             "--ports", "2"
         );
         Assert.Equal("NIC added to 'srv01'.\n", output);
-        
+
         (output, yaml) = await ExecuteAsync(
             "servers", "nic", "add", "srv01",
             "--type", "RJ45",
@@ -102,12 +99,11 @@ public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
             "srv01  RAM: 128 GB, IPMI: yes\n",
             output
         );
-        
 
-        
-    // Summary (strict table)
+
+        // Summary (strict table)
         (output, yaml) = await ExecuteAsync("servers", "summary");
-        
+
         Assert.Equal("""
                      ╭───────┬───────────┬───────┬────────┬───────────┬───────────┬──────────┬──────╮
                      │ Name  │ CPU       │ C/T   │ RAM    │ Storage   │ NICs      │ GPUs     │ IPMI │
@@ -117,27 +113,27 @@ public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
                      │       │ Silver    │       │        │ / HDD 0)  │           │ A2000 (6 │      │
                      │       │ 4310      │       │        │           │           │ GB VRAM) │      │
                      ╰───────┴───────────┴───────┴────────┴───────────┴───────────┴──────────┴──────╯
-                     
+
                      """, output);
-                     
+
 
         // Describe (strict)
         (output, yaml) = await ExecuteAsync("servers", "describe", "srv01");
         Assert.Equal("""
-                    ╭─Server───────────────────────────────╮
-                    │ Name  srv01                          │
-                    │ IPMI  yes                            │
-                    │ RAM   128 GB                         │
-                    │ CPU   Intel Xeon Silver 4310 (12/24) │
-                    ╰──────────────────────────────────────╯
+                     ╭─Server───────────────────────────────╮
+                     │ Name  srv01                          │
+                     │ IPMI  yes                            │
+                     │ RAM   128 GB                         │
+                     │ CPU   Intel Xeon Silver 4310 (12/24) │
+                     ╰──────────────────────────────────────╯
 
-                    """, output);
-                     
+                     """, output);
+
 
         // Tree (loose)
         (output, yaml) = await ExecuteAsync("servers", "tree", "srv01");
         Assert.Contains("srv01", output);
-        
+
 
         // Delete server
         (output, yaml) = await ExecuteAsync("servers", "del", "srv01");

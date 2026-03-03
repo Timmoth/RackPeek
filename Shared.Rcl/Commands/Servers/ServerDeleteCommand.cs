@@ -8,15 +8,14 @@ namespace Shared.Rcl.Commands.Servers;
 
 public class ServerDeleteCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<ServerNameSettings>
-{
+) : AsyncCommand<ServerNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IDeleteResourceUseCase<Server> useCase =
+            scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Server>>();
 
         await useCase.ExecuteAsync(settings.Name);
 
