@@ -26,37 +26,30 @@ public class ConsoleEmulator : IConsoleEmulator {
         return testConsole.Output;
     }
 
-    internal static string[] ParseArguments(string input)
-    {
+    internal static string[] ParseArguments(string input) {
         var args = new List<string>();
         var current = new System.Text.StringBuilder();
         char? quote = null;
 
-        for (var i = 0; i < input.Length; i++)
-        {
+        for (var i = 0; i < input.Length; i++) {
             var c = input[i];
 
-            if (quote.HasValue)
-            {
+            if (quote.HasValue) {
                 if (c == quote.Value)
                     quote = null;
                 else
                     current.Append(c);
             }
-            else if (c is '"' or '\'')
-            {
+            else if (c is '"' or '\'') {
                 quote = c;
             }
-            else if (c == ' ')
-            {
-                if (current.Length > 0)
-                {
+            else if (c == ' ') {
+                if (current.Length > 0) {
                     args.Add(current.ToString());
                     current.Clear();
                 }
             }
-            else
-            {
+            else {
                 current.Append(c);
             }
         }
