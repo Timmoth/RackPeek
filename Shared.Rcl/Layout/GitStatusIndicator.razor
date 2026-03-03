@@ -1,0 +1,389 @@
+@using RackPeek.Domain.Git
+@inject IGitService GitService
+@implements IDisposable
+
+@if (_status != GitRepoStatus.NotAvailable)
+{
+    <div class="relative flex items-center gap-2 text-sm" data-testid="git-status-indicator">
+
+        @* Branch name — clickable to open history *@
+        @if (!string.IsNullOrEmpty(_branch))
+        {
+            <button class="text-zinc-400 text-xs hover:text-emerald-400 transition"
+                    data-testid="git-branch"
+                    @onclick="ToggleHistoryAsync">
+                @_branch
+            </button>
+        }
+
+        @if (_status == GitRepoStatus.Clean)
+        {
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"
+                  data-testid="git-status-dot-clean"
+                  title="All changes committed">
+            </span>
+            <span class="text-zinc-500 text-xs" data-testid="git-status-text">
+                Saved
+            </span>
+        }
+        else if (_status == GitRepoStatus.Dirty)
+        {
+            <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"
+                  data-testid="git-status-dot-dirty"
+                  title="Uncommitted changes">
+            </span>
+
+            @* Save button with dropdown toggle *@
+            <div class="relative flex" data-testid="git-save-group">
+                <button class="px-2 py-1 text-xs rounded-l bg-emerald-600 hover:bg-emerald-500 text-white transition disabled:opacity-50"
+                        disabled="@_isBusy"
+                        data-testid="git-save-button"
+                        @onclick="CommitAsync">
+                    @(_isCommitting ? "Saving..." : "Save")
+                </button>
+                <button class="px-1.5 py-1 text-xs rounded-r bg-emerald-700 hover:bg-emerald-600 text-white transition border-l border-emerald-800 disabled:opacity-50"
+                        disabled="@_isBusy"
+                        data-testid="git-save-dropdown"
+                        @onclick="ToggleDropdown">
+                    &#9662;
+                </button>
+
+                @if (_showDropdown)
+                {
+                    <div class="absolute top-full right-0 mt-1 bg-zinc-800 border border-zinc-700 rounded shadow-lg z-50 min-w-[120px]"
+                         data-testid="git-dropdown-menu">
+                        <button class="w-full text-left px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-700 hover:text-white transition"
+                                data-testid="git-diff-button"
+                                @onclick="OpenDiffAsync">
+                            Diff
+                        </button>
+                        @if (!_confirmDiscard)
+                        {
+                            <button class="w-full text-left px-3 py-2 text-xs text-zinc-400 hover:bg-zinc-700 hover:text-red-400 transition"
+                                    data-testid="git-discard-button"
+                                    @onclick="() => _confirmDiscard = true">
+                                Discard
+                            </button>
+                        }
+                        else
+                        {
+                            <div class="px-3 py-2 flex items-center gap-2">
+                                <span class="text-red-400 text-xs">Sure?</span>
+                                <button class="px-2 py-0.5 text-xs rounded bg-red-600 hover:bg-red-500 text-white transition"
+                                        data-testid="git-discard-confirm"
+                                        @onclick="DiscardAsync">
+                                    Yes
+                                </button>
+                                <button class="px-2 py-0.5 text-xs rounded text-zinc-400 hover:text-white transition"
+                                        data-testid="git-discard-cancel"
+                                        @onclick="() => _confirmDiscard = false">
+                                    No
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        @if (_errorMessage is not null)
+        {
+            <span class="text-red-400 text-xs" data-testid="git-error">
+                @_errorMessage
+            </span>
+        }
+    </div>
+
+    @* Dropdown backdrop — closes dropdown on outside click *@
+    @if (_showDropdown)
+    {
+        <div class="fixed inset-0 z-40" @onclick="CloseDropdown"></div>
+    }
+
+    @* Diff Modal *@
+    @if (_showDiff)
+    {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+             data-testid="git-diff-overlay"
+             @onclick="CloseDiff">
+            <div class="bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl w-[90vw] max-w-4xl max-h-[80vh] flex flex-col"
+                 @onclick:stopPropagation="true">
+
+                <div class="flex items-center justify-between px-4 py-3 border-b border-zinc-700">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-semibold text-zinc-200">Changes</span>
+                        <span class="text-xs text-zinc-500">@_changedFiles.Length file(s)</span>
+                    </div>
+                    <button class="text-zinc-400 hover:text-white transition text-lg"
+                            data-testid="git-diff-close"
+                            @onclick="CloseDiff">
+                        &times;
+                    </button>
+                </div>
+
+                @if (_changedFiles.Length > 0)
+                {
+                    <div class="px-4 py-2 border-b border-zinc-800 flex flex-wrap gap-2">
+                        @foreach (var file in _changedFiles)
+                        {
+                            var status = file.Length >= 2 ? file[..2].Trim() : "?";
+                            var name = file.Length >= 3 ? file[3..] : file;
+                            var color = status switch
+                            {
+                                "M" => "text-amber-400",
+                                "A" or "?" => "text-emerald-400",
+                                "D" => "text-red-400",
+                                _ => "text-zinc-400"
+                            };
+                            <span class="text-xs">
+                                <span class="@color font-bold">@status</span>
+                                <span class="text-zinc-300">@name</span>
+                            </span>
+                        }
+                    </div>
+                }
+
+                <div class="overflow-auto flex-1 p-4">
+                    <pre class="text-xs leading-relaxed whitespace-pre-wrap">@((MarkupString)FormatDiff(_diffContent))</pre>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* History Modal *@
+    @if (_showHistory)
+    {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+             data-testid="git-history-overlay"
+             @onclick="CloseHistory">
+            <div class="bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl w-[90vw] max-w-3xl max-h-[80vh] flex flex-col"
+                 @onclick:stopPropagation="true">
+
+                <div class="flex items-center justify-between px-4 py-3 border-b border-zinc-700">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-semibold text-zinc-200">History</span>
+                        <span class="text-xs text-zinc-500">@_branch</span>
+                        <span class="text-xs text-zinc-600">@_logEntries.Length commits</span>
+                    </div>
+                    <button class="text-zinc-400 hover:text-white transition text-lg"
+                            data-testid="git-history-close"
+                            @onclick="CloseHistory">
+                        &times;
+                    </button>
+                </div>
+
+                <div class="overflow-auto flex-1">
+                    @if (_logEntries.Length == 0)
+                    {
+                        <div class="p-4 text-zinc-500 text-sm">No commits yet.</div>
+                    }
+                    else
+                    {
+                        <div class="divide-y divide-zinc-800">
+                            @foreach (var entry in _logEntries)
+                            {
+                                <div class="px-4 py-3 hover:bg-zinc-800/50 transition" data-testid="git-log-entry">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs text-emerald-400 font-mono shrink-0">@entry.Hash</span>
+                                        <span class="text-sm text-zinc-200 truncate">@entry.Message</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 mt-1">
+                                        <span class="text-xs text-zinc-500">@entry.Author</span>
+                                        <span class="text-xs text-zinc-600">@entry.Date</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private GitRepoStatus _status = GitRepoStatus.NotAvailable;
+    private string _branch = string.Empty;
+    private bool _isCommitting;
+    private bool _isRestoring;
+    private bool _confirmDiscard;
+    private bool _showDropdown;
+    private string? _errorMessage;
+    private PeriodicTimer? _timer;
+    private CancellationTokenSource? _cts;
+
+    private bool _showDiff;
+    private string _diffContent = string.Empty;
+    private string[] _changedFiles = [];
+
+    private bool _showHistory;
+    private GitLogEntry[] _logEntries = [];
+
+    private bool _isBusy => _isCommitting || _isRestoring;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _status = await GitService.GetStatusAsync();
+
+        if (_status == GitRepoStatus.NotAvailable)
+            return;
+
+        _branch = await GitService.GetCurrentBranchAsync();
+
+        _cts = new CancellationTokenSource();
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+        _ = PollStatusAsync(_cts.Token);
+    }
+
+    private async Task PollStatusAsync(CancellationToken ct)
+    {
+        try
+        {
+            while (await _timer!.WaitForNextTickAsync(ct))
+            {
+                if (_isBusy) continue;
+
+                var newStatus = await GitService.GetStatusAsync();
+                if (newStatus != _status)
+                {
+                    _status = newStatus;
+                    _confirmDiscard = false;
+                    _showDropdown = false;
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    private async Task CommitAsync()
+    {
+        _errorMessage = null;
+        _isCommitting = true;
+        _confirmDiscard = false;
+        _showDropdown = false;
+
+        try
+        {
+            var error = await GitService.CommitAllAsync(
+                $"rackpeek: save config {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC");
+
+            if (error is not null)
+                _errorMessage = error;
+
+            _status = await GitService.GetStatusAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Unexpected error: {ex.Message}";
+        }
+        finally
+        {
+            _isCommitting = false;
+        }
+    }
+
+    private void ToggleDropdown()
+    {
+        _showDropdown = !_showDropdown;
+        _confirmDiscard = false;
+    }
+
+    private void CloseDropdown()
+    {
+        _showDropdown = false;
+        _confirmDiscard = false;
+    }
+
+    private async Task OpenDiffAsync()
+    {
+        _showDropdown = false;
+        _changedFiles = await GitService.GetChangedFilesAsync();
+        _diffContent = await GitService.GetDiffAsync();
+        _showDiff = true;
+    }
+
+    private void CloseDiff()
+    {
+        _showDiff = false;
+        _diffContent = string.Empty;
+        _changedFiles = [];
+    }
+
+    private async Task ToggleHistoryAsync()
+    {
+        if (_showHistory)
+        {
+            CloseHistory();
+            return;
+        }
+
+        _showDropdown = false;
+        _logEntries = await GitService.GetLogAsync();
+        _showHistory = true;
+    }
+
+    private void CloseHistory()
+    {
+        _showHistory = false;
+        _logEntries = [];
+    }
+
+    private async Task DiscardAsync()
+    {
+        _errorMessage = null;
+        _isRestoring = true;
+        _confirmDiscard = false;
+        _showDropdown = false;
+
+        try
+        {
+            var error = await GitService.RestoreAllAsync();
+            if (error is not null)
+                _errorMessage = error;
+
+            _status = await GitService.GetStatusAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Unexpected error: {ex.Message}";
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
+    }
+
+    private static string FormatDiff(string diff)
+    {
+        if (string.IsNullOrWhiteSpace(diff))
+            return "<span class=\"text-zinc-500\">No diff available</span>";
+
+        var lines = diff.Split('\n');
+        var sb = new System.Text.StringBuilder();
+
+        foreach (var line in lines)
+        {
+            var escaped = System.Net.WebUtility.HtmlEncode(line);
+            if (line.StartsWith('+') && !line.StartsWith("+++"))
+                sb.AppendLine($"<span class=\"text-emerald-400\">{escaped}</span>");
+            else if (line.StartsWith('-') && !line.StartsWith("---"))
+                sb.AppendLine($"<span class=\"text-red-400\">{escaped}</span>");
+            else if (line.StartsWith("@@"))
+                sb.AppendLine($"<span class=\"text-blue-400\">{escaped}</span>");
+            else if (line.StartsWith("diff "))
+                sb.AppendLine($"<span class=\"text-amber-300 font-bold\">{escaped}</span>");
+            else
+                sb.AppendLine($"<span class=\"text-zinc-400\">{escaped}</span>");
+        }
+
+        return sb.ToString();
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _timer?.Dispose();
+    }
+}

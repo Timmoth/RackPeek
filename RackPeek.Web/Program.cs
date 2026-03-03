@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using RackPeek.Domain;
+using RackPeek.Domain.Git;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Web.Api;
@@ -26,6 +27,8 @@ public class Program {
             : Path.Combine(basePath, yamlDir);
 
         Directory.CreateDirectory(yamlPath);
+
+        builder.Services.AddSingleton<IGitService>(new GitService(yamlPath));
 
         var yamlFilePath = Path.Combine(yamlPath, yamlFileName);
 

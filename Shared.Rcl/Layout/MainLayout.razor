@@ -26,7 +26,10 @@
             </div>
         </NavLink>
 
-        <nav class="space-x-6 text-sm" data-testid="main-nav">
+        <div class="flex items-center gap-6">
+            <GitStatusIndicator />
+
+            <nav class="space-x-6 text-sm" data-testid="main-nav">
 
             <NavLink href=""
                      Match="NavLinkMatch.All"
@@ -79,7 +82,9 @@
             </NavLink>
 
 
-        </nav>
+
+            </nav>
+        </div>
     </header>
 
     <main class="p-6" data-testid="page-content">
