@@ -3,6 +3,7 @@
   "resource-levels.md",
   "install-guide.md",
   "ansible-generator-guide.md",
+  "docker-gen-guide.md",
   "cli-commands.md",
   "cli-commands-index.md",
   "versioning.md"

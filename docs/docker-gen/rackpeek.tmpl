@@ -1,0 +1,77 @@
+{{/* default rackpeek configuration template */}}
+{{/* Generate Services based on filtered containers */}}
+{{/* Optional RUNS_ON environment variable used for runsOn*/}}
+{{/* If ports are exposed, the first one is used */}}
+{{/* If ports are exposed, the first one is used */}}
+
+{{/* Use index function to access map keys with dots in them https://pkg.go.dev/text/template#hdr-Functions  */}}
+
+{{ range $index, $value := . }}
+
+{{ $addrLen := len $value.Addresses }}
+
+- kind: Service
+{{/* Name priority rackpeek.name -> homepage.name -> org.opencontainers.image.title -> container_name */}}
+{{ if contains $value.Labels "rackpeek.name"  }}
+  name: {{ index $value.Labels "rackpeek.name" }}
+{{ else if contains $value.Labels "homepage.name" }}
+  name: {{ index $value.Labels "homepage.name" }}
+{{ else if contains $value.Labels "org.opencontainers.image.title" }}
+  name: {{ index $value.Labels "org.opencontainers.image.title" }}
+{{ else }}
+  name: {{ $value.Name }}
+{{ end }}
+
+{{/* only include network section if there is a url in labels or published ports with HOST_IP env set */}}
+{{ if or (contains $value.Labels "homepage.href") (contains $value.Labels "rackpeek.href") (contains $value.Labels "caddy") (contains $value.Labels "swag_url") (and ($.Env.HOST_IP) (gt $addrLen 0)) }}
+  network:
+  {{/* URL priority caddy -> homepage.name -> rackpeek.href */}}
+  {{/* cant get url from traefik due to route rule complexity */}}
+  {{ if contains $value.Labels "rackpeek.href" }}
+    url: {{ index $value.Labels "rackpeek.href" }}
+  {{ else if contains $value.Labels "homepage.href" }}
+    url: {{ index $value.Labels "homepage.href" }}
+  {{ else if contains $value.Labels "caddy" }}
+    url: {{ index $value.Labels "caddy" }}
+  {{end }}
+
+{{/* only generate ip:port if HOST_IP env is set */}}
+{{/* -- if rackpeek supports multiple IPs per service in the future this can be modified */}}
+{{ if $.Env.HOST_IP }}
+    {{ $hostIps := split $.Env.HOST_IP "," }}
+    {{ $httpsIsh := where $value.Addresses "Port" "443"}}
+    {{ $httpIsh := where $value.Addresses "Port" "80"}}
+    {{/* try to get ports by known web ports first */}}
+    {{ if or (gt (len $httpsIsh) 0) (gt (len $httpIsh) 0)}}
+        {{ range $i, $address := $value.Addresses }}
+            {{/* only use this if container is binding on all addresses or a known host, and using known web port */}}
+            {{ if and (or (eq $address.HostIP "0.0.0.0") (contains $hostIps $address.HostIP)) (or (eq $address.Port "443") (eq $address.Port "80")) }}
+    ip: {{ index $hostIps 0 }}
+    port: {{ $address.Port }}
+    protocol: TCP 
+    {{ break }}
+            {{ end }}
+        {{ end }}
+
+    {{/* otherwise, use first port */}}
+    {{ else }}
+        {{ range $i, $address := $value.Addresses }}
+            {{/* only use this if container is binding on all addresses or a known host port */}}
+            {{ if or (eq $address.HostIP "0.0.0.0") (contains $hostIps $address.HostIP) }}
+    ip: {{ index $hostIps 0 }}
+    port: {{ $address.Port }}
+    protocol: TCP 
+    {{ break }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{/* end network loop */}}
+{{ end }}
+
+{{ if $.Env.RUNS_ON  }}
+  runsOn:
+    - {{ $.Env.RUNS_ON }}
+{{ end }}
+{{/* end containers loop */}}
+{{ end }}

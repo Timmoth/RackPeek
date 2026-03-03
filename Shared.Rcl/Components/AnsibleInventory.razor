@@ -1,5 +1,4 @@
 ﻿@page "/ansible/inventory"
-@using RackPeek.Domain.Resources.Desktops
 @using RackPeek.Domain.UseCases.Ansible
 @inject AnsibleInventoryGeneratorUseCase InventoryUseCase
 
@@ -20,6 +19,20 @@
 
     <!-- Options -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+        <!-- Format -->
+        <div>
+            <div class="text-zinc-400 mb-1">Format</div>
+            <select class="w-full bg-zinc-800 text-zinc-200 p-2 rounded border border-zinc-700"
+                    data-testid="inventory-format-select"
+                    @bind="_selectedFormat">
+                <option value="Ini">INI</option>
+                <option value="Yaml">YAML</option>
+            </select>
+            <div class="text-xs text-zinc-500 mt-1">
+                Select output format
+            </div>
+        </div>
 
         <!-- Tags -->
         <div>
@@ -90,12 +103,14 @@
 
 @code {
 
+    private InventoryFormat _selectedFormat = InventoryFormat.Ini;
+
     private string _groupByTagsRaw = "prod, staging";
     private string _groupByLabelsRaw = "env, site";
     private string _globalVarsRaw =
 @"ansible_user=ansible
 ansible_python_interpreter=/usr/bin/python3";
-    
+
     private string _inventoryText = string.Empty;
     private List<string> _warnings = new();
 
@@ -108,12 +123,14 @@ ansible_python_interpreter=/usr/bin/python3";
 
             var options = new InventoryOptions
             {
+                Format = _selectedFormat,
                 GroupByTags = ParseCsv(_groupByTagsRaw),
                 GroupByLabelKeys = ParseCsv(_groupByLabelsRaw),
                 GlobalVars = ParseGlobalVars(_globalVarsRaw)
             };
 
             var result = await InventoryUseCase.ExecuteAsync(options);
+
             if (result is null)
             {
                 _warnings.Add("Inventory generation returned null.");
