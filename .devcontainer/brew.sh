@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-BREW_PREFIX=${BREW_PREFIX:-"/home/linuxbrew/.linuxbrew"}
-SHALLOW_CLONE=${SHALLOWCLONE:-"false"}
+BREW_PREFIX=${BREW_PREFIX:-"/home/vscode/.linuxbrew"}
+SHALLOW_CLONE=${SHALLOWCLONE:-"true"}
 USERNAME=${USERNAME:-"automatic"}
 
 ARCHITECTURE="$(uname -m)"
