@@ -3,31 +3,23 @@ using Spectre.Console;
 
 namespace RackPeek.Spectre;
 
-public class SpectreConsoleLogger : ILogger
-{
-    public IDisposable BeginScope<T>(T state)
-    {
-        return null!;
+public class SpectreConsoleLogger : ILogger {
+    public IDisposable BeginScope<T>(T state) where T : notnull => null!;
+
+    public bool IsEnabled(LogLevel logLevel) => true;
+
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+        Func<TState, Exception, string> formatter) {
+        if (exception != null) {
+            var message = formatter(state, exception);
+            Style style = GetStyle(logLevel);
+
+            AnsiConsole.MarkupLine($"[{style}] {message}[/]");
+        }
     }
 
-    public bool IsEnabled(LogLevel logLevel)
-    {
-        return true;
-    }
-
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
-        Func<TState, Exception, string> formatter)
-    {
-        var message = formatter(state, exception);
-        var style = GetStyle(logLevel);
-
-        AnsiConsole.MarkupLine($"[{style}] {message}[/]");
-    }
-
-    private Style GetStyle(LogLevel logLevel)
-    {
-        return logLevel switch
-        {
+    private Style GetStyle(LogLevel logLevel) {
+        return logLevel switch {
             LogLevel.Trace => new Style(Color.Grey),
             LogLevel.Debug => new Style(Color.Grey),
             LogLevel.Information => new Style(Color.Green),

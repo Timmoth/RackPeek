@@ -1,28 +1,24 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using RackPeek.Domain.Resources.Servers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers;
 
-public class ServerReportCommand(ILogger<ServerReportCommand> logger, IServiceProvider serviceProvider)
-    : AsyncCommand
-{
-    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<ServerHardwareReportUseCase>();
+public class ServerReportCommand(IServiceProvider serviceProvider)
+    : AsyncCommand {
+    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        ServerHardwareReportUseCase useCase = scope.ServiceProvider.GetRequiredService<ServerHardwareReportUseCase>();
 
-        var report = await useCase.ExecuteAsync();
+        ServerHardwareReport report = await useCase.ExecuteAsync();
 
-        if (report.Servers.Count == 0)
-        {
+        if (report.Servers.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No servers found.[/]");
             return 0;
         }
 
-        var table = new Table()
+        Table table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Name")
             .AddColumn("CPU")
@@ -33,7 +29,7 @@ public class ServerReportCommand(ILogger<ServerReportCommand> logger, IServicePr
             .AddColumn("GPUs")
             .AddColumn("IPMI");
 
-        foreach (var s in report.Servers)
+        foreach (ServerHardwareRow s in report.Servers)
             table.AddRow(
                 s.Name,
                 s.CpuSummary,

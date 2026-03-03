@@ -7,8 +7,8 @@ namespace Tests.E2e;
 
 public class UpsCardTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) : E2ETestBase(fixture, output)
-{
+    ITestOutputHelper output) : E2ETestBase(fixture, output) {
+    private readonly PlaywrightFixture _fixture = fixture;
     private readonly ITestOutputHelper _output = output;
 
     // =============================================================
@@ -16,26 +16,22 @@ public class UpsCardTests(
     // =============================================================
 
     [Fact]
-    public async Task User_Can_Rename_Clone_And_Delete_Ups_From_Details_Page()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Rename_Clone_And_Delete_Ups_From_Details_Page() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
 
         var originalName = $"e2e-ups-{Guid.NewGuid():N}"[..16];
-        var renamedName  = $"e2e-ups-rn-{Guid.NewGuid():N}"[..16];
-        var cloneName    = $"e2e-ups-cl-{Guid.NewGuid():N}"[..16];
+        var renamedName = $"e2e-ups-rn-{Guid.NewGuid():N}"[..16];
+        var cloneName = $"e2e-ups-cl-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync($"{fixture.BaseUrl}/ups/list");
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/ups/list");
 
             var list = new UpsListPom(page);
             await list.AddUpsAsync(originalName);
 
             if (!page.Url.Contains($"/resources/hardware/{originalName}",
                     StringComparison.OrdinalIgnoreCase))
-            {
                 await list.OpenUpsAsync(originalName);
-            }
 
             var card = new UpsCardPom(page);
             await card.AssertVisibleAsync(originalName);
@@ -59,14 +55,13 @@ public class UpsCardTests(
             await page.WaitForURLAsync("**/hardware/tree");
 
             // Navigate back and delete renamed
-            await page.GotoAsync($"{fixture.BaseUrl}/resources/hardware/{renamedName}");
+            await page.GotoAsync($"{_fixture.BaseUrl}/resources/hardware/{renamedName}");
             await card.AssertVisibleAsync(renamedName);
 
             await card.DeleteAsync(renamedName);
             await page.WaitForURLAsync("**/hardware/tree");
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
 
@@ -77,8 +72,7 @@ public class UpsCardTests(
 
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
@@ -88,23 +82,19 @@ public class UpsCardTests(
     // =============================================================
 
     [Fact]
-    public async Task User_Can_Edit_And_Save_Ups()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Edit_And_Save_Ups() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ups-edit-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync($"{fixture.BaseUrl}/ups/list");
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/ups/list");
 
             var list = new UpsListPom(page);
             await list.AddUpsAsync(name);
 
             if (!page.Url.Contains($"/resources/hardware/{name}",
                     StringComparison.OrdinalIgnoreCase))
-            {
                 await list.OpenUpsAsync(name);
-            }
 
             var card = new UpsCardPom(page);
             await card.AssertVisibleAsync(name);
@@ -124,8 +114,7 @@ public class UpsCardTests(
                 card.CapacityValue(name)
             ).ToContainTextAsync("1500");
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
@@ -135,23 +124,19 @@ public class UpsCardTests(
     // =============================================================
 
     [Fact]
-    public async Task User_Can_Cancel_Ups_Edit_Without_Saving()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Cancel_Ups_Edit_Without_Saving() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ups-cancel-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync($"{fixture.BaseUrl}/ups/list");
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/ups/list");
 
             var list = new UpsListPom(page);
             await list.AddUpsAsync(name);
 
             if (!page.Url.Contains($"/resources/hardware/{name}",
                     StringComparison.OrdinalIgnoreCase))
-            {
                 await list.OpenUpsAsync(name);
-            }
 
             var card = new UpsCardPom(page);
             await card.AssertVisibleAsync(name);
@@ -168,22 +153,19 @@ public class UpsCardTests(
                 card.EditButton(name)
             ).ToBeVisibleAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
-    
-    
+
+
     [Fact]
-    public async Task User_Can_Add_And_Remove_Tags_From_Ups_Card()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Add_And_Remove_Tags_From_Ups_Card() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -202,7 +184,7 @@ public class UpsCardTests(
             var card = new UpsCardPom(page);
             await card.AssertVisibleAsync(name);
 
-            var tags = card.Tags;
+            TagsPom tags = card.Tags;
 
             // -------------------------------------------------
             // Add multiple tags in one modal interaction
@@ -236,8 +218,7 @@ public class UpsCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }

@@ -6,30 +6,27 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Ups;
 
 public class UpsGetCommand(IServiceProvider provider)
-    : AsyncCommand
-{
+    : AsyncCommand {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpsHardwareReportUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        UpsHardwareReportUseCase useCase = scope.ServiceProvider.GetRequiredService<UpsHardwareReportUseCase>();
 
-        var report = await useCase.ExecuteAsync();
+        UpsHardwareReport report = await useCase.ExecuteAsync();
 
-        if (report.UpsUnits.Count == 0)
-        {
+        if (report.UpsUnits.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No UPS units found.[/]");
             return 0;
         }
 
-        var table = new Table()
+        Table table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Name")
             .AddColumn("Model")
             .AddColumn("VA");
 
-        foreach (var ups in report.UpsUnits)
+        foreach (UpsHardwareRow ups in report.UpsUnits)
             table.AddRow(
                 ups.Name,
                 ups.Model,

@@ -4,11 +4,9 @@ using RackPeek.Domain.UseCases.Ansible;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Shared.Rcl.Commands.Ansible;
+namespace Shared.Rcl.Commands.Exporters;
 
-
-public sealed class GenerateAnsibleInventorySettings : CommandSettings
-{
+public sealed class GenerateAnsibleInventorySettings : CommandSettings {
     [CommandOption("--group-tags")]
     [Description("Comma-separated list of tags to group by (e.g. prod,staging)")]
     public string? GroupTags { get; init; }
@@ -30,52 +28,46 @@ public sealed class GenerateAnsibleInventorySettings : CommandSettings
     [Description("Write inventory to file instead of stdout")]
     public string? OutputPath { get; init; }
 }
+
 public sealed class GenerateAnsibleInventoryCommand(IServiceProvider provider)
-    : AsyncCommand<GenerateAnsibleInventorySettings>
-{
+    : AsyncCommand<GenerateAnsibleInventorySettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         GenerateAnsibleInventorySettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
 
-        var useCase = scope.ServiceProvider
+        AnsibleInventoryGeneratorUseCase useCase = scope.ServiceProvider
             .GetRequiredService<AnsibleInventoryGeneratorUseCase>();
 
-        if (!TryParseFormat(settings.Format, out var format))
-        {
+        if (!TryParseFormat(settings.Format, out InventoryFormat format)) {
             AnsiConsole.MarkupLine(
                 $"[red]Invalid format:[/] {Markup.Escape(settings.Format)}. Use 'ini' or 'yaml'.");
             return -1;
         }
 
-        var options = new InventoryOptions
-        {
+        var options = new InventoryOptions {
             Format = format,
             GroupByTags = ParseCsv(settings.GroupTags),
             GroupByLabelKeys = ParseCsv(settings.GroupLabels),
             GlobalVars = ParseGlobalVars(settings.GlobalVars)
         };
 
-        var result = await useCase.ExecuteAsync(options);
+        InventoryResult? result = await useCase.ExecuteAsync(options);
 
-        if (result is null)
-        {
+        if (result is null) {
             AnsiConsole.MarkupLine("[red]Inventory generation returned null.[/]");
             return -1;
         }
 
-        if (result.Warnings.Any())
-        {
+        if (result.Warnings.Any()) {
             AnsiConsole.MarkupLine("[yellow]Warnings:[/]");
             foreach (var warning in result.Warnings)
                 AnsiConsole.MarkupLine($"[yellow]- {Markup.Escape(warning)}[/]");
             AnsiConsole.WriteLine();
         }
 
-        if (!string.IsNullOrWhiteSpace(settings.OutputPath))
-        {
+        if (!string.IsNullOrWhiteSpace(settings.OutputPath)) {
             await File.WriteAllTextAsync(
                 settings.OutputPath,
                 result.InventoryText,
@@ -84,8 +76,7 @@ public sealed class GenerateAnsibleInventoryCommand(IServiceProvider provider)
             AnsiConsole.MarkupLine(
                 $"[green]Inventory written to:[/] {Markup.Escape(settings.OutputPath)}");
         }
-        else
-        {
+        else {
             AnsiConsole.MarkupLine("[green]Generated Inventory:[/]");
             AnsiConsole.WriteLine();
             AnsiConsole.Write(result.InventoryText);
@@ -96,10 +87,8 @@ public sealed class GenerateAnsibleInventoryCommand(IServiceProvider provider)
 
     // ------------------------
 
-    private static bool TryParseFormat(string raw, out InventoryFormat format)
-    {
-        format = raw.Trim().ToLowerInvariant() switch
-        {
+    private static bool TryParseFormat(string raw, out InventoryFormat format) {
+        format = raw.Trim().ToLowerInvariant() switch {
             "ini" => InventoryFormat.Ini,
             "yaml" => InventoryFormat.Yaml,
             "yml" => InventoryFormat.Yaml,
@@ -107,12 +96,11 @@ public sealed class GenerateAnsibleInventoryCommand(IServiceProvider provider)
         };
 
         return raw.Equals("ini", StringComparison.OrdinalIgnoreCase)
-            || raw.Equals("yaml", StringComparison.OrdinalIgnoreCase)
-            || raw.Equals("yml", StringComparison.OrdinalIgnoreCase);
+               || raw.Equals("yaml", StringComparison.OrdinalIgnoreCase)
+               || raw.Equals("yml", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static IReadOnlyList<string> ParseCsv(string? raw)
-    {
+    private static IReadOnlyList<string> ParseCsv(string? raw) {
         if (string.IsNullOrWhiteSpace(raw))
             return [];
 
@@ -122,12 +110,10 @@ public sealed class GenerateAnsibleInventoryCommand(IServiceProvider provider)
             .ToArray();
     }
 
-    private static IDictionary<string, string> ParseGlobalVars(string[] vars)
-    {
+    private static IDictionary<string, string> ParseGlobalVars(string[] vars) {
         var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var entry in vars ?? [])
-        {
+        foreach (var entry in vars ?? []) {
             var parts = entry.Split('=', 2);
             if (parts.Length != 2)
                 continue;

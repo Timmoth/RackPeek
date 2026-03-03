@@ -1,7 +1,6 @@
 namespace RackPeek.Domain.Resources.SubResources;
 
-public class Nic
-{
+public class Nic {
     public static readonly string[] ValidNicTypes =
     {
         // Copper Ethernet

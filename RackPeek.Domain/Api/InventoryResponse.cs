@@ -1,7 +1,6 @@
 namespace RackPeek.Domain.Api;
 
-public class ImportYamlResponse
-{
+public class ImportYamlResponse {
     public List<string> Added { get; set; } = new();
     public List<string> Updated { get; set; } = new();
     public List<string> Replaced { get; set; } = new();

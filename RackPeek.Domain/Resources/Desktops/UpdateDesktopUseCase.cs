@@ -4,16 +4,14 @@ using RackPeek.Domain.Resources.SubResources;
 
 namespace RackPeek.Domain.Resources.Desktops;
 
-public class UpdateDesktopUseCase(IResourceCollection repository) : IUseCase
-{
+public class UpdateDesktopUseCase(IResourceCollection repository) : IUseCase {
     public async Task ExecuteAsync(
         string name,
         string? model = null,
         double? ramGb = null,
         int? ramMts = null,
         string? notes = null
-    )
-    {
+    ) {
         // ToDo validate / normalize all inputs
 
         name = Normalize.HardwareName(name);
@@ -27,35 +25,23 @@ public class UpdateDesktopUseCase(IResourceCollection repository) : IUseCase
             desktop.Model = model;
 
         // ---- RAM ----
-        if (ramGb.HasValue)
-        {
+        if (ramGb.HasValue) {
             ThrowIfInvalid.RamGb(ramGb);
             desktop.Ram ??= new Ram();
             desktop.Ram.Size = ramGb.Value;
         }
 
-        if (ramMts.HasValue)
-        {
+        if (ramMts.HasValue) {
             desktop.Ram ??= new Ram();
             desktop.Ram.Mts = ramMts.Value;
         }
-        
-        if (desktop.Ram != null)
-        {
-            if (desktop.Ram.Size == 0)
-            {
-                desktop.Ram.Size = null;
-            }
-            
-            if (desktop.Ram.Mts == 0)
-            {
-                desktop.Ram.Mts = null;
-            }
 
-            if (desktop.Ram.Size == null && desktop.Ram.Mts == null)
-            {
-                desktop.Ram = null;
-            }
+        if (desktop.Ram != null) {
+            if (desktop.Ram.Size == 0) desktop.Ram.Size = null;
+
+            if (desktop.Ram.Mts == 0) desktop.Ram.Mts = null;
+
+            if (desktop.Ram.Size == null && desktop.Ram.Mts == null) desktop.Ram = null;
         }
 
         if (notes != null) desktop.Notes = notes;

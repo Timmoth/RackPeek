@@ -40,7 +40,7 @@
             <input class="w-full bg-zinc-800 text-zinc-200 p-2 rounded border border-zinc-700"
                    placeholder="prod, staging, dmz"
                    data-testid="group-by-tags-input"
-                   @bind="_groupByTagsRaw" />
+                   @bind="_groupByTagsRaw"/>
             <div class="text-xs text-zinc-500 mt-1">
                 Comma-separated tag names
             </div>
@@ -52,7 +52,7 @@
             <input class="w-full bg-zinc-800 text-zinc-200 p-2 rounded border border-zinc-700"
                    placeholder="env, site"
                    data-testid="group-by-labels-input"
-                   @bind="_groupByLabelsRaw" />
+                   @bind="_groupByLabelsRaw"/>
             <div class="text-xs text-zinc-500 mt-1">
                 Creates groups like env_prod, site_london
             </div>
@@ -107,9 +107,10 @@
 
     private string _groupByTagsRaw = "prod, staging";
     private string _groupByLabelsRaw = "env, site";
+
     private string _globalVarsRaw =
-@"ansible_user=ansible
-ansible_python_interpreter=/usr/bin/python3";
+        @"ansible_user=ansible
+        ansible_python_interpreter=/usr/bin/python3";
 
     private string _inventoryText = string.Empty;
     private List<string> _warnings = new();
@@ -153,9 +154,9 @@ ansible_python_interpreter=/usr/bin/python3";
             return [];
 
         return raw.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                  .Select(x => x.Trim())
-                  .Where(x => !string.IsNullOrWhiteSpace(x))
-                  .ToArray();
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToArray();
     }
 
     private static IDictionary<string, string> ParseGlobalVars(string raw)
@@ -184,4 +185,5 @@ ansible_python_interpreter=/usr/bin/python3";
 
         return dict;
     }
+
 }

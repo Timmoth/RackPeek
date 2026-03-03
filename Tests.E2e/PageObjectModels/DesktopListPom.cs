@@ -2,8 +2,7 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class DesktopsListPom(IPage page)
-{
+public class DesktopsListPom(IPage page) {
     public AddResourceComponent AddDesktop => new(page, "desktop");
 
     public ILocator PageRoot => page.GetByTestId("desktops-page-root");
@@ -23,37 +22,29 @@ public class DesktopsListPom(IPage page)
     // Dynamic Desktop Items
     // -------------------------------------------------
 
-    public ILocator DesktopItem(string name)
-    {
-        return page.GetByTestId($"desktop-item-{Sanitize(name)}");
-    }
+    public ILocator DesktopItem(string name) => page.GetByTestId($"desktop-item-{Sanitize(name)}");
 
-    public ILocator OpenLink(string name)
-    {
+    public ILocator OpenLink(string name) {
         return DesktopItem(name)
             .GetByTestId("open-desktop-link");
     }
 
-    public ILocator DeleteButton(string name)
-    {
+    public ILocator DeleteButton(string name) {
         return DesktopItem(name)
             .GetByTestId("delete-desktop-button");
     }
 
-    public ILocator RenameButton(string name)
-    {
+    public ILocator RenameButton(string name) {
         return DesktopItem(name)
             .GetByTestId("rename-desktop-button");
     }
 
-    public ILocator CloneButton(string name)
-    {
+    public ILocator CloneButton(string name) {
         return DesktopItem(name)
             .GetByTestId("clone-desktop-button");
     }
 
-    public ILocator ModelBadge(string name)
-    {
+    public ILocator ModelBadge(string name) {
         return DesktopItem(name)
             .GetByTestId("desktop-model-badge");
     }
@@ -62,36 +53,29 @@ public class DesktopsListPom(IPage page)
     // Navigation
     // -------------------------------------------------
 
-    public async Task GotoAsync(string baseUrl)
-    {
+    public async Task GotoAsync(string baseUrl) {
         await page.GotoAsync($"{baseUrl}/desktops/list");
         await AssertLoadedAsync();
     }
 
-    public async Task AssertLoadedAsync()
-    {
+    public async Task AssertLoadedAsync() {
         await Assertions.Expect(PageRoot).ToBeVisibleAsync();
         await Assertions.Expect(PageTitle).ToBeVisibleAsync();
     }
 
-    public async Task WaitForListAsync()
-    {
-        await Assertions.Expect(DesktopsList).ToBeVisibleAsync();
-    }
+    public async Task WaitForListAsync() => await Assertions.Expect(DesktopsList).ToBeVisibleAsync();
 
     // -------------------------------------------------
     // Actions
     // -------------------------------------------------
 
-    public async Task AddDesktopAsync(string name)
-    {
+    public async Task AddDesktopAsync(string name) {
         await AddDesktop.AddAsync(name);
         await Assertions.Expect(DesktopItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task DeleteDesktopAsync(string name)
-    {
+    public async Task DeleteDesktopAsync(string name) {
         await DeleteButton(name).ClickAsync();
         await page.GetByTestId("Desktop-confirm-modal-confirm").ClickAsync();
 
@@ -99,26 +83,20 @@ public class DesktopsListPom(IPage page)
             .Not.ToBeVisibleAsync();
     }
 
-    public async Task OpenDesktopAsync(string name)
-    {
+    public async Task OpenDesktopAsync(string name) {
         await OpenLink(name).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{name}");
     }
 
-    public async Task AssertDesktopExists(string name)
-    {
+    public async Task AssertDesktopExists(string name) {
         await Assertions.Expect(DesktopItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task AssertDesktopDoesNotExist(string name)
-    {
+    public async Task AssertDesktopDoesNotExist(string name) {
         await Assertions.Expect(DesktopItem(name))
             .Not.ToBeVisibleAsync();
     }
 
-    private static string Sanitize(string value)
-    {
-        return value.Replace(" ", "-");
-    }
+    private static string Sanitize(string value) => value.Replace(" ", "-");
 }

@@ -1,7 +1,6 @@
 namespace Shared.Rcl.Components;
 
-public enum ResourceType
-{
+public enum ResourceType {
     Hardware,
     System,
     Service

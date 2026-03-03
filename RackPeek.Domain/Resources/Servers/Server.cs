@@ -2,8 +2,7 @@ using RackPeek.Domain.Resources.SubResources;
 
 namespace RackPeek.Domain.Resources.Servers;
 
-public class Server : Hardware.Hardware, ICpuResource, IDriveResource, IGpuResource, INicResource
-{
+public class Server : Hardware.Hardware, ICpuResource, IDriveResource, IGpuResource, INicResource {
     public const string KindLabel = "Server";
     public Ram? Ram { get; set; }
     public bool? Ipmi { get; set; }

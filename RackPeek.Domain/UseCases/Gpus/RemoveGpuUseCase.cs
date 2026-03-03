@@ -6,20 +6,17 @@ using RackPeek.Domain.Resources.Servers;
 namespace RackPeek.Domain.UseCases.Gpus;
 
 public interface IRemoveGpuUseCase<T> : IResourceUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     public Task ExecuteAsync(string name, int index);
 }
 
-public class RemoveGpuUseCase<T>(IResourceCollection repository) : IRemoveGpuUseCase<T> where T : Resource
-{
-    public async Task ExecuteAsync(string name, int index)
-    {
+public class RemoveGpuUseCase<T>(IResourceCollection repository) : IRemoveGpuUseCase<T> where T : Resource {
+    public async Task ExecuteAsync(string name, int index) {
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
-        var resource = await repository.GetByNameAsync<T>(name) ??
-                       throw new NotFoundException($"Resource '{name}' not found.");
+        T resource = await repository.GetByNameAsync<T>(name) ??
+                     throw new NotFoundException($"Resource '{name}' not found.");
 
         if (resource is not IGpuResource gr) throw new NotFoundException($"Resource '{name}' not found.");
 

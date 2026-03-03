@@ -95,7 +95,8 @@ In addition to stable releases, RackPeek publishes a **nightly Docker image** fr
 * Built for `linux/amd64`
 * Tagged as:
 
-  * `aptacode/rackpeek:nightly`
-  * `aptacode/rackpeek:nightly-<short-sha>`
+    * `aptacode/rackpeek:nightly`
+    * `aptacode/rackpeek:nightly-<short-sha>`
 
-Nightly images provide early access to upcoming changes and are intended for testing and development (not production use).
+Nightly images provide early access to upcoming changes and are intended for testing and development (not production
+use).

@@ -1,23 +1,22 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 using Json.Schema;
 using YamlDotNet.RepresentationModel;
 
 namespace Tests.Yaml;
 
-public class SchemaConformanceTests
-{
-    private static JsonSchema LoadSchema(int version)
-    {
+public class SchemaConformanceTests {
+    private static JsonSchema LoadSchema(int version) {
         var schemaText = File.ReadAllText($"schemas/schema.v{version}.json");
         return JsonSchema.FromText(schemaText);
     }
-    private static JsonElement ConvertYamlToJsonElement(string yaml)
-    {
+
+    private static JsonElement ConvertYamlToJsonElement(string yaml) {
         // Load YAML into YAML DOM
         var yamlStream = new YamlStream();
         yamlStream.Load(new StringReader(yaml));
 
-        var root = yamlStream.Documents[0].RootNode;
+        YamlNode root = yamlStream.Documents[0].RootNode;
 
         // Convert YAML node → JSON string
         var json = ConvertYamlNodeToJson(root);
@@ -26,16 +25,14 @@ public class SchemaConformanceTests
         return document.RootElement.Clone();
     }
 
-    private static string ConvertYamlNodeToJson(YamlNode node)
-    {
-        if (node is YamlScalarNode scalar)
-        {
+    private static string ConvertYamlNodeToJson(YamlNode node) {
+        if (node is YamlScalarNode scalar) {
             // Try numeric
             if (int.TryParse(scalar.Value, out var i))
                 return i.ToString();
 
             if (double.TryParse(scalar.Value, out var d))
-                return d.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                return d.ToString(CultureInfo.InvariantCulture);
 
             if (bool.TryParse(scalar.Value, out var b))
                 return b.ToString().ToLowerInvariant();
@@ -44,17 +41,15 @@ public class SchemaConformanceTests
             return JsonSerializer.Serialize(scalar.Value);
         }
 
-        if (node is YamlSequenceNode sequence)
-        {
-            var items = sequence.Children
+        if (node is YamlSequenceNode sequence) {
+            IEnumerable<string> items = sequence.Children
                 .Select(ConvertYamlNodeToJson);
 
             return "[" + string.Join(",", items) + "]";
         }
 
-        if (node is YamlMappingNode mapping)
-        {
-            var props = mapping.Children
+        if (node is YamlMappingNode mapping) {
+            IEnumerable<string> props = mapping.Children
                 .Select(kvp =>
                     JsonSerializer.Serialize(((YamlScalarNode)kvp.Key).Value)
                     + ":"
@@ -65,15 +60,14 @@ public class SchemaConformanceTests
 
         return "null";
     }
-    
+
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
-    public void All_yaml_files_conform_to_schema(int version)
-    {
+    public void All_yaml_files_conform_to_schema(int version) {
         // Arrange
-        var schema = LoadSchema(version);
-        
+        JsonSchema schema = LoadSchema(version);
+
         var yamlFolder = Path.Combine(
             AppContext.BaseDirectory,
             "TestConfigs",
@@ -88,34 +82,27 @@ public class SchemaConformanceTests
         var failures = new List<string>();
 
         // Act
-        foreach (var file in yamlFiles)
-        {
+        foreach (var file in yamlFiles) {
             var yaml = File.ReadAllText(file);
-            var jsonNode = ConvertYamlToJsonElement(yaml);
+            JsonElement jsonNode = ConvertYamlToJsonElement(yaml);
 
-            var options = new EvaluationOptions
-            {
-                OutputFormat = OutputFormat.Hierarchical            };
+            var options = new EvaluationOptions {
+                OutputFormat = OutputFormat.Hierarchical
+            };
 
-            var result = schema.Evaluate(jsonNode, options);
-            
-            if (!result.IsValid)
-            {
+            EvaluationResults result = schema.Evaluate(jsonNode, options);
+
+            if (!result.IsValid) {
                 var errors = new List<string>();
 
-                void CollectErrors(EvaluationResults node)
-                {
+                void CollectErrors(EvaluationResults node) {
                     if (node.Errors != null)
-                    {
-                        foreach (var error in node.Errors)
+                        foreach (KeyValuePair<string, string> error in node.Errors)
                             errors.Add($"{error.Key}: {error.Value}");
-                    }
 
                     if (node.Details != null)
-                    {
-                        foreach (var child in node.Details)
+                        foreach (EvaluationResults child in node.Details)
                             CollectErrors(child);
-                    }
                 }
 
                 CollectErrors(result);
@@ -127,8 +114,7 @@ public class SchemaConformanceTests
         }
 
         // Assert
-        if (failures.Any())
-        {
+        if (failures.Any()) {
             var message = string.Join(
                 $"{Environment.NewLine}--------------------{Environment.NewLine}",
                 failures);

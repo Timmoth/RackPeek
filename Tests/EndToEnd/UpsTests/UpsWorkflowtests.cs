@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.UpsTests;
 
 [Collection("Yaml CLI tests")]
 public class UpsWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string, string)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string, string)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -24,10 +22,9 @@ public class UpsWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
     }
 
     [Fact]
-    public async Task ups_cli_workflow_test()
-    {
+    public async Task ups_cli_workflow_test() {
         // Add UPS
-        var (output, yaml) = await ExecuteAsync("ups", "add", "ups01");
+        (var output, var yaml) = await ExecuteAsync("ups", "add", "ups01");
         Assert.Equal("UPS 'ups01' added.\n", output);
         Assert.Contains("name: ups01", yaml);
 

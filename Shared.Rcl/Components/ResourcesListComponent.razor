@@ -1,6 +1,6 @@
 ﻿@using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources
-@typeparam TResource where TResource : RackPeek.Domain.Resources.Resource
+@typeparam TResource where TResource : Resource
 
 @inject IResourceCollection Repo
 
@@ -74,11 +74,11 @@
     [Parameter] public EventCallback<string> OnCreated { get; set; }
 
     private IReadOnlyList<TResource>? _loadedResources;
-    
+
     private IReadOnlyList<TResource>? ResourcesToRender => Resources ?? _loadedResources;
 
     public string ResourceKind { get; set; } = Resource.GetKind<TResource>();
-    
+
     protected override async Task OnParametersSetAsync()
     {
         if (Resources is not null)
@@ -88,12 +88,19 @@
             _loadedResources = await Repo.GetAllOfTypeAsync<TResource>();
     }
 
-    private IEnumerable<IGrouping<string?, TResource>> GroupResources(IEnumerable<TResource> resources) =>
-        resources.GroupBy(GroupBy).OrderByDescending(g => g.Count());
+    private IEnumerable<IGrouping<string?, TResource>> GroupResources(IEnumerable<TResource> resources)
+    {
+        return resources.GroupBy(GroupBy).OrderByDescending(g => g.Count());
+    }
 
-    private static string FormatGroupKey(string? key) =>
-        string.IsNullOrWhiteSpace(key) ? "unassigned" : key.Replace(" ", "-");
+    private static string FormatGroupKey(string? key)
+    {
+        return string.IsNullOrWhiteSpace(key) ? "unassigned" : key.Replace(" ", "-");
+    }
 
-    private static string DisplayGroupKey(string? key) =>
-        string.IsNullOrWhiteSpace(key) ? "Unassigned" : key;
+    private static string DisplayGroupKey(string? key)
+    {
+        return string.IsNullOrWhiteSpace(key) ? "Unassigned" : key;
+    }
+
 }

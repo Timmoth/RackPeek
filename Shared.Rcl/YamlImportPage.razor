@@ -1,8 +1,7 @@
 ﻿@page "/yaml/import"
-<PageTitle>Yaml Import</PageTitle>
-
 @using RackPeek.Domain.Api
 @using RackPeek.Domain.Persistence
+<PageTitle>Yaml Import</PageTitle>
 
 @inject UpsertInventoryUseCase ImportUseCase
 
@@ -19,7 +18,7 @@
             <input type="radio"
                    name="mergeMode"
                    checked="@(_mode == MergeMode.Merge)"
-                   @onchange="() => OnModeChanged(MergeMode.Merge)" />
+                   @onchange="() => OnModeChanged(MergeMode.Merge)"/>
 
             <div>
                 <div class="text-emerald-400">Merge</div>
@@ -33,7 +32,7 @@
             <input type="radio"
                    name="mergeMode"
                    checked="@(_mode == MergeMode.Replace)"
-                   @onchange="() => OnModeChanged(MergeMode.Replace)" />
+                   @onchange="() => OnModeChanged(MergeMode.Replace)"/>
 
             <div>
                 <div class="text-red-400">Replace</div>
@@ -179,7 +178,7 @@
 
     private string _inputYaml = "";
     private string? _validationError;
-    private bool _isValid = false;
+    private bool _isValid;
 
     private MergeMode _mode = MergeMode.Merge;
 
@@ -188,6 +187,7 @@
         _mode = mode;
         await ComputeDiff();
     }
+
     async Task ComputeDiff()
     {
         _validationError = null;
@@ -252,4 +252,5 @@
             _validationError = $"Apply failed: {ex.Message}";
         }
     }
+
 }

@@ -7,15 +7,14 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Laptops;
 
 public class LaptopDeleteCommand(IServiceProvider provider)
-    : AsyncCommand<LaptopNameSettings>
-{
+    : AsyncCommand<LaptopNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         LaptopNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Laptop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IDeleteResourceUseCase<Laptop> useCase =
+            scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Laptop>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

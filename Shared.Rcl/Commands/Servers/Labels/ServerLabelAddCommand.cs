@@ -6,23 +6,20 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Labels;
 
-public class ServerLabelAddSettings : ServerNameSettings
-{
+public class ServerLabelAddSettings : ServerNameSettings {
     [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
 
     [CommandOption("--value <VALUE>")] public string Value { get; set; } = default!;
 }
 
 public class ServerLabelAddCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<ServerLabelAddSettings>
-{
+    : AsyncCommand<ServerLabelAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerLabelAddSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddLabelUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IAddLabelUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IAddLabelUseCase<Server>>();
 
         await useCase.ExecuteAsync(settings.Name, settings.Key, settings.Value);
 

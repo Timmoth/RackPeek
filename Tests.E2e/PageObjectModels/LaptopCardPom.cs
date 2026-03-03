@@ -1,11 +1,32 @@
-namespace Tests.E2e.PageObjectModels;
-
 using Microsoft.Playwright;
 
-public class LaptopCardPom(IPage page)
-{
+namespace Tests.E2e.PageObjectModels;
+
+public class LaptopCardPom(IPage page) {
     public TagsPom Tags => new(page);
     public LabelsPom Labels => new(page);
+
+    // -------------------------------------------------
+    // Modals
+    // -------------------------------------------------
+
+    // ConfirmModal TestIdPrefix="Laptop" => "Laptop-confirm-modal-*"
+    public ILocator DeleteConfirmModal => page.GetByTestId("Laptop-confirm-modal");
+    public ILocator DeleteConfirmButton => page.GetByTestId("Laptop-confirm-modal-confirm");
+    public ILocator DeleteCancelButton => page.GetByTestId("Laptop-confirm-modal-cancel");
+
+    // StringValueModal prefixes you set:
+    // laptop-rename => "laptop-rename-string-value-modal-*"
+    public ILocator RenameModal => page.GetByTestId("laptop-rename-string-value-modal");
+    public ILocator RenameModalInput => page.GetByTestId("laptop-rename-string-value-modal-input");
+    public ILocator RenameModalAccept => page.GetByTestId("laptop-rename-string-value-modal-submit");
+    public ILocator RenameModalCancel => page.GetByTestId("laptop-rename-string-value-modal-cancel");
+
+    // laptop-clone => "laptop-clone-string-value-modal-*"
+    public ILocator CloneModal => page.GetByTestId("laptop-clone-string-value-modal");
+    public ILocator CloneModalInput => page.GetByTestId("laptop-clone-string-value-modal-input");
+    public ILocator CloneModalAccept => page.GetByTestId("laptop-clone-string-value-modal-submit");
+    public ILocator CloneModalCancel => page.GetByTestId("laptop-clone-string-value-modal-cancel");
 
     // -------------------------------------------------
     // Root + Navigation
@@ -17,8 +38,7 @@ public class LaptopCardPom(IPage page)
     public ILocator OpenLaptopLink(string name)
         => page.GetByTestId($"laptop-item-{Sanitize(name)}-link");
 
-    public async Task OpenLaptopAsync(string name)
-    {
+    public async Task OpenLaptopAsync(string name) {
         await OpenLaptopLink(name).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{name}");
     }
@@ -132,41 +152,17 @@ public class LaptopCardPom(IPage page)
         => LaptopItem(name).GetByTestId("laptop-notes-editor-markdown-editor-cancel");
 
     // -------------------------------------------------
-    // Modals
-    // -------------------------------------------------
-
-    // ConfirmModal TestIdPrefix="Laptop" => "Laptop-confirm-modal-*"
-    public ILocator DeleteConfirmModal => page.GetByTestId("Laptop-confirm-modal");
-    public ILocator DeleteConfirmButton => page.GetByTestId("Laptop-confirm-modal-confirm");
-    public ILocator DeleteCancelButton => page.GetByTestId("Laptop-confirm-modal-cancel");
-
-    // StringValueModal prefixes you set:
-    // laptop-rename => "laptop-rename-string-value-modal-*"
-    public ILocator RenameModal => page.GetByTestId("laptop-rename-string-value-modal");
-    public ILocator RenameModalInput => page.GetByTestId("laptop-rename-string-value-modal-input");
-    public ILocator RenameModalAccept => page.GetByTestId("laptop-rename-string-value-modal-submit");
-    public ILocator RenameModalCancel => page.GetByTestId("laptop-rename-string-value-modal-cancel");
-
-    // laptop-clone => "laptop-clone-string-value-modal-*"
-    public ILocator CloneModal => page.GetByTestId("laptop-clone-string-value-modal");
-    public ILocator CloneModalInput => page.GetByTestId("laptop-clone-string-value-modal-input");
-    public ILocator CloneModalAccept => page.GetByTestId("laptop-clone-string-value-modal-submit");
-    public ILocator CloneModalCancel => page.GetByTestId("laptop-clone-string-value-modal-cancel");
-
-    // -------------------------------------------------
     // Actions helpers
     // -------------------------------------------------
 
-    public async Task DeleteLaptopAsync(string name)
-    {
+    public async Task DeleteLaptopAsync(string name) {
         await DeleteButton(name).ClickAsync();
         await Assertions.Expect(DeleteConfirmModal).ToBeVisibleAsync();
         await DeleteConfirmButton.ClickAsync();
         await Assertions.Expect(LaptopItem(name)).Not.ToBeVisibleAsync();
     }
 
-    public async Task RenameLaptopAsync(string currentName, string newName)
-    {
+    public async Task RenameLaptopAsync(string currentName, string newName) {
         await RenameButton(currentName).ClickAsync();
         await Assertions.Expect(RenameModal).ToBeVisibleAsync();
 
@@ -176,8 +172,7 @@ public class LaptopCardPom(IPage page)
         await page.WaitForURLAsync($"**/resources/hardware/{newName}");
     }
 
-    public async Task CloneLaptopAsync(string currentName, string cloneName)
-    {
+    public async Task CloneLaptopAsync(string currentName, string cloneName) {
         await CloneButton(currentName).ClickAsync();
         await Assertions.Expect(CloneModal).ToBeVisibleAsync();
 

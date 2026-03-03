@@ -5,21 +5,18 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Laptops;
 
-public class LaptopSetSettings : LaptopNameSettings
-{
+public class LaptopSetSettings : LaptopNameSettings {
     [CommandOption("--model")] public string? Model { get; set; }
 }
 
 public class LaptopSetCommand(IServiceProvider provider)
-    : AsyncCommand<LaptopSetSettings>
-{
+    : AsyncCommand<LaptopSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         LaptopSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateLaptopUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        UpdateLaptopUseCase useCase = scope.ServiceProvider.GetRequiredService<UpdateLaptopUseCase>();
 
         await useCase.ExecuteAsync(settings.Name, settings.Model);
 

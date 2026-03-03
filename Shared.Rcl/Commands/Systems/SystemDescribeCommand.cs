@@ -7,19 +7,17 @@ namespace Shared.Rcl.Commands.Systems;
 
 public class SystemDescribeCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<SystemNameSettings>
-{
+) : AsyncCommand<SystemNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         SystemNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DescribeSystemUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        DescribeSystemUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeSystemUseCase>();
 
-        var system = await useCase.ExecuteAsync(settings.Name);
+        SystemDescription system = await useCase.ExecuteAsync(settings.Name);
 
-        var grid = new Grid()
+        Grid grid = new Grid()
             .AddColumn(new GridColumn().NoWrap())
             .AddColumn(new GridColumn().NoWrap());
 

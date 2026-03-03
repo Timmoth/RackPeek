@@ -73,7 +73,7 @@
             {
                 <input data-testid="ups-model-input"
                        class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
-                       @bind="_edit.Model" />
+                       @bind="_edit.Model"/>
             }
             else if (!string.IsNullOrWhiteSpace(Ups.Model))
             {
@@ -93,7 +93,7 @@
                 <input type="number"
                        data-testid="ups-capacity-input"
                        class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
-                       @bind="_edit.Va" />
+                       @bind="_edit.Va"/>
             }
             else if (Ups.Va is not null)
             {
@@ -104,11 +104,11 @@
             }
         </div>
 
-        <ResourceTagEditor Resource="Ups" 
-                           TestIdPrefix="ups" />
+        <ResourceTagEditor Resource="Ups"
+                           TestIdPrefix="ups"/>
 
         <ResourceLabelEditor Resource="Ups"
-                             TestIdPrefix="ups" />
+                             TestIdPrefix="ups"/>
 
 
         <div class="md:col-span-2"
@@ -120,13 +120,13 @@
             {
                 <MarkdownEditor @bind-Value="_edit.Notes"
                                 ShowActionButtons="false"
-                                TestIdPrefix="ups-notes-editor" />
+                                TestIdPrefix="ups-notes-editor"/>
             }
             else
             {
                 <MarkdownViewer Value="@Ups.Notes"
                                 ShowEditButton="false"
-                                TestIdPrefix="ups-notes-viewer" />
+                                TestIdPrefix="ups-notes-viewer"/>
             }
         </div>
     </div>
@@ -149,7 +149,7 @@
                   Label="New Ups name"
                   Value="@Ups.Name"
                   OnSubmit="HandleRenameSubmit"
-                  TestIdPrefix="ups-rename" />
+                  TestIdPrefix="ups-rename"/>
 
 <StringValueModal IsOpen="_cloneOpen"
                   IsOpenChanged="v => _cloneOpen = v"
@@ -158,7 +158,7 @@
                   Label="New resource name"
                   Value="@($"{Ups.Name}-copy")"
                   OnSubmit="HandleCloneSubmit"
-                  TestIdPrefix="ups-clone" />
+                  TestIdPrefix="ups-clone"/>
 
 @code {
     [Parameter] [EditorRequired] public Ups Ups { get; set; } = default!;

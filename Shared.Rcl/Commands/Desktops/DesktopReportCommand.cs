@@ -9,22 +9,21 @@ namespace Shared.Rcl.Commands.Desktops;
 public class DesktopReportCommand(
     ILogger<DesktopReportCommand> logger,
     IServiceProvider serviceProvider
-) : AsyncCommand
-{
-    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DesktopHardwareReportUseCase>();
+) : AsyncCommand {
+    private readonly ILogger<DesktopReportCommand> _logger = logger;
 
-        var report = await useCase.ExecuteAsync();
+    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        DesktopHardwareReportUseCase useCase = scope.ServiceProvider.GetRequiredService<DesktopHardwareReportUseCase>();
 
-        if (report.Desktops.Count == 0)
-        {
+        DesktopHardwareReport report = await useCase.ExecuteAsync();
+
+        if (report.Desktops.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No desktops found.[/]");
             return 0;
         }
 
-        var table = new Table()
+        Table table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Name")
             .AddColumn("CPU")
@@ -34,7 +33,7 @@ public class DesktopReportCommand(
             .AddColumn("NICs")
             .AddColumn("GPU");
 
-        foreach (var d in report.Desktops)
+        foreach (DesktopHardwareRow d in report.Desktops)
             table.AddRow(
                 d.Name,
                 d.CpuSummary,

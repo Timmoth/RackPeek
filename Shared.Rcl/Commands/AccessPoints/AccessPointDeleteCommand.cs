@@ -8,15 +8,14 @@ namespace Shared.Rcl.Commands.AccessPoints;
 
 public class AccessPointDeleteCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<AccessPointNameSettings>
-{
+) : AsyncCommand<AccessPointNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         AccessPointNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<AccessPoint>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IDeleteResourceUseCase<AccessPoint> useCase =
+            scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<AccessPoint>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

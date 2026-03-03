@@ -2,8 +2,7 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class SwitchListPom(IPage page)
-{
+public class SwitchListPom(IPage page) {
     public AddResourceComponent AddSwitch => new(page, "switch");
 
     public ILocator PageRoot => page.GetByTestId("switches-page-root");
@@ -23,46 +22,37 @@ public class SwitchListPom(IPage page)
     // Dynamic Switch Items
     // -------------------------------------------------
 
-    public ILocator SwitchItem(string name)
-    {
-        return page.GetByTestId($"switch-item-{Sanitize(name)}");
-    }
+    public ILocator SwitchItem(string name) => page.GetByTestId($"switch-item-{Sanitize(name)}");
 
     public ILocator OpenLink(string name)
         => page.GetByTestId($"switch-item-{Sanitize(name)}-link");
 
-    public ILocator EditButton(string name)
-    {
+    public ILocator EditButton(string name) {
         return SwitchItem(name)
             .GetByTestId("edit-switch-button");
     }
 
-    public ILocator SaveButton(string name)
-    {
+    public ILocator SaveButton(string name) {
         return SwitchItem(name)
             .GetByTestId("save-switch-button");
     }
 
-    public ILocator CancelButton(string name)
-    {
+    public ILocator CancelButton(string name) {
         return SwitchItem(name)
             .GetByTestId("cancel-switch-button");
     }
 
-    public ILocator RenameButton(string name)
-    {
+    public ILocator RenameButton(string name) {
         return SwitchItem(name)
             .GetByTestId("rename-switch-button");
     }
 
-    public ILocator CloneButton(string name)
-    {
+    public ILocator CloneButton(string name) {
         return SwitchItem(name)
             .GetByTestId("clone-switch-button");
     }
 
-    public ILocator DeleteButton(string name)
-    {
+    public ILocator DeleteButton(string name) {
         return SwitchItem(name)
             .GetByTestId("delete-switch-button");
     }
@@ -71,36 +61,29 @@ public class SwitchListPom(IPage page)
     // Navigation
     // -------------------------------------------------
 
-    public async Task GotoAsync(string baseUrl)
-    {
+    public async Task GotoAsync(string baseUrl) {
         await page.GotoAsync($"{baseUrl}/switches/list");
         await AssertLoadedAsync();
     }
 
-    public async Task AssertLoadedAsync()
-    {
+    public async Task AssertLoadedAsync() {
         await Assertions.Expect(PageRoot).ToBeVisibleAsync();
         await Assertions.Expect(PageTitle).ToBeVisibleAsync();
     }
 
-    public async Task WaitForListAsync()
-    {
-        await Assertions.Expect(SwitchsList).ToBeVisibleAsync();
-    }
+    public async Task WaitForListAsync() => await Assertions.Expect(SwitchsList).ToBeVisibleAsync();
 
     // -------------------------------------------------
     // Actions
     // -------------------------------------------------
 
-    public async Task AddSwitchAsync(string name)
-    {
+    public async Task AddSwitchAsync(string name) {
         await AddSwitch.AddAsync(name);
         await Assertions.Expect(SwitchItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task DeleteSwitchAsync(string name)
-    {
+    public async Task DeleteSwitchAsync(string name) {
         await DeleteButton(name).ClickAsync();
         await page.GetByTestId("Switch-confirm-modal-confirm").ClickAsync();
 
@@ -108,26 +91,20 @@ public class SwitchListPom(IPage page)
             .Not.ToBeVisibleAsync();
     }
 
-    public async Task OpenSwitchAsync(string name)
-    {
+    public async Task OpenSwitchAsync(string name) {
         await OpenLink(name).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{name}");
     }
 
-    public async Task AssertSwitchExists(string name)
-    {
+    public async Task AssertSwitchExists(string name) {
         await Assertions.Expect(SwitchItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task AssertSwitchDoesNotExist(string name)
-    {
+    public async Task AssertSwitchDoesNotExist(string name) {
         await Assertions.Expect(SwitchItem(name))
             .Not.ToBeVisibleAsync();
     }
 
-    private static string Sanitize(string value)
-    {
-        return value.Replace(" ", "-");
-    }
+    private static string Sanitize(string value) => value.Replace(" ", "-");
 }

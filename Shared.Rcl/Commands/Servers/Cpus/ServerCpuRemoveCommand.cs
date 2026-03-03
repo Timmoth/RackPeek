@@ -6,20 +6,17 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Cpus;
 
-public class ServerCpuRemoveSettings : ServerNameSettings
-{
+public class ServerCpuRemoveSettings : ServerNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 }
 
-public class ServerCpuRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<ServerCpuRemoveSettings>
-{
+public class ServerCpuRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<ServerCpuRemoveSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerCpuRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveCpuUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IRemoveCpuUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IRemoveCpuUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

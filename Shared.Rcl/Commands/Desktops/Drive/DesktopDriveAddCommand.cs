@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Desktops.Drive;
 
-public class DesktopDriveAddSettings : CommandSettings
-{
+public class DesktopDriveAddSettings : CommandSettings {
     [CommandArgument(0, "<desktop>")]
     [Description("The name of the desktop.")]
     public string DesktopName { get; set; } = default!;
@@ -23,15 +22,13 @@ public class DesktopDriveAddSettings : CommandSettings
 }
 
 public class DesktopDriveAddCommand(IServiceProvider provider)
-    : AsyncCommand<DesktopDriveAddSettings>
-{
+    : AsyncCommand<DesktopDriveAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DesktopDriveAddSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddDriveUseCase<Desktop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IAddDriveUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IAddDriveUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Type, settings.Size);
 

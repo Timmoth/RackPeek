@@ -4,27 +4,25 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl;
 
-public static class ServiceCollectionExtensions
-{
+public static class ServiceCollectionExtensions {
     public static IServiceCollection AddCommands(
-        this IServiceCollection services)
-    {
-        var commandTypes = Assembly.GetAssembly(typeof(ServiceCollectionExtensions))
+        this IServiceCollection services) {
+        IEnumerable<Type>? commandTypes = Assembly.GetAssembly(typeof(ServiceCollectionExtensions))
             ?.GetTypes()
             .Where(t =>
                 t is { IsAbstract: false, IsInterface: false } &&
                 IsAsyncCommand(t)
             );
 
-        foreach (var type in commandTypes) services.AddScoped(type);
+        if (commandTypes != null)
+            foreach (Type type in commandTypes)
+                services.AddScoped(type);
 
         return services;
     }
 
-    private static bool IsAsyncCommand(Type type)
-    {
-        while (type != null)
-        {
+    private static bool IsAsyncCommand(Type type) {
+        while (type != null) {
             if (type.IsGenericType &&
                 type.GetGenericTypeDefinition() == typeof(AsyncCommand<>))
                 return true;

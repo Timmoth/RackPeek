@@ -1,11 +1,26 @@
-namespace Tests.E2e.PageObjectModels;
-
+using System.Globalization;
 using Microsoft.Playwright;
 
-public class AccessPointCardPom(IPage page)
-{
+namespace Tests.E2e.PageObjectModels;
+
+public class AccessPointCardPom(IPage page) {
     public TagsPom Tags => new(page);
     public LabelsPom Labels => new(page);
+
+    // Modals
+    public ILocator DeleteConfirmModal => page.GetByTestId("AccessPoint-confirm-modal");
+    public ILocator DeleteConfirmButton => page.GetByTestId("AccessPoint-confirm-modal-confirm");
+    public ILocator DeleteCancelButton => page.GetByTestId("AccessPoint-confirm-modal-cancel");
+
+    public ILocator RenameModal => page.GetByTestId("accesspoint-rename-string-value-modal");
+    public ILocator RenameModalInput => page.GetByTestId("accesspoint-rename-string-value-modal-input");
+    public ILocator RenameModalSubmit => page.GetByTestId("accesspoint-rename-string-value-modal-submit");
+    public ILocator RenameModalCancel => page.GetByTestId("accesspoint-rename-string-value-modal-cancel");
+
+    public ILocator CloneModal => page.GetByTestId("accesspoint-clone-string-value-modal");
+    public ILocator CloneModalInput => page.GetByTestId("accesspoint-clone-string-value-modal-input");
+    public ILocator CloneModalSubmit => page.GetByTestId("accesspoint-clone-string-value-modal-submit");
+    public ILocator CloneModalCancel => page.GetByTestId("accesspoint-clone-string-value-modal-cancel");
 
     // Root
     public ILocator Card(string accessPointName)
@@ -70,76 +85,49 @@ public class AccessPointCardPom(IPage page)
     public ILocator NotesEditorTextarea(string accessPointName)
         => Card(accessPointName).GetByTestId("accesspoint-notes-editor-markdown-editor-textarea");
 
-    // Modals
-    public ILocator DeleteConfirmModal => page.GetByTestId("AccessPoint-confirm-modal");
-    public ILocator DeleteConfirmButton => page.GetByTestId("AccessPoint-confirm-modal-confirm");
-    public ILocator DeleteCancelButton => page.GetByTestId("AccessPoint-confirm-modal-cancel");
-
-    public ILocator RenameModal => page.GetByTestId("accesspoint-rename-string-value-modal");
-    public ILocator RenameModalInput => page.GetByTestId("accesspoint-rename-string-value-modal-input");
-    public ILocator RenameModalSubmit => page.GetByTestId("accesspoint-rename-string-value-modal-submit");
-    public ILocator RenameModalCancel => page.GetByTestId("accesspoint-rename-string-value-modal-cancel");
-
-    public ILocator CloneModal => page.GetByTestId("accesspoint-clone-string-value-modal");
-    public ILocator CloneModalInput => page.GetByTestId("accesspoint-clone-string-value-modal-input");
-    public ILocator CloneModalSubmit => page.GetByTestId("accesspoint-clone-string-value-modal-submit");
-    public ILocator CloneModalCancel => page.GetByTestId("accesspoint-clone-string-value-modal-cancel");
-
     // -------------------------------------------------
     // Navigation (hardware details page)
     // -------------------------------------------------
 
-    public async Task GotoHardwareAsync(string baseUrl, string hardwareName)
-    {
+    public async Task GotoHardwareAsync(string baseUrl, string hardwareName) {
         await page.GotoAsync($"{baseUrl}/resources/hardware/{hardwareName}");
         await AssertCardVisibleAsync(hardwareName);
     }
 
-    public async Task AssertCardVisibleAsync(string accessPointName)
-    {
+    public async Task AssertCardVisibleAsync(string accessPointName) =>
         await Assertions.Expect(Card(accessPointName)).ToBeVisibleAsync();
-    }
 
     // -------------------------------------------------
     // Actions
     // -------------------------------------------------
 
-    public async Task OpenAsync(string accessPointName)
-    {
+    public async Task OpenAsync(string accessPointName) {
         await OpenLink(accessPointName).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{accessPointName}");
     }
 
-    public async Task BeginEditAsync(string accessPointName)
-    {
+    public async Task BeginEditAsync(string accessPointName) {
         await EditButton(accessPointName).ClickAsync();
         await Assertions.Expect(ModelInput(accessPointName)).ToBeVisibleAsync();
     }
 
-    public async Task SetModelAsync(string accessPointName, string model)
-    {
+    public async Task SetModelAsync(string accessPointName, string model) =>
         await ModelInput(accessPointName).FillAsync(model);
-    }
 
-    public async Task SetSpeedAsync(string accessPointName, double speed)
-    {
-        await SpeedInput(accessPointName).FillAsync(speed.ToString(System.Globalization.CultureInfo.InvariantCulture));
-    }
+    public async Task SetSpeedAsync(string accessPointName, double speed) =>
+        await SpeedInput(accessPointName).FillAsync(speed.ToString(CultureInfo.InvariantCulture));
 
-    public async Task SaveAsync(string accessPointName)
-    {
+    public async Task SaveAsync(string accessPointName) {
         await SaveButton(accessPointName).ClickAsync();
         await Assertions.Expect(ModelSection(accessPointName)).ToBeVisibleAsync();
     }
 
-    public async Task CancelEditAsync(string accessPointName)
-    {
+    public async Task CancelEditAsync(string accessPointName) {
         await CancelButton(accessPointName).ClickAsync();
         await Assertions.Expect(EditButton(accessPointName)).ToBeVisibleAsync();
     }
 
-    public async Task DeleteAsync(string accessPointName)
-    {
+    public async Task DeleteAsync(string accessPointName) {
         await DeleteButton(accessPointName).ClickAsync();
         await DeleteConfirmButton.ClickAsync();
 
@@ -147,8 +135,7 @@ public class AccessPointCardPom(IPage page)
             .Not.ToBeVisibleAsync();
     }
 
-    public async Task RenameAsync(string accessPointName, string newName)
-    {
+    public async Task RenameAsync(string accessPointName, string newName) {
         await RenameButton(accessPointName).ClickAsync();
         await RenameModalInput.FillAsync(newName);
         await RenameModalSubmit.ClickAsync();
@@ -156,8 +143,7 @@ public class AccessPointCardPom(IPage page)
         await page.WaitForURLAsync($"**/resources/hardware/{newName}");
     }
 
-    public async Task CloneAsync(string accessPointName, string cloneName)
-    {
+    public async Task CloneAsync(string accessPointName, string cloneName) {
         await CloneButton(accessPointName).ClickAsync();
         await CloneModalInput.FillAsync(cloneName);
         await CloneModalSubmit.ClickAsync();

@@ -3,8 +3,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Laptops.Drive;
 
-public class LaptopDriveRemoveSettings : CommandSettings
-{
+public class LaptopDriveRemoveSettings : CommandSettings {
     [CommandArgument(0, "<Laptop>")]
     [Description("The name of the Laptop.")]
     public string LaptopName { get; set; } = default!;

@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Desktops.Cpus;
 
-public class DesktopCpuRemoveSettings : CommandSettings
-{
+public class DesktopCpuRemoveSettings : CommandSettings {
     [CommandArgument(0, "<desktop>")]
     [Description("The name of the desktop.")]
     public string DesktopName { get; set; } = default!;
@@ -19,15 +18,13 @@ public class DesktopCpuRemoveSettings : CommandSettings
 }
 
 public class DesktopCpuRemoveCommand(IServiceProvider provider)
-    : AsyncCommand<DesktopCpuRemoveSettings>
-{
+    : AsyncCommand<DesktopCpuRemoveSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DesktopCpuRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveCpuUseCase<Desktop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IRemoveCpuUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IRemoveCpuUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Index);
 

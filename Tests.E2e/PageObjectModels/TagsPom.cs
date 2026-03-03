@@ -1,9 +1,8 @@
-namespace Tests.E2e.PageObjectModels;
-
 using Microsoft.Playwright;
 
-public class TagsPom(IPage page)
-{
+namespace Tests.E2e.PageObjectModels;
+
+public class TagsPom(IPage page) {
     // -------------------------------------------------
     // Root
     // -------------------------------------------------
@@ -56,22 +55,17 @@ public class TagsPom(IPage page)
     // Assertions
     // -------------------------------------------------
 
-    public async Task AssertTagVisibleAsync(string testIdPrefix, string tag)
-    {
+    public async Task AssertTagVisibleAsync(string testIdPrefix, string tag) =>
         await Assertions.Expect(Tag(testIdPrefix, tag)).ToBeVisibleAsync();
-    }
 
-    public async Task AssertTagNotVisibleAsync(string testIdPrefix, string tag)
-    {
+    public async Task AssertTagNotVisibleAsync(string testIdPrefix, string tag) =>
         await Assertions.Expect(Tag(testIdPrefix, tag)).Not.ToBeVisibleAsync();
-    }
 
     // -------------------------------------------------
     // Actions
     // -------------------------------------------------
 
-    public async Task AddTagsAsync(string testIdPrefix, params string[] tags)
-    {
+    public async Task AddTagsAsync(string testIdPrefix, params string[] tags) {
         await AddButton(testIdPrefix).ClickAsync();
 
         await Assertions.Expect(ModalInput(testIdPrefix)).ToBeVisibleAsync();
@@ -81,20 +75,15 @@ public class TagsPom(IPage page)
         await ModalInput(testIdPrefix).FillAsync(value);
         await ModalSubmit(testIdPrefix).ClickAsync();
 
-        foreach (var tag in tags)
-        {
-            await AssertTagVisibleAsync(testIdPrefix, tag);
-        }
+        foreach (var tag in tags) await AssertTagVisibleAsync(testIdPrefix, tag);
     }
 
-    public async Task RemoveTagAsync(string testIdPrefix, string tag)
-    {
+    public async Task RemoveTagAsync(string testIdPrefix, string tag) {
         await RemoveTagButton(testIdPrefix, tag).ClickAsync();
         await AssertTagNotVisibleAsync(testIdPrefix, tag);
     }
 
-    public async Task NavigateToTagAsync(string testIdPrefix, string tag)
-    {
+    public async Task NavigateToTagAsync(string testIdPrefix, string tag) {
         await ViewTagButton(testIdPrefix, tag).ClickAsync();
         await page.WaitForURLAsync($"**/tags/{tag}");
     }

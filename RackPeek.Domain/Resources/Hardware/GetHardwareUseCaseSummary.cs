@@ -1,11 +1,9 @@
 namespace RackPeek.Domain.Resources.Hardware;
 
-public sealed class HardwareSummary
-{
+public sealed class HardwareSummary {
     public HardwareSummary(
         int totalHardware,
-        IReadOnlyDictionary<string, int> hardwareByKind)
-    {
+        IReadOnlyDictionary<string, int> hardwareByKind) {
         TotalHardware = totalHardware;
         HardwareByKind = hardwareByKind;
     }
@@ -14,12 +12,10 @@ public sealed class HardwareSummary
     public IReadOnlyDictionary<string, int> HardwareByKind { get; }
 }
 
-public class GetHardwareUseCaseSummary(IHardwareRepository repository) : IUseCase
-{
-    public async Task<HardwareSummary> ExecuteAsync()
-    {
-        var totalCountTask = repository.GetCountAsync();
-        var kindCountTask = repository.GetKindCountAsync();
+public class GetHardwareUseCaseSummary(IHardwareRepository repository) : IUseCase {
+    public async Task<HardwareSummary> ExecuteAsync() {
+        Task<int> totalCountTask = repository.GetCountAsync();
+        Task<Dictionary<string, int>> kindCountTask = repository.GetKindCountAsync();
 
         await Task.WhenAll(totalCountTask, kindCountTask);
 

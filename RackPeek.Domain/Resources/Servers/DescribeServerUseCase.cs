@@ -14,10 +14,8 @@ public record ServerDescription(
     bool Ipmi
 );
 
-public class DescribeServerUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<ServerDescription> ExecuteAsync(string name)
-    {
+public class DescribeServerUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<ServerDescription> ExecuteAsync(string name) {
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 

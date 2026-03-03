@@ -1,15 +1,13 @@
 namespace Tests.EndToEnd.Infra;
 
-public sealed class TempYamlCliFixture : IAsyncLifetime
-{
+public sealed class TempYamlCliFixture : IAsyncLifetime {
     public string Root { get; } = Path.Combine(
         Path.GetTempPath(),
         "rackpeek-tests",
         Guid.NewGuid().ToString()
     );
 
-    public Task InitializeAsync()
-    {
+    public Task InitializeAsync() {
         Directory.CreateDirectory(Root);
 
         // Create empty YAML files so repo loads cleanly
@@ -22,8 +20,7 @@ public sealed class TempYamlCliFixture : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public Task DisposeAsync()
-    {
+    public Task DisposeAsync() {
         Directory.Delete(Root, true);
         return Task.CompletedTask;
     }

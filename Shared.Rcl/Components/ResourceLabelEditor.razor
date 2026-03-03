@@ -63,10 +63,10 @@
     Key="@_editingKey"
     Value="@_editingValue"
     TestIdPrefix="@BaseTestId"
-    OnSubmit="HandleLabelSubmit" />
+    OnSubmit="HandleLabelSubmit"/>
 
 @code {
-    [Parameter][EditorRequired] public TResource Resource { get; set; } = default!;
+    [Parameter] [EditorRequired] public TResource Resource { get; set; } = default!;
     [Parameter] public EventCallback OnLabelsChanged { get; set; }
     [Parameter] public string? TestIdPrefix { get; set; }
 
@@ -115,4 +115,5 @@
         if (OnLabelsChanged.HasDelegate)
             await OnLabelsChanged.InvokeAsync();
     }
+
 }

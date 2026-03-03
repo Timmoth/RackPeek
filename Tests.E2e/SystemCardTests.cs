@@ -1,14 +1,14 @@
-﻿using Tests.E2e.Infra;
+﻿using Microsoft.Playwright;
+using Tests.E2e.Infra;
 using Tests.E2e.PageObjectModels;
 using Xunit.Abstractions;
-using Microsoft.Playwright;
 
 namespace Tests.E2e;
 
 public class SystemCardTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) : E2ETestBase(fixture, output)
-{
+    ITestOutputHelper output) : E2ETestBase(fixture, output) {
+    private readonly PlaywrightFixture _fixture = fixture;
     private readonly ITestOutputHelper _output = output;
 
     // ============================================================
@@ -16,17 +16,15 @@ public class SystemCardTests(
     // ============================================================
 
     [Fact]
-    public async Task User_Can_Rename_Clone_And_Delete_System()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Rename_Clone_And_Delete_System() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
 
         var originalName = $"e2e-sys-{Guid.NewGuid():N}"[..16];
-        var renamedName  = $"e2e-sys-rn-{Guid.NewGuid():N}"[..16];
-        var cloneName    = $"e2e-sys-cl-{Guid.NewGuid():N}"[..16];
+        var renamedName = $"e2e-sys-rn-{Guid.NewGuid():N}"[..16];
+        var cloneName = $"e2e-sys-cl-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync($"{fixture.BaseUrl}/systems/list");
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/systems/list");
 
             var list = new SystemsListPom(page);
             await list.AssertLoadedAsync();
@@ -35,9 +33,7 @@ public class SystemCardTests(
 
             if (!page.Url.Contains($"/resources/systems/{originalName}",
                     StringComparison.OrdinalIgnoreCase))
-            {
                 await list.OpenSystemAsync(originalName);
-            }
 
             var card = new SystemCardPom(page);
             await card.AssertVisibleAsync(originalName);
@@ -61,14 +57,13 @@ public class SystemCardTests(
             await page.WaitForURLAsync("**/systems/list");
 
             // Delete renamed original
-            await page.GotoAsync($"{fixture.BaseUrl}/resources/systems/{renamedName}");
+            await page.GotoAsync($"{_fixture.BaseUrl}/resources/systems/{renamedName}");
             await card.AssertVisibleAsync(renamedName);
 
             await card.DeleteAsync(renamedName);
             await page.WaitForURLAsync("**/systems/list");
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
 
@@ -79,8 +74,7 @@ public class SystemCardTests(
 
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
@@ -90,23 +84,19 @@ public class SystemCardTests(
     // ============================================================
 
     [Fact]
-    public async Task User_Can_Edit_And_Save_System()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Edit_And_Save_System() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-sys-edit-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync($"{fixture.BaseUrl}/systems/list");
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/systems/list");
 
             var list = new SystemsListPom(page);
             await list.AddSystemAsync(name);
 
             if (!page.Url.Contains($"/resources/systems/{name}",
                     StringComparison.OrdinalIgnoreCase))
-            {
                 await list.OpenSystemAsync(name);
-            }
 
             var card = new SystemCardPom(page);
             await card.AssertVisibleAsync(name);
@@ -124,8 +114,7 @@ public class SystemCardTests(
             // Verify read mode restored
             await Assertions.Expect(card.EditButton(name)).ToBeVisibleAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
@@ -135,23 +124,19 @@ public class SystemCardTests(
     // ============================================================
 
     [Fact]
-    public async Task User_Can_Cancel_System_Edit()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Cancel_System_Edit() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-sys-cancel-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync($"{fixture.BaseUrl}/systems/list");
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/systems/list");
 
             var list = new SystemsListPom(page);
             await list.AddSystemAsync(name);
 
             if (!page.Url.Contains($"/resources/systems/{name}",
                     StringComparison.OrdinalIgnoreCase))
-            {
                 await list.OpenSystemAsync(name);
-            }
 
             var card = new SystemCardPom(page);
             await card.AssertVisibleAsync(name);
@@ -164,8 +149,7 @@ public class SystemCardTests(
 
             await Assertions.Expect(card.EditButton(name)).ToBeVisibleAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
@@ -175,45 +159,38 @@ public class SystemCardTests(
     // ============================================================
 
     [Fact]
-    public async Task User_Can_Add_And_Edit_System_Drive()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Add_And_Edit_System_Drive() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-sys-drive-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync($"{fixture.BaseUrl}/systems/list");
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/systems/list");
 
             var list = new SystemsListPom(page);
             await list.AddSystemAsync(name);
 
             if (!page.Url.Contains($"/resources/systems/{name}",
                     StringComparison.OrdinalIgnoreCase))
-            {
                 await list.OpenSystemAsync(name);
-            }
 
             var card = new SystemCardPom(page);
             await card.AssertVisibleAsync(name);
 
             await card.AddDriveAsync(name, "ssd", 512);
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
-    
-    
+
+
     [Fact]
-    public async Task User_Can_Add_And_Remove_Tags_From_System_Card()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Add_And_Remove_Tags_From_System_Card() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync($"{fixture.BaseUrl}/systems/list");
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/systems/list");
 
             var list = new SystemsListPom(page);
             await list.AssertLoadedAsync();
@@ -224,7 +201,7 @@ public class SystemCardTests(
             var card = new SystemCardPom(page);
             await card.AssertVisibleAsync(name);
 
-            var tags = card.Tags;
+            TagsPom tags = card.Tags;
 
             // -------------------------------------------------
             // Add multiple tags in one modal interaction
@@ -258,10 +235,8 @@ public class SystemCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
-
 }

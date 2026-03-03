@@ -6,22 +6,20 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Firewalls;
 
-public class FirewallAddSettings : CommandSettings
-{
+public class FirewallAddSettings : CommandSettings {
     [CommandArgument(0, "<name>")] public string Name { get; set; } = default!;
 }
 
 public class FirewallAddCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<FirewallAddSettings>
-{
+) : AsyncCommand<FirewallAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         FirewallAddSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Firewall>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IAddResourceUseCase<Firewall> useCase =
+            scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Firewall>>();
 
         await useCase.ExecuteAsync(
             settings.Name

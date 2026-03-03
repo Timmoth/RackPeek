@@ -7,17 +7,15 @@ namespace Shared.Rcl.Commands.Firewalls;
 
 public class FirewallGetByNameCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<FirewallNameSettings>
-{
+) : AsyncCommand<FirewallNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         FirewallNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DescribeFirewallUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        DescribeFirewallUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeFirewallUseCase>();
 
-        var sw = await useCase.ExecuteAsync(settings.Name);
+        FirewallDescription sw = await useCase.ExecuteAsync(settings.Name);
 
         AnsiConsole.MarkupLine(
             $"[green]{sw.Name}[/]  Model: {sw.Model ?? "Unknown"}, Managed: {(sw.Managed == true ? "Yes" : "No")}, PoE: {(sw.Poe == true ? "Yes" : "No")}");

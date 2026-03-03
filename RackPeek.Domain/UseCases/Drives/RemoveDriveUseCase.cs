@@ -6,20 +6,17 @@ using RackPeek.Domain.Resources.Servers;
 namespace RackPeek.Domain.UseCases.Drives;
 
 public interface IRemoveDriveUseCase<T> : IResourceUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     public Task ExecuteAsync(string name, int index);
 }
 
-public class RemoveDriveUseCase<T>(IResourceCollection repository) : IRemoveDriveUseCase<T> where T : Resource
-{
-    public async Task ExecuteAsync(string name, int index)
-    {
+public class RemoveDriveUseCase<T>(IResourceCollection repository) : IRemoveDriveUseCase<T> where T : Resource {
+    public async Task ExecuteAsync(string name, int index) {
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
-        var resource = await repository.GetByNameAsync<T>(name) ??
-                       throw new NotFoundException($"Resource '{name}' not found.");
+        T resource = await repository.GetByNameAsync<T>(name) ??
+                     throw new NotFoundException($"Resource '{name}' not found.");
 
         if (resource is not IDriveResource dr) throw new NotFoundException($"Resource '{name}' not found.");
 

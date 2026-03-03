@@ -4,29 +4,24 @@ using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Helpers;
 
-public static class ThrowIfInvalid
-{
-    public static void ResourceName(string name)
-    {
+public static class ThrowIfInvalid {
+    public static void ResourceName(string name) {
         if (string.IsNullOrWhiteSpace(name)) throw new ValidationException("Name is required.");
 
         if (name.Length > 50) throw new ValidationException("Name is too long.");
     }
 
-    public static void LabelKey(string key)
-    {
+    public static void LabelKey(string key) {
         if (string.IsNullOrWhiteSpace(key)) throw new ValidationException("Label key is required.");
         if (key.Length > 50) throw new ValidationException("Label key is too long.");
     }
 
-    public static void LabelValue(string value)
-    {
+    public static void LabelValue(string value) {
         if (string.IsNullOrWhiteSpace(value)) throw new ValidationException("Label value is required.");
         if (value.Length > 200) throw new ValidationException("Label value is too long.");
     }
 
-    public static void AccessPointModelName(string name)
-    {
+    public static void AccessPointModelName(string name) {
         if (string.IsNullOrWhiteSpace(name))
             throw new ValidationException("Model name is required.");
 
@@ -34,15 +29,13 @@ public static class ThrowIfInvalid
             throw new ValidationException("Model name is too long.");
     }
 
-    public static void RamGb(double? value)
-    {
+    public static void RamGb(double? value) {
         if (value is null) throw new ValidationException("RAM value must be specified.");
 
         if (value < 0) throw new ValidationException("RAM value must be a non negative number of gigabytes.");
     }
 
-    public static void SystemType(string systemType)
-    {
+    public static void SystemType(string systemType) {
         if (string.IsNullOrWhiteSpace(systemType)) throw new ValidationException("System type is required.");
 
         var normalized = systemType.Trim().ToLowerInvariant();
@@ -58,8 +51,7 @@ public static class ThrowIfInvalid
         throw new ValidationException(message);
     }
 
-    private static IEnumerable<string> GetSystemTypeSuggestions(string input)
-    {
+    private static IEnumerable<string> GetSystemTypeSuggestions(string input) {
         return SystemResource.ValidSystemTypes.Select(type => new { Type = type, Score = SimilarityScore(input, type) })
             .Where(x => x.Score >= 0.5)
             .OrderByDescending(x => x.Score)
@@ -69,8 +61,7 @@ public static class ThrowIfInvalid
 
     #region Nics
 
-    public static void NicType(string nicType)
-    {
+    public static void NicType(string nicType) {
         if (string.IsNullOrWhiteSpace(nicType)) throw new ValidationException("NIC type is required.");
 
         var normalized = nicType.Trim().ToLowerInvariant();
@@ -86,8 +77,7 @@ public static class ThrowIfInvalid
         throw new ValidationException(message);
     }
 
-    private static IEnumerable<string> GetNicTypeSuggestions(string input)
-    {
+    private static IEnumerable<string> GetNicTypeSuggestions(string input) {
         return Nic.ValidNicTypes.Select(type => new { Type = type, Score = SimilarityScore(input, type) })
             .Where(x => x.Score >= 0.5)
             .OrderByDescending(x => x.Score)
@@ -95,8 +85,7 @@ public static class ThrowIfInvalid
             .Select(x => x.Type);
     }
 
-    private static double SimilarityScore(string a, string b)
-    {
+    private static double SimilarityScore(string a, string b) {
         if (a == b) return 1.0;
 
         if (b.StartsWith(a) || a.StartsWith(b)) return 0.9;
@@ -105,21 +94,18 @@ public static class ThrowIfInvalid
         return (double)commonChars / Math.Max(a.Length, b.Length);
     }
 
-    public static void NicSpeed(double speed)
-    {
+    public static void NicSpeed(double speed) {
         if (speed < 0) throw new ValidationException("NIC speed must be a non negative number of gigabits per second.");
     }
 
-    public static void NetworkSpeed(double speed)
-    {
+    public static void NetworkSpeed(double speed) {
         if (speed < 0)
             throw new ValidationException(
                 "Network speed must be a non negative number of gigabits per second.");
     }
 
 
-    public static void NicPorts(int ports)
-    {
+    public static void NicPorts(int ports) {
         if (ports < 0) throw new ValidationException("NIC port count must be a non negative integer.");
     }
 
@@ -127,8 +113,7 @@ public static class ThrowIfInvalid
 
     #region Drives
 
-    public static void DriveType(string driveType)
-    {
+    public static void DriveType(string driveType) {
         if (string.IsNullOrWhiteSpace(driveType)) throw new ValidationException("Drive type is required.");
 
         var normalized = driveType.Trim().ToLowerInvariant();
@@ -144,8 +129,7 @@ public static class ThrowIfInvalid
         throw new ValidationException(message);
     }
 
-    private static IEnumerable<string> GetDriveTypeSuggestions(string input)
-    {
+    private static IEnumerable<string> GetDriveTypeSuggestions(string input) {
         return Drive.ValidDriveTypes.Select(type => new { Type = type, Score = SimilarityScore(input, type) })
             .Where(x => x.Score >= 0.5)
             .OrderByDescending(x => x.Score)
@@ -153,8 +137,7 @@ public static class ThrowIfInvalid
             .Select(x => x.Type);
     }
 
-    public static void DriveSize(int size)
-    {
+    public static void DriveSize(int size) {
         if (size < 0) throw new ValidationException("Drive size value must be a non negative number of gigabytes.");
     }
 

@@ -3,8 +3,7 @@ using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
-public class UpdateServiceUseCase(IResourceCollection repository) : IUseCase
-{
+public class UpdateServiceUseCase(IResourceCollection repository) : IUseCase {
     public async Task ExecuteAsync(
         string name,
         string? ip = null,
@@ -13,8 +12,7 @@ public class UpdateServiceUseCase(IResourceCollection repository) : IUseCase
         string? url = null,
         List<string>? runsOn = null,
         string? notes = null
-    )
-    {
+    ) {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
         // ToDo validate / normalize all inputs
 
@@ -24,42 +22,36 @@ public class UpdateServiceUseCase(IResourceCollection repository) : IUseCase
         if (service is null)
             throw new NotFoundException($"Service '{name}' not found.");
 
-        if (ip != null)
-        {
+        if (ip != null) {
             service.Network ??= new Network();
             service.Network.Ip = ip;
         }
 
-        if (protocol != null)
-        {
+        if (protocol != null) {
             service.Network ??= new Network();
             service.Network.Protocol = protocol;
         }
 
-        if (url != null)
-        {
+        if (url != null) {
             service.Network ??= new Network();
             service.Network.Url = url;
         }
 
-        if (port.HasValue)
-        {
+        if (port.HasValue) {
             service.Network ??= new Network();
             service.Network.Port = port.Value;
         }
 
-        if (runsOn is not null)
-        {
+        if (runsOn is not null) {
             var normalizedParents = new List<string>();
 
             foreach (var parent in runsOn
                          .Where(p => !string.IsNullOrWhiteSpace(p))
                          .Select(p => p.Trim())
-                         .Distinct(StringComparer.OrdinalIgnoreCase))
-            {
+                         .Distinct(StringComparer.OrdinalIgnoreCase)) {
                 ThrowIfInvalid.ResourceName(parent);
 
-                var parentSystem = await repository.GetByNameAsync(parent);
+                Resource? parentSystem = await repository.GetByNameAsync(parent);
 
                 if (parentSystem == null)
                     throw new NotFoundException($"Parent system '{parent}' not found.");

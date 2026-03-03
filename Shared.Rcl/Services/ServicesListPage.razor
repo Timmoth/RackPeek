@@ -6,10 +6,11 @@
 <ResourcesListComponent TResource="Service"
                         Title="Services"
                         TestId="services"
-                        GroupBy="@(s => {
-                          if (s.RunsOn is null) return "Unkown";
-                          return s.RunsOn.FirstOrDefault();
-                        })"
+                        GroupBy="@(s =>
+                                 {
+                                     if (s.RunsOn is null) return "Unkown";
+                                     return s.RunsOn.FirstOrDefault();
+                                 })"
                         ShouldGroup="true"
                         OnCreated="NavigateToNewResource">
 
