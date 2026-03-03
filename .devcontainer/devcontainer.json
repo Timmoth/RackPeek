@@ -7,9 +7,6 @@
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
-		"ghcr.io/meaningful-ooo/devcontainer-features/homebrew:2": {
-			"shallowClone": true
-		}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -21,7 +18,7 @@
 	// }
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "brew install just"
+	"postCreateCommand": "sudo .devcontainer/postInstall.sh"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
