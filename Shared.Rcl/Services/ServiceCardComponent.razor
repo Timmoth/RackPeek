@@ -186,57 +186,57 @@
         <!-- Runs On -->
         <div data-testid="service-runson-section">
             <div class="text-zinc-400 mb-1">
-              Runs On
+                Runs On
 
-              <button
-                  data-testid="service-runson-button"
-                  class="hover:text-emerald-400 pr-4"
-                  title="Add Runs On"
-                  @onclick="() => _selectParentOpen = true">
-                      @("+")
-              </button>
+                <button
+                    data-testid="service-runson-button"
+                    class="hover:text-emerald-400 pr-4"
+                    title="Add Runs On"
+                    @onclick="() => _selectParentOpen = true">
+                    @("+")
+                </button>
             </div>
 
             @if (_isEditing)
             {
-                    @if (Service.RunsOn?.Count > 0)
+                @if (Service.RunsOn?.Count > 0)
+                {
+                    @foreach (var parent in Service.RunsOn)
                     {
-                      @foreach(var parent in Service.RunsOn)
-                      {
                         <button
-                          class="hover:text-emerald-400"
-                          title="Edit Runs On"
-                          @onclick="() => _selectParentOpen = true">
+                            class="hover:text-emerald-400"
+                            title="Edit Runs On"
+                            @onclick="() => _selectParentOpen = true">
                             @($"{parent}")
                         </button>
                         <button
-                          class="text-red-400 hover:text-red-300 pr-4"
-                          title="Remove"
-                          @onclick="() => HandleParentDeleted(parent)">
-                            @($"✕")
+                            class="text-red-400 hover:text-red-300 pr-4"
+                            title="Remove"
+                            @onclick="() => HandleParentDeleted(parent)">
+                            @("✕")
                         </button>
-                      }
                     }
+                }
             }
             else if (Service.RunsOn?.Count > 0)
             {
-                @foreach(var parent in Service.RunsOn)
+                @foreach (var parent in Service.RunsOn)
                 {
-                  <NavLink href="@($"resources/systems/{Uri.EscapeDataString(parent)}")"
-                           data-testid="service-runson-link"
-                           class="text-emerald-400 pr-4">
-                      @parent
-                  </NavLink>
+                    <NavLink href="@($"resources/systems/{Uri.EscapeDataString(parent)}")"
+                             data-testid="service-runson-link"
+                             class="text-emerald-400 pr-4">
+                        @parent
+                    </NavLink>
                 }
             }
         </div>
 
 
         <ResourceTagEditor Resource="Service"
-                           TestIdPrefix="service" />
+                           TestIdPrefix="service"/>
 
         <ResourceLabelEditor Resource="Service"
-                             TestIdPrefix="service" />
+                             TestIdPrefix="service"/>
 
 
         <div class="md:col-span-2">
@@ -247,16 +247,14 @@
                 <MarkdownEditor
                     @bind-Value="_edit.Notes"
                     ShowActionButtons="false"
-                    TestIdPrefix="service-notes-editor" />
-
+                    TestIdPrefix="service-notes-editor"/>
             }
             else
             {
                 <MarkdownViewer
                     Value="@Service.Notes"
                     ShowEditButton="false"
-                    TestIdPrefix="service-notes-viewer" />
-
+                    TestIdPrefix="service-notes-viewer"/>
             }
         </div>
     </div>
@@ -345,10 +343,9 @@
             _edit.RunsOn,
             _edit.Notes
         );
-        
+
         await OnSave.InvokeAsync(Service.Name);
         await ResolveEffectiveIp();
-
     }
 
     void Cancel()
@@ -369,11 +366,11 @@
         if (!string.IsNullOrWhiteSpace(name) && !runsOn.Contains(name))
             runsOn.Add(name);
 
-        var ip       = _isEditing ? _edit.Ip       : Service.Network?.Ip;
-        var port     = _isEditing ? _edit.Port     : Service.Network?.Port;
+        var ip = _isEditing ? _edit.Ip : Service.Network?.Ip;
+        var port = _isEditing ? _edit.Port : Service.Network?.Port;
         var protocol = _isEditing ? _edit.Protocol : Service.Network?.Protocol;
-        var url      = _isEditing ? _edit.Url      : Service.Network?.Url;
-        var notes    = _isEditing ? _edit.Notes    : Service.Notes;
+        var url = _isEditing ? _edit.Url : Service.Network?.Url;
+        var notes = _isEditing ? _edit.Notes : Service.Notes;
 
         await UpdateUseCase.ExecuteAsync(Service.Name, ip, port, protocol, url, runsOn, notes);
 
@@ -401,11 +398,11 @@
         var runsOn = (_isEditing ? _edit.RunsOn : Service.RunsOn) ?? new List<string>();
         runsOn = runsOn.Where(x => !string.IsNullOrWhiteSpace(x) && x != name).ToList();
 
-        var ip       = _isEditing ? _edit.Ip       : Service.Network?.Ip;
-        var port     = _isEditing ? _edit.Port     : Service.Network?.Port;
+        var ip = _isEditing ? _edit.Ip : Service.Network?.Ip;
+        var port = _isEditing ? _edit.Port : Service.Network?.Port;
         var protocol = _isEditing ? _edit.Protocol : Service.Network?.Protocol;
-        var url      = _isEditing ? _edit.Url      : Service.Network?.Url;
-        var notes    = _isEditing ? _edit.Notes    : Service.Notes;
+        var url = _isEditing ? _edit.Url : Service.Network?.Url;
+        var notes = _isEditing ? _edit.Notes : Service.Notes;
 
         await UpdateUseCase.ExecuteAsync(Service.Name, ip, port, protocol, url, runsOn, notes);
 
@@ -485,7 +482,7 @@
         !string.IsNullOrWhiteSpace(Service.Network?.Url)
             ? Service.Network!.Url
             : GetBrowsableHref();
-    
+
     private string? EffectiveIp;
 
     protected override async Task OnParametersSetAsync()

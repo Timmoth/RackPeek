@@ -6,8 +6,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Firewalls.Ports;
 
-public class FirewallPortUpdateSettings : FirewallNameSettings
-{
+public class FirewallPortUpdateSettings : FirewallNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
     [CommandOption("--type")] public string? Type { get; set; }
     [CommandOption("--speed")] public double? Speed { get; set; }
@@ -15,12 +14,10 @@ public class FirewallPortUpdateSettings : FirewallNameSettings
 }
 
 public class FirewallPortUpdateCommand(IServiceProvider sp)
-    : AsyncCommand<FirewallPortUpdateSettings>
-{
-    public override async Task<int> ExecuteAsync(CommandContext ctx, FirewallPortUpdateSettings s, CancellationToken ct)
-    {
-        using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IUpdatePortUseCase<Firewall>>();
+    : AsyncCommand<FirewallPortUpdateSettings> {
+    public override async Task<int> ExecuteAsync(CommandContext ctx, FirewallPortUpdateSettings s, CancellationToken ct) {
+        using IServiceScope scope = sp.CreateScope();
+        IUpdatePortUseCase<Firewall> useCase = scope.ServiceProvider.GetRequiredService<IUpdatePortUseCase<Firewall>>();
 
         await useCase.ExecuteAsync(s.Name, s.Index, s.Type, s.Speed, s.Count);
 

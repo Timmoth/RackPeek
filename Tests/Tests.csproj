@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.4"/>
-        <PackageReference Include="JsonSchema.Net" Version="9.1.1" />
+        <PackageReference Include="JsonSchema.Net" Version="9.1.1"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
         <PackageReference Include="NSubstitute" Version="5.3.0"/>
         <PackageReference Include="xunit" Version="2.9.3"/>
@@ -30,13 +30,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="EndToEnd\LaptopTests\" />
-      <Folder Include="EndToEnd\RouterTests\" />
-      <Folder Include="EndToEnd\ServerTests\" />
-      <Folder Include="EndToEnd\ServiceTests\" />
+        <Folder Include="EndToEnd\LaptopTests\"/>
+        <Folder Include="EndToEnd\RouterTests\"/>
+        <Folder Include="EndToEnd\ServerTests\"/>
+        <Folder Include="EndToEnd\ServiceTests\"/>
     </ItemGroup>
     <ItemGroup>
-        <None Include="schemas\**\*.json" CopyToOutputDirectory="PreserveNewest" />
-        <None Include="TestConfigs\**\*.yaml" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="schemas\**\*.json" CopyToOutputDirectory="PreserveNewest"/>
+        <None Include="TestConfigs\**\*.yaml" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 </Project>

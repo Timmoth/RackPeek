@@ -1,5 +1,4 @@
 ﻿@page "/resources/hardware/{HardwareName}"
-
 @using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources.AccessPoints
 @using RackPeek.Domain.Resources.Desktops
@@ -28,7 +27,7 @@
 <ResourceBreadCrumbComponent
     ResourceType="ResourceType.Hardware"
     ResourceName="@HardwareName"
-    />
+/>
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
     @if (_hardware is null && !_loading)
@@ -41,48 +40,52 @@
     }
     else
     {
-        <h1 class="text-lg text-zinc-100 mb-6">
-            @_hardware.Name (@_hardware.Kind)
-        </h1>
+        @if (_hardware != null)
+        {
+            <h1 class="text-lg text-zinc-100 mb-6">
+                @_hardware.Name (@_hardware.Kind)
+            </h1>
 
-        @if (_hardware is Server server)
-        {
-            <ServerCardComponent Server="server" OnDeleted="DeleteCallback"/>
+            @if (_hardware is Server server)
+            {
+                <ServerCardComponent Server="server" OnDeleted="DeleteCallback"/>
+            }
+            else if (_hardware is Desktop desktop)
+            {
+                <DesktopCardComponent Desktop="desktop" OnDeleted="DeleteCallback"/>
+            }
+            else if (_hardware is AccessPoint accessPoint)
+            {
+                <AccessPointCardComponent AccessPoint="accessPoint" OnDeleted="DeleteCallback"/>
+            }
+            else if (_hardware is Switch _switch)
+            {
+                <SwitchCardComponent Switch="_switch" OnDeleted="DeleteCallback"/>
+            }
+            else if (_hardware is Laptop laptop)
+            {
+                <LaptopCardComponent Laptop="laptop" OnDeleted="DeleteCallback"/>
+            }
+            else if (_hardware is Firewall firewall)
+            {
+                <FirewallCardComponent Firewall="firewall" OnDeleted="DeleteCallback"/>
+            }
+            else if (_hardware is Router router)
+            {
+                <RouterCardComponent Router="router" OnDeleted="DeleteCallback"/>
+            }
+            else if (_hardware is Ups ups)
+            {
+                <UpsCardComponent Ups="ups" OnDeleted="DeleteCallback"/>
+            }
+            else
+            {
+                <div class="text-zinc-400">
+                    No detailed view for hardware type: @_hardware.Kind
+                </div>
+            }
         }
-        else if (_hardware is Desktop desktop)
-        {
-            <DesktopCardComponent Desktop="desktop" OnDeleted="DeleteCallback"/>
-        }
-        else if (_hardware is AccessPoint accessPoint)
-        {
-            <AccessPointCardComponent AccessPoint="accessPoint" OnDeleted="DeleteCallback"/>
-        }
-        else if (_hardware is Switch _switch)
-        {
-            <SwitchCardComponent Switch="_switch" OnDeleted="DeleteCallback"/>
-        }
-        else if (_hardware is Laptop laptop)
-        {
-            <LaptopCardComponent Laptop="laptop" OnDeleted="DeleteCallback"/>
-        }
-        else if (_hardware is Firewall firewall)
-        {
-            <FirewallCardComponent Firewall="firewall" OnDeleted="DeleteCallback"/>
-        }
-        else if (_hardware is Router router)
-        {
-            <RouterCardComponent Router="router" OnDeleted="DeleteCallback"/>
-        }
-        else if (_hardware is Ups ups)
-        {
-            <UpsCardComponent Ups="ups" OnDeleted="DeleteCallback"/>
-        }
-        else
-        {
-            <div class="text-zinc-400">
-                No detailed view for hardware type: @_hardware.Kind
-            </div>
-        }
+
 
         @if (_tree is not null && _tree.Systems.Any())
         {
@@ -99,7 +102,7 @@
             <AddResourceComponent TResource="SystemResource"
                                   Placeholder="System name"
                                   OnCreated="NavigateToNewResource"
-                                  RunsOn="@(new List<string>(){HardwareName})"/>
+                                  RunsOn="@(new List<string>  { HardwareName })"/>
         </div>
     }
 </div>
@@ -127,9 +130,10 @@
         _loading = false;
     }
 
-    private async Task DeleteCallback(string obj)
+    private Task DeleteCallback(string obj)
     {
         Nav.NavigateTo("/hardware/tree");
+        return Task.CompletedTask;
     }
 
     private Task NavigateToNewResource(string serverName)

@@ -16,14 +16,11 @@ public record RouterHardwareRow(
     string PortSummary
 );
 
-public class RouterHardwareReportUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<RouterHardwareReport> ExecuteAsync()
-    {
-        var routers = await repository.GetAllOfTypeAsync<Router>();
+public class RouterHardwareReportUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<RouterHardwareReport> ExecuteAsync() {
+        IReadOnlyList<Router> routers = await repository.GetAllOfTypeAsync<Router>();
 
-        var rows = routers.Select(sw =>
-        {
+        var rows = routers.Select(sw => {
             var totalPorts = sw.Ports?.Sum(p => p.Count ?? 0) ?? 0;
 
             var maxSpeed = sw.Ports?
@@ -35,8 +32,7 @@ public class RouterHardwareReportUseCase(IResourceCollection repository) : IUseC
                     sw.Ports
                         .GroupBy(p => p.Speed ?? 0)
                         .OrderBy(g => g.Key)
-                        .Select(g =>
-                        {
+                        .Select(g => {
                             var count = g.Sum(p => p.Count ?? 0);
                             return $"{count}×{g.Key}G";
                         }));

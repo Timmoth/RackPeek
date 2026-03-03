@@ -2,12 +2,10 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class ServicesListPom
-{
+public class ServicesListPom {
     private readonly IPage _page;
 
-    public ServicesListPom(IPage page)
-    {
+    public ServicesListPom(IPage page) {
         _page = page;
     }
 
@@ -32,95 +30,58 @@ public class ServicesListPom
     // Grouping (RunsOn)
     // -------------------------------------------------
 
-    public ILocator Group(string groupKey)
-    {
-        return _page.GetByTestId($"services-group-{SanitizeGroup(groupKey)}");
-    }
+    public ILocator Group(string groupKey) => _page.GetByTestId($"services-group-{SanitizeGroup(groupKey)}");
 
-    public ILocator GroupTitle(string groupKey)
-    {
-        return _page.GetByTestId($"services-group-title-{SanitizeGroup(groupKey)}");
-    }
+    public ILocator GroupTitle(string groupKey) => _page.GetByTestId($"services-group-title-{SanitizeGroup(groupKey)}");
 
-    public ILocator GroupList(string groupKey)
-    {
-        return _page.GetByTestId($"services-group-list-{SanitizeGroup(groupKey)}");
-    }
+    public ILocator GroupList(string groupKey) => _page.GetByTestId($"services-group-list-{SanitizeGroup(groupKey)}");
 
     // -------------------------------------------------
     // Individual Services
     // -------------------------------------------------
 
-    public ILocator ServiceListItem(string name)
-    {
-        return _page.GetByTestId($"services-list-item-{Sanitize(name)}");
-    }
+    public ILocator ServiceListItem(string name) => _page.GetByTestId($"services-list-item-{Sanitize(name)}");
 
-    public ILocator ServiceCard(string name)
-    {
-        return _page.GetByTestId($"service-item-{Sanitize(name)}");
-    }
+    public ILocator ServiceCard(string name) => _page.GetByTestId($"service-item-{Sanitize(name)}");
 
-    public ILocator DeleteButton(string name)
-    {
-        return ServiceCard(name).GetByTestId("delete-service-button");
-    }
+    public ILocator DeleteButton(string name) => ServiceCard(name).GetByTestId("delete-service-button");
 
-    public ILocator EditButton(string name)
-    {
-        return ServiceCard(name).GetByTestId("edit-service-button");
-    }
+    public ILocator EditButton(string name) => ServiceCard(name).GetByTestId("edit-service-button");
 
-    public ILocator RenameButton(string name)
-    {
-        return ServiceCard(name).GetByTestId("rename-service-button");
-    }
+    public ILocator RenameButton(string name) => ServiceCard(name).GetByTestId("rename-service-button");
 
-    public ILocator CloneButton(string name)
-    {
-        return ServiceCard(name).GetByTestId("clone-service-button");
-    }
+    public ILocator CloneButton(string name) => ServiceCard(name).GetByTestId("clone-service-button");
 
     // -------------------------------------------------
     // Navigation
     // -------------------------------------------------
 
-    public async Task GotoAsync(string baseUrl)
-    {
+    public async Task GotoAsync(string baseUrl) {
         await _page.GotoAsync($"{baseUrl}/services/list");
         await AssertLoadedAsync();
     }
 
-    public async Task AssertLoadedAsync()
-    {
+    public async Task AssertLoadedAsync() {
         await Assertions.Expect(PageRoot).ToBeVisibleAsync();
         await Assertions.Expect(PageTitle).ToBeVisibleAsync();
     }
 
-    public async Task WaitForListAsync()
-    {
-        await Assertions.Expect(ServicesList).ToBeVisibleAsync();
-    }
+    public async Task WaitForListAsync() => await Assertions.Expect(ServicesList).ToBeVisibleAsync();
 
-    public async Task AssertEmptyAsync()
-    {
-        await Assertions.Expect(EmptyState).ToBeVisibleAsync();
-    }
+    public async Task AssertEmptyAsync() => await Assertions.Expect(EmptyState).ToBeVisibleAsync();
 
     // -------------------------------------------------
     // Actions
     // -------------------------------------------------
 
-    public async Task AddServiceAsync(string name)
-    {
+    public async Task AddServiceAsync(string name) {
         await AddService.AddAsync(name);
 
         await Assertions.Expect(ServiceCard(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task DeleteServiceAsync(string name)
-    {
+    public async Task DeleteServiceAsync(string name) {
         await DeleteButton(name).ClickAsync();
 
         await _page.GetByTestId("service-delete-confirm-modal-confirm")
@@ -130,8 +91,7 @@ public class ServicesListPom
             .Not.ToBeVisibleAsync();
     }
 
-    public async Task OpenServiceAsync(string name)
-    {
+    public async Task OpenServiceAsync(string name) {
         await ServiceCard(name).ClickAsync();
         await _page.WaitForURLAsync($"**/resources/services/{name}");
     }
@@ -140,26 +100,22 @@ public class ServicesListPom
     // Assertions
     // -------------------------------------------------
 
-    public async Task AssertServiceExists(string name)
-    {
+    public async Task AssertServiceExists(string name) {
         await Assertions.Expect(ServiceCard(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task AssertServiceDoesNotExist(string name)
-    {
+    public async Task AssertServiceDoesNotExist(string name) {
         await Assertions.Expect(ServiceCard(name))
             .Not.ToBeVisibleAsync();
     }
 
-    public async Task AssertGroupExists(string groupKey)
-    {
+    public async Task AssertGroupExists(string groupKey) {
         await Assertions.Expect(Group(groupKey))
             .ToBeVisibleAsync();
     }
 
-    public async Task AssertServiceInGroup(string groupKey, string serviceName)
-    {
+    public async Task AssertServiceInGroup(string groupKey, string serviceName) {
         await Assertions.Expect(
                 GroupList(groupKey)
                     .GetByTestId($"services-list-item-{Sanitize(serviceName)}")
@@ -171,13 +127,9 @@ public class ServicesListPom
     // Utilities
     // -------------------------------------------------
 
-    private static string Sanitize(string value)
-    {
-        return value.Replace(" ", "-");
-    }
+    private static string Sanitize(string value) => value.Replace(" ", "-");
 
-    private static string SanitizeGroup(string? value)
-    {
+    private static string SanitizeGroup(string? value) {
         return string.IsNullOrWhiteSpace(value)
             ? "unassigned"
             : value.Replace(" ", "-");

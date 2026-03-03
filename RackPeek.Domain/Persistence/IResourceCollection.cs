@@ -5,8 +5,7 @@ using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Persistence;
 
-public interface IResourceCollection
-{
+public interface IResourceCollection {
     IReadOnlyList<Hardware> HardwareResources { get; }
     IReadOnlyList<SystemResource> SystemResources { get; }
     IReadOnlyList<Service> ServiceResources { get; }
@@ -19,23 +18,21 @@ public interface IResourceCollection
 
     Resource? GetByName(string name);
     Task<bool> Exists(string name);
-    
+
     Task<string?> GetKind(string? name);
 
 
     Task LoadAsync(); // required for WASM startup
     Task<IReadOnlyList<Resource>> GetByTagAsync(string name);
     public Task<Dictionary<string, int>> GetTagsAsync();
-    
+
     Task<IReadOnlyList<(Resource, string)>> GetByLabelAsync(string name);
     public Task<Dictionary<string, int>> GetLabelsAsync();
-    
+
     Task<IReadOnlyList<(Resource, string)>> GetResourceIpsAsync();
 
     Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>();
     Task<IReadOnlyList<Resource>> GetDependantsAsync(string name);
 
     Task Merge(string incomingYaml, MergeMode mode);
-
-
 }

@@ -1,6 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using RackPeek.Domain.Resources.SubResources
-
 @if (IsOpen)
 {
     <div class="fixed inset-0 z-50 flex items-center justify-center"
@@ -37,9 +36,9 @@
                       OnValidSubmit="HandleValidSubmit"
                       data-testid="@($"{BaseTestId}-form")">
 
-                <DataAnnotationsValidator />
+                <DataAnnotationsValidator/>
                 <ValidationSummary class="text-xs text-red-400 mb-3"
-                                   data-testid="@($"{BaseTestId}-validation-summary")" />
+                                   data-testid="@($"{BaseTestId}-validation-summary")"/>
 
                 <div class="space-y-3 text-sm">
 
@@ -47,23 +46,25 @@
                         <label class="block text-zinc-400 mb-1">Model</label>
                         <InputText class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
                                    data-testid="@($"{BaseTestId}-model-input")"
-                                   @bind-Value="_model.Model" />
+                                   @bind-Value="_model.Model"/>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
 
                         <div data-testid="@($"{BaseTestId}-cores-field")">
                             <label class="block text-zinc-400 mb-1">Cores</label>
-                            <InputNumber class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
-                                         data-testid="@($"{BaseTestId}-cores-input")"
-                                         @bind-Value="_model.Cores" />
+                            <InputNumber
+                                class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                data-testid="@($"{BaseTestId}-cores-input")"
+                                @bind-Value="_model.Cores"/>
                         </div>
 
                         <div data-testid="@($"{BaseTestId}-threads-field")">
                             <label class="block text-zinc-400 mb-1">Threads</label>
-                            <InputNumber class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
-                                         data-testid="@($"{BaseTestId}-threads-input")"
-                                         @bind-Value="_model.Threads" />
+                            <InputNumber
+                                class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                data-testid="@($"{BaseTestId}-threads-input")"
+                                @bind-Value="_model.Threads"/>
                         </div>
 
                     </div>
@@ -187,4 +188,5 @@
 
         [Range(1, 2048)] public int? Threads { get; set; }
     }
+
 }

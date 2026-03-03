@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.LaptopTests;
 
 [Collection("Yaml CLI tests")]
 public class LaptopErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string, string)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string, string)> ExecuteAsync(params string[] args) {
         var output = await YamlCliTestHost.RunAsync(
             args,
             fs.Root,
@@ -21,32 +19,28 @@ public class LaptopErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
     }
 
     [Fact]
-    public async Task adding_duplicate_laptop_returns_error()
-    {
+    public async Task adding_duplicate_laptop_returns_error() {
         await ExecuteAsync("laptops", "add", "lap01");
-        var (output, _) = await ExecuteAsync("laptops", "add", "lap01");
+        (var output, var _) = await ExecuteAsync("laptops", "add", "lap01");
         Assert.Contains("already exists", output, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task get_missing_laptop_returns_error()
-    {
-        var (output, _) = await ExecuteAsync("laptops", "get", "ghost");
+    public async Task get_missing_laptop_returns_error() {
+        (var output, var _) = await ExecuteAsync("laptops", "get", "ghost");
         Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task delete_missing_laptop_returns_error()
-    {
-        var (output, _) = await ExecuteAsync("laptops", "del", "ghost");
+    public async Task delete_missing_laptop_returns_error() {
+        (var output, var _) = await ExecuteAsync("laptops", "del", "ghost");
         Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 
     // CPU errors
     [Fact]
-    public async Task cpu_add_missing_laptop_returns_error()
-    {
-        var (output, _) = await ExecuteAsync(
+    public async Task cpu_add_missing_laptop_returns_error() {
+        (var output, var _) = await ExecuteAsync(
             "laptops", "cpu", "add", "ghost",
             "--model", "Intel i7",
             "--cores", "8",
@@ -57,11 +51,10 @@ public class LaptopErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
     }
 
     [Fact]
-    public async Task cpu_set_invalid_index_returns_error()
-    {
+    public async Task cpu_set_invalid_index_returns_error() {
         await ExecuteAsync("laptops", "add", "lap01");
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "laptops", "cpu", "set", "lap01", "5",
             "--model", "Intel i7"
         );
@@ -71,11 +64,10 @@ public class LaptopErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
 
     // Drive errors
     [Fact]
-    public async Task drive_set_invalid_index_returns_error()
-    {
+    public async Task drive_set_invalid_index_returns_error() {
         await ExecuteAsync("laptops", "add", "lap01");
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "laptops", "drives", "set", "lap01", "3",
             "--type", "ssd"
         );
@@ -85,11 +77,10 @@ public class LaptopErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
 
     // GPU errors
     [Fact]
-    public async Task gpu_set_invalid_index_returns_error()
-    {
+    public async Task gpu_set_invalid_index_returns_error() {
         await ExecuteAsync("laptops", "add", "lap01");
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "laptops", "gpu", "set", "lap01", "2",
             "--model", "Intel Iris Xe"
         );

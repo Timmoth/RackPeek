@@ -7,8 +7,7 @@ using RackPeek.Domain.Resources.SubResources;
 namespace RackPeek.Domain.UseCases.Cpus;
 
 public interface IAddCpuUseCase<T> : IResourceUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     public Task ExecuteAsync(
         string name,
         string? model,
@@ -16,29 +15,26 @@ public interface IAddCpuUseCase<T> : IResourceUseCase<T>
         int? threads);
 }
 
-public class AddCpuUseCase<T>(IResourceCollection repo) : IAddCpuUseCase<T> where T : Resource
-{
+public class AddCpuUseCase<T>(IResourceCollection repo) : IAddCpuUseCase<T> where T : Resource {
     public async Task ExecuteAsync(
         string name,
         string? model,
         int? cores,
-        int? threads)
-    {
+        int? threads) {
         // ToDo pass in properties as inputs, construct the entity in the usecase
         // ToDo validate / normalize all inputs
 
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
-        var resource = await repo.GetByNameAsync<T>(name) ??
-                       throw new NotFoundException($"Resource '{name}' not found.");
+        T resource = await repo.GetByNameAsync<T>(name) ??
+                     throw new NotFoundException($"Resource '{name}' not found.");
 
         if (resource is not ICpuResource cpuResource) return;
 
         cpuResource.Cpus ??= [];
 
-        cpuResource.Cpus.Add(new Cpu
-        {
+        cpuResource.Cpus.Add(new Cpu {
             Model = model,
             Cores = cores,
             Threads = threads

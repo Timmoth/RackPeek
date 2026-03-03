@@ -6,23 +6,20 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Gpus;
 
-public class ServerGpuAddSettings : ServerNameSettings
-{
-    [CommandOption("--model <MODEL>")] public string Model { get; set; }
+public class ServerGpuAddSettings : ServerNameSettings {
+    [CommandOption("--model <MODEL>")] public string? Model { get; set; }
 
     [CommandOption("--vram <VRAM>")] public int Vram { get; set; }
 }
 
 public class ServerGpuAddCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<ServerGpuAddSettings>
-{
+    : AsyncCommand<ServerGpuAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerGpuAddSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddGpuUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IAddGpuUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IAddGpuUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

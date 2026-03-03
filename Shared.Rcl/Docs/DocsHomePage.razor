@@ -48,7 +48,7 @@
                 <input class="w-full bg-zinc-800 text-zinc-200 p-2 rounded border border-zinc-700 text-sm"
                        placeholder="Search docs…"
                        data-testid="docs-search-input"
-                       @bind="_filter" />
+                       @bind="_filter"/>
 
                 <div class="mt-3 space-y-1 max-h-[60vh] overflow-auto pr-1">
 
@@ -228,7 +228,7 @@
         catch
         {
             _indexNotFound = true;
-            _docsIndex = new();
+            _docsIndex = new List<string>();
         }
         finally
         {
@@ -246,9 +246,11 @@
     }
 
     private static string ToRouteSlug(string path)
-        => path.EndsWith(".md", StringComparison.OrdinalIgnoreCase)
+    {
+        return path.EndsWith(".md", StringComparison.OrdinalIgnoreCase)
             ? path[..^3]
             : path;
+    }
 
     private static string DisplayName(string path)
     {
@@ -257,17 +259,20 @@
             p = p[..^3];
 
         return p.Split('/', StringSplitOptions.RemoveEmptyEntries)
-                .LastOrDefault() ?? p;
+            .LastOrDefault() ?? p;
     }
 
     private static string Sanitize(string value)
-        => value.Replace(" ", "-")
-                .Replace("/", "-")
-                .Replace("\\", "-")
-                .Replace(".", "-");
+    {
+        return value.Replace(" ", "-")
+            .Replace("/", "-")
+            .Replace("\\", "-")
+            .Replace(".", "-");
+    }
 
     public void Dispose()
     {
         Nav.LocationChanged -= HandleLocationChanged;
     }
+
 }

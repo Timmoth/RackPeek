@@ -1,0 +1,157 @@
+﻿@page "/ssh/export"
+@using RackPeek.Domain.UseCases.Ssh
+@inject SshConfigExportUseCase SshUseCase
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900 max-w-5xl mx-auto"
+     data-testid="ssh-export-page">
+
+    <div class="flex justify-between items-center mb-4">
+        <div class="text-zinc-100 text-lg">
+            SSH Config Export
+        </div>
+
+        <button class="text-sm bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-white transition"
+                data-testid="generate-ssh-button"
+                @onclick="GenerateExport">
+            Generate
+        </button>
+    </div>
+
+    <!-- Options -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+        <!-- Include Tags -->
+        <div>
+            <div class="text-zinc-400 mb-1">Include Tags</div>
+            <input class="w-full bg-zinc-800 text-zinc-200 p-2 rounded border border-zinc-700"
+                   placeholder="prod, linux"
+                   data-testid="ssh-include-tags-input"
+                   @bind="_includeTagsRaw"/>
+            <div class="text-xs text-zinc-500 mt-1">
+                Only include resources with these tags (optional)
+            </div>
+        </div>
+
+        <!-- Default SSH User -->
+        <div>
+            <div class="text-zinc-400 mb-1">Default SSH User</div>
+            <input class="w-full bg-zinc-800 text-zinc-200 p-2 rounded border border-zinc-700"
+                   placeholder="ubuntu"
+                   data-testid="ssh-default-user-input"
+                   @bind="_defaultUser"/>
+            <div class="text-xs text-zinc-500 mt-1">
+                Used if ssh_user or ansible_user label is not defined
+            </div>
+        </div>
+
+        <!-- Default SSH Port -->
+        <div>
+            <div class="text-zinc-400 mb-1">Default SSH Port</div>
+            <input type="number"
+                   class="w-full bg-zinc-800 text-zinc-200 p-2 rounded border border-zinc-700"
+                   data-testid="ssh-default-port-input"
+                   @bind="_defaultPort"/>
+            <div class="text-xs text-zinc-500 mt-1">
+                Used if ssh_port or ansible_port label is not defined
+            </div>
+        </div>
+
+        <!-- Default Identity File -->
+        <div>
+            <div class="text-zinc-400 mb-1">Default Identity File</div>
+            <input class="w-full bg-zinc-800 text-zinc-200 p-2 rounded border border-zinc-700"
+                   placeholder="~/.ssh/id_rsa"
+                   data-testid="ssh-default-identity-input"
+                   @bind="_defaultIdentityFile"/>
+            <div class="text-xs text-zinc-500 mt-1">
+                Used if ssh_identity_file label is not defined
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Warnings -->
+    @if (_warnings.Any())
+    {
+        <div class="border border-red-700 bg-red-900/40 text-red-300 p-3 rounded mb-4"
+             data-testid="ssh-warnings">
+            <div class="font-semibold mb-1">Warnings</div>
+            <ul class="list-disc ml-5 text-sm">
+                @foreach (var warning in _warnings)
+                {
+                    <li>@warning</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Output -->
+    <div>
+        <div class="text-zinc-400 mb-1">Generated SSH Config</div>
+        <textarea class="w-full bg-black text-emerald-400 p-3 rounded border border-zinc-800 font-mono text-sm"
+                  rows="18"
+                  readonly
+                  data-testid="ssh-output">
+@_sshText
+        </textarea>
+    </div>
+
+</div>
+
+@code {
+
+    private string _includeTagsRaw = string.Empty;
+    private string? _defaultUser = "ubuntu";
+    private int _defaultPort = 22;
+    private string? _defaultIdentityFile = "~/.ssh/id_rsa";
+
+    private string _sshText = string.Empty;
+    private List<string> _warnings = new();
+
+    private async Task GenerateExport()
+    {
+        try
+        {
+            _warnings.Clear();
+            _sshText = string.Empty;
+
+            var options = new SshExportOptions
+            {
+                IncludeTags = ParseCsv(_includeTagsRaw),
+                DefaultUser = string.IsNullOrWhiteSpace(_defaultUser) ? null : _defaultUser,
+                DefaultPort = _defaultPort,
+                DefaultIdentityFile = string.IsNullOrWhiteSpace(_defaultIdentityFile)
+                    ? null
+                    : _defaultIdentityFile
+            };
+
+            var result = await SshUseCase.ExecuteAsync(options);
+
+            if (result is null)
+            {
+                _warnings.Add("SSH export returned null.");
+                return;
+            }
+
+            _sshText = result.ConfigText;
+            _warnings = result.Warnings.ToList();
+        }
+        catch (Exception ex)
+        {
+            _warnings.Clear();
+            _warnings.Add($"Unexpected error: {ex.Message}");
+        }
+    }
+
+    private static IReadOnlyList<string> ParseCsv(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return [];
+
+        return raw.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToArray();
+    }
+
+}

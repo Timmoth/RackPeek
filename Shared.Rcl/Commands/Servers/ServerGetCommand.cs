@@ -7,24 +7,21 @@ namespace Shared.Rcl.Commands.Servers;
 
 public class ServerGetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand
-{
+) : AsyncCommand {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<ServerHardwareReportUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        ServerHardwareReportUseCase useCase = scope.ServiceProvider.GetRequiredService<ServerHardwareReportUseCase>();
 
-        var report = await useCase.ExecuteAsync();
+        ServerHardwareReport report = await useCase.ExecuteAsync();
 
-        if (report.Servers.Count == 0)
-        {
+        if (report.Servers.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No servers found.[/]");
             return 0;
         }
 
-        var table = new Table()
+        Table table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Name")
             .AddColumn("CPU")
@@ -34,7 +31,7 @@ public class ServerGetCommand(
             .AddColumn("NICs")
             .AddColumn("IPMI");
 
-        foreach (var s in report.Servers)
+        foreach (ServerHardwareRow s in report.Servers)
             table.AddRow(
                 s.Name,
                 s.CpuSummary,

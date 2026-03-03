@@ -7,24 +7,21 @@ namespace Shared.Rcl.Commands.Systems;
 
 public class SystemGetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand
-{
+) : AsyncCommand {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<SystemReportUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        SystemReportUseCase useCase = scope.ServiceProvider.GetRequiredService<SystemReportUseCase>();
 
-        var report = await useCase.ExecuteAsync();
+        SystemReport report = await useCase.ExecuteAsync();
 
-        if (report.Systems.Count == 0)
-        {
+        if (report.Systems.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No systems found.[/]");
             return 0;
         }
 
-        var table = new Table()
+        Table table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Name")
             .AddColumn("Type")
@@ -34,7 +31,7 @@ public class SystemGetCommand(
             .AddColumn("Storage (GB)")
             .AddColumn("Runs On");
 
-        foreach (var s in report.Systems)
+        foreach (SystemReportRow s in report.Systems)
             table.AddRow(
                 s.Name,
                 s.Type ?? "Unknown",

@@ -1,4 +1,5 @@
-﻿using Tests.E2e.Infra;
+﻿using Microsoft.Playwright;
+using Tests.E2e.Infra;
 using Tests.E2e.PageObjectModels;
 using Xunit.Abstractions;
 
@@ -6,19 +7,17 @@ namespace Tests.E2e;
 
 public class ServiceTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) : E2ETestBase(fixture, output)
-{
+    ITestOutputHelper output) : E2ETestBase(fixture, output) {
+    private readonly PlaywrightFixture _fixture = fixture;
     private readonly ITestOutputHelper _output = output;
 
     [Fact]
-    public async Task User_Can_Add_And_Delete_System()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Add_And_Delete_System() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
 
-        try
-        {
+        try {
             // Go home
-            await page.GotoAsync(fixture.BaseUrl);
+            await page.GotoAsync(_fixture.BaseUrl);
 
             _output.WriteLine($"URL after Goto: {page.Url}");
 
@@ -40,8 +39,7 @@ public class ServiceTests(
 
             await context.CloseAsync();
         }
-        catch (Exception ex)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
 
             _output.WriteLine($"Current URL: {page.Url}");
@@ -53,8 +51,7 @@ public class ServiceTests(
 
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }

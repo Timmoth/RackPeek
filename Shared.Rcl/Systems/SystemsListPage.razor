@@ -10,10 +10,10 @@
                         TestId="systems"
                         Resources="@Systems"
                         ShouldGroup="true"
-                        GroupBy="@(s => {
-                          if (s.RunsOn is null) return "Unkown";
-                          return s.RunsOn.FirstOrDefault();
-                        })"
+                        GroupBy="@(s =>
+                                 {
+                                     return s.RunsOn.FirstOrDefault();
+                                 })"
                         OnCreated="NavigateToNewResource">
 
     <ItemTemplate Context="systemResource">
@@ -90,7 +90,9 @@
     }
 
     private static string? Normalize(string? s)
-        => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+    {
+        return string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+    }
 
     private async Task UpdateSystem(SystemEditModel edit)
     {
@@ -113,4 +115,5 @@
         Nav.NavigateTo($"resources/systems/{Uri.EscapeDataString(name)}");
         return Task.CompletedTask;
     }
+
 }

@@ -8,19 +8,18 @@ namespace Shared.Rcl.Commands.AccessPoints;
 
 public class AccessPointDescribeCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<AccessPointNameSettings>
-{
+) : AsyncCommand<AccessPointNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         AccessPointNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<AccessPoint>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IGetResourceByNameUseCase<AccessPoint> useCase =
+            scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<AccessPoint>>();
 
-        var ap = await useCase.ExecuteAsync(settings.Name);
+        AccessPoint ap = await useCase.ExecuteAsync(settings.Name);
 
-        var grid = new Grid()
+        Grid grid = new Grid()
             .AddColumn(new GridColumn().NoWrap())
             .AddColumn(new GridColumn().NoWrap());
 

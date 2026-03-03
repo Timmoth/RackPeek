@@ -7,15 +7,13 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Laptops.Drive;
 
 public class LaptopDriveAddCommand(IServiceProvider provider)
-    : AsyncCommand<LaptopDriveAddSettings>
-{
+    : AsyncCommand<LaptopDriveAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         LaptopDriveAddSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddDriveUseCase<Laptop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IAddDriveUseCase<Laptop> useCase = scope.ServiceProvider.GetRequiredService<IAddDriveUseCase<Laptop>>();
 
         await useCase.ExecuteAsync(settings.LaptopName, settings.Type, settings.Size);
 

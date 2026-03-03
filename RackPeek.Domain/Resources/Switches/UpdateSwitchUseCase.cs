@@ -3,16 +3,14 @@ using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.Switches;
 
-public class UpdateSwitchUseCase(IResourceCollection repository) : IUseCase
-{
+public class UpdateSwitchUseCase(IResourceCollection repository) : IUseCase {
     public async Task ExecuteAsync(
         string name,
         string? model = null,
         bool? managed = null,
         bool? poe = null,
         string? notes = null
-    )
-    {
+    ) {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
         // ToDo validate / normalize all inputs
 

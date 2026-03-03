@@ -1,16 +1,14 @@
 using Tests.EndToEnd.Infra;
 using Xunit.Abstractions;
 
-namespace Tests.EndToEnd.AnsibleTests;
+namespace Tests.EndToEnd.ExporterTests;
 
 [Collection("Yaml CLI tests")]
 public class AnsibleInventoryWorkflowTests(
     TempYamlCliFixture fs,
     ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -26,8 +24,7 @@ public class AnsibleInventoryWorkflowTests(
     }
 
     [Fact]
-    public async Task ansible_inventory_cli_workflow_test()
-    {
+    public async Task ansible_inventory_cli_workflow_test() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), """
                                                                            version: 1
                                                                            resources:
@@ -59,7 +56,7 @@ public class AnsibleInventoryWorkflowTests(
 
                                                                            """);
 
-        var (output, yaml) = await ExecuteAsync(
+        (var output, var yaml) = await ExecuteAsync(
             "ansible", "inventory",
             "--group-tags", "prod,staging",
             "--group-labels", "env",
@@ -87,10 +84,9 @@ public class AnsibleInventoryWorkflowTests(
                      vm-staging01 ansible_host=192.168.1.20 ansible_user=debian
                      """, output);
     }
-    
+
     [Fact]
-    public async Task ansible_inventory_yaml_output_test()
-    {
+    public async Task ansible_inventory_yaml_output_test() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), """
                                                                            version: 1
                                                                            resources:
@@ -108,7 +104,7 @@ public class AnsibleInventoryWorkflowTests(
                                                                                env: prod
                                                                            """);
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "ansible", "inventory",
             "--format", "yaml",
             "--group-tags", "prod",
@@ -132,10 +128,9 @@ public class AnsibleInventoryWorkflowTests(
                                ansible_user: ubuntu
                      """, output);
     }
-    
+
     [Fact]
-    public async Task ansible_inventory_groups_are_sorted()
-    {
+    public async Task ansible_inventory_groups_are_sorted() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), """
                                                                            version: 1
                                                                            resources:
@@ -154,7 +149,7 @@ public class AnsibleInventoryWorkflowTests(
                                                                                ansible_host: 10.0.0.1
                                                                            """);
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "ansible", "inventory",
             "--group-tags", "alpha,zeta"
         );
@@ -164,10 +159,9 @@ public class AnsibleInventoryWorkflowTests(
 
         Assert.True(alphaIndex < zetaIndex);
     }
-    
+
     [Fact]
-    public async Task yaml_format_does_not_emit_ini_sections()
-    {
+    public async Task yaml_format_does_not_emit_ini_sections() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), """
                                                                            version: 1
                                                                            resources:
@@ -178,7 +172,7 @@ public class AnsibleInventoryWorkflowTests(
                                                                                ansible_host: 10.0.0.1
                                                                            """);
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "ansible", "inventory",
             "--format", "yaml"
         );

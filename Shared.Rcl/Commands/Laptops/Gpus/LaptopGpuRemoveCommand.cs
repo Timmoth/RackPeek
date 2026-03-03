@@ -7,15 +7,13 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Laptops.Gpus;
 
 public class LaptopGpuRemoveCommand(IServiceProvider provider)
-    : AsyncCommand<LaptopGpuRemoveSettings>
-{
+    : AsyncCommand<LaptopGpuRemoveSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         LaptopGpuRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveGpuUseCase<Laptop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IRemoveGpuUseCase<Laptop> useCase = scope.ServiceProvider.GetRequiredService<IRemoveGpuUseCase<Laptop>>();
 
         await useCase.ExecuteAsync(settings.LaptopName, settings.Index);
 

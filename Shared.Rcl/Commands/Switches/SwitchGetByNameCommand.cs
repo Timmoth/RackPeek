@@ -7,17 +7,15 @@ namespace Shared.Rcl.Commands.Switches;
 
 public class SwitchGetByNameCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<SwitchNameSettings>
-{
+) : AsyncCommand<SwitchNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         SwitchNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DescribeSwitchUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        DescribeSwitchUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeSwitchUseCase>();
 
-        var sw = await useCase.ExecuteAsync(settings.Name);
+        SwitchDescription sw = await useCase.ExecuteAsync(settings.Name);
 
         AnsiConsole.MarkupLine(
             $"[green]{sw.Name}[/]  Model: {sw.Model ?? "Unknown"}, Managed: {(sw.Managed == true ? "Yes" : "No")}, PoE: {(sw.Poe == true ? "Yes" : "No")}");

@@ -16,14 +16,11 @@ public record FirewallHardwareRow(
     string PortSummary
 );
 
-public class FirewallHardwareReportUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<FirewallHardwareReport> ExecuteAsync()
-    {
-        var firewalls = await repository.GetAllOfTypeAsync<Firewall>();
+public class FirewallHardwareReportUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<FirewallHardwareReport> ExecuteAsync() {
+        IReadOnlyList<Firewall> firewalls = await repository.GetAllOfTypeAsync<Firewall>();
 
-        var rows = firewalls.Select(sw =>
-        {
+        var rows = firewalls.Select(sw => {
             var totalPorts = sw.Ports?.Sum(p => p.Count ?? 0) ?? 0;
 
             var maxSpeed = sw.Ports?
@@ -35,8 +32,7 @@ public class FirewallHardwareReportUseCase(IResourceCollection repository) : IUs
                     sw.Ports
                         .GroupBy(p => p.Speed ?? 0)
                         .OrderBy(g => g.Key)
-                        .Select(g =>
-                        {
+                        .Select(g => {
                             var count = g.Sum(p => p.Count ?? 0);
                             return $"{count}×{g.Key}G";
                         }));

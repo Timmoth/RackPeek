@@ -1,43 +1,34 @@
 namespace RackPeek.Domain.Persistence.Yaml;
 
-using RackPeek.Domain.Resources;
-using YamlDotNet.Core;
-
-public interface IResourceYamlMigrationService
-{
+public interface IResourceYamlMigrationService {
     Task<YamlRoot> DeserializeAsync(
         string yaml,
         Func<string, Task>? preMigrationAction = null,
         Func<YamlRoot, Task>? postMigrationAction = null);
 }
 
-public sealed class ResourceYamlMigrationService( 
+public sealed class ResourceYamlMigrationService(
     RackPeekConfigMigrationDeserializer deserializer)
-    : IResourceYamlMigrationService
-{
-    private static readonly int CurrentSchemaVersion =
+    : IResourceYamlMigrationService {
+    private static readonly int _currentSchemaVersion =
         RackPeekConfigMigrationDeserializer.ListOfMigrations.Count;
 
     public async Task<YamlRoot> DeserializeAsync(
         string yaml,
         Func<string, Task>? preMigrationAction = null,
-        Func<YamlRoot, Task>? postMigrationAction = null)
-    {
+        Func<YamlRoot, Task>? postMigrationAction = null) {
         if (string.IsNullOrWhiteSpace(yaml))
             return new YamlRoot();
 
         var version = deserializer.GetSchemaVersion(yaml);
 
-        if (version > CurrentSchemaVersion)
-        {
+        if (version > _currentSchemaVersion)
             throw new InvalidOperationException(
-                $"Config schema version {version} is newer than this application supports ({CurrentSchemaVersion}).");
-        }
+                $"Config schema version {version} is newer than this application supports ({_currentSchemaVersion}).");
 
         YamlRoot? root;
 
-        if (version < CurrentSchemaVersion)
-        {
+        if (version < _currentSchemaVersion) {
             if (preMigrationAction != null)
                 await preMigrationAction(yaml);
 
@@ -46,8 +37,7 @@ public sealed class ResourceYamlMigrationService(
             if (postMigrationAction != null)
                 await postMigrationAction(root);
         }
-        else
-        {
+        else {
             root = await deserializer.Deserialize(yaml);
         }
 

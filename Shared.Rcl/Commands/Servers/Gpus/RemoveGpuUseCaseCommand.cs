@@ -6,21 +6,18 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Gpus;
 
-public class ServerGpuRemoveSettings : ServerNameSettings
-{
+public class ServerGpuRemoveSettings : ServerNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 }
 
 public class ServerGpuRemoveCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<ServerGpuRemoveSettings>
-{
+    : AsyncCommand<ServerGpuRemoveSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerGpuRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveGpuUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IRemoveGpuUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IRemoveGpuUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

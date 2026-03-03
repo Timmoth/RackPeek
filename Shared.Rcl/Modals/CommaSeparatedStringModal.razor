@@ -1,5 +1,4 @@
 ﻿@using System.ComponentModel.DataAnnotations
-
 @if (IsOpen)
 {
     <div class="fixed inset-0 z-50 flex items-center justify-center"
@@ -44,7 +43,7 @@
                       OnValidSubmit="HandleValidSubmit"
                       data-testid="@($"{BaseTestId}-form")">
 
-                <DataAnnotationsValidator />
+                <DataAnnotationsValidator/>
 
                 @if (!string.IsNullOrEmpty(_error))
                 {
@@ -63,7 +62,7 @@
 
                     <InputText class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
                                data-testid="@($"{BaseTestId}-input")"
-                               @bind-Value="_model.Value" />
+                               @bind-Value="_model.Value"/>
                 </div>
 
                 <!-- Actions -->
@@ -165,7 +164,7 @@
 
     private class FormModel
     {
-        [Required]
-        public string? Value { get; set; }
+        [Required] public string? Value { get; set; }
     }
+
 }

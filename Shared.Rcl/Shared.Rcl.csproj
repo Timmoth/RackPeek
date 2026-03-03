@@ -10,18 +10,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <SupportedPlatform Include="browser" />
+        <SupportedPlatform Include="browser"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Markdig" Version="1.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.3" />
-        <PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
-        <PackageReference Include="Spectre.Console.Testing" Version="0.54.0" />
+        <PackageReference Include="Markdig" Version="1.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.3"/>
+        <PackageReference Include="Spectre.Console.Cli" Version="0.53.1"/>
+        <PackageReference Include="Spectre.Console.Testing" Version="0.54.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RackPeek.Domain\RackPeek.Domain.csproj" />
+        <ProjectReference Include="..\RackPeek.Domain\RackPeek.Domain.csproj"/>
     </ItemGroup>
 
 

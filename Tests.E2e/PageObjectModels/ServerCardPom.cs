@@ -2,49 +2,9 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class ServerCardPom(IPage page)
-{
+public class ServerCardPom(IPage page) {
     public TagsPom Tags => new(page);
     public LabelsPom Labels => new(page);
-
-    // -------------------------------------------------
-    // Root / Identity
-    // -------------------------------------------------
-
-    public ILocator ServerItem(string name)
-        => page.GetByTestId($"server-item-{Sanitize(name)}");
-
-    public ILocator ServerLink(string name)
-        => page.GetByTestId($"server-item-{Sanitize(name)}-link");
-
-    public async Task AssertVisibleAsync(string name)
-        => await Assertions.Expect(ServerItem(name)).ToBeVisibleAsync();
-
-    // -------------------------------------------------
-    // Top actions
-    // -------------------------------------------------
-
-    public ILocator RenameButton(string name)
-        => ServerItem(name).GetByTestId("rename-server-button");
-
-    public ILocator CloneButton(string name)
-        => ServerItem(name).GetByTestId("clone-server-button");
-
-    public ILocator DeleteButton(string name)
-        => ServerItem(name).GetByTestId("delete-server-button");
-
-    // -------------------------------------------------
-    // CPU section + modal (TestIdPrefix="server-cpu")
-    // -------------------------------------------------
-
-    public ILocator CpuSection(string name)
-        => ServerItem(name).GetByTestId("server-cpu-section");
-
-    public ILocator AddCpuButton(string name)
-        => ServerItem(name).GetByTestId("add-cpu-button");
-
-    public ILocator EditCpuButton(string name, string cpuDisplayKey)
-        => ServerItem(name).GetByTestId($"edit-cpu-{Sanitize(cpuDisplayKey)}");
 
     // CpuModal base id becomes: "server-cpu-cpu-modal"
     public ILocator CpuModalRoot => page.GetByTestId("server-cpu-cpu-modal");
@@ -54,7 +14,7 @@ public class ServerCardPom(IPage page)
     public ILocator CpuModalSubmit => page.GetByTestId("server-cpu-cpu-modal-submit");
     public ILocator CpuModalCancel => page.GetByTestId("server-cpu-cpu-modal-cancel");
     public ILocator CpuModalDelete => page.GetByTestId("server-cpu-cpu-modal-delete");
-    
+
 
     public ILocator RamModalRoot => page.GetByTestId("server-ram-ram-modal");
     public ILocator RamModalSizeInput => page.GetByTestId("server-ram-ram-modal-size-input");
@@ -118,7 +78,7 @@ public class ServerCardPom(IPage page)
     public ILocator DeleteConfirmModal => page.GetByTestId("server-delete-confirm-modal");
     public ILocator DeleteConfirm => page.GetByTestId("server-delete-confirm-modal-confirm");
     public ILocator DeleteCancel => page.GetByTestId("server-delete-confirm-modal-cancel");
-    
+
 
     public ILocator RenameModal => page.GetByTestId("server-rename-string-value-modal");
     public ILocator RenameInput => page.GetByTestId("server-rename-string-value-modal-input");
@@ -135,11 +95,49 @@ public class ServerCardPom(IPage page)
     public ILocator CloneCancel => page.GetByTestId("server-clone-string-value-modal-cancel");
 
     // -------------------------------------------------
+    // Root / Identity
+    // -------------------------------------------------
+
+    public ILocator ServerItem(string name)
+        => page.GetByTestId($"server-item-{Sanitize(name)}");
+
+    public ILocator ServerLink(string name)
+        => page.GetByTestId($"server-item-{Sanitize(name)}-link");
+
+    public async Task AssertVisibleAsync(string name)
+        => await Assertions.Expect(ServerItem(name)).ToBeVisibleAsync();
+
+    // -------------------------------------------------
+    // Top actions
+    // -------------------------------------------------
+
+    public ILocator RenameButton(string name)
+        => ServerItem(name).GetByTestId("rename-server-button");
+
+    public ILocator CloneButton(string name)
+        => ServerItem(name).GetByTestId("clone-server-button");
+
+    public ILocator DeleteButton(string name)
+        => ServerItem(name).GetByTestId("delete-server-button");
+
+    // -------------------------------------------------
+    // CPU section + modal (TestIdPrefix="server-cpu")
+    // -------------------------------------------------
+
+    public ILocator CpuSection(string name)
+        => ServerItem(name).GetByTestId("server-cpu-section");
+
+    public ILocator AddCpuButton(string name)
+        => ServerItem(name).GetByTestId("add-cpu-button");
+
+    public ILocator EditCpuButton(string name, string cpuDisplayKey)
+        => ServerItem(name).GetByTestId($"edit-cpu-{Sanitize(cpuDisplayKey)}");
+
+    // -------------------------------------------------
     // Helpers / Common actions
     // -------------------------------------------------
 
-    public async Task RenameAsync(string currentName, string newName)
-    {
+    public async Task RenameAsync(string currentName, string newName) {
         await RenameButton(currentName).ClickAsync();
         await Assertions.Expect(RenameModal).ToBeVisibleAsync();
         await RenameInput.FillAsync(newName);
@@ -147,8 +145,7 @@ public class ServerCardPom(IPage page)
         await page.WaitForURLAsync($"**/resources/hardware/{newName}");
     }
 
-    public async Task CloneAsync(string currentName, string cloneName)
-    {
+    public async Task CloneAsync(string currentName, string cloneName) {
         await CloneButton(currentName).ClickAsync();
         await Assertions.Expect(CloneModal).ToBeVisibleAsync();
         await CloneInput.FillAsync(cloneName);
@@ -156,8 +153,7 @@ public class ServerCardPom(IPage page)
         await page.WaitForURLAsync($"**/resources/hardware/{cloneName}");
     }
 
-    public async Task DeleteAsync(string name)
-    {
+    public async Task DeleteAsync(string name) {
         await DeleteButton(name).ClickAsync();
         await Assertions.Expect(DeleteConfirmModal).ToBeVisibleAsync();
         await DeleteConfirm.ClickAsync();

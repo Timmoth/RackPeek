@@ -6,8 +6,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Switches;
 
-public class SwitchSetSettings : ServerNameSettings
-{
+public class SwitchSetSettings : ServerNameSettings {
     [CommandOption("--Model")] public string Model { get; set; } = default!;
 
     [CommandOption("--managed")] public bool Managed { get; set; }
@@ -17,15 +16,13 @@ public class SwitchSetSettings : ServerNameSettings
 
 public class SwitchSetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<SwitchSetSettings>
-{
+) : AsyncCommand<SwitchSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         SwitchSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateSwitchUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        UpdateSwitchUseCase useCase = scope.ServiceProvider.GetRequiredService<UpdateSwitchUseCase>();
 
         await useCase.ExecuteAsync(
             settings.Name,

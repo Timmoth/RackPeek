@@ -15,10 +15,8 @@ public record SwitchDescription(
     Dictionary<string, string> Labels
 );
 
-public class DescribeSwitchUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<SwitchDescription> ExecuteAsync(string name)
-    {
+public class DescribeSwitchUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<SwitchDescription> ExecuteAsync(string name) {
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
@@ -27,7 +25,7 @@ public class DescribeSwitchUseCase(IResourceCollection repository) : IUseCase
             throw new NotFoundException($"Switch '{name}' not found.");
 
         // If no ports exist, return defaults
-        var ports = switchResource.Ports ?? new List<Port>();
+        List<Port> ports = switchResource.Ports ?? new List<Port>();
 
         // Total ports count
         var totalPorts = ports.Sum(p => p.Count ?? 0);
@@ -36,10 +34,9 @@ public class DescribeSwitchUseCase(IResourceCollection repository) : IUseCase
         var totalSpeedGb = ports.Sum(p => (p.Speed ?? 0) * (p.Count ?? 0));
 
         // Build a port summary string
-        var portGroups = ports
+        IEnumerable<string> portGroups = ports
             .GroupBy(p => p.Type ?? "Unknown")
-            .Select(g =>
-            {
+            .Select(g => {
                 var count = g.Sum(x => x.Count ?? 0);
                 var speed = g.Sum(x => (x.Speed ?? 0) * (x.Count ?? 0));
                 return $"{g.Key}: {count} ports ({speed} Gb total)";

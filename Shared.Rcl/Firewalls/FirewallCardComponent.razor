@@ -78,7 +78,7 @@
             {
                 <input data-testid="firewall-model-input"
                        class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
-                       @bind="_edit.Model" />
+                       @bind="_edit.Model"/>
             }
             else if (!string.IsNullOrWhiteSpace(Firewall.Model))
             {
@@ -99,14 +99,14 @@
                     <label class="flex items-center gap-2 text-zinc-300">
                         <input type="checkbox"
                                data-testid="firewall-managed-checkbox"
-                               @bind="_edit.Managed" />
+                               @bind="_edit.Managed"/>
                         Managed
                     </label>
 
                     <label class="flex items-center gap-2 text-zinc-300">
                         <input type="checkbox"
                                data-testid="firewall-poe-checkbox"
-                               @bind="_edit.Poe" />
+                               @bind="_edit.Poe"/>
                         PoE
                     </label>
                 </div>
@@ -151,7 +151,8 @@
             {
                 @foreach (var port in Firewall.Ports)
                 {
-                    <div class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
                         <button data-testid=@($"edit-port-{port.Type}-{port.Speed}")
                                 class="hover:text-emerald-400"
                                 @onclick="() => OpenEditPort(port)">
@@ -162,11 +163,11 @@
             }
         </div>
 
-        <ResourceTagEditor Resource="Firewall" 
-                           TestIdPrefix="firewall" />
+        <ResourceTagEditor Resource="Firewall"
+                           TestIdPrefix="firewall"/>
 
         <ResourceLabelEditor Resource="Firewall"
-                             TestIdPrefix="firewall" />
+                             TestIdPrefix="firewall"/>
 
 
         <div class="md:col-span-2"
@@ -178,13 +179,13 @@
             {
                 <MarkdownEditor @bind-Value="_edit.Notes"
                                 ShowActionButtons="false"
-                                TestIdPrefix="firewall-notes-editor" />
+                                TestIdPrefix="firewall-notes-editor"/>
             }
             else
             {
                 <MarkdownViewer Value="@Firewall.Notes"
                                 ShowEditButton="false"
-                                TestIdPrefix="firewall-notes-viewer" />
+                                TestIdPrefix="firewall-notes-viewer"/>
             }
         </div>
 
@@ -195,7 +196,7 @@
            IsOpenChanged="v => _portModalOpen = v"
            Value="@_editingPort"
            OnSubmit="HandlePortSubmit"
-           OnDelete="HandlePortDelete" />
+           OnDelete="HandlePortDelete"/>
 
 <ConfirmModal IsOpen="_confirmDeleteOpen"
               IsOpenChanged="v => _confirmDeleteOpen = v"
@@ -214,7 +215,7 @@
                   Label="New firewall name"
                   Value="@Firewall.Name"
                   OnSubmit="HandleRenameSubmit"
-                  TestIdPrefix="firewall-rename" />
+                  TestIdPrefix="firewall-rename"/>
 
 <StringValueModal IsOpen="_cloneOpen"
                   IsOpenChanged="v => _cloneOpen = v"
@@ -223,7 +224,7 @@
                   Label="New resource name"
                   Value="@($"{Firewall.Name}-copy")"
                   OnSubmit="HandleCloneSubmit"
-                  TestIdPrefix="firewall-clone" />
+                  TestIdPrefix="firewall-clone"/>
 
 @code {
     [Parameter] [EditorRequired] public Firewall Firewall { get; set; } = default!;

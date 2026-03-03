@@ -6,8 +6,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Firewalls;
 
-public class FirewallSetSettings : ServerNameSettings
-{
+public class FirewallSetSettings : ServerNameSettings {
     [CommandOption("--Model")] public string Model { get; set; } = default!;
 
     [CommandOption("--managed")] public bool Managed { get; set; }
@@ -17,15 +16,13 @@ public class FirewallSetSettings : ServerNameSettings
 
 public class FirewallSetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<FirewallSetSettings>
-{
+) : AsyncCommand<FirewallSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         FirewallSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateFirewallUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        UpdateFirewallUseCase useCase = scope.ServiceProvider.GetRequiredService<UpdateFirewallUseCase>();
 
         await useCase.ExecuteAsync(
             settings.Name,

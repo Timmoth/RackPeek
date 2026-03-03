@@ -1,5 +1,4 @@
 namespace RackPeek.Domain.Resources;
 
-public interface IResourceRepository
-{
+public interface IResourceRepository {
 }

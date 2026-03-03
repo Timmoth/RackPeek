@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Switches.Ports;
 
-public class SwitchPortAddSettings : SwitchNameSettings
-{
+public class SwitchPortAddSettings : SwitchNameSettings {
     [CommandOption("--type")]
     [Description("The port type (e.g., rj45, sfp+).")]
     public string? Type { get; set; }
@@ -23,12 +22,10 @@ public class SwitchPortAddSettings : SwitchNameSettings
 }
 
 public class SwitchPortAddCommand(IServiceProvider sp)
-    : AsyncCommand<SwitchPortAddSettings>
-{
-    public override async Task<int> ExecuteAsync(CommandContext ctx, SwitchPortAddSettings s, CancellationToken ct)
-    {
-        using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddPortUseCase<Switch>>();
+    : AsyncCommand<SwitchPortAddSettings> {
+    public override async Task<int> ExecuteAsync(CommandContext ctx, SwitchPortAddSettings s, CancellationToken ct) {
+        using IServiceScope scope = sp.CreateScope();
+        IAddPortUseCase<Switch> useCase = scope.ServiceProvider.GetRequiredService<IAddPortUseCase<Switch>>();
 
         await useCase.ExecuteAsync(s.Name, s.Type, s.Speed, s.Count);
 

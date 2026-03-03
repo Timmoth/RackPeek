@@ -7,19 +7,17 @@ namespace Tests.E2e;
 
 public class DesktopCardTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) : E2ETestBase(fixture, output)
-{
+    ITestOutputHelper output) : E2ETestBase(fixture, output) {
+    private readonly PlaywrightFixture _fixture = fixture;
     private readonly ITestOutputHelper _output = output;
 
     [Fact]
-    public async Task User_Can_Add_And_Delete_Desktop()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Add_And_Delete_Desktop() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var desktopName = $"e2e-dt-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -45,8 +43,7 @@ public class DesktopCardTests(
             // after deletion you redirect (your page does Nav.NavigateTo("/hardware/tree"))
             await page.WaitForURLAsync("**/hardware/tree");
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
             _output.WriteLine("==== DOM SNAPSHOT START ====");
@@ -54,22 +51,19 @@ public class DesktopCardTests(
             _output.WriteLine("==== DOM SNAPSHOT END ====");
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Rename_Desktop_From_Details_Page()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Rename_Desktop_From_Details_Page() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var originalName = $"e2e-dt-{Guid.NewGuid():N}"[..16];
         var renamedName = $"e2e-dt-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -95,8 +89,7 @@ public class DesktopCardTests(
             await card.DeleteDesktopAsync(renamedName);
             await page.WaitForURLAsync("**/hardware/tree");
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
             _output.WriteLine("==== DOM SNAPSHOT START ====");
@@ -104,22 +97,19 @@ public class DesktopCardTests(
             _output.WriteLine("==== DOM SNAPSHOT END ====");
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Clone_Desktop_From_Details_Page()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Clone_Desktop_From_Details_Page() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var originalName = $"e2e-dt-{Guid.NewGuid():N}"[..16];
         var cloneName = $"e2e-dt-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -146,13 +136,12 @@ public class DesktopCardTests(
             await page.WaitForURLAsync("**/hardware/tree");
 
             // go back to original and delete it too
-            await page.GotoAsync($"{fixture.BaseUrl}/resources/hardware/{originalName}");
+            await page.GotoAsync($"{_fixture.BaseUrl}/resources/hardware/{originalName}");
             await Assertions.Expect(card.DesktopItem(originalName)).ToBeVisibleAsync();
             await card.DeleteDesktopAsync(originalName);
             await page.WaitForURLAsync("**/hardware/tree");
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
             _output.WriteLine("==== DOM SNAPSHOT START ====");
@@ -160,22 +149,19 @@ public class DesktopCardTests(
             _output.WriteLine("==== DOM SNAPSHOT END ====");
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Edit_Desktop_Notes_And_Save()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Edit_Desktop_Notes_And_Save() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var desktopName = $"e2e-dt-{Guid.NewGuid():N}"[..16];
         var notes = $"notes-{Guid.NewGuid():N}";
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -210,8 +196,7 @@ public class DesktopCardTests(
             await card.DeleteDesktopAsync(desktopName);
             await page.WaitForURLAsync("**/hardware/tree");
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
             _output.WriteLine("==== DOM SNAPSHOT START ====");
@@ -219,22 +204,19 @@ public class DesktopCardTests(
             _output.WriteLine("==== DOM SNAPSHOT END ====");
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Edit_Desktop_Notes_And_Cancel()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Edit_Desktop_Notes_And_Cancel() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var desktopName = $"e2e-dt-{Guid.NewGuid():N}"[..16];
         var notes = $"notes-{Guid.NewGuid():N}";
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -267,8 +249,7 @@ public class DesktopCardTests(
             await card.DeleteDesktopAsync(desktopName);
             await page.WaitForURLAsync("**/hardware/tree");
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
             _output.WriteLine("==== DOM SNAPSHOT START ====");
@@ -276,22 +257,19 @@ public class DesktopCardTests(
             _output.WriteLine("==== DOM SNAPSHOT END ====");
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
-    
-    
+
+
     [Fact]
-    public async Task User_Can_Add_And_Remove_Tags_From_Desktop_Card()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Add_And_Remove_Tags_From_Desktop_Card() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -310,7 +288,7 @@ public class DesktopCardTests(
             var card = new DesktopCardPom(page);
             await Assertions.Expect(card.DesktopItem(name)).ToBeVisibleAsync();
 
-            var tags = card.Tags;
+            TagsPom tags = card.Tags;
 
             // -------------------------------------------------
             // Add multiple tags in one modal interaction
@@ -344,11 +322,8 @@ public class DesktopCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
-    
-    
 }

@@ -3,8 +3,7 @@ using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
-public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
-{
+public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase {
     public async Task ExecuteAsync(
         string name,
         string? type = null,
@@ -14,8 +13,7 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         string? ip = null,
         List<string>? runsOn = null,
         string? notes = null
-    )
-    {
+    ) {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
         // ToDo validate / normalize all inputs
 
@@ -27,8 +25,7 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         if (system is null)
             throw new InvalidOperationException($"System '{name}' not found.");
 
-        if (!string.IsNullOrWhiteSpace(type))
-        {
+        if (!string.IsNullOrWhiteSpace(type)) {
             var normalizedSystemType = Normalize.SystemType(type);
             ThrowIfInvalid.SystemType(normalizedSystemType);
             system.Type = normalizedSystemType;
@@ -43,32 +40,23 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         if (ram.HasValue)
             system.Ram = ram.Value;
 
-        if (ip != null)
-        {
-            system.Ip = ip;
-        }
-        
+        if (ip != null) system.Ip = ip;
+
         if (notes != null) system.Notes = notes;
 
         if (runsOn?.Count > 0)
-        {
-            foreach(string parent in runsOn) {
+            foreach (var parent in runsOn)
                 if (!string.IsNullOrWhiteSpace(parent)) {
                     ThrowIfInvalid.ResourceName(parent);
-                    var parentHardware = await repository.GetByNameAsync(parent);
+                    Resource? parentHardware = await repository.GetByNameAsync(parent);
 
-                    
+
                     if (parentHardware == null) throw new NotFoundException($"Parent '{parent}' not found.");
                     if (parentHardware is not Hardware.Hardware and not SystemResource)
-                    {
                         throw new Exception("System cannot run on this resource.");
-                    }
-                    
-                    if (!system.RunsOn.Contains(parent)) system.RunsOn.Add(parent);
 
+                    if (!system.RunsOn.Contains(parent)) system.RunsOn.Add(parent);
                 }
-            }
-        }
 
         await repository.UpdateAsync(system);
     }

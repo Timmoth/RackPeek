@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Systems;
 
-public class SystemSetSettings : ServerNameSettings
-{
+public class SystemSetSettings : ServerNameSettings {
     [CommandOption("--type")] public string? Type { get; set; }
 
     [CommandOption("--os")] public string? Os { get; set; }
@@ -20,7 +19,7 @@ public class SystemSetSettings : ServerNameSettings
     [CommandOption("--runs-on <RUNSON>")]
     [Description("The physical machine(s) the service is running on.")]
     public string[]? RunsOn { get; set; }
-    
+
     [CommandOption("--ip")]
     [Description("The ip address of the system.")]
     public string? Ip { get; set; }
@@ -28,15 +27,13 @@ public class SystemSetSettings : ServerNameSettings
 
 public class SystemSetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<SystemSetSettings>
-{
+) : AsyncCommand<SystemSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         SystemSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateSystemUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        UpdateSystemUseCase useCase = scope.ServiceProvider.GetRequiredService<UpdateSystemUseCase>();
 
         await useCase.ExecuteAsync(
             settings.Name,

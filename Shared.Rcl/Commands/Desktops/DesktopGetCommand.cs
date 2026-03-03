@@ -7,24 +7,22 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Desktops;
 
 public class DesktopGetCommand(IServiceProvider provider)
-    : AsyncCommand
-{
+    : AsyncCommand {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IGetAllResourcesByKindUseCase<Desktop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IGetAllResourcesByKindUseCase<Desktop> useCase =
+            scope.ServiceProvider.GetRequiredService<IGetAllResourcesByKindUseCase<Desktop>>();
 
-        var desktops = await useCase.ExecuteAsync();
+        IReadOnlyList<Desktop> desktops = await useCase.ExecuteAsync();
 
-        if (desktops.Count == 0)
-        {
+        if (desktops.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No desktops found.[/]");
             return 0;
         }
 
-        var table = new Table()
+        Table table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Name")
             .AddColumn("Model")
@@ -34,7 +32,7 @@ public class DesktopGetCommand(IServiceProvider provider)
             .AddColumn("NICs")
             .AddColumn("GPUs");
 
-        foreach (var d in desktops)
+        foreach (Desktop d in desktops)
             table.AddRow(
                 d.Name,
                 d.Model ?? "Unknown",

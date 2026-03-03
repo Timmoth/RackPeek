@@ -5,21 +5,18 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Desktops;
 
-public class DesktopSetSettings : DesktopNameSettings
-{
+public class DesktopSetSettings : DesktopNameSettings {
     [CommandOption("--model")] public string? Model { get; set; }
 }
 
 public class DesktopSetCommand(IServiceProvider provider)
-    : AsyncCommand<DesktopSetSettings>
-{
+    : AsyncCommand<DesktopSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DesktopSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateDesktopUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        UpdateDesktopUseCase useCase = scope.ServiceProvider.GetRequiredService<UpdateDesktopUseCase>();
 
         await useCase.ExecuteAsync(settings.Name, settings.Model);
 

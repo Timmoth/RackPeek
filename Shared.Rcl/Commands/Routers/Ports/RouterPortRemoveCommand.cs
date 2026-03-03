@@ -6,18 +6,15 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Routers.Ports;
 
-public class RouterPortRemoveSettings : RouterNameSettings
-{
+public class RouterPortRemoveSettings : RouterNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 }
 
 public class RouterPortRemoveCommand(IServiceProvider sp)
-    : AsyncCommand<RouterPortRemoveSettings>
-{
-    public override async Task<int> ExecuteAsync(CommandContext ctx, RouterPortRemoveSettings s, CancellationToken ct)
-    {
-        using var scope = sp.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Router>>();
+    : AsyncCommand<RouterPortRemoveSettings> {
+    public override async Task<int> ExecuteAsync(CommandContext ctx, RouterPortRemoveSettings s, CancellationToken ct) {
+        using IServiceScope scope = sp.CreateScope();
+        IRemovePortUseCase<Router> useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Router>>();
 
         await useCase.ExecuteAsync(s.Name, s.Index);
 

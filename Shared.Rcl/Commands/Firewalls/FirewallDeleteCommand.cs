@@ -8,15 +8,14 @@ namespace Shared.Rcl.Commands.Firewalls;
 
 public class FirewallDeleteCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<FirewallNameSettings>
-{
+) : AsyncCommand<FirewallNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         FirewallNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Firewall>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IDeleteResourceUseCase<Firewall> useCase =
+            scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Firewall>>();
 
         await useCase.ExecuteAsync(settings.Name);
 
