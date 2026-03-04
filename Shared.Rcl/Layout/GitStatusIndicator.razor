@@ -86,6 +86,67 @@
             </div>
         }
 
+        @* Sync button — separate from save, only when remote exists *@
+        @if (_hasRemote)
+        {
+            <div class="relative flex" data-testid="git-sync-group">
+                <button class="px-2 py-1 text-xs rounded text-zinc-400 hover:text-white hover:bg-zinc-700 transition disabled:opacity-50"
+                        disabled="@_isSyncing"
+                        data-testid="git-sync-button"
+                        @onclick="ToggleSyncAsync">
+                    @if (_isFetching)
+                    {
+                        <span>Checking...</span>
+                    }
+                    else if (_syncStatus.Ahead > 0 || _syncStatus.Behind > 0)
+                    {
+                        <span>
+                            Sync
+                            @if (_syncStatus.Ahead > 0) { <span class="text-emerald-400">↑@_syncStatus.Ahead</span> }
+                            @if (_syncStatus.Behind > 0) { <span class="text-blue-400">↓@_syncStatus.Behind</span> }
+                        </span>
+                    }
+                    else
+                    {
+                        <span>Sync</span>
+                    }
+                </button>
+
+                @if (_showSyncDropdown)
+                {
+                    <div class="absolute top-full right-0 mt-1 bg-zinc-800 border border-zinc-700 rounded shadow-lg z-50 min-w-[140px]"
+                         data-testid="git-sync-dropdown">
+                        @if (_syncStatus.Ahead > 0 || _syncStatus.Behind > 0)
+                        {
+                            <div class="px-3 py-2 text-xs text-zinc-500 border-b border-zinc-700">
+                                @if (_syncStatus.Ahead > 0) { <span class="text-emerald-400">↑@_syncStatus.Ahead ahead</span> }
+                                @if (_syncStatus.Ahead > 0 && _syncStatus.Behind > 0) { <span> · </span> }
+                                @if (_syncStatus.Behind > 0) { <span class="text-blue-400">↓@_syncStatus.Behind behind</span> }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="px-3 py-2 text-xs text-zinc-500 border-b border-zinc-700">
+                                Up to date
+                            </div>
+                        }
+                        <button class="w-full text-left px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-700 hover:text-white transition disabled:opacity-50"
+                                disabled="@(_isSyncing || _syncStatus.Ahead == 0)"
+                                data-testid="git-push-button"
+                                @onclick="PushAsync">
+                            @(_isPushing ? "Pushing..." : "Push")
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-700 hover:text-white transition disabled:opacity-50"
+                                disabled="@(_isSyncing || _syncStatus.Behind == 0)"
+                                data-testid="git-pull-button"
+                                @onclick="PullAsync">
+                            @(_isPulling ? "Pulling..." : "Pull")
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+
         @if (_errorMessage is not null)
         {
             <span class="text-red-400 text-xs" data-testid="git-error">
@@ -94,10 +155,10 @@
         }
     </div>
 
-    @* Dropdown backdrop — closes dropdown on outside click *@
-    @if (_showDropdown)
+    @* Dropdown backdrop — closes all dropdowns on outside click *@
+    @if (_showDropdown || _showSyncDropdown)
     {
-        <div class="fixed inset-0 z-40" @onclick="CloseDropdown"></div>
+        <div class="fixed inset-0 z-40" @onclick="CloseAllDropdowns"></div>
     }
 
     @* Diff Modal *@
@@ -219,7 +280,15 @@
     private bool _showHistory;
     private GitLogEntry[] _logEntries = [];
 
-    private bool _isBusy => _isCommitting || _isRestoring;
+    private bool _hasRemote;
+    private GitSyncStatus _syncStatus = new(0, 0, false);
+    private bool _showSyncDropdown;
+    private bool _isFetching;
+    private bool _isPushing;
+    private bool _isPulling;
+
+    private bool _isBusy => _isCommitting || _isRestoring || _isSyncing;
+    private bool _isSyncing => _isPushing || _isPulling || _isFetching;
 
     protected override async Task OnInitializedAsync()
     {
@@ -229,6 +298,7 @@
             return;
 
         _branch = await GitService.GetCurrentBranchAsync();
+        _hasRemote = await GitService.HasRemoteAsync();
 
         _cts = new CancellationTokenSource();
         _timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
@@ -286,12 +356,41 @@
     private void ToggleDropdown()
     {
         _showDropdown = !_showDropdown;
+        _showSyncDropdown = false;
         _confirmDiscard = false;
     }
 
-    private void CloseDropdown()
+    private async Task ToggleSyncAsync()
+    {
+        if (_showSyncDropdown)
+        {
+            _showSyncDropdown = false;
+            return;
+        }
+
+        _showDropdown = false;
+        _errorMessage = null;
+        _isFetching = true;
+        _showSyncDropdown = true;
+
+        try
+        {
+            _syncStatus = await GitService.GetSyncStatusAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Fetch error: {ex.Message}";
+        }
+        finally
+        {
+            _isFetching = false;
+        }
+    }
+
+    private void CloseAllDropdowns()
     {
         _showDropdown = false;
+        _showSyncDropdown = false;
         _confirmDiscard = false;
     }
 
@@ -319,6 +418,7 @@
         }
 
         _showDropdown = false;
+        _showSyncDropdown = false;
         _logEntries = await GitService.GetLogAsync();
         _showHistory = true;
     }
@@ -351,6 +451,53 @@
         finally
         {
             _isRestoring = false;
+        }
+    }
+
+    private async Task PushAsync()
+    {
+        _errorMessage = null;
+        _isPushing = true;
+
+        try
+        {
+            var error = await GitService.PushAsync();
+            if (error is not null)
+                _errorMessage = error;
+
+            _syncStatus = await GitService.GetSyncStatusAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Push error: {ex.Message}";
+        }
+        finally
+        {
+            _isPushing = false;
+        }
+    }
+
+    private async Task PullAsync()
+    {
+        _errorMessage = null;
+        _isPulling = true;
+
+        try
+        {
+            var error = await GitService.PullAsync();
+            if (error is not null)
+                _errorMessage = error;
+
+            _syncStatus = await GitService.GetSyncStatusAsync();
+            _status = await GitService.GetStatusAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Pull error: {ex.Message}";
+        }
+        finally
+        {
+            _isPulling = false;
         }
     }
 

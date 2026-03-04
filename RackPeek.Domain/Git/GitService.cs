@@ -135,6 +135,62 @@ public sealed class GitService : IGitService
             .ToArray();
     }
 
+    public async Task<bool> HasRemoteAsync()
+    {
+        if (!_isAvailable) return false;
+        var (exitCode, output) = await RunGitAsync("remote");
+        return exitCode == 0 && !string.IsNullOrWhiteSpace(output);
+    }
+
+    public async Task<GitSyncStatus> GetSyncStatusAsync()
+    {
+        if (!_isAvailable || !await HasRemoteAsync())
+            return new GitSyncStatus(0, 0, false);
+
+        // Fetch latest remote state (silent, no merge)
+        await RunGitAsync("fetch", "--quiet");
+
+        // Check if upstream tracking is configured
+        var (upstreamExit, _) = await RunGitAsync("rev-parse", "--abbrev-ref", "@{upstream}");
+        if (upstreamExit != 0)
+        {
+            // No upstream configured — count local commits as ahead
+            var (logExit, logOutput) = await RunGitAsync("rev-list", "--count", "HEAD");
+            var localCommits = logExit == 0 && int.TryParse(logOutput, out var c) ? c : 0;
+            return new GitSyncStatus(localCommits, 0, true);
+        }
+
+        var (aheadExit, aheadOutput) = await RunGitAsync("rev-list", "--count", "@{upstream}..HEAD");
+        var (behindExit, behindOutput) = await RunGitAsync("rev-list", "--count", "HEAD..@{upstream}");
+
+        var ahead = aheadExit == 0 && int.TryParse(aheadOutput, out var a) ? a : 0;
+        var behind = behindExit == 0 && int.TryParse(behindOutput, out var b) ? b : 0;
+
+        return new GitSyncStatus(ahead, behind, true);
+    }
+
+    public async Task<string?> PushAsync()
+    {
+        if (!_isAvailable) return "Git is not available.";
+        if (!await HasRemoteAsync()) return "No remote configured.";
+
+        // Use -u on first push to set upstream tracking
+        var (upstreamExit, _) = await RunGitAsync("rev-parse", "--abbrev-ref", "@{upstream}");
+        var (exitCode, output) = upstreamExit != 0
+            ? await RunGitAsync("push", "-u", "origin", "HEAD")
+            : await RunGitAsync("push");
+        return exitCode != 0 ? $"git push failed: {output}" : null;
+    }
+
+    public async Task<string?> PullAsync()
+    {
+        if (!_isAvailable) return "Git is not available.";
+        if (!await HasRemoteAsync()) return "No remote configured.";
+
+        var (exitCode, output) = await RunGitAsync("pull");
+        return exitCode != 0 ? $"git pull failed: {output}" : null;
+    }
+
     private bool CheckGitAvailable()
     {
         try
