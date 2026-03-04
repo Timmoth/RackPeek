@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Desktops.Gpus;
 
-public class DesktopGpuAddSettings : CommandSettings
-{
+public class DesktopGpuAddSettings : CommandSettings {
     [CommandArgument(0, "<desktop>")]
     [Description("The name of the desktop.")]
     public string DesktopName { get; set; } = default!;
@@ -23,15 +22,13 @@ public class DesktopGpuAddSettings : CommandSettings
 }
 
 public class DesktopGpuAddCommand(IServiceProvider provider)
-    : AsyncCommand<DesktopGpuAddSettings>
-{
+    : AsyncCommand<DesktopGpuAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DesktopGpuAddSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddGpuUseCase<Desktop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IAddGpuUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IAddGpuUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Model, settings.Vram);
 

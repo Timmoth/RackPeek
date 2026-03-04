@@ -25,11 +25,15 @@
     }
     else
     {
-        <h1 class="text-lg text-zinc-100 mb-6">
-            @_system.Name (@_system.Kind)
-        </h1>
+        @if (_system != null)
+        {
+            <h1 class="text-lg text-zinc-100 mb-6">
+                @_system.Name (@_system.Kind)
+            </h1>
 
-        <SystemCardComponent System="_system" OnSave="UpdateSystem" OnDeleted="OnDeleted"/>
+            <SystemCardComponent System="_system" OnSave="UpdateSystem" OnDeleted="OnDeleted"/>
+        }
+
 
         @if (_tree is not null && _tree.ChildResources.Any())
         {
@@ -46,14 +50,14 @@
             <AddResourceComponent TResource="Service"
                                   Placeholder="Service name"
                                   OnCreated="NavigateToNewResource"
-                                  RunsOn="@(new List<string>{SystemName})"/>
-            
+                                  RunsOn="@(new List<string> { SystemName })"/>
+
         </div>
         <div class="m-4">
             <AddResourceComponent TResource="SystemResource"
                                   Placeholder="System name"
                                   OnCreated="NavigateToNewSystemResource"
-                                  RunsOn="@(new List<string>{SystemName})"/>
+                                  RunsOn="@(new List<string> { SystemName })"/>
         </div>
     }
 </div>
@@ -92,9 +96,10 @@
         );
     }
 
-    private async Task OnDeleted()
+    private Task OnDeleted()
     {
         Nav.NavigateTo("/systems/list");
+        return Task.CompletedTask;
     }
 
     private Task NavigateToNewResource(string serverName)
@@ -102,7 +107,7 @@
         Nav.NavigateTo($"resources/services/{Uri.EscapeDataString(serverName)}");
         return Task.CompletedTask;
     }
-    
+
     private Task NavigateToNewSystemResource(string serverName)
     {
         Nav.NavigateTo($"resources/systems/{Uri.EscapeDataString(serverName)}");

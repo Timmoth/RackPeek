@@ -1,5 +1,3 @@
-@using System.ComponentModel.DataAnnotations
-
 @if (IsOpen)
 {
     <div class="fixed inset-0 z-50 flex items-center justify-center"
@@ -44,7 +42,7 @@
                       OnValidSubmit="HandleValidSubmit"
                       data-testid="@($"{BaseTestId}-form")">
 
-                <DataAnnotationsValidator />
+                <DataAnnotationsValidator/>
 
                 @if (!string.IsNullOrEmpty(_error))
                 {
@@ -64,7 +62,7 @@
                         <InputText class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
                                    data-testid="@($"{BaseTestId}-key-input")"
                                    @bind-Value="_model.Key"
-                                   placeholder="@KeyPlaceholder" />
+                                   placeholder="@KeyPlaceholder"/>
                     </div>
 
                     <div>
@@ -74,7 +72,7 @@
                         <InputText class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
                                    data-testid="@($"{BaseTestId}-value-input")"
                                    @bind-Value="_model.Value"
-                                   placeholder="@ValuePlaceholder" />
+                                   placeholder="@ValuePlaceholder"/>
                     </div>
                 </div>
 
@@ -187,4 +185,5 @@
         public string? Key { get; set; }
         public string? Value { get; set; }
     }
+
 }

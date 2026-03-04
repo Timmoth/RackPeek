@@ -2,15 +2,10 @@ using RackPeek.Domain.Resources.Services;
 
 namespace RackPeek.Domain.Persistence;
 
-public class ServiceRepository(IResourceCollection resources) : IServiceRepository
-{
-    public Task<int> GetCountAsync()
-    {
-        return Task.FromResult(resources.ServiceResources.Count);
-    }
+public class ServiceRepository(IResourceCollection resources) : IServiceRepository {
+    public Task<int> GetCountAsync() => Task.FromResult(resources.ServiceResources.Count);
 
-    public Task<int> GetIpAddressCountAsync()
-    {
+    public Task<int> GetIpAddressCountAsync() {
         return Task.FromResult(resources.ServiceResources
             .Where(i => i.Network?.Ip != null)
             .Select(i => i.Network!.Ip)
@@ -18,26 +13,18 @@ public class ServiceRepository(IResourceCollection resources) : IServiceReposito
             .Count());
     }
 
-    public Task<IReadOnlyList<Service>> GetBySystemHostAsync(string systemHostName)
-    {
+    public Task<IReadOnlyList<Service>> GetBySystemHostAsync(string systemHostName) {
         var systemHostNameLower = systemHostName.ToLower().Trim();
         var results = resources.ServiceResources
             .Where(s => s.RunsOn.Select(p => p.ToLower().Equals(systemHostNameLower)).ToList().Count > 0).ToList();
         return Task.FromResult<IReadOnlyList<Service>>(results);
     }
 
-    public Task<IReadOnlyList<Service>> GetAllAsync()
-    {
-        return Task.FromResult(resources.ServiceResources);
-    }
+    public Task<IReadOnlyList<Service>> GetAllAsync() => Task.FromResult(resources.ServiceResources);
 
-    public Task<Service?> GetByNameAsync(string name)
-    {
-        return Task.FromResult(resources.GetByName(name) as Service);
-    }
+    public Task<Service?> GetByNameAsync(string name) => Task.FromResult(resources.GetByName(name) as Service);
 
-    public async Task AddAsync(Service service)
-    {
+    public async Task AddAsync(Service service) {
         if (resources.ServiceResources.Any(r =>
                 r.Name.Equals(service.Name, StringComparison.OrdinalIgnoreCase)))
             throw new InvalidOperationException(
@@ -46,9 +33,8 @@ public class ServiceRepository(IResourceCollection resources) : IServiceReposito
         await resources.AddAsync(service);
     }
 
-    public async Task UpdateAsync(Service service)
-    {
-        var existing = resources.ServiceResources
+    public async Task UpdateAsync(Service service) {
+        Service? existing = resources.ServiceResources
             .FirstOrDefault(r => r.Name.Equals(service.Name, StringComparison.OrdinalIgnoreCase));
 
         if (existing == null)
@@ -57,9 +43,8 @@ public class ServiceRepository(IResourceCollection resources) : IServiceReposito
         await resources.UpdateAsync(service);
     }
 
-    public async Task DeleteAsync(string name)
-    {
-        var existing = resources.ServiceResources
+    public async Task DeleteAsync(string name) {
+        Service? existing = resources.ServiceResources
             .FirstOrDefault(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
         if (existing == null)

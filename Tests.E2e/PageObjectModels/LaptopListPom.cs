@@ -2,8 +2,7 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class LaptopListPom(IPage page)
-{
+public class LaptopListPom(IPage page) {
     public AddResourceComponent Addlaptop => new(page, "laptop");
 
     public ILocator PageRoot => page.GetByTestId("laptops-page-root");
@@ -23,37 +22,29 @@ public class LaptopListPom(IPage page)
     // Dynamic laptop Items
     // -------------------------------------------------
 
-    public ILocator LaptopItem(string name)
-    {
-        return page.GetByTestId($"laptop-item-{Sanitize(name)}");
-    }
+    public ILocator LaptopItem(string name) => page.GetByTestId($"laptop-item-{Sanitize(name)}");
 
-    public ILocator OpenLink(string name)
-    {
+    public ILocator OpenLink(string name) {
         return LaptopItem(name)
             .GetByTestId("open-laptop-link");
     }
 
-    public ILocator DeleteButton(string name)
-    {
+    public ILocator DeleteButton(string name) {
         return LaptopItem(name)
             .GetByTestId("delete-laptop-button");
     }
 
-    public ILocator RenameButton(string name)
-    {
+    public ILocator RenameButton(string name) {
         return LaptopItem(name)
             .GetByTestId("rename-laptop-button");
     }
 
-    public ILocator CloneButton(string name)
-    {
+    public ILocator CloneButton(string name) {
         return LaptopItem(name)
             .GetByTestId("clone-laptop-button");
     }
 
-    public ILocator ModelBadge(string name)
-    {
+    public ILocator ModelBadge(string name) {
         return LaptopItem(name)
             .GetByTestId("laptop-model-badge");
     }
@@ -62,36 +53,29 @@ public class LaptopListPom(IPage page)
     // Navigation
     // -------------------------------------------------
 
-    public async Task GotoAsync(string baseUrl)
-    {
+    public async Task GotoAsync(string baseUrl) {
         await page.GotoAsync($"{baseUrl}/laptops/list");
         await AssertLoadedAsync();
     }
 
-    public async Task AssertLoadedAsync()
-    {
+    public async Task AssertLoadedAsync() {
         await Assertions.Expect(PageRoot).ToBeVisibleAsync();
         await Assertions.Expect(PageTitle).ToBeVisibleAsync();
     }
 
-    public async Task WaitForListAsync()
-    {
-        await Assertions.Expect(LaptopsList).ToBeVisibleAsync();
-    }
+    public async Task WaitForListAsync() => await Assertions.Expect(LaptopsList).ToBeVisibleAsync();
 
     // -------------------------------------------------
     // Actions
     // -------------------------------------------------
 
-    public async Task AddLaptopAsync(string name)
-    {
+    public async Task AddLaptopAsync(string name) {
         await Addlaptop.AddAsync(name);
         await Assertions.Expect(LaptopItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task DeleteLaptopAsync(string name)
-    {
+    public async Task DeleteLaptopAsync(string name) {
         await DeleteButton(name).ClickAsync();
         await page.GetByTestId("Laptop-confirm-modal-confirm").ClickAsync();
 
@@ -99,26 +83,20 @@ public class LaptopListPom(IPage page)
             .Not.ToBeVisibleAsync();
     }
 
-    public async Task OpenLaptopAsync(string name)
-    {
+    public async Task OpenLaptopAsync(string name) {
         await OpenLink(name).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{name}");
     }
 
-    public async Task AssertLaptopExists(string name)
-    {
+    public async Task AssertLaptopExists(string name) {
         await Assertions.Expect(LaptopItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task AssertLaptopDoesNotExist(string name)
-    {
+    public async Task AssertLaptopDoesNotExist(string name) {
         await Assertions.Expect(LaptopItem(name))
             .Not.ToBeVisibleAsync();
     }
 
-    private static string Sanitize(string value)
-    {
-        return value.Replace(" ", "-");
-    }
+    private static string Sanitize(string value) => value.Replace(" ", "-");
 }

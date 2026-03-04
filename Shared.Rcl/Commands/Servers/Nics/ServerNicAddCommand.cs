@@ -6,9 +6,8 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Nics;
 
-public class ServerNicAddSettings : ServerNameSettings
-{
-    [CommandOption("--type <TYPE>")] public string Type { get; set; }
+public class ServerNicAddSettings : ServerNameSettings {
+    [CommandOption("--type <TYPE>")] public string? Type { get; set; }
 
     [CommandOption("--speed <SPEED>")] public double Speed { get; set; }
 
@@ -16,15 +15,13 @@ public class ServerNicAddSettings : ServerNameSettings
 }
 
 public class ServerNicAddCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<ServerNicAddSettings>
-{
+    : AsyncCommand<ServerNicAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerNicAddSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddNicUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IAddNicUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IAddNicUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

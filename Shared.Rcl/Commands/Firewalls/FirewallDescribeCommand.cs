@@ -7,19 +7,17 @@ namespace Shared.Rcl.Commands.Firewalls;
 
 public class FirewallDescribeCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<FirewallNameSettings>
-{
+) : AsyncCommand<FirewallNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         FirewallNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DescribeFirewallUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        DescribeFirewallUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeFirewallUseCase>();
 
-        var sw = await useCase.ExecuteAsync(settings.Name);
+        FirewallDescription sw = await useCase.ExecuteAsync(settings.Name);
 
-        var grid = new Grid()
+        Grid grid = new Grid()
             .AddColumn(new GridColumn().NoWrap())
             .AddColumn(new GridColumn().NoWrap());
 

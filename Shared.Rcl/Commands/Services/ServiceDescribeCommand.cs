@@ -7,19 +7,17 @@ namespace Shared.Rcl.Commands.Services;
 
 public class ServiceDescribeCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<ServiceNameSettings>
-{
+) : AsyncCommand<ServiceNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServiceNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DescribeServiceUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        DescribeServiceUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeServiceUseCase>();
 
-        var service = await useCase.ExecuteAsync(settings.Name);
+        ServiceDescription service = await useCase.ExecuteAsync(settings.Name);
 
-        var grid = new Grid()
+        Grid grid = new Grid()
             .AddColumn(new GridColumn().NoWrap())
             .AddColumn(new GridColumn().NoWrap())
             .AddColumn(new GridColumn().NoWrap())

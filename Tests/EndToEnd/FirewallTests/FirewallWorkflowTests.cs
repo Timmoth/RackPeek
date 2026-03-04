@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.FirewallTests;
 
 [Collection("Yaml CLI tests")]
 public class FirewallWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string, string)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string, string)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -25,12 +23,11 @@ public class FirewallWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outp
     }
 
     [Fact]
-    public async Task firewalls_cli_workflow_test()
-    {
+    public async Task firewalls_cli_workflow_test() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         // Add firewall
-        var (output, yaml) = await ExecuteAsync("firewalls", "add", "fw01");
+        (var output, var yaml) = await ExecuteAsync("firewalls", "add", "fw01");
         Assert.Equal("Firewall 'fw01' added.\n", output);
         Assert.Contains("name: fw01", yaml);
 

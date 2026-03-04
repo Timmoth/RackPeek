@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.AccessPoints;
 
-public class AccessPointSetSettings : ServerNameSettings
-{
+public class AccessPointSetSettings : ServerNameSettings {
     [CommandOption("--model")]
     [Description("The access point model name.")]
     public string? Model { get; set; }
@@ -20,15 +19,13 @@ public class AccessPointSetSettings : ServerNameSettings
 
 public class AccessPointSetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<AccessPointSetSettings>
-{
+) : AsyncCommand<AccessPointSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         AccessPointSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateAccessPointUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        UpdateAccessPointUseCase useCase = scope.ServiceProvider.GetRequiredService<UpdateAccessPointUseCase>();
 
         await useCase.ExecuteAsync(
             settings.Name,

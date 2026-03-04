@@ -1,6 +1,7 @@
 ﻿@page "/subnets"
 @using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources
+@using RackPeek.Domain.Resources.SystemResources
 @inject IResourceCollection ResourceCollection
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6 space-y-6"
@@ -21,9 +22,9 @@
            border border-zinc-700
            focus:outline-none focus:ring-2 focus:ring-emerald-500"
             @bind="Filter"
-            @bind:event="oninput" />
+            @bind:event="oninput"/>
     </div>
-    
+
     @if (_grouped is not null && _grouped.Any())
     {
         var nextFreeIp = GetNextFreeIp();
@@ -70,14 +71,12 @@
 
                         var services = subnetGroup.Value
                             .SelectMany(x => x.Value)
-                            .Count(x => x.Item1 is RackPeek.Domain.Resources.Services.Service);
+                            .Count(x => x.Item1 is Service);
 
                         // /24 assumption (x subnet)
                         const int subnetCapacity = 256;
 
-                        var percentFull = subnetCapacity == 0
-                            ? 0
-                            : (int)Math.Round((double)addresses / subnetCapacity * 100);
+                        var percentFull = (int)Math.Round((double)addresses / subnetCapacity * 100);
                     }
 
                     <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3 flex items-baseline gap-3">
@@ -106,7 +105,7 @@
                                     {
                                         var url = GetResourceUrl(resource);
 
-                                        int? port = resource is RackPeek.Domain.Resources.Services.Service
+                                        var port = resource is Service
                                         {
                                             Network.Port: not null
                                         } service
@@ -117,12 +116,13 @@
 
                                         <li class="text-zinc-500 hover:text-emerald-300">
                                             <NavLink href="@url" class="block">
-                                                @resource.Name@if (port.HasValue)
-                                                              {
-                                                                  <span class="text-emerald-400">:@port</span>
-                                                              }
+                                                @resource.Name
+                                                @if (port.HasValue)
+                                                {
+                                                    <span class="text-emerald-400">:@port</span>
+                                                }
                                                 (@typeName)
-                                                </NavLink>
+                                            </NavLink>
                                         </li>
                                     }
                                 </ul>
@@ -136,6 +136,7 @@
         </div>
     }
 </div>
+
 @code {
 
     private string _filter = string.Empty;
@@ -163,75 +164,75 @@
         }
     }
 
- private void ApplyFilter()
-{
-    var filter = _filter?.Trim();
-
-    IEnumerable<(Resource resource, string ip)> filtered = _all;
-
-    if (!string.IsNullOrWhiteSpace(filter))
+    private void ApplyFilter()
     {
-        // PORT MODE (":22" or ":2" etc.) — prefix match as user types
-        if (filter.StartsWith(":"))
-        {
-            var portText = filter[1..].Trim();
+        var filter = _filter?.Trim();
 
-            if (string.IsNullOrEmpty(portText))
+        IEnumerable<(Resource resource, string ip)> filtered = _all;
+
+        if (!string.IsNullOrWhiteSpace(filter))
+        {
+            // PORT MODE (":22" or ":2" etc.) — prefix match as user types
+            if (filter.StartsWith(":"))
             {
-                // ":" alone -> show everything with a port
-                filtered = _all.Where(x =>
-                    x.resource is RackPeek.Domain.Resources.Services.Service
-                    {
-                        Network.Port: not null
-                    });
-            }
-            else if (portText.All(char.IsDigit))
-            {
-                filtered = _all.Where(x =>
-                    x.resource is RackPeek.Domain.Resources.Services.Service
-                    {
-                        Network.Port: not null
-                    } service
-                    && service.Network!.Port!.Value.ToString().StartsWith(portText, StringComparison.Ordinal));
+                var portText = filter[1..].Trim();
+
+                if (string.IsNullOrEmpty(portText))
+                {
+                    // ":" alone -> show everything with a port
+                    filtered = _all.Where(x =>
+                        x.resource is Service
+                        {
+                            Network.Port: not null
+                        });
+                }
+                else if (portText.All(char.IsDigit))
+                {
+                    filtered = _all.Where(x =>
+                        x.resource is Service
+                        {
+                            Network.Port: not null
+                        } service
+                        && service.Network!.Port!.Value.ToString().StartsWith(portText, StringComparison.Ordinal));
+                }
+                else
+                {
+                    // ":abc" -> no matches
+                    filtered = [];
+                }
             }
             else
             {
-                // ":abc" -> no matches
-                filtered = [];
+                // IP OR PORT MATCH (non ":" input)
+                filtered = _all.Where(x =>
+                    x.ip.Contains(filter, StringComparison.OrdinalIgnoreCase)
+                    ||
+                    (
+                        x.resource is Service
+                        {
+                            Network.Port: not null
+                        } service
+                        && service.Network!.Port!.Value.ToString()
+                            .Contains(filter, StringComparison.Ordinal)
+                    )
+                );
             }
         }
-        else
-        {
-            // IP OR PORT MATCH (non ":" input)
-            filtered = _all.Where(x =>
-                x.ip.Contains(filter, StringComparison.OrdinalIgnoreCase)
-                ||
-                (
-                    x.resource is RackPeek.Domain.Resources.Services.Service
-                    {
-                        Network.Port: not null
-                    } service
-                    && service.Network!.Port!.Value.ToString()
-                        .Contains(filter, StringComparison.Ordinal)
-                )
+
+        _grouped = filtered
+            .Where(x => !string.IsNullOrWhiteSpace(x.ip))
+            .GroupBy(x => GetSubnet(x.ip))
+            .ToDictionary(
+                g => g.Key,
+                g => g.GroupBy(x => x.ip)
+                    .ToDictionary(
+                        ip => ip.Key,
+                        ip => ip.ToList()
+                    )
             );
-        }
+
+        StateHasChanged();
     }
-
-    _grouped = filtered
-        .Where(x => !string.IsNullOrWhiteSpace(x.ip))
-        .GroupBy(x => GetSubnet(x.ip))
-        .ToDictionary(
-            g => g.Key,
-            g => g.GroupBy(x => x.ip)
-                .ToDictionary(
-                    ip => ip.Key,
-                    ip => ip.ToList()
-                )
-        );
-
-    StateHasChanged();
-}
 
     private string GetSubnet(string ip)
     {
@@ -245,16 +246,16 @@
     {
         return resource switch
         {
-            RackPeek.Domain.Resources.SystemResources.SystemResource
+            SystemResource
                 => $"resources/systems/{Uri.EscapeDataString(resource.Name)}",
 
-            RackPeek.Domain.Resources.Services.Service
+            Service
                 => $"resources/services/{Uri.EscapeDataString(resource.Name)}",
 
             _ => "#"
         };
     }
-    
+
     private string GetNextFreeIp()
     {
         if (_grouped is null || !_grouped.Any())
@@ -268,7 +269,7 @@
                 .Where(n => n >= 0)
                 .ToHashSet();
 
-            for (int host = 1; host < 255; host++)
+            for (var host = 1; host < 255; host++)
             {
                 if (!usedHosts.Contains(host))
                 {
@@ -280,7 +281,7 @@
 
         return "full";
     }
-    
+
     private int GetNextFreePort()
     {
         if (_grouped is null)
@@ -290,12 +291,12 @@
             .SelectMany(s => s.Value)
             .SelectMany(ip => ip.Value)
             .Select(x => x.Item1)
-            .OfType<RackPeek.Domain.Resources.Services.Service>()
+            .OfType<Service>()
             .Where(s => s.Network?.Port is not null)
             .Select(s => s.Network!.Port!.Value)
             .ToHashSet();
 
-        for (int port = 1024; port < 65535; port++)
+        for (var port = 1024; port < 65535; port++)
         {
             if (!usedPorts.Contains(port))
                 return port;
@@ -303,4 +304,5 @@
 
         return -1;
     }
+
 }

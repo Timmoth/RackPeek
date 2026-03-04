@@ -7,15 +7,13 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Laptops.Drive;
 
 public class LaptopDriveRemoveCommand(IServiceProvider provider)
-    : AsyncCommand<LaptopDriveRemoveSettings>
-{
+    : AsyncCommand<LaptopDriveRemoveSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         LaptopDriveRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveDriveUseCase<Laptop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IRemoveDriveUseCase<Laptop> useCase = scope.ServiceProvider.GetRequiredService<IRemoveDriveUseCase<Laptop>>();
 
         await useCase.ExecuteAsync(settings.LaptopName, settings.Index);
 

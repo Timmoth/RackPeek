@@ -24,7 +24,7 @@
             <!-- Filter -->
             <input placeholder="filter resources..."
                    class="bg-zinc-900 border border-zinc-800 px-3 py-1 rounded focus:outline-none focus:border-emerald-600"
-                   @bind="_filter" />
+                   @bind="_filter"/>
 
             <!-- Sort By -->
             <select class="bg-zinc-900 border border-zinc-800 px-2 py-1 rounded"
@@ -111,7 +111,7 @@
         var decoded = Uri.UnescapeDataString(LabelName);
         _resources = await ResourceRepository.GetByLabelAsync(decoded);
     }
-    
+
     private IEnumerable<(Resource Resource, string Value)> GetProcessed()
     {
         if (_resources is null)
@@ -133,8 +133,8 @@
             "Value" => query
                 .OrderBy(r => GetSortKey(r.Value))
                 .ThenBy(r => r.Resource.Name),
-            "Kind"  => query.OrderBy(r => r.Resource.Kind),
-            _       => query.OrderBy(r => r.Resource.Name)
+            "Kind" => query.OrderBy(r => r.Resource.Kind),
+            _ => query.OrderBy(r => r.Resource.Name)
         };
 
         if (!_ascending)
@@ -163,7 +163,7 @@
 
         return value;
     }
-    
+
     private string GetResourceUrl(Resource resource)
     {
         if (resource.Kind == SystemResource.KindLabel)
@@ -174,7 +174,7 @@
 
         return $"resources/hardware/{Uri.EscapeDataString(resource.Name)}";
     }
-    
+
     private readonly record struct SortKey(int TypeRank, object Value, string Fallback)
         : IComparable<SortKey>
     {
@@ -182,13 +182,13 @@
         {
             var rank = TypeRank.CompareTo(other.TypeRank);
             if (rank != 0) return rank;
-            
+
             var valueCompare = TypeRank switch
             {
-                0 => ((int)Value).CompareTo((int)other.Value),   
-                1 => ((DateTime)Value).CompareTo((DateTime)other.Value),  
-                2 => ((decimal)Value).CompareTo((decimal)other.Value),   
-                3 => ((bool)Value).CompareTo((bool)other.Value),      
+                0 => ((int)Value).CompareTo((int)other.Value),
+                1 => ((DateTime)Value).CompareTo((DateTime)other.Value),
+                2 => ((decimal)Value).CompareTo((decimal)other.Value),
+                3 => ((bool)Value).CompareTo((bool)other.Value),
                 _ => string.Compare((string)Value, (string)other.Value, StringComparison.Ordinal)
             };
 
@@ -204,21 +204,22 @@
         var s = raw?.Trim() ?? string.Empty;
 
         if (string.IsNullOrEmpty(s))
-            return new SortKey(TypeRank: 0, Value: 0, Fallback: "");
+            return new SortKey(0, 0, "");
 
         // Date
         if (DateTime.TryParse(s, out var dt))
-            return new SortKey(TypeRank: 1, Value: dt, Fallback: s);
+            return new SortKey(1, dt, s);
 
         // Number
         if (decimal.TryParse(s, out var dec))
-            return new SortKey(TypeRank: 2, Value: dec, Fallback: s);
+            return new SortKey(2, dec, s);
 
         // Bool
         if (bool.TryParse(s, out var b))
-            return new SortKey(TypeRank: 3, Value: b, Fallback: s);
+            return new SortKey(3, b, s);
 
         // Text (case-insensitive sort by normalizing)
-        return new SortKey(TypeRank: 4, Value: s.ToLowerInvariant(), Fallback: s);
+        return new SortKey(4, s.ToLowerInvariant(), s);
     }
+
 }

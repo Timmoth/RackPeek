@@ -1,0 +1,142 @@
+﻿@page "/hosts/export"
+@using RackPeek.Domain.UseCases.Hosts
+@inject HostsFileExportUseCase HostsUseCase
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900 max-w-5xl mx-auto"
+     data-testid="hosts-export-page">
+
+    <div class="flex justify-between items-center mb-4">
+        <div class="text-zinc-100 text-lg">
+            Hosts File Export
+        </div>
+
+        <button class="text-sm bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-white transition"
+                data-testid="generate-hosts-button"
+                @onclick="GenerateExport">
+            Generate
+        </button>
+    </div>
+
+    <!-- Options -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+        <!-- Include Tags -->
+        <div>
+            <div class="text-zinc-400 mb-1">Include Tags</div>
+            <input class="w-full bg-zinc-800 text-zinc-200 p-2 rounded border border-zinc-700"
+                   placeholder="prod, staging"
+                   data-testid="hosts-include-tags-input"
+                   @bind="_includeTagsRaw"/>
+            <div class="text-xs text-zinc-500 mt-1">
+                Only include resources with these tags (optional)
+            </div>
+        </div>
+
+        <!-- Domain Suffix -->
+        <div>
+            <div class="text-zinc-400 mb-1">Domain Suffix</div>
+            <input class="w-full bg-zinc-800 text-zinc-200 p-2 rounded border border-zinc-700"
+                   placeholder="home.local"
+                   data-testid="hosts-domain-suffix-input"
+                   @bind="_domainSuffix"/>
+            <div class="text-xs text-zinc-500 mt-1">
+                Appends .domain to host names (optional)
+            </div>
+        </div>
+
+        <!-- Include Localhost Defaults -->
+        <div class="flex items-center space-x-2">
+            <input type="checkbox"
+                   class="accent-emerald-600"
+                   data-testid="hosts-include-localhost-checkbox"
+                   @bind="_includeLocalhost"/>
+            <label class="text-zinc-300">
+                Include localhost defaults (127.0.0.1 / ::1)
+            </label>
+        </div>
+
+    </div>
+
+    <!-- Warnings -->
+    @if (_warnings.Any())
+    {
+        <div class="border border-red-700 bg-red-900/40 text-red-300 p-3 rounded mb-4"
+             data-testid="hosts-warnings">
+            <div class="font-semibold mb-1">Warnings</div>
+            <ul class="list-disc ml-5 text-sm">
+                @foreach (var warning in _warnings)
+                {
+                    <li>@warning</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Output -->
+    <div>
+        <div class="text-zinc-400 mb-1">Generated Hosts File</div>
+        <textarea class="w-full bg-black text-emerald-400 p-3 rounded border border-zinc-800 font-mono text-sm"
+                  rows="18"
+                  readonly
+                  data-testid="hosts-output">
+@_hostsText
+        </textarea>
+    </div>
+
+</div>
+
+@code {
+
+    private string _includeTagsRaw = string.Empty;
+    private string? _domainSuffix = "home.local";
+    private bool _includeLocalhost = true;
+
+    private string _hostsText = string.Empty;
+    private List<string> _warnings = new();
+
+    private async Task GenerateExport()
+    {
+        try
+        {
+            _warnings.Clear();
+            _hostsText = string.Empty;
+
+            var options = new HostsExportOptions
+            {
+                IncludeTags = ParseCsv(_includeTagsRaw),
+                DomainSuffix = string.IsNullOrWhiteSpace(_domainSuffix)
+                    ? null
+                    : _domainSuffix,
+                IncludeLocalhostDefaults = _includeLocalhost
+            };
+
+            var result = await HostsUseCase.ExecuteAsync(options);
+
+            if (result is null)
+            {
+                _warnings.Add("Hosts export returned null.");
+                return;
+            }
+
+            _hostsText = result.HostsText;
+            _warnings = result.Warnings.ToList();
+        }
+        catch (Exception ex)
+        {
+            _warnings.Clear();
+            _warnings.Add($"Unexpected error: {ex.Message}");
+        }
+    }
+
+    private static IReadOnlyList<string> ParseCsv(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return [];
+
+        return raw.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToArray();
+    }
+
+}

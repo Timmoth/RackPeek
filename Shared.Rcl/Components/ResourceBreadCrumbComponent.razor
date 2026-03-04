@@ -11,19 +11,17 @@
         }
 
         <div class="flex">
-            <CrumbLevel Items="Levels[i]" />
+            <CrumbLevel Items="Levels[i]"/>
         </div>
     }
 </div>
 
 @code {
-    [Parameter, EditorRequired] 
-    public ResourceType ResourceType { get; set; }
-    
-    public string Kind { get; set; }
+    [Parameter][EditorRequired] public ResourceType ResourceType { get; set; }
 
-    [Parameter, EditorRequired] 
-    public string ResourceName { get; set; } = default!;
+    public string Kind { get; set; } = string.Empty;
+
+    [Parameter][EditorRequired] public string ResourceName { get; set; } = default!;
 
     private List<List<Breadcrumb>> Levels { get; } = new();
 
@@ -93,7 +91,7 @@
         }
     }
 
-    private async Task<Dictionary<int, List<(string Name, string Kind)>>> 
+    private async Task<Dictionary<int, List<(string Name, string Kind)>>>
         BuildAncestorGraph(IEnumerable<string> startingNodes)
     {
         var byDistance = new Dictionary<int, List<(string, string)>>();
@@ -143,7 +141,9 @@
     }
 
     private void AddLevel(params Breadcrumb[] items)
-        => AddLevel((IEnumerable<Breadcrumb>)items);
+    {
+        AddLevel((IEnumerable<Breadcrumb>)items);
+    }
 
     private void AddLevel(IEnumerable<Breadcrumb> items)
     {
@@ -153,4 +153,5 @@
     }
 
     public record Breadcrumb(string Label, string Kind, string Href);
+
 }

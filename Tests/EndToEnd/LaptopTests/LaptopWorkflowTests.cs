@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.LaptopTests;
 
 [Collection("Yaml CLI tests")]
 public class LaptopWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string, string)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string, string)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -25,12 +23,11 @@ public class LaptopWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
     }
 
     [Fact]
-    public async Task laptops_cli_workflow_test()
-    {
+    public async Task laptops_cli_workflow_test() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         // Add laptop
-        var (output, yaml) = await ExecuteAsync("laptops", "add", "lap01");
+        (var output, var yaml) = await ExecuteAsync("laptops", "add", "lap01");
         Assert.Equal("Laptop 'lap01' added.\n", output);
         Assert.Contains("name: lap01", yaml);
 

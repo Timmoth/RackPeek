@@ -8,18 +8,15 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Laptops.Gpus;
 
 public class LaptopGpuSetCommand(IServiceProvider provider)
-    : AsyncCommand<LaptopGpuSetSettings>
-{
+    : AsyncCommand<LaptopGpuSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         LaptopGpuSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateGpuUseCase<Laptop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IUpdateGpuUseCase<Laptop> useCase = scope.ServiceProvider.GetRequiredService<IUpdateGpuUseCase<Laptop>>();
 
-        var gpu = new Gpu
-        {
+        var gpu = new Gpu {
             Model = settings.Model,
             Vram = settings.Vram
         };

@@ -1,6 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using RackPeek.Domain.Resources.SubResources
-
 @if (IsOpen)
 {
     <div class="fixed inset-0 z-50 flex items-center justify-center"
@@ -37,9 +36,9 @@
                       OnValidSubmit="HandleValidSubmit"
                       data-testid="@($"{BaseTestId}-form")">
 
-                <DataAnnotationsValidator />
+                <DataAnnotationsValidator/>
                 <ValidationSummary class="text-xs text-red-400 mb-3"
-                                   data-testid="@($"{BaseTestId}-validation-summary")" />
+                                   data-testid="@($"{BaseTestId}-validation-summary")"/>
 
                 <div class="space-y-3 text-sm">
 
@@ -49,18 +48,20 @@
                             <label class="block text-zinc-400 mb-1">
                                 Size (GB)
                             </label>
-                            <InputNumber class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
-                                         data-testid="@($"{BaseTestId}-size-input")"
-                                         @bind-Value="_model.Size" />
+                            <InputNumber
+                                class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                data-testid="@($"{BaseTestId}-size-input")"
+                                @bind-Value="_model.Size"/>
                         </div>
 
                         <div data-testid="@($"{BaseTestId}-mts-field")">
                             <label class="block text-zinc-400 mb-1">
                                 Speed (MT/s)
                             </label>
-                            <InputNumber class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
-                                         data-testid="@($"{BaseTestId}-mts-input")"
-                                         @bind-Value="_model.Mts" />
+                            <InputNumber
+                                class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                data-testid="@($"{BaseTestId}-mts-input")"
+                                @bind-Value="_model.Mts"/>
                         </div>
 
                     </div>
@@ -140,14 +141,13 @@
                 };
         }
     }
-    
+
     private async Task HandleClear()
     {
         await OnSubmit.InvokeAsync(null);
         await Close();
     }
 
-    
 
     private async Task HandleValidSubmit()
     {
@@ -178,4 +178,5 @@
 
         [Range(1, 10000)] public int? Mts { get; set; }
     }
+
 }

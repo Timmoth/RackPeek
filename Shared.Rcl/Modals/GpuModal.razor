@@ -1,6 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using RackPeek.Domain.Resources.SubResources
-
 @if (IsOpen)
 {
     <div class="fixed inset-0 z-50 flex items-center justify-center"
@@ -37,9 +36,9 @@
                       OnValidSubmit="HandleValidSubmit"
                       data-testid="@($"{BaseTestId}-form")">
 
-                <DataAnnotationsValidator />
+                <DataAnnotationsValidator/>
                 <ValidationSummary class="text-xs text-red-400 mb-3"
-                                   data-testid="@($"{BaseTestId}-validation-summary")" />
+                                   data-testid="@($"{BaseTestId}-validation-summary")"/>
 
                 <div class="space-y-3 text-sm">
 
@@ -51,7 +50,7 @@
 
                         <InputText class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
                                    data-testid="@($"{BaseTestId}-model-input")"
-                                   @bind-Value="_model.Model" />
+                                   @bind-Value="_model.Model"/>
                     </div>
 
                     <!-- VRAM -->
@@ -62,7 +61,7 @@
 
                         <InputNumber class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
                                      data-testid="@($"{BaseTestId}-vram-input")"
-                                     @bind-Value="_model.Vram" />
+                                     @bind-Value="_model.Vram"/>
                     </div>
 
                 </div>
@@ -181,4 +180,5 @@
 
         [Range(1, 256)] public int? Vram { get; set; }
     }
+
 }

@@ -80,7 +80,7 @@
             {
                 <input data-testid="router-model-input"
                        class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
-                       @bind="_edit.Model" />
+                       @bind="_edit.Model"/>
             }
             else if (!string.IsNullOrWhiteSpace(Router.Model))
             {
@@ -101,14 +101,14 @@
                     <label class="flex items-center gap-2 text-zinc-300">
                         <input type="checkbox"
                                data-testid="router-managed-checkbox"
-                               @bind="_edit.Managed" />
+                               @bind="_edit.Managed"/>
                         Managed
                     </label>
 
                     <label class="flex items-center gap-2 text-zinc-300">
                         <input type="checkbox"
                                data-testid="router-poe-checkbox"
-                               @bind="_edit.Poe" />
+                               @bind="_edit.Poe"/>
                         PoE
                     </label>
                 </div>
@@ -153,7 +153,8 @@
             {
                 @foreach (var port in Router.Ports)
                 {
-                    <div class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
                         <button data-testid=@($"edit-port-{port.Type}-{port.Speed}")
                                 class="hover:text-emerald-400"
                                 @onclick="() => OpenEditPort(port)">
@@ -164,11 +165,11 @@
             }
         </div>
 
-        <ResourceTagEditor Resource="Router" 
-                           TestIdPrefix="router" />
+        <ResourceTagEditor Resource="Router"
+                           TestIdPrefix="router"/>
 
         <ResourceLabelEditor Resource="Router"
-                             TestIdPrefix="router" />
+                             TestIdPrefix="router"/>
 
 
         <div class="md:col-span-2"
@@ -180,13 +181,13 @@
             {
                 <MarkdownEditor @bind-Value="_edit.Notes"
                                 ShowActionButtons="false"
-                                TestIdPrefix="router-notes-editor" />
+                                TestIdPrefix="router-notes-editor"/>
             }
             else
             {
                 <MarkdownViewer Value="@Router.Notes"
                                 ShowEditButton="false"
-                                TestIdPrefix="router-notes-viewer" />
+                                TestIdPrefix="router-notes-viewer"/>
             }
         </div>
 
@@ -197,7 +198,7 @@
            IsOpenChanged="v => _portModalOpen = v"
            Value="@_editingPort"
            OnSubmit="HandlePortSubmit"
-           OnDelete="HandlePortDelete" />
+           OnDelete="HandlePortDelete"/>
 
 <ConfirmModal IsOpen="_confirmDeleteOpen"
               IsOpenChanged="v => _confirmDeleteOpen = v"
@@ -216,7 +217,7 @@
                   Label="New router name"
                   Value="@Router.Name"
                   OnSubmit="HandleRenameSubmit"
-                  TestIdPrefix="router-rename" />
+                  TestIdPrefix="router-rename"/>
 
 <StringValueModal IsOpen="_cloneOpen"
                   IsOpenChanged="v => _cloneOpen = v"
@@ -225,7 +226,7 @@
                   Label="New resource name"
                   Value="@($"{Router.Name}-copy")"
                   OnSubmit="HandleCloneSubmit"
-                  TestIdPrefix="router-clone" />
+                  TestIdPrefix="router-clone"/>
 
 @code {
     [Parameter] [EditorRequired] public Router Router { get; set; } = default!;

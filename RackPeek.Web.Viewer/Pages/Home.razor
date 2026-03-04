@@ -17,93 +17,109 @@
     }
     else
     {
-<!-- Totals + Tools -->
-<div class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+        <!-- Totals + Tools -->
+        <div class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
 
-    <!-- Totals -->
-    <div class="border border-zinc-800 rounded-md p-4">
-        <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
-            Totals
+            <!-- Totals -->
+            <div class="border border-zinc-800 rounded-md p-4">
+                <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
+                    Totals
+                </div>
+
+                <div class="grid grid-cols-2 gap-y-2">
+
+                    <div class="hover:text-emerald-300">
+                        <NavLink href="@("hardware/tree")">→ Hardware</NavLink>
+                    </div>
+                    <div class="text-right">@_hardware!.TotalHardware</div>
+
+                    <div class="hover:text-emerald-300">
+                        <NavLink href="@("systems/list")">→ Systems</NavLink>
+                    </div>
+                    <div class="text-right">@_system!.TotalSystems</div>
+
+                    <div class="hover:text-emerald-300">
+                        <NavLink href="@("services/list")">→ Services</NavLink>
+                    </div>
+                    <div class="text-right">@_service!.TotalServices</div>
+                </div>
+            </div>
+
+            <!-- Tools -->
+            <div class="border border-zinc-800 rounded-md p-4">
+                <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
+                    Tools
+                </div>
+
+                <ul class="space-y-2 text-sm">
+
+                    <li>
+                        <NavLink href="subnets"
+                                 class="block hover:text-emerald-300"
+                                 data-testid="home-tool-subnets">
+                            → Subnet Browser
+                        </NavLink>
+                    </li>
+
+                    <li>
+                        <NavLink href="cli"
+                                 class="block hover:text-emerald-300"
+                                 data-testid="home-tool-cli">
+                            → CLI Emulator
+                        </NavLink>
+                    </li>
+
+                    <li>
+                        <NavLink href="yaml"
+                                 class="block hover:text-emerald-300"
+                                 data-testid="home-tool-yaml">
+                            → YAML Editor
+                        </NavLink>
+                    </li>
+
+                    <li>
+                        <NavLink href="ansible/inventory"
+                                 class="block hover:text-emerald-300"
+                                 data-testid="home-tool-ansible">
+                            → Ansible Inventory Generator
+                        </NavLink>
+                    </li>
+
+                    <li>
+                        <NavLink href="ssh/export"
+                                 class="block hover:text-emerald-300"
+                                 data-testid="home-tool-ansible">
+                            → SSH Config Export
+                        </NavLink>
+                    </li>
+
+                    <li>
+                        <NavLink href="hosts/export"
+                                 class="block hover:text-emerald-300"
+                                 data-testid="home-tool-ansible">
+                            → Hosts File Export
+                        </NavLink>
+                    </li>
+
+                    <li>
+                        <NavLink href="docs"
+                                 class="block hover:text-emerald-300"
+                                 data-testid="home-tool-docs">
+                            → Documentation
+                        </NavLink>
+                    </li>
+
+                </ul>
+            </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-y-2">
-
-            <div class="hover:text-emerald-300">
-                <NavLink href="@("hardware/tree")">→ Hardware</NavLink>
-            </div>
-            <div class="text-right">@_hardware!.TotalHardware</div>
-
-            <div class="hover:text-emerald-300">
-                <NavLink href="@("systems/list")">→ Systems</NavLink>
-            </div>
-            <div class="text-right">@_system!.TotalSystems</div>
-
-            <div class="hover:text-emerald-300">
-                <NavLink href="@("services/list")">→ Services</NavLink>
-            </div>
-            <div class="text-right">@_service!.TotalServices</div>
-        </div>
-    </div>
-
-    <!-- Tools -->
-    <div class="border border-zinc-800 rounded-md p-4">
-        <div class="text-xs text-zinc-500 uppercase tracking-wider mb-3">
-            Tools
+        <div class="space-y-10 mb-10">
+            <TagListComponent/>
         </div>
 
-        <ul class="space-y-2 text-sm">
-
-            <li>
-                <NavLink href="subnets"
-                         class="block hover:text-emerald-300"
-                         data-testid="home-tool-subnets">
-                    → Subnet Browser
-                </NavLink>
-            </li>
-            
-            <li>
-                <NavLink href="cli"
-                         class="block hover:text-emerald-300"
-                         data-testid="home-tool-cli">
-                    → CLI Emulator
-                </NavLink>
-            </li>
-
-            <li>
-                <NavLink href="yaml"
-                         class="block hover:text-emerald-300"
-                         data-testid="home-tool-yaml">
-                    → YAML Editor
-                </NavLink>
-            </li>
-
-            <li>
-                <NavLink href="ansible/inventory"
-                         class="block hover:text-emerald-300"
-                         data-testid="home-tool-ansible">
-                    → Ansible Inventory Generator
-                </NavLink>
-            </li>
-
-            <li>
-                <NavLink href="docs"
-                         class="block hover:text-emerald-300"
-                         data-testid="home-tool-docs">
-                    → Documentation
-                </NavLink>
-            </li>
-
-        </ul>
-    </div>
-</div>
- 
-<div class="space-y-10 mb-10">
-    <TagListComponent/>
-</div>
-
-<div class="space-y-10 mb-10">
-    <LabelListComponent/>
-</div>
+        <div class="space-y-10 mb-10">
+            <LabelListComponent/>
+        </div>
 
         <!-- Tree -->
         <div class="space-y-10">
@@ -156,7 +172,8 @@
                                 @foreach (var (type, count) in _system.SystemsByType.OrderByDescending(x => x.Value))
                                 {
                                     <li class="text-zinc-500 hover:text-emerald-300">
-                                        <NavLink href="@($"systems/list?type={Uri.EscapeDataString(type)}")" class="block">
+                                        <NavLink href="@($"systems/list?type={Uri.EscapeDataString(type)}")"
+                                                 class="block">
                                             └─ @type (@count)
                                         </NavLink>
                                     </li>

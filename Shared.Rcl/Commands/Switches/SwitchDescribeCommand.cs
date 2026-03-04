@@ -7,19 +7,17 @@ namespace Shared.Rcl.Commands.Switches;
 
 public class SwitchDescribeCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<SwitchNameSettings>
-{
+) : AsyncCommand<SwitchNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         SwitchNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<DescribeSwitchUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        DescribeSwitchUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeSwitchUseCase>();
 
-        var sw = await useCase.ExecuteAsync(settings.Name);
+        SwitchDescription sw = await useCase.ExecuteAsync(settings.Name);
 
-        var grid = new Grid()
+        Grid grid = new Grid()
             .AddColumn(new GridColumn().NoWrap())
             .AddColumn(new GridColumn().NoWrap());
 

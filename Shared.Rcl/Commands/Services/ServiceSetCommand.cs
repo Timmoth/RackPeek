@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Services;
 
-public class ServiceSetSettings : ServerNameSettings
-{
+public class ServiceSetSettings : ServerNameSettings {
     [CommandOption("--ip")]
     [Description("The ip address of the service.")]
     public string? Ip { get; set; }
@@ -32,15 +31,13 @@ public class ServiceSetSettings : ServerNameSettings
 
 public class ServiceSetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<ServiceSetSettings>
-{
+) : AsyncCommand<ServiceSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServiceSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<UpdateServiceUseCase>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        UpdateServiceUseCase useCase = scope.ServiceProvider.GetRequiredService<UpdateServiceUseCase>();
 
         await useCase.ExecuteAsync(
             settings.Name,

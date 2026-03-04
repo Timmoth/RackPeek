@@ -175,7 +175,7 @@
             {
                 <input class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
                        data-testid="system-ip-input"
-                       @bind="_edit.Ip" />
+                       @bind="_edit.Ip"/>
             }
             else if (!string.IsNullOrWhiteSpace(EffectiveIp))
             {
@@ -188,13 +188,14 @@
                 </div>
             }
         </div>
-        
+
         <!-- Runs On -->
         <div class="text-sm">
             <div class="text-zinc-400 mb-1">
                 Runs On
                 <button class="hover:text-emerald-400 pl-2"
-                        @onclick="() => _selectParentOpen = true">+</button>
+                        @onclick="() => _selectParentOpen = true">+
+                </button>
             </div>
 
             @if (System.RunsOn?.Count > 0)
@@ -203,11 +204,12 @@
                 {
                     var kind = (_parentKinds.GetValueOrDefault(parent) ?? "").Trim().ToLower();
 
-                    string url = "#";
+                    var url = "#";
                     if (Resource.IsHardware(kind))
                     {
                         url = $"resources/hardware/{Uri.EscapeDataString(parent)}";
-                    }else if (kind == "system")
+                    }
+                    else if (kind == "system")
                     {
                         url = $"resources/systems/{Uri.EscapeDataString(parent)}";
                     }
@@ -260,10 +262,10 @@
             }
         </div>
         <ResourceTagEditor Resource="System"
-                           TestIdPrefix="system" />
+                           TestIdPrefix="system"/>
 
         <ResourceLabelEditor Resource="System"
-                             TestIdPrefix="system" />
+                             TestIdPrefix="system"/>
 
 
         <div class="md:col-span-2">
@@ -274,16 +276,14 @@
                 <MarkdownEditor
                     @bind-Value="_edit.Notes"
                     ShowActionButtons="false"
-                    TestIdPrefix="system-notes-editor" />
-
+                    TestIdPrefix="system-notes-editor"/>
             }
             else
             {
                 <MarkdownViewer
                     Value="@System.Notes"
                     ShowEditButton="false"
-                    TestIdPrefix="system-notes-viewer" />
-
+                    TestIdPrefix="system-notes-viewer"/>
             }
         </div>
 
@@ -296,7 +296,7 @@
     IsOpenChanged="v => _selectParentOpen = v"
     Title="Select a parent resource"
     Value="@SelectedParentName"
-    OnAccept="HandleParentSelected" />
+    OnAccept="HandleParentSelected"/>
 <DriveModal
     IsOpen="@_driveModalOpen"
     IsOpenChanged="v => _driveModalOpen = v"
@@ -315,7 +315,7 @@
     OnConfirm="DeleteServer"
     TestIdPrefix="system-delete">
     Are you sure you want to delete <strong>@System.Name</strong>?
-    <br />
+    <br/>
     This will detach all dependent systems.
 </ConfirmModal>
 
@@ -357,14 +357,14 @@
 
     bool _selectParentOpen;
     string? SelectedParentName;
-    private Dictionary<string, string> _parentKinds = new();
+    private readonly Dictionary<string, string> _parentKinds = new();
 
     protected override async Task OnParametersSetAsync()
     {
         await RefreshParentKinds();
         await ResolveEffectiveIp();
     }
-    
+
     private async Task RefreshParentKinds()
     {
         _parentKinds.Clear();
@@ -375,90 +375,87 @@
             _parentKinds[parent] = kind ?? "";
         }
     }
-    
-  async Task HandleParentSelected(string? name)
-{
-    if (name == System.Name)
+
+    async Task HandleParentSelected(string? name)
     {
-        return;
+        if (name == System.Name)
+        {
+            return;
+        }
+
+        SelectedParentName = name;
+
+        // Start from the edit buffer when editing, otherwise from the persisted model
+        var runsOn = (_isEditing ? _edit.RunsOn : System.RunsOn) ?? new List<string>();
+        runsOn = runsOn.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+
+        if (!string.IsNullOrWhiteSpace(name) && !runsOn.Contains(name))
+            runsOn.Add(name);
+
+        // IMPORTANT: use _edit values when editing so we don't wipe typed fields
+        var type = _isEditing ? _edit.Type : System.Type;
+        var os = _isEditing ? _edit.Os : System.Os;
+        var cores = _isEditing ? _edit.Cores : System.Cores;
+        var ram = _isEditing ? _edit.Ram : System.Ram;
+        var ip = _isEditing ? _edit.Ip : System.Ip;
+        var notes = _isEditing ? _edit.Notes : System.Notes;
+
+        await UpdateUseCase.ExecuteAsync(
+            System.Name,
+            type,
+            os,
+            cores,
+            ram,
+            ip,
+            runsOn,
+            notes);
+
+        System = await GetByNameUseCase.ExecuteAsync(System.Name);
+
+        if (_isEditing)
+            _edit.RunsOn = runsOn;
+        else
+            _edit = SystemEditModel.From(System);
+
+        await RefreshParentKinds();
     }
-    
-    SelectedParentName = name;
 
-    // Start from the edit buffer when editing, otherwise from the persisted model
-    var runsOn = (_isEditing ? _edit.RunsOn : System.RunsOn) ?? new List<string>();
-    runsOn = runsOn.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+    async Task HandleParentDeleted(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return;
 
-    if (!string.IsNullOrWhiteSpace(name) && !runsOn.Contains(name))
-        runsOn.Add(name);
+        SelectedParentName = name;
 
-    // IMPORTANT: use _edit values when editing so we don't wipe typed fields
-    var type  = _isEditing ? _edit.Type  : System.Type;
-    var os    = _isEditing ? _edit.Os    : System.Os;
-    var cores = _isEditing ? _edit.Cores : System.Cores;
-    var ram   = _isEditing ? _edit.Ram   : System.Ram;
-    var ip    = _isEditing ? _edit.Ip    : System.Ip;
-    var notes = _isEditing ? _edit.Notes : System.Notes;
+        var runsOn = (_isEditing ? _edit.RunsOn : System.RunsOn) ?? new List<string>();
+        System.RunsOn = runsOn = runsOn.Where(x => !string.IsNullOrWhiteSpace(x) && x != name).ToList();
 
-    await UpdateUseCase.ExecuteAsync(
-        System.Name,
-        type,
-        os,
-        cores,
-        ram,
-        ip,
-        runsOn,
-        notes);
+        var type = _isEditing ? _edit.Type : System.Type;
+        var os = _isEditing ? _edit.Os : System.Os;
+        var cores = _isEditing ? _edit.Cores : System.Cores;
+        var ram = _isEditing ? _edit.Ram : System.Ram;
+        var ip = _isEditing ? _edit.Ip : System.Ip;
+        var notes = _isEditing ? _edit.Notes : System.Notes;
 
-    System = await GetByNameUseCase.ExecuteAsync(System.Name);
+        await UpdateUseCase.ExecuteAsync(
+            System.Name,
+            type,
+            os,
+            cores,
+            ram,
+            ip,
+            runsOn,
+            notes);
 
-    if (_isEditing)
-        _edit.RunsOn = runsOn;
-    else
-        _edit = SystemEditModel.From(System);
-    
-    await RefreshParentKinds();
+        System = await GetByNameUseCase.ExecuteAsync(System.Name);
 
-}
+        if (_isEditing)
+            _edit.RunsOn = runsOn;
+        else
+            _edit = SystemEditModel.From(System);
 
-async Task HandleParentDeleted(string? name)
-{
-    if (string.IsNullOrWhiteSpace(name))
-        return;
-
-    SelectedParentName = name;
-
-    var runsOn = (_isEditing ? _edit.RunsOn : System.RunsOn) ?? new List<string>();
-    System.RunsOn = runsOn = runsOn.Where(x => !string.IsNullOrWhiteSpace(x) && x != name).ToList();
-
-    var type  = _isEditing ? _edit.Type  : System.Type;
-    var os    = _isEditing ? _edit.Os    : System.Os;
-    var cores = _isEditing ? _edit.Cores : System.Cores;
-    var ram   = _isEditing ? _edit.Ram   : System.Ram;
-    var ip    = _isEditing ? _edit.Ip    : System.Ip;
-    var notes = _isEditing ? _edit.Notes : System.Notes;
-
-    await UpdateUseCase.ExecuteAsync(
-        System.Name,
-        type,
-        os,
-        cores,
-        ram,
-        ip,
-        runsOn,
-        notes);
-
-    System = await GetByNameUseCase.ExecuteAsync(System.Name);
-
-    if (_isEditing)
-        _edit.RunsOn = runsOn;
-    else
-        _edit = SystemEditModel.From(System);
-    
-    await RefreshParentKinds();
-
-}
-  
+        await RefreshParentKinds();
+    }
 
 
     #region Drives
@@ -615,4 +612,5 @@ async Task HandleParentDeleted(string? name)
             ? null
             : parent.Ip;
     }
+
 }

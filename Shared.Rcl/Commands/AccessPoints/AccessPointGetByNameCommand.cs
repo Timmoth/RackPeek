@@ -8,17 +8,16 @@ namespace Shared.Rcl.Commands.AccessPoints;
 
 public class AccessPointGetByNameCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<AccessPointNameSettings>
-{
+) : AsyncCommand<AccessPointNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         AccessPointNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<AccessPoint>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IGetResourceByNameUseCase<AccessPoint> useCase =
+            scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<AccessPoint>>();
 
-        var ap = await useCase.ExecuteAsync(settings.Name);
+        AccessPoint ap = await useCase.ExecuteAsync(settings.Name);
 
         AnsiConsole.MarkupLine(
             $"[green]{ap.Name}[/]  Model: {ap.Model ?? "Unknown"}, Speed: {ap.Speed?.ToString() ?? "Unknown"}Gbps");

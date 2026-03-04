@@ -41,6 +41,5 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired] 
-    public List<ResourceBreadCrumbComponent.Breadcrumb> Items { get; set; } = new();
+    [Parameter][EditorRequired] public List<ResourceBreadCrumbComponent.Breadcrumb> Items { get; set; } = new();
 }

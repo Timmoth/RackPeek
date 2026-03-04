@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.SwitchTests;
 
 [Collection("Yaml CLI tests")]
 public class SwitchWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string, string)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string, string)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -25,12 +23,11 @@ public class SwitchWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
     }
 
     [Fact]
-    public async Task switches_cli_workflow_test()
-    {
+    public async Task switches_cli_workflow_test() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         // Add switch
-        var (output, yaml) = await ExecuteAsync("switches", "add", "sw01");
+        (var output, var yaml) = await ExecuteAsync("switches", "add", "sw01");
         Assert.Equal("Switch 'sw01' added.\n", output);
         Assert.Contains("name: sw01", yaml);
 

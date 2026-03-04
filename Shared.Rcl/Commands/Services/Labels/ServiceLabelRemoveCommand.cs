@@ -6,18 +6,15 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Services.Labels;
 
-public class ServiceLabelRemoveSettings : ServiceNameSettings
-{
+public class ServiceLabelRemoveSettings : ServiceNameSettings {
     [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
 }
 
-public class ServiceLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<ServiceLabelRemoveSettings>
-{
+public class ServiceLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<ServiceLabelRemoveSettings> {
     public override async Task<int> ExecuteAsync(CommandContext context, ServiceLabelRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<Service>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IRemoveLabelUseCase<Service> useCase = scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<Service>>();
         await useCase.ExecuteAsync(settings.Name, settings.Key);
         AnsiConsole.MarkupLine($"[green]Label '{settings.Key}' removed from '{settings.Name}'.[/]");
         return 0;

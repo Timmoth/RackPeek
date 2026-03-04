@@ -11,37 +11,11 @@ using RackPeek.Domain.Resources.UpsUnits;
 
 namespace RackPeek.Domain.Resources;
 
-public abstract class Resource
-{
-    private static readonly string[] HardwareTypes =
+public abstract class Resource {
+    private static readonly string[] _hardwareTypes =
         ["server", "switch", "firewall", "router", "accesspoint", "desktop", "laptop", "ups"];
 
-    public static bool IsHardware(string kind)
-    {
-        kind = kind.Trim().ToLower();
-        return kind == "hardware" || HardwareTypes.Contains(kind);
-    } 
-        
-    public static string GetResourceUrl(string kind, string name)
-    {
-        var encoded = Uri.EscapeDataString(name);
-
-        kind = kind.Trim().ToLower();
-        if (IsHardware(kind))
-        {
-            return $"resources/hardware/{encoded}";
-        }else if (kind == "system")
-        {
-            return $"resources/systems/{encoded}";
-        }else if (kind == "service")
-        {
-            return $"resources/services/{encoded}";
-        }
-
-        return "#";
-    }
-    
-    private static readonly Dictionary<string, string> KindToPluralDictionary = new()
+    private static readonly Dictionary<string, string> _kindToPluralDictionary = new()
     {
         { "hardware", "hardware" },
         { "server", "servers" },
@@ -56,7 +30,7 @@ public abstract class Resource
         { "service", "services" }
     };
 
-    private static readonly Dictionary<Type, string> TypeToKindMap = new()
+    private static readonly Dictionary<Type, string> _typeToKindMap = new()
     {
         { typeof(Hardware.Hardware), "Hardware" },
         { typeof(Server), "Server" },
@@ -79,24 +53,38 @@ public abstract class Resource
     public Dictionary<string, string> Labels { get; set; } = new();
     public string? Notes { get; set; }
 
-    public List<string> RunsOn { get; set; } = new List<string>();
+    public List<string> RunsOn { get; set; } = new();
 
-    public static string KindToPlural(string kind)
-    {
-        return KindToPluralDictionary.GetValueOrDefault(kind.ToLower().Trim(), kind);
+    public static bool IsHardware(string kind) {
+        kind = kind.Trim().ToLower();
+        return kind == "hardware" || _hardwareTypes.Contains(kind);
     }
 
-    public static string GetKind<T>() where T : Resource
-    {
-        if (TypeToKindMap.TryGetValue(typeof(T), out var kind))
+    public static string GetResourceUrl(string kind, string name) {
+        var encoded = Uri.EscapeDataString(name);
+
+        kind = kind.Trim().ToLower();
+        if (IsHardware(kind)) return $"resources/hardware/{encoded}";
+
+        if (kind == "system") return $"resources/systems/{encoded}";
+
+        if (kind == "service") return $"resources/services/{encoded}";
+
+        return "#";
+    }
+
+    public static string KindToPlural(string kind) =>
+        _kindToPluralDictionary.GetValueOrDefault(kind.ToLower().Trim(), kind);
+
+    public static string GetKind<T>() where T : Resource {
+        if (_typeToKindMap.TryGetValue(typeof(T), out var kind))
             return kind;
 
         throw new InvalidOperationException(
             $"No kind mapping defined for type {typeof(T).Name}");
     }
 
-    public static bool CanRunOn<T>(Resource parent) where T : Resource
-    {
+    public static bool CanRunOn<T>(Resource parent) where T : Resource {
         var childKind = GetKind<T>().ToLowerInvariant();
         var parentKind = parent.Kind.ToLowerInvariant();
 
@@ -107,7 +95,7 @@ public abstract class Resource
         // System -> Hardware
         if (childKind == "system" && parent is Hardware.Hardware)
             return true;
-        
+
         // System -> System
         if (childKind == "system" && parent is SystemResource)
             return true;

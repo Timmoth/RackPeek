@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.AccessPointTests;
 
 [Collection("Yaml CLI tests")]
 public class AccessPointWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string, string)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string, string)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -24,9 +22,8 @@ public class AccessPointWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper o
     }
 
     [Fact]
-    public async Task accesspoints_cli_workflow_test()
-    {
-        var (output, yaml) = await ExecuteAsync("accesspoints", "add", "ap01");
+    public async Task accesspoints_cli_workflow_test() {
+        (var output, var yaml) = await ExecuteAsync("accesspoints", "add", "ap01");
         Assert.Equal("Access Point 'ap01' added.\n", output);
         Assert.Contains("name: ap01", yaml);
 

@@ -5,34 +5,30 @@ using RackPeek.Domain.Resources;
 namespace RackPeek.Domain.UseCases;
 
 public interface IRenameResourceUseCase<T> : IResourceUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     public Task ExecuteAsync(string originalName, string newName);
 }
 
-public class RenameResourceUseCase<T>(IResourceCollection repo) : IRenameResourceUseCase<T> where T : Resource
-{
-    public async Task ExecuteAsync(string originalName, string newName)
-    {
+public class RenameResourceUseCase<T>(IResourceCollection repo) : IRenameResourceUseCase<T> where T : Resource {
+    public async Task ExecuteAsync(string originalName, string newName) {
         originalName = Normalize.SystemName(originalName);
         ThrowIfInvalid.ResourceName(originalName);
 
         newName = Normalize.SystemName(newName);
         ThrowIfInvalid.ResourceName(newName);
 
-        var existingResource = await repo.GetByNameAsync(newName);
+        Resource? existingResource = await repo.GetByNameAsync(newName);
         if (existingResource != null)
             throw new ConflictException($"{existingResource.Kind} resource '{newName}' already exists.");
 
-        var original = await repo.GetByNameAsync(originalName);
+        Resource? original = await repo.GetByNameAsync(originalName);
         if (original == null) throw new NotFoundException($"Resource '{originalName}' not found.");
 
         original.Name = newName;
         await repo.UpdateAsync(original);
 
-        var children = await repo.GetDependantsAsync(originalName);
-        foreach (var child in children)
-        {
+        IReadOnlyList<Resource> children = await repo.GetDependantsAsync(originalName);
+        foreach (Resource child in children) {
             child.RunsOn = child.RunsOn.ConvertAll<string>(p => p == originalName ? newName : p);
             await repo.UpdateAsync(child);
         }

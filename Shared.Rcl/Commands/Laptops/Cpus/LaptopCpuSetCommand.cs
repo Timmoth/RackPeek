@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Laptops.Cpus;
 
-public class LaptopCpuSetSettings : CommandSettings
-{
+public class LaptopCpuSetSettings : CommandSettings {
     [CommandArgument(0, "<Laptop>")]
     [Description("The Laptop name.")]
     public string LaptopName { get; set; } = default!;
@@ -31,15 +30,13 @@ public class LaptopCpuSetSettings : CommandSettings
 }
 
 public class LaptopCpuSetCommand(IServiceProvider provider)
-    : AsyncCommand<LaptopCpuSetSettings>
-{
+    : AsyncCommand<LaptopCpuSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         LaptopCpuSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateCpuUseCase<Laptop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IUpdateCpuUseCase<Laptop> useCase = scope.ServiceProvider.GetRequiredService<IUpdateCpuUseCase<Laptop>>();
 
         await useCase.ExecuteAsync(settings.LaptopName, settings.Index, settings.Model, settings.Cores,
             settings.Threads);

@@ -230,35 +230,33 @@
         </div>
 
         <ResourceTagEditor Resource="Server"
-                           TestIdPrefix="server" />
+                           TestIdPrefix="server"/>
 
         <ResourceLabelEditor Resource="Server"
-                             TestIdPrefix="server" />
+                             TestIdPrefix="server"/>
 
 
+        <div class="md:col-span-2">
+            <div class="text-zinc-400 mb-1">Notes</div>
 
-    <div class="md:col-span-2">
-        <div class="text-zinc-400 mb-1">Notes</div>
-
-        @if (!_editingNotes)
-        {
-            <MarkdownViewer
-                Value="@Server.Notes"
-                ShowEditButton="true"
-                OnEdit="BeginNotesEdit"
-                TestIdPrefix="server-markdown"/>
-        }
-        else
-        {
-            <MarkdownEditor
-                @bind-Value="_notesDraft"
-                ShowActionButtons="true"
-                OnSave="SaveNotes"
-                OnCancel="CancelNotesEdit"
-                TestIdPrefix="server-markdown"/>
-
-        }
-    </div>
+            @if (!_editingNotes)
+            {
+                <MarkdownViewer
+                    Value="@Server.Notes"
+                    ShowEditButton="true"
+                    OnEdit="BeginNotesEdit"
+                    TestIdPrefix="server-markdown"/>
+            }
+            else
+            {
+                <MarkdownEditor
+                    @bind-Value="_notesDraft"
+                    ShowActionButtons="true"
+                    OnSave="SaveNotes"
+                    OnCancel="CancelNotesEdit"
+                    TestIdPrefix="server-markdown"/>
+            }
+        </div>
     </div>
 
 </div>
@@ -326,7 +324,7 @@
     Label="New server name"
     Value="@Server.Name"
     OnSubmit="HandleRenameSubmit"
-    TestIdPrefix="server-rename" />
+    TestIdPrefix="server-rename"/>
 
 <StringValueModal
     IsOpen="_cloneOpen"
@@ -336,7 +334,7 @@
     Label="New resource name"
     Value="@($"{Server.Name}-copy")"
     OnSubmit="HandleCloneSubmit"
-    TestIdPrefix="server-clone" />
+    TestIdPrefix="server-clone"/>
 
 
 @code {

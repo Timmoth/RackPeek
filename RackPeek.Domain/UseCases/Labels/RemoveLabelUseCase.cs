@@ -5,13 +5,12 @@ using RackPeek.Domain.Resources;
 namespace RackPeek.Domain.UseCases.Labels;
 
 /// <summary>
-/// Removes a label by key from a resource.
+///     Removes a label by key from a resource.
 /// </summary>
 public interface IRemoveLabelUseCase<T> : IResourceUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     /// <summary>
-    /// Removes the label with the given key. No-op if the key does not exist.
+    ///     Removes the label with the given key. No-op if the key does not exist.
     /// </summary>
     /// <param name="name">Resource name.</param>
     /// <param name="key">Label key to remove.</param>
@@ -21,21 +20,19 @@ public interface IRemoveLabelUseCase<T> : IResourceUseCase<T>
 }
 
 /// <summary>
-/// Removes a label by key from a resource.
+///     Removes a label by key from a resource.
 /// </summary>
 public class RemoveLabelUseCase<T>(IResourceCollection repo) : IRemoveLabelUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     /// <inheritdoc />
-    public async Task ExecuteAsync(string name, string key)
-    {
+    public async Task ExecuteAsync(string name, string key) {
         key = Normalize.LabelKey(key);
 
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
         ThrowIfInvalid.LabelKey(key);
 
-        var resource = await repo.GetByNameAsync(name);
+        Resource? resource = await repo.GetByNameAsync(name);
         if (resource is null)
             throw new NotFoundException($"Resource '{name}' not found.");
 

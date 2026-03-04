@@ -21,34 +21,29 @@ public record ServerHardwareRow(
     int GpuCount,
     int TotalGpuVramGb,
     string GpuSummary,
-    bool Ipmi, 
+    bool Ipmi,
     IReadOnlyList<Nic> Nics
-)
-{        
-public string NicSummary =>
-string.Join(", ",
-    (Nics ?? [])
-    .SelectMany(n =>
-    {
-        var ports = n.Ports ?? 1;
-        var speed = n.Speed ?? 0;
-        return Enumerable.Repeat(speed, ports);
-    })
-    .GroupBy(speed => speed)
-    .OrderByDescending(g => g.Key)
-    .Select(g => $"{g.Count()}×{g.Key}G")
-    .DefaultIfEmpty("none")
-);
+) {
+    public string NicSummary =>
+        string.Join(", ",
+            (Nics ?? [])
+            .SelectMany(n => {
+                var ports = n.Ports ?? 1;
+                var speed = n.Speed ?? 0;
+                return Enumerable.Repeat(speed, ports);
+            })
+            .GroupBy(speed => speed)
+            .OrderByDescending(g => g.Key)
+            .Select(g => $"{g.Count()}×{g.Key}G")
+            .DefaultIfEmpty("none")
+        );
 }
 
-public class ServerHardwareReportUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<ServerHardwareReport> ExecuteAsync()
-    {
-        var servers = await repository.GetAllOfTypeAsync<Server>();
+public class ServerHardwareReportUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<ServerHardwareReport> ExecuteAsync() {
+        IReadOnlyList<Server> servers = await repository.GetAllOfTypeAsync<Server>();
 
-        var rows = servers.Select(server =>
-        {
+        var rows = servers.Select(server => {
             var totalCores = server.Cpus?.Sum(c => c.Cores) ?? 0;
             var totalThreads = server.Cpus?.Sum(c => c.Threads) ?? 0;
 

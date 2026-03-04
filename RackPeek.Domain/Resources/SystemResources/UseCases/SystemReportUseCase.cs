@@ -16,14 +16,11 @@ public record SystemReportRow(
     List<string> RunsOn
 );
 
-public class SystemReportUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<SystemReport> ExecuteAsync()
-    {
-        var systems = await repository.GetAllOfTypeAsync<SystemResource>();
+public class SystemReportUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<SystemReport> ExecuteAsync() {
+        IReadOnlyList<SystemResource> systems = await repository.GetAllOfTypeAsync<SystemResource>();
 
-        var rows = systems.Select(system =>
-        {
+        var rows = systems.Select(system => {
             var totalStorage = system.Drives?.Sum(d => d.Size) ?? 0;
 
             return new SystemReportRow(

@@ -2,24 +2,20 @@ using System.Text;
 
 namespace RackPeek.Domain.Resources.Services;
 
-public class Service : Resource
-{
+public class Service : Resource {
     public const string KindLabel = "Service";
     public Network? Network { get; set; }
 
-    public string NetworkString()
-    {
+    public string NetworkString() {
         if (Network == null) return string.Empty;
 
         if (!string.IsNullOrEmpty(Network.Url)) return Network.Url;
 
         var stringBuilder = new StringBuilder();
-        if (!string.IsNullOrEmpty(Network.Ip))
-        {
+        if (!string.IsNullOrEmpty(Network.Ip)) {
             stringBuilder.Append("Ip: ");
             stringBuilder.Append(Network.Ip);
-            if (Network.Port.HasValue)
-            {
+            if (Network.Port.HasValue) {
                 stringBuilder.Append(':');
                 stringBuilder.Append(Network.Port.Value);
             }
@@ -31,8 +27,7 @@ public class Service : Resource
     }
 }
 
-public class Network
-{
+public class Network {
     public string? Ip { get; set; }
     public int? Port { get; set; }
     public string? Protocol { get; set; }

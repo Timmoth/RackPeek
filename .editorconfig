@@ -1,0 +1,52 @@
+root = true
+
+[*.cs]
+
+###############
+# Formatting  #
+###############
+
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+end_of_line = lf
+insert_final_newline = true
+
+###############
+# C# Style    #
+###############
+
+csharp_new_line_before_open_brace = all:error
+csharp_indent_case_contents = true:error
+csharp_indent_switch_labels = true:error
+
+###############
+# var usage   #
+###############
+
+csharp_style_var_for_built_in_types = true:error
+csharp_style_var_when_type_is_apparent = true:error
+csharp_style_var_elsewhere = false:error
+csharp_style_var_in_deconstruction = true:error
+
+###############
+# Expression-bodied members
+###############
+
+csharp_style_expression_bodied_methods = when_on_single_line:error
+csharp_style_expression_bodied_properties = when_on_single_line:error
+
+###############
+# Naming rules
+###############
+
+dotnet_naming_rule.private_fields_should_be_camel_case.severity = error
+dotnet_naming_rule.private_fields_should_be_camel_case.symbols = private_fields
+dotnet_naming_rule.private_fields_should_be_camel_case.style = camel_case_style
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.camel_case_style.capitalization = camel_case
+dotnet_naming_style.camel_case_style.required_prefix = _

@@ -19,14 +19,11 @@ public record DesktopHardwareRow(
     string GpuSummary
 );
 
-public class DesktopHardwareReportUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<DesktopHardwareReport> ExecuteAsync()
-    {
-        var desktops = await repository.GetAllOfTypeAsync<Desktop>();
+public class DesktopHardwareReportUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<DesktopHardwareReport> ExecuteAsync() {
+        IReadOnlyList<Desktop> desktops = await repository.GetAllOfTypeAsync<Desktop>();
 
-        var rows = desktops.Select(desktop =>
-        {
+        var rows = desktops.Select(desktop => {
             var totalCores = desktop.Cpus?.Sum(c => c.Cores) ?? 0;
             var totalThreads = desktop.Cpus?.Sum(c => c.Threads) ?? 0;
 
@@ -53,8 +50,7 @@ public class DesktopHardwareReportUseCase(IResourceCollection repository) : IUse
                     desktop.Nics
                         .GroupBy(n => n.Speed ?? 0)
                         .OrderBy(g => g.Key)
-                        .Select(g =>
-                        {
+                        .Select(g => {
                             var count = g.Sum(n => n.Ports ?? 0);
                             return $"{count}×{g.Key}G";
                         }));

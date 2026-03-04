@@ -7,15 +7,13 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Desktops;
 
 public class DesktopAddCommand(IServiceProvider provider)
-    : AsyncCommand<DesktopNameSettings>
-{
+    : AsyncCommand<DesktopNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DesktopNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Desktop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IAddResourceUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.Name);
 

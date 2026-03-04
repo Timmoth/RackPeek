@@ -9,36 +9,32 @@ using RackPeek.Domain.UseCases;
 using RackPeek.Domain.UseCases.Cpus;
 using RackPeek.Domain.UseCases.Drives;
 using RackPeek.Domain.UseCases.Gpus;
-using RackPeek.Domain.UseCases.Nics;
 using RackPeek.Domain.UseCases.Labels;
+using RackPeek.Domain.UseCases.Nics;
 using RackPeek.Domain.UseCases.Ports;
 using RackPeek.Domain.UseCases.Tags;
 
 namespace RackPeek.Domain;
 
-public interface IResourceUseCase<T> where T : Resource
-{
+public interface IResourceUseCase<T> where T : Resource {
 }
 
-public static class ServiceCollectionExtensions
-{
+public static class ServiceCollectionExtensions {
     public static IServiceCollection AddResourceUseCases(
         this IServiceCollection services,
-        Assembly assembly)
-    {
-        var types = assembly.GetTypes()
+        Assembly assembly) {
+        IEnumerable<Type> types = assembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface);
 
-        foreach (var type in types)
-        {
-            var resourceUseCaseInterfaces = type.GetInterfaces()
+        foreach (Type type in types) {
+            IEnumerable<Type> resourceUseCaseInterfaces = type.GetInterfaces()
                 .Where(i =>
                     i.IsGenericType &&
                     i.GetInterfaces().Any(parent =>
                         parent.IsGenericType &&
                         parent.GetGenericTypeDefinition() == typeof(IResourceUseCase<>)));
 
-            foreach (var serviceType in resourceUseCaseInterfaces) services.AddScoped(serviceType, type);
+            foreach (Type serviceType in resourceUseCaseInterfaces) services.AddScoped(serviceType, type);
         }
 
         return services;
@@ -46,8 +42,7 @@ public static class ServiceCollectionExtensions
 
 
     public static IServiceCollection AddUseCases(
-        this IServiceCollection services)
-    {
+        this IServiceCollection services) {
         services.AddScoped(typeof(IAddResourceUseCase<>), typeof(AddResourceUseCase<>));
         services.AddScoped(typeof(IAddLabelUseCase<>), typeof(AddLabelUseCase<>));
         services.AddScoped(typeof(IAddTagUseCase<>), typeof(AddTagUseCase<>));
@@ -80,21 +75,22 @@ public static class ServiceCollectionExtensions
         services.AddScoped(typeof(IRemoveNicUseCase<>), typeof(RemoveNicUseCase<>));
         services.AddScoped(typeof(IUpdateNicUseCase<>), typeof(UpdateNicUseCase<>));
 
-        var usecases = Assembly.GetAssembly(typeof(IUseCase))
+        IEnumerable<Type>? usecases = Assembly.GetAssembly(typeof(IUseCase))
             ?.GetTypes()
             .Where(t =>
                 !t.IsAbstract &&
                 typeof(IUseCase).IsAssignableFrom(t)
             );
 
-        foreach (var type in usecases) services.AddScoped(type);
+        if (usecases != null)
+            foreach (Type type in usecases)
+                services.AddScoped(type);
 
         return services;
     }
 
     public static IServiceCollection AddYamlRepos(
-        this IServiceCollection services)
-    {
+        this IServiceCollection services) {
         services.AddScoped<IHardwareRepository, YamlHardwareRepository>();
         services.AddScoped<ISystemRepository, YamlSystemRepository>();
         services.AddScoped<IServiceRepository, ServiceRepository>();

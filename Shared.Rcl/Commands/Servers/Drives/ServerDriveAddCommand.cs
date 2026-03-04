@@ -7,11 +7,10 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Drives;
 
-public class ServerDriveAddSettings : ServerNameSettings
-{
+public class ServerDriveAddSettings : ServerNameSettings {
     [CommandOption("--type <TYPE>")]
     [Description("The drive type e.g hdd / ssd.")]
-    public string Type { get; set; }
+    public string? Type { get; set; }
 
     [CommandOption("--size <SIZE>")]
     [Description("The drive capacity in GB.")]
@@ -19,15 +18,13 @@ public class ServerDriveAddSettings : ServerNameSettings
 }
 
 public class ServerDriveAddCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<ServerDriveAddSettings>
-{
+    : AsyncCommand<ServerDriveAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerDriveAddSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IAddDriveUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IAddDriveUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IAddDriveUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

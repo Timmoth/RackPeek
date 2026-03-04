@@ -6,26 +6,23 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Cpus;
 
-public class ServerCpuSetSettings : ServerNameSettings
-{
+public class ServerCpuSetSettings : ServerNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 
-    [CommandOption("--model <MODEL>")] public string Model { get; set; }
+    [CommandOption("--model <MODEL>")] public string? Model { get; set; }
 
     [CommandOption("--cores <CORES>")] public int Cores { get; set; }
 
     [CommandOption("--threads <THREADS>")] public int Threads { get; set; }
 }
 
-public class ServerCpuSetCommand(IServiceProvider serviceProvider) : AsyncCommand<ServerCpuSetSettings>
-{
+public class ServerCpuSetCommand(IServiceProvider serviceProvider) : AsyncCommand<ServerCpuSetSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerCpuSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateCpuUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IUpdateCpuUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IUpdateCpuUseCase<Server>>();
 
         await useCase.ExecuteAsync(
             settings.Name,

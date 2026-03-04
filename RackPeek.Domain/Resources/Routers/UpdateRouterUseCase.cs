@@ -3,16 +3,14 @@ using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.Routers;
 
-public class UpdateRouterUseCase(IResourceCollection repository) : IUseCase
-{
+public class UpdateRouterUseCase(IResourceCollection repository) : IUseCase {
     public async Task ExecuteAsync(
         string name,
         string? model = null,
         bool? managed = null,
         bool? poe = null,
         string? notes = null
-    )
-    {
+    ) {
         // ToDo pass in properties as inputs, construct the entity in the usecase
         // ToDo validate / normalize all inputs
 

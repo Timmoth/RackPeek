@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Desktops.Cpus;
 
-public class DesktopCpuSetSettings : CommandSettings
-{
+public class DesktopCpuSetSettings : CommandSettings {
     [CommandArgument(0, "<desktop>")]
     [Description("The desktop name.")]
     public string DesktopName { get; set; } = default!;
@@ -30,13 +29,11 @@ public class DesktopCpuSetSettings : CommandSettings
     public int? Threads { get; set; }
 }
 
-public class DesktopCpuSetCommand(IServiceProvider provider) : AsyncCommand<DesktopCpuSetSettings>
-{
+public class DesktopCpuSetCommand(IServiceProvider provider) : AsyncCommand<DesktopCpuSetSettings> {
     public override async Task<int> ExecuteAsync(CommandContext context, DesktopCpuSetSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = provider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IUpdateCpuUseCase<Desktop>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = provider.CreateScope();
+        IUpdateCpuUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IUpdateCpuUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Index, settings.Model, settings.Cores,
             settings.Threads);

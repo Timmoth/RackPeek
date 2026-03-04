@@ -3,22 +3,17 @@ using RackPeek.Domain.Resources.Services.Networking;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
-public class ServiceSubnetsUseCase(IResourceCollection repo) : IUseCase
-{
-    public async Task<ServiceSubnetsResult> ExecuteAsync(string? cidr, int? prefix, CancellationToken token)
-    {
-        var services = await repo.GetAllOfTypeAsync<Service>();
+public class ServiceSubnetsUseCase(IResourceCollection repo) : IUseCase {
+    public async Task<ServiceSubnetsResult> ExecuteAsync(string? cidr, int? prefix, CancellationToken token) {
+        IReadOnlyList<Service> services = await repo.GetAllOfTypeAsync<Service>();
 
         // If CIDR is provided → filter mode
-        if (cidr is not null)
-        {
+        if (cidr is not null) {
             Cidr parsed;
-            try
-            {
+            try {
                 parsed = Cidr.Parse(cidr);
             }
-            catch
-            {
+            catch {
                 return ServiceSubnetsResult.InvalidCidr(cidr);
             }
 
@@ -56,8 +51,7 @@ public record SubnetSummary(string Cidr, int Count);
 
 public record ServiceSummary(string Name, string Ip, List<string>? RunsOn);
 
-public class ServiceSubnetsResult
-{
+public class ServiceSubnetsResult {
     public bool IsInvalidCidr { get; private set; }
     public string? InvalidCidrValue { get; private set; }
 
@@ -66,18 +60,11 @@ public class ServiceSubnetsResult
     public List<SubnetSummary> Subnets { get; private set; } = new();
     public List<ServiceSummary> Services { get; private set; } = new();
 
-    public static ServiceSubnetsResult InvalidCidr(string cidr)
-    {
-        return new ServiceSubnetsResult { IsInvalidCidr = true, InvalidCidrValue = cidr };
-    }
+    public static ServiceSubnetsResult InvalidCidr(string cidr) =>
+        new() { IsInvalidCidr = true, InvalidCidrValue = cidr };
 
-    public static ServiceSubnetsResult FromSubnets(List<SubnetSummary> subnets)
-    {
-        return new ServiceSubnetsResult { Subnets = subnets };
-    }
+    public static ServiceSubnetsResult FromSubnets(List<SubnetSummary> subnets) => new() { Subnets = subnets };
 
-    public static ServiceSubnetsResult FromServices(List<ServiceSummary> services, string cidr)
-    {
-        return new ServiceSubnetsResult { Services = services, FilteredCidr = cidr };
-    }
+    public static ServiceSubnetsResult FromServices(List<ServiceSummary> services, string cidr) =>
+        new() { Services = services, FilteredCidr = cidr };
 }

@@ -7,19 +7,17 @@ namespace Tests.E2e;
 
 public class SwitchCardTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) : E2ETestBase(fixture, output)
-{
+    ITestOutputHelper output) : E2ETestBase(fixture, output) {
+    private readonly PlaywrightFixture _fixture = fixture;
     private readonly ITestOutputHelper _output = output;
 
     [Fact]
-    public async Task User_Can_Edit_Switch_Model_And_Features()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Edit_Switch_Model_And_Features() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-fw-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -62,8 +60,7 @@ public class SwitchCardTests(
             await Assertions.Expect(card.ManagedBadge(name)).ToBeVisibleAsync();
             await Assertions.Expect(card.PoeBadge(name)).ToBeVisibleAsync();
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
 
@@ -74,22 +71,19 @@ public class SwitchCardTests(
 
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Rename_Switch_From_Details_Page()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Rename_Switch_From_Details_Page() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-fw-{Guid.NewGuid():N}"[..16];
         var renamed = $"{name}-ren";
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -112,8 +106,7 @@ public class SwitchCardTests(
             // after rename we should be on new URL and see the renamed card root
             await Assertions.Expect(card.SwitchItem(renamed)).ToBeVisibleAsync();
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
 
@@ -124,22 +117,19 @@ public class SwitchCardTests(
 
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Clone_Switch_From_Details_Page()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Clone_Switch_From_Details_Page() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-fw-{Guid.NewGuid():N}"[..16];
         var clone = $"{name}-cpy";
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -162,8 +152,7 @@ public class SwitchCardTests(
             // should be on the clone's details URL and see the clone card
             await Assertions.Expect(card.SwitchItem(clone)).ToBeVisibleAsync();
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
 
@@ -174,21 +163,18 @@ public class SwitchCardTests(
 
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
 
     [Fact]
-    public async Task User_Can_Delete_Switch_From_Details_Page()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Delete_Switch_From_Details_Page() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-fw-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -211,8 +197,7 @@ public class SwitchCardTests(
             // After delete, your page navigates away (Nav.NavigateTo("/hardware/tree"))
             await page.WaitForURLAsync("**/hardware/tree");
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
             _output.WriteLine($"Current URL: {page.Url}");
 
@@ -223,22 +208,19 @@ public class SwitchCardTests(
 
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }
-    
-    
+
+
     [Fact]
-    public async Task User_Can_Add_And_Remove_Tags_From_Switch_Card()
-    {
-        var (context, page) = await CreatePageAsync();
+    public async Task User_Can_Add_And_Remove_Tags_From_Switch_Card() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
         var name = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try
-        {
-            await page.GotoAsync(fixture.BaseUrl);
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
 
             var layout = new MainLayoutPom(page);
             await layout.AssertLoadedAsync();
@@ -256,7 +238,7 @@ public class SwitchCardTests(
 
             var card = new SwitchCardPom(page);
 
-            var tags = card.Tags;
+            TagsPom tags = card.Tags;
 
             // -------------------------------------------------
             // Add multiple tags in one modal interaction
@@ -290,8 +272,7 @@ public class SwitchCardTests(
 
             await context.CloseAsync();
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }

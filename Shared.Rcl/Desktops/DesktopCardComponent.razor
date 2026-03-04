@@ -86,7 +86,8 @@
             {
                 @foreach (var cpu in Desktop.Cpus)
                 {
-                    <div class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
                         <button data-testid=@($"edit-cpu-{cpu.ToString().Replace(" ", "-")}")
                                 class="hover:text-emerald-400"
                                 @onclick="() => OpenEditCpu(cpu)">
@@ -110,7 +111,8 @@
 
             @if (Desktop.Ram is not null)
             {
-                <div class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                <div
+                    class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
                     <button data-testid="ram-value-button"
                             class="hover:text-emerald-400"
                             @onclick="EditRam">
@@ -137,7 +139,8 @@
             {
                 @foreach (var drive in Desktop.Drives)
                 {
-                    <div class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
                         <button data-testid=@($"edit-drive-{drive.Type}-{drive.Size}")
                                 class="hover:text-emerald-400"
                                 @onclick="() => OpenEditDrive(drive)">
@@ -165,7 +168,8 @@
             {
                 @foreach (var nic in Desktop.Nics)
                 {
-                    <div class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
                         <button data-testid=@($"edit-nic-{nic.Type}-{nic.Speed}")
                                 class="hover:text-emerald-400"
                                 @onclick="() => OpenEditNic(nic)">
@@ -193,7 +197,8 @@
             {
                 @foreach (var gpu in Desktop.Gpus)
                 {
-                    <div class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                    <div
+                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
                         <button data-testid=@($"edit-gpu-{gpu.Model}-{gpu.Vram}")
                                 class="hover:text-emerald-400"
                                 @onclick="() => OpenEditGpu(gpu)">
@@ -205,33 +210,32 @@
         </div>
 
         <ResourceTagEditor Resource="Desktop"
-                           TestIdPrefix="desktop" />
+                           TestIdPrefix="desktop"/>
 
         <ResourceLabelEditor Resource="Desktop"
-                             TestIdPrefix="desktop" />
+                             TestIdPrefix="desktop"/>
 
 
+        <div class="md:col-span-2" data-testid="desktop-notes-section">
+            <div class="text-zinc-400 mb-1">Notes</div>
 
-    <div class="md:col-span-2" data-testid="desktop-notes-section">
-        <div class="text-zinc-400 mb-1">Notes</div>
-
-        @if (!_editingNotes)
-        {
-            <MarkdownViewer Value="@Desktop.Notes"
-                            ShowEditButton="true"
-                            OnEdit="BeginNotesEdit"
-                            TestIdPrefix="desktop-notes-viewer"/>
-        }
-        else
-        {
-            <MarkdownEditor @bind-Value="_notesDraft"
-                            ShowActionButtons="true"
-                            OnSave="SaveNotes"
-                            OnCancel="CancelNotesEdit"
-                            TestIdPrefix="desktop-notes-editor"/>
-        }
+            @if (!_editingNotes)
+            {
+                <MarkdownViewer Value="@Desktop.Notes"
+                                ShowEditButton="true"
+                                OnEdit="BeginNotesEdit"
+                                TestIdPrefix="desktop-notes-viewer"/>
+            }
+            else
+            {
+                <MarkdownEditor @bind-Value="_notesDraft"
+                                ShowActionButtons="true"
+                                OnSave="SaveNotes"
+                                OnCancel="CancelNotesEdit"
+                                TestIdPrefix="desktop-notes-editor"/>
+            }
+        </div>
     </div>
-</div>
 </div>
 
 <ConfirmModal IsOpen="_confirmDeleteOpen"
@@ -267,14 +271,14 @@
           IsOpenChanged="v => _cpuModalOpen = v"
           Value="@_editingCpu"
           OnSubmit="HandleCpuSubmit"
-          OnDelete="HandleCpuDelete" 
+          OnDelete="HandleCpuDelete"
           TestIdPrefix="desktop"/>
 
 
 <RamModal IsOpen="@_isRamModalOpen"
           IsOpenChanged="v => _isRamModalOpen = v"
           Value="@Desktop.Ram"
-          OnSubmit="HandleRamSubmit" 
+          OnSubmit="HandleRamSubmit"
           TestIdPrefix="desktop"/>
 
 
@@ -282,7 +286,7 @@
             IsOpenChanged="v => _driveModalOpen = v"
             Value="@_editingDrive"
             OnSubmit="HandleDriveSubmit"
-            OnDelete="HandleDriveDelete" 
+            OnDelete="HandleDriveDelete"
             TestIdPrefix="desktop"/>
 
 
@@ -290,7 +294,7 @@
           IsOpenChanged="v => _gpuModalOpen = v"
           Value="@_editingGpu"
           OnSubmit="HandleGpuSubmit"
-          OnDelete="HandleGpuDelete" 
+          OnDelete="HandleGpuDelete"
           TestIdPrefix="desktop"/>
 
 

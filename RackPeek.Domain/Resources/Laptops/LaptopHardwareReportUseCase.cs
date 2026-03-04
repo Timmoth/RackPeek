@@ -2,14 +2,11 @@ using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.Laptops;
 
-public class LaptopHardwareReportUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<LaptopHardwareReport> ExecuteAsync()
-    {
-        var laptops = await repository.GetAllOfTypeAsync<Laptop>();
+public class LaptopHardwareReportUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<LaptopHardwareReport> ExecuteAsync() {
+        IReadOnlyList<Laptop> laptops = await repository.GetAllOfTypeAsync<Laptop>();
 
-        var rows = laptops.Select(laptop =>
-        {
+        var rows = laptops.Select(laptop => {
             var totalCores = laptop.Cpus?.Sum(c => c.Cores) ?? 0;
             var totalThreads = laptop.Cpus?.Sum(c => c.Threads) ?? 0;
 

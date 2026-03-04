@@ -2,8 +2,7 @@ using RackPeek.Domain.Resources.Services;
 
 namespace Shared.Rcl.Services;
 
-public sealed class ServiceEditModel
-{
+public sealed class ServiceEditModel {
     public string Name { get; init; } = default!;
     public string? Ip { get; set; }
     public int? Port { get; set; }
@@ -12,10 +11,8 @@ public sealed class ServiceEditModel
     public List<string>? RunsOn { get; set; }
     public string? Notes { get; set; }
 
-    public static ServiceEditModel From(Service s)
-    {
-        return new ServiceEditModel
-        {
+    public static ServiceEditModel From(Service s) {
+        return new ServiceEditModel {
             Name = s.Name,
             Ip = s.Network?.Ip,
             Port = s.Network?.Port,

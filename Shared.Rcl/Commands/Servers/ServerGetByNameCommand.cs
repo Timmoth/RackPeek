@@ -8,17 +8,16 @@ namespace Shared.Rcl.Commands.Servers;
 
 public class ServerGetByNameCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<ServerNameSettings>
-{
+) : AsyncCommand<ServerNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerNameSettings settings,
-        CancellationToken cancellationToken)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var useCase = scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<Server>>();
+        CancellationToken cancellationToken) {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IGetResourceByNameUseCase<Server> useCase =
+            scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<Server>>();
 
-        var server = await useCase.ExecuteAsync(settings.Name);
+        Server server = await useCase.ExecuteAsync(settings.Name);
 
         AnsiConsole.MarkupLine(
             $"[green]{server.Name}[/]  RAM: {server.Ram?.Size} GB, IPMI: {(server.Ipmi == true ? "yes" : "no")}");

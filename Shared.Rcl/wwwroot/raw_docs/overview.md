@@ -2,9 +2,11 @@
 
 Welcome to the RackPeek knowledge base.
 
-RackPeek is a lightweight, opinionated CLI tool and Web UI for documenting and managing home lab and small-scale IT infrastructure.
+RackPeek is a lightweight, opinionated CLI tool and Web UI for documenting and managing home lab and small-scale IT
+infrastructure.
 
-It exists to help you understand your infrastructure clearly — without enterprise bloat, proprietary lock-in, or unnecessary process.
+It exists to help you understand your infrastructure clearly — without enterprise bloat, proprietary lock-in, or
+unnecessary process.
 
 ---
 
@@ -27,18 +29,23 @@ It is intentionally focused on homelabs and self-hosted environments, not enterp
 RackPeek is built around a few core principles:
 
 ### Simplicity
+
 Clear models. Minimal abstraction. No unnecessary metadata.
 
 ### Openness
+
 Your data is stored in plain YAML. No hidden databases. No lock-in.
 
 ### Ease of Deployment
+
 Runs in Docker or as a single binary. Fast to install. Easy to maintain.
 
 ### Privacy
+
 No telemetry. No tracking. No ads. What runs on your infrastructure stays on your infrastructure.
 
 ### Opinionated
+
 Optimized for real-world home lab use — not corporate documentation workflows.
 
 ---
@@ -64,6 +71,7 @@ Post-1.0, expansion areas include deeper automation support, diagramming, and in
 RackPeek is open source and community-driven.
 
 If you:
+
 - Run a homelab
 - Self-host services
 - Experiment with infrastructure
