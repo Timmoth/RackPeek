@@ -18,11 +18,12 @@ strip_colors() {
   sed -E "s/\x1B\[[0-9;]*[mK]//g"
 }
 
+
 run_help() {
- local project="./RackPeek" 
- local config="Release" 
- local publish_dir="$project/publish" 
- local exe="$publish_dir/RackPeek"
+  local project="./RackPeek"
+  local config="Release"
+  local publish_dir="$project/publish"
+  local exe="$publish_dir/RackPeek"
 
   if [[ ! -x "$exe" ]]; then
     echo "Publishing RackPeek ($config)..." >&2
@@ -30,7 +31,8 @@ run_help() {
   fi
 
   local output
-  output=$("$exe" "$@" 2>&1 | strip_colors)
+  output=$("$exe" "$@" 2>&1 | strip_colors || true)
+
   echo "$output"
 }
 
@@ -68,26 +70,26 @@ get_description() {
   '
 }
 
-# UPDATED: Handles "add <name>" correctly by taking only the first column ($1)
+
 get_child_commands() {
   local help_output="$1"
-  
-  echo "$help_output" | awk '
-    BEGIN { in_commands = 0 }
-    /^COMMANDS:/ { in_commands = 1; next }
-    
-    in_commands {
-      # Stop if we hit an empty line or a new section
-      if ($0 ~ /^[[:space:]]*$/) exit;
-      if ($0 ~ /^[A-Z]+:/) exit;
 
-      # Match lines that look like commands (indented)
-      if ($0 ~ /^[[:space:]]+[a-zA-Z0-9-]+/) {
-        # Print only the first word (the command name)
-        print $1
+  echo "$help_output" | awk '
+    /^COMMANDS:/ { in_commands=1; next }
+
+    in_commands {
+      # stop when another section header appears
+      if ($0 ~ /^[A-Z]+:/) exit
+
+      # ignore empty lines
+      if ($0 ~ /^[[:space:]]*$/) next
+
+      # capture first token (command name)
+      if (match($0, /^[[:space:]]*([a-zA-Z0-9_-]+)/, m)) {
+        print m[1]
       }
     }
-  '
+  ' | sort -u
 }
 
 # ----------------------------
@@ -160,16 +162,22 @@ fi
   # 5. Recurse
   local child_cmds
   mapfile -t child_cmds < <(get_child_commands "$help_output")
-
+  
+  # If no children, still create a leaf entry
+  if [[ ${#child_cmds[@]} -eq 0 && ${#current_cmd_array[@]} -gt 0 ]]; then
+      # Leaf command entry
+      echo "$tree_entry" >> "$TREE_TEMP"
+  fi
+  
   for child in "${child_cmds[@]}"; do
-    echo "Recursing into: ${display_header} ${child}" >&2
-    local next_path
-    if [[ -z "$path_string" ]]; then
-      next_path="$child"
-    else
-      next_path="$path_string $child"
-    fi
-    generate_help_recursive "$next_path"
+      echo "Recursing into: ${display_header} ${child}" >&2
+      local next_path
+      if [[ -z "$path_string" ]]; then
+          next_path="$child"
+      else
+          next_path="$path_string $child"
+      fi
+      generate_help_recursive "$next_path"
   done
 }
 

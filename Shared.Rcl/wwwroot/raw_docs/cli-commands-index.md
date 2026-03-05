@@ -1,142 +1,322 @@
+
 - [rpk](docs/Commands.md#rpk)
-    - [summary](docs/Commands.md#rpk-summary) - Show a summarized report of all resources in the system
-    - [servers](docs/Commands.md#rpk-servers) - Manage servers and their components
-        - [summary](docs/Commands.md#rpk-servers-summary) - Show a summarized hardware report for all servers
-        - [add](docs/Commands.md#rpk-servers-add) - Add a new server to the inventory
-        - [get](docs/Commands.md#rpk-servers-get) - List all servers or retrieve a specific server by name
-        - [describe](docs/Commands.md#rpk-servers-describe) - Display detailed information about a specific server
-        - [set](docs/Commands.md#rpk-servers-set) - Update properties of an existing server
-        - [del](docs/Commands.md#rpk-servers-del) - Delete a server from the inventory
-        - [tree](docs/Commands.md#rpk-servers-tree) - Display the dependency tree of a server
-        - [cpu](docs/Commands.md#rpk-servers-cpu) - Manage CPUs attached to a server
-            - [add](docs/Commands.md#rpk-servers-cpu-add) - Add a CPU to a specific server
-            - [set](docs/Commands.md#rpk-servers-cpu-set) - Update configuration of a server CPU
-            - [del](docs/Commands.md#rpk-servers-cpu-del) - Remove a CPU from a server
-        - [drive](docs/Commands.md#rpk-servers-drive) - Manage drives attached to a server
-            - [add](docs/Commands.md#rpk-servers-drive-add) - Add a storage drive to a server
-            - [set](docs/Commands.md#rpk-servers-drive-set) - Update properties of a server drive
-            - [del](docs/Commands.md#rpk-servers-drive-del) - Remove a drive from a server
-        - [gpu](docs/Commands.md#rpk-servers-gpu) - Manage GPUs attached to a server
-            - [add](docs/Commands.md#rpk-servers-gpu-add) - Add a GPU to a server
-            - [set](docs/Commands.md#rpk-servers-gpu-set) - Update properties of a server GPU
-            - [del](docs/Commands.md#rpk-servers-gpu-del) - Remove a GPU from a server
-        - [nic](docs/Commands.md#rpk-servers-nic) - Manage network interface cards (NICs) for a server
-            - [add](docs/Commands.md#rpk-servers-nic-add) - Add a NIC to a server
-            - [set](docs/Commands.md#rpk-servers-nic-set) - Update properties of a server NIC
-            - [del](docs/Commands.md#rpk-servers-nic-del) - Remove a NIC from a server
-    - [switches](docs/Commands.md#rpk-switches) - Manage network switches
-        - [summary](docs/Commands.md#rpk-switches-summary) - Show a hardware report for all switches
-        - [add](docs/Commands.md#rpk-switches-add) - Add a new network switch to the inventory
-        - [list](docs/Commands.md#rpk-switches-list) - List all switches in the system
-        - [get](docs/Commands.md#rpk-switches-get) - Retrieve details of a specific switch by name
-        - [describe](docs/Commands.md#rpk-switches-describe) - Show detailed information about a switch
-        - [set](docs/Commands.md#rpk-switches-set) - Update properties of a switch
-        - [del](docs/Commands.md#rpk-switches-del) - Delete a switch from the inventory
-        - [port](docs/Commands.md#rpk-switches-port) - Manage ports on a network switch
-            - [add](docs/Commands.md#rpk-switches-port-add) - Add a port to a switch
-            - [set](docs/Commands.md#rpk-switches-port-set) - Update a switch port
-            - [del](docs/Commands.md#rpk-switches-port-del) - Remove a port from a switch
-    - [routers](docs/Commands.md#rpk-routers) - Manage network routers
-        - [summary](docs/Commands.md#rpk-routers-summary) - Show a hardware report for all routers
-        - [add](docs/Commands.md#rpk-routers-add) - Add a new network router to the inventory
-        - [list](docs/Commands.md#rpk-routers-list) - List all routers in the system
-        - [get](docs/Commands.md#rpk-routers-get) - Retrieve details of a specific router by name
-        - [describe](docs/Commands.md#rpk-routers-describe) - Show detailed information about a router
-        - [set](docs/Commands.md#rpk-routers-set) - Update properties of a router
-        - [del](docs/Commands.md#rpk-routers-del) - Delete a router from the inventory
-        - [port](docs/Commands.md#rpk-routers-port) - Manage ports on a router
-            - [add](docs/Commands.md#rpk-routers-port-add) - Add a port to a router
-            - [set](docs/Commands.md#rpk-routers-port-set) - Update a router port
-            - [del](docs/Commands.md#rpk-routers-port-del) - Remove a port from a router
-    - [firewalls](docs/Commands.md#rpk-firewalls) - Manage firewalls
-        - [summary](docs/Commands.md#rpk-firewalls-summary) - Show a hardware report for all firewalls
-        - [add](docs/Commands.md#rpk-firewalls-add) - Add a new firewall to the inventory
-        - [list](docs/Commands.md#rpk-firewalls-list) - List all firewalls in the system
-        - [get](docs/Commands.md#rpk-firewalls-get) - Retrieve details of a specific firewall by name
-        - [describe](docs/Commands.md#rpk-firewalls-describe) - Show detailed information about a firewall
-        - [set](docs/Commands.md#rpk-firewalls-set) - Update properties of a firewall
-        - [del](docs/Commands.md#rpk-firewalls-del) - Delete a firewall from the inventory
-        - [port](docs/Commands.md#rpk-firewalls-port) - Manage ports on a firewall
-            - [add](docs/Commands.md#rpk-firewalls-port-add) - Add a port to a firewall
-            - [set](docs/Commands.md#rpk-firewalls-port-set) - Update a firewall port
-            - [del](docs/Commands.md#rpk-firewalls-port-del) - Remove a port from a firewall
-    - [systems](docs/Commands.md#rpk-systems) - Manage systems and their dependencies
-        - [summary](docs/Commands.md#rpk-systems-summary) - Show a summary report for all systems
-        - [add](docs/Commands.md#rpk-systems-add) - Add a new system to the inventory
-        - [list](docs/Commands.md#rpk-systems-list) - List all systems
-        - [get](docs/Commands.md#rpk-systems-get) - Retrieve a system by name
-        - [describe](docs/Commands.md#rpk-systems-describe) - Display detailed information about a system
-        - [set](docs/Commands.md#rpk-systems-set) - Update properties of a system
-        - [del](docs/Commands.md#rpk-systems-del) - Delete a system from the inventory
-        - [tree](docs/Commands.md#rpk-systems-tree) - Display the dependency tree for a system
     - [accesspoints](docs/Commands.md#rpk-accesspoints) - Manage access points
-        - [summary](docs/Commands.md#rpk-accesspoints-summary) - Show a hardware report for all access points
         - [add](docs/Commands.md#rpk-accesspoints-add) - Add a new access point
-        - [list](docs/Commands.md#rpk-accesspoints-list) - List all access points
-        - [get](docs/Commands.md#rpk-accesspoints-get) - Retrieve an access point by name
-        - [describe](docs/Commands.md#rpk-accesspoints-describe) - Show detailed information about an access point
-        - [set](docs/Commands.md#rpk-accesspoints-set) - Update properties of an access point
+        - [add](docs/Commands.md#rpk-accesspoints-add) - Add a new access point
         - [del](docs/Commands.md#rpk-accesspoints-del) - Delete an access point
-    - [ups](docs/Commands.md#rpk-ups) - Manage UPS units
-        - [summary](docs/Commands.md#rpk-ups-summary) - Show a hardware report for all UPS units
-        - [add](docs/Commands.md#rpk-ups-add) - Add a new UPS unit
-        - [list](docs/Commands.md#rpk-ups-list) - List all UPS units
-        - [get](docs/Commands.md#rpk-ups-get) - Retrieve a UPS unit by name
-        - [describe](docs/Commands.md#rpk-ups-describe) - Show detailed information about a UPS unit
-        - [set](docs/Commands.md#rpk-ups-set) - Update properties of a UPS unit
-        - [del](docs/Commands.md#rpk-ups-del) - Delete a UPS unit
+        - [del](docs/Commands.md#rpk-accesspoints-del) - Delete an access point
+        - [describe](docs/Commands.md#rpk-accesspoints-describe) - Show detailed information about an access point
+        - [describe](docs/Commands.md#rpk-accesspoints-describe) - Show detailed information about an access point
+        - [get](docs/Commands.md#rpk-accesspoints-get) - Retrieve an access point by name
+        - [get](docs/Commands.md#rpk-accesspoints-get) - Retrieve an access point by name
+        - [label](docs/Commands.md#rpk-accesspoints-label) - Manage labels on an access point
+            - [add](docs/Commands.md#rpk-accesspoints-label-add) - Add a label to an access point
+            - [add](docs/Commands.md#rpk-accesspoints-label-add) - Add a label to an access point
+            - [remove](docs/Commands.md#rpk-accesspoints-label-remove) - Remove a label from an access point
+            - [remove](docs/Commands.md#rpk-accesspoints-label-remove) - Remove a label from an access point
+        - [list](docs/Commands.md#rpk-accesspoints-list) - List all access points
+        - [list](docs/Commands.md#rpk-accesspoints-list) - List all access points
+        - [set](docs/Commands.md#rpk-accesspoints-set) - Update properties of an access point
+        - [set](docs/Commands.md#rpk-accesspoints-set) - Update properties of an access point
+        - [summary](docs/Commands.md#rpk-accesspoints-summary) - Show a hardware report for all access points
+        - [summary](docs/Commands.md#rpk-accesspoints-summary) - Show a hardware report for all access points
+    - [ansible](docs/Commands.md#rpk-ansible) - Generate and manage Ansible inventory
+        - [inventory](docs/Commands.md#rpk-ansible-inventory) - Generate an Ansible inventory
+        - [inventory](docs/Commands.md#rpk-ansible-inventory) - Generate an Ansible inventory
     - [desktops](docs/Commands.md#rpk-desktops) - Manage desktop computers and their components
         - [add](docs/Commands.md#rpk-desktops-add) - Add a new desktop
-        - [list](docs/Commands.md#rpk-desktops-list) - List all desktops
-        - [get](docs/Commands.md#rpk-desktops-get) - Retrieve a desktop by name
-        - [describe](docs/Commands.md#rpk-desktops-describe) - Show detailed information about a desktop
-        - [set](docs/Commands.md#rpk-desktops-set) - Update properties of a desktop
-        - [del](docs/Commands.md#rpk-desktops-del) - Delete a desktop from the inventory
-        - [summary](docs/Commands.md#rpk-desktops-summary) - Show a summarized hardware report for all desktops
-        - [tree](docs/Commands.md#rpk-desktops-tree) - Display the dependency tree for a desktop
+        - [add](docs/Commands.md#rpk-desktops-add) - Add a new desktop
         - [cpu](docs/Commands.md#rpk-desktops-cpu) - Manage CPUs attached to desktops
             - [add](docs/Commands.md#rpk-desktops-cpu-add) - Add a CPU to a desktop
-            - [set](docs/Commands.md#rpk-desktops-cpu-set) - Update a desktop CPU
+            - [add](docs/Commands.md#rpk-desktops-cpu-add) - Add a CPU to a desktop
             - [del](docs/Commands.md#rpk-desktops-cpu-del) - Remove a CPU from a desktop
+            - [del](docs/Commands.md#rpk-desktops-cpu-del) - Remove a CPU from a desktop
+            - [set](docs/Commands.md#rpk-desktops-cpu-set) - Update a desktop CPU
+            - [set](docs/Commands.md#rpk-desktops-cpu-set) - Update a desktop CPU
+        - [del](docs/Commands.md#rpk-desktops-del) - Delete a desktop from the inventory
+        - [del](docs/Commands.md#rpk-desktops-del) - Delete a desktop from the inventory
+        - [describe](docs/Commands.md#rpk-desktops-describe) - Show detailed information about a desktop
+        - [describe](docs/Commands.md#rpk-desktops-describe) - Show detailed information about a desktop
         - [drive](docs/Commands.md#rpk-desktops-drive) - Manage storage drives attached to desktops
             - [add](docs/Commands.md#rpk-desktops-drive-add) - Add a drive to a desktop
-            - [set](docs/Commands.md#rpk-desktops-drive-set) - Update a desktop drive
+            - [add](docs/Commands.md#rpk-desktops-drive-add) - Add a drive to a desktop
             - [del](docs/Commands.md#rpk-desktops-drive-del) - Remove a drive from a desktop
+            - [del](docs/Commands.md#rpk-desktops-drive-del) - Remove a drive from a desktop
+            - [set](docs/Commands.md#rpk-desktops-drive-set) - Update a desktop drive
+            - [set](docs/Commands.md#rpk-desktops-drive-set) - Update a desktop drive
+        - [get](docs/Commands.md#rpk-desktops-get) - Retrieve a desktop by name
+        - [get](docs/Commands.md#rpk-desktops-get) - Retrieve a desktop by name
         - [gpu](docs/Commands.md#rpk-desktops-gpu) - Manage GPUs attached to desktops
             - [add](docs/Commands.md#rpk-desktops-gpu-add) - Add a GPU to a desktop
-            - [set](docs/Commands.md#rpk-desktops-gpu-set) - Update a desktop GPU
+            - [add](docs/Commands.md#rpk-desktops-gpu-add) - Add a GPU to a desktop
             - [del](docs/Commands.md#rpk-desktops-gpu-del) - Remove a GPU from a desktop
+            - [del](docs/Commands.md#rpk-desktops-gpu-del) - Remove a GPU from a desktop
+            - [set](docs/Commands.md#rpk-desktops-gpu-set) - Update a desktop GPU
+            - [set](docs/Commands.md#rpk-desktops-gpu-set) - Update a desktop GPU
+        - [label](docs/Commands.md#rpk-desktops-label) - Manage labels on a desktop
+            - [add](docs/Commands.md#rpk-desktops-label-add) - Add a label to a desktop
+            - [add](docs/Commands.md#rpk-desktops-label-add) - Add a label to a desktop
+            - [remove](docs/Commands.md#rpk-desktops-label-remove) - Remove a label from a desktop
+            - [remove](docs/Commands.md#rpk-desktops-label-remove) - Remove a label from a desktop
+        - [list](docs/Commands.md#rpk-desktops-list) - List all desktops
+        - [list](docs/Commands.md#rpk-desktops-list) - List all desktops
         - [nic](docs/Commands.md#rpk-desktops-nic) - Manage network interface cards (NICs) for desktops
             - [add](docs/Commands.md#rpk-desktops-nic-add) - Add a NIC to a desktop
-            - [set](docs/Commands.md#rpk-desktops-nic-set) - Update a desktop NIC
+            - [add](docs/Commands.md#rpk-desktops-nic-add) - Add a NIC to a desktop
             - [del](docs/Commands.md#rpk-desktops-nic-del) - Remove a NIC from a desktop
-    - [Laptops](docs/Commands.md#rpk-laptops) - Manage Laptop computers and their components
+            - [del](docs/Commands.md#rpk-desktops-nic-del) - Remove a NIC from a desktop
+            - [set](docs/Commands.md#rpk-desktops-nic-set) - Update a desktop NIC
+            - [set](docs/Commands.md#rpk-desktops-nic-set) - Update a desktop NIC
+        - [set](docs/Commands.md#rpk-desktops-set) - Update properties of a desktop
+        - [set](docs/Commands.md#rpk-desktops-set) - Update properties of a desktop
+        - [summary](docs/Commands.md#rpk-desktops-summary) - Show a summarized hardware report for all desktops
+        - [summary](docs/Commands.md#rpk-desktops-summary) - Show a summarized hardware report for all desktops
+        - [tree](docs/Commands.md#rpk-desktops-tree) - Display the dependency tree for a desktop
+        - [tree](docs/Commands.md#rpk-desktops-tree) - Display the dependency tree for a desktop
+    - [firewalls](docs/Commands.md#rpk-firewalls) - Manage firewalls
+        - [add](docs/Commands.md#rpk-firewalls-add) - Add a new firewall to the inventory
+        - [add](docs/Commands.md#rpk-firewalls-add) - Add a new firewall to the inventory
+        - [del](docs/Commands.md#rpk-firewalls-del) - Delete a firewall from the inventory
+        - [del](docs/Commands.md#rpk-firewalls-del) - Delete a firewall from the inventory
+        - [describe](docs/Commands.md#rpk-firewalls-describe) - Show detailed information about a firewall
+        - [describe](docs/Commands.md#rpk-firewalls-describe) - Show detailed information about a firewall
+        - [get](docs/Commands.md#rpk-firewalls-get) - Retrieve details of a specific firewall by name
+        - [get](docs/Commands.md#rpk-firewalls-get) - Retrieve details of a specific firewall by name
+        - [label](docs/Commands.md#rpk-firewalls-label) - Manage labels on a firewall
+            - [add](docs/Commands.md#rpk-firewalls-label-add) - Add a label to a firewall
+            - [add](docs/Commands.md#rpk-firewalls-label-add) - Add a label to a firewall
+            - [remove](docs/Commands.md#rpk-firewalls-label-remove) - Remove a label from a firewall
+            - [remove](docs/Commands.md#rpk-firewalls-label-remove) - Remove a label from a firewall
+        - [list](docs/Commands.md#rpk-firewalls-list) - List all firewalls in the system
+        - [list](docs/Commands.md#rpk-firewalls-list) - List all firewalls in the system
+        - [port](docs/Commands.md#rpk-firewalls-port) - Manage ports on a firewall
+            - [add](docs/Commands.md#rpk-firewalls-port-add) - Add a port to a firewall
+            - [add](docs/Commands.md#rpk-firewalls-port-add) - Add a port to a firewall
+            - [del](docs/Commands.md#rpk-firewalls-port-del) - Remove a port from a firewall
+            - [del](docs/Commands.md#rpk-firewalls-port-del) - Remove a port from a firewall
+            - [set](docs/Commands.md#rpk-firewalls-port-set) - Update a firewall port
+            - [set](docs/Commands.md#rpk-firewalls-port-set) - Update a firewall port
+        - [set](docs/Commands.md#rpk-firewalls-set) - Update properties of a firewall
+        - [set](docs/Commands.md#rpk-firewalls-set) - Update properties of a firewall
+        - [summary](docs/Commands.md#rpk-firewalls-summary) - Show a hardware report for all firewalls
+        - [summary](docs/Commands.md#rpk-firewalls-summary) - Show a hardware report for all firewalls
+    - [hosts](docs/Commands.md#rpk-hosts) - Generate a hosts file from infrastructure
+        - [export](docs/Commands.md#rpk-hosts-export) - Generate a /etc/hosts compatible file
+        - [export](docs/Commands.md#rpk-hosts-export) - Generate a /etc/hosts compatible file
+    - [laptops](docs/Commands.md#rpk-laptops) - Manage Laptop computers and their components
         - [add](docs/Commands.md#rpk-laptops-add) - Add a new Laptop
-        - [list](docs/Commands.md#rpk-laptops-list) - List all Laptops
-        - [get](docs/Commands.md#rpk-laptops-get) - Retrieve a Laptop by name
-        - [describe](docs/Commands.md#rpk-laptops-describe) - Show detailed information about a Laptop
-        - [del](docs/Commands.md#rpk-laptops-del) - Delete a Laptop from the inventory
-        - [summary](docs/Commands.md#rpk-laptops-summary) - Show a summarized hardware report for all Laptops
-        - [tree](docs/Commands.md#rpk-laptops-tree) - Display the dependency tree for a Laptop
+        - [add](docs/Commands.md#rpk-laptops-add) - Add a new Laptop
         - [cpu](docs/Commands.md#rpk-laptops-cpu) - Manage CPUs attached to Laptops
             - [add](docs/Commands.md#rpk-laptops-cpu-add) - Add a CPU to a Laptop
-            - [set](docs/Commands.md#rpk-laptops-cpu-set) - Update a Laptop CPU
+            - [add](docs/Commands.md#rpk-laptops-cpu-add) - Add a CPU to a Laptop
             - [del](docs/Commands.md#rpk-laptops-cpu-del) - Remove a CPU from a Laptop
-        - [drive](docs/Commands.md#rpk-laptops-drive) - Manage storage drives attached to Laptops
-            - [add](docs/Commands.md#rpk-laptops-drive-add) - Add a drive to a Laptop
-            - [set](docs/Commands.md#rpk-laptops-drive-set) - Update a Laptop drive
-            - [del](docs/Commands.md#rpk-laptops-drive-del) - Remove a drive from a Laptop
+            - [del](docs/Commands.md#rpk-laptops-cpu-del) - Remove a CPU from a Laptop
+            - [set](docs/Commands.md#rpk-laptops-cpu-set) - Update a Laptop CPU
+            - [set](docs/Commands.md#rpk-laptops-cpu-set) - Update a Laptop CPU
+        - [del](docs/Commands.md#rpk-laptops-del) - Delete a Laptop from the inventory
+        - [del](docs/Commands.md#rpk-laptops-del) - Delete a Laptop from the inventory
+        - [describe](docs/Commands.md#rpk-laptops-describe) - Show detailed information about a Laptop
+        - [describe](docs/Commands.md#rpk-laptops-describe) - Show detailed information about a Laptop
+        - [drives](docs/Commands.md#rpk-laptops-drives) - Manage storage drives attached to Laptops
+            - [add](docs/Commands.md#rpk-laptops-drives-add) - Add a drive to a Laptop
+            - [add](docs/Commands.md#rpk-laptops-drives-add) - Add a drive to a Laptop
+            - [del](docs/Commands.md#rpk-laptops-drives-del) - Remove a drive from a Laptop
+            - [del](docs/Commands.md#rpk-laptops-drives-del) - Remove a drive from a Laptop
+            - [set](docs/Commands.md#rpk-laptops-drives-set) - Update a Laptop drive
+            - [set](docs/Commands.md#rpk-laptops-drives-set) - Update a Laptop drive
+        - [get](docs/Commands.md#rpk-laptops-get) - Retrieve a Laptop by name
+        - [get](docs/Commands.md#rpk-laptops-get) - Retrieve a Laptop by name
         - [gpu](docs/Commands.md#rpk-laptops-gpu) - Manage GPUs attached to Laptops
             - [add](docs/Commands.md#rpk-laptops-gpu-add) - Add a GPU to a Laptop
-            - [set](docs/Commands.md#rpk-laptops-gpu-set) - Update a Laptop GPU
+            - [add](docs/Commands.md#rpk-laptops-gpu-add) - Add a GPU to a Laptop
             - [del](docs/Commands.md#rpk-laptops-gpu-del) - Remove a GPU from a Laptop
+            - [del](docs/Commands.md#rpk-laptops-gpu-del) - Remove a GPU from a Laptop
+            - [set](docs/Commands.md#rpk-laptops-gpu-set) - Update a Laptop GPU
+            - [set](docs/Commands.md#rpk-laptops-gpu-set) - Update a Laptop GPU
+        - [label](docs/Commands.md#rpk-laptops-label) - Manage labels on a laptop
+            - [add](docs/Commands.md#rpk-laptops-label-add) - Add a label to a laptop
+            - [add](docs/Commands.md#rpk-laptops-label-add) - Add a label to a laptop
+            - [remove](docs/Commands.md#rpk-laptops-label-remove) - Remove a label from a laptop
+            - [remove](docs/Commands.md#rpk-laptops-label-remove) - Remove a label from a laptop
+        - [list](docs/Commands.md#rpk-laptops-list) - List all Laptops
+        - [list](docs/Commands.md#rpk-laptops-list) - List all Laptops
+        - [set](docs/Commands.md#rpk-laptops-set) - Update properties of a laptop
+        - [set](docs/Commands.md#rpk-laptops-set) - Update properties of a laptop
+        - [summary](docs/Commands.md#rpk-laptops-summary) - Show a summarized hardware report for all Laptops
+        - [summary](docs/Commands.md#rpk-laptops-summary) - Show a summarized hardware report for all Laptops
+        - [tree](docs/Commands.md#rpk-laptops-tree) - Display the dependency tree for a Laptop
+        - [tree](docs/Commands.md#rpk-laptops-tree) - Display the dependency tree for a Laptop
+    - [mermaid](docs/Commands.md#rpk-mermaid) - Generate Mermaid diagrams from infrastructure
+        - [export](docs/Commands.md#rpk-mermaid-export) - Generate a Mermaid infrastructure diagram
+        - [export](docs/Commands.md#rpk-mermaid-export) - Generate a Mermaid infrastructure diagram
+    - [routers](docs/Commands.md#rpk-routers) - Manage network routers
+        - [add](docs/Commands.md#rpk-routers-add) - Add a new network router to the inventory
+        - [add](docs/Commands.md#rpk-routers-add) - Add a new network router to the inventory
+        - [del](docs/Commands.md#rpk-routers-del) - Delete a router from the inventory
+        - [del](docs/Commands.md#rpk-routers-del) - Delete a router from the inventory
+        - [describe](docs/Commands.md#rpk-routers-describe) - Show detailed information about a router
+        - [describe](docs/Commands.md#rpk-routers-describe) - Show detailed information about a router
+        - [get](docs/Commands.md#rpk-routers-get) - Retrieve details of a specific router by name
+        - [get](docs/Commands.md#rpk-routers-get) - Retrieve details of a specific router by name
+        - [label](docs/Commands.md#rpk-routers-label) - Manage labels on a router
+            - [add](docs/Commands.md#rpk-routers-label-add) - Add a label to a router
+            - [add](docs/Commands.md#rpk-routers-label-add) - Add a label to a router
+            - [remove](docs/Commands.md#rpk-routers-label-remove) - Remove a label from a router
+            - [remove](docs/Commands.md#rpk-routers-label-remove) - Remove a label from a router
+        - [list](docs/Commands.md#rpk-routers-list) - List all routers in the system
+        - [list](docs/Commands.md#rpk-routers-list) - List all routers in the system
+        - [port](docs/Commands.md#rpk-routers-port) - Manage ports on a router
+            - [add](docs/Commands.md#rpk-routers-port-add) - Add a port to a router
+            - [add](docs/Commands.md#rpk-routers-port-add) - Add a port to a router
+            - [del](docs/Commands.md#rpk-routers-port-del) - Remove a port from a router
+            - [del](docs/Commands.md#rpk-routers-port-del) - Remove a port from a router
+            - [set](docs/Commands.md#rpk-routers-port-set) - Update a router port
+            - [set](docs/Commands.md#rpk-routers-port-set) - Update a router port
+        - [set](docs/Commands.md#rpk-routers-set) - Update properties of a router
+        - [set](docs/Commands.md#rpk-routers-set) - Update properties of a router
+        - [summary](docs/Commands.md#rpk-routers-summary) - Show a hardware report for all routers
+        - [summary](docs/Commands.md#rpk-routers-summary) - Show a hardware report for all routers
+    - [servers](docs/Commands.md#rpk-servers) - Manage servers and their components
+        - [add](docs/Commands.md#rpk-servers-add) - Add a new server to the inventory
+        - [add](docs/Commands.md#rpk-servers-add) - Add a new server to the inventory
+        - [cpu](docs/Commands.md#rpk-servers-cpu) - Manage CPUs attached to a server
+            - [add](docs/Commands.md#rpk-servers-cpu-add) - Add a CPU to a specific server
+            - [add](docs/Commands.md#rpk-servers-cpu-add) - Add a CPU to a specific server
+            - [del](docs/Commands.md#rpk-servers-cpu-del) - Remove a CPU from a server
+            - [del](docs/Commands.md#rpk-servers-cpu-del) - Remove a CPU from a server
+            - [set](docs/Commands.md#rpk-servers-cpu-set) - Update configuration of a server CPU
+            - [set](docs/Commands.md#rpk-servers-cpu-set) - Update configuration of a server CPU
+        - [del](docs/Commands.md#rpk-servers-del) - Delete a server from the inventory
+        - [del](docs/Commands.md#rpk-servers-del) - Delete a server from the inventory
+        - [describe](docs/Commands.md#rpk-servers-describe) - Display detailed information about a specific server
+        - [describe](docs/Commands.md#rpk-servers-describe) - Display detailed information about a specific server
+        - [drive](docs/Commands.md#rpk-servers-drive) - Manage drives attached to a server
+            - [add](docs/Commands.md#rpk-servers-drive-add) - Add a storage drive to a server
+            - [add](docs/Commands.md#rpk-servers-drive-add) - Add a storage drive to a server
+            - [del](docs/Commands.md#rpk-servers-drive-del) - Remove a drive from a server
+            - [del](docs/Commands.md#rpk-servers-drive-del) - Remove a drive from a server
+            - [set](docs/Commands.md#rpk-servers-drive-set) - Update properties of a server drive
+            - [set](docs/Commands.md#rpk-servers-drive-set) - Update properties of a server drive
+        - [get](docs/Commands.md#rpk-servers-get) - List all servers or retrieve a specific server by name
+        - [get](docs/Commands.md#rpk-servers-get) - List all servers or retrieve a specific server by name
+        - [gpu](docs/Commands.md#rpk-servers-gpu) - Manage GPUs attached to a server
+            - [add](docs/Commands.md#rpk-servers-gpu-add) - Add a GPU to a server
+            - [add](docs/Commands.md#rpk-servers-gpu-add) - Add a GPU to a server
+            - [del](docs/Commands.md#rpk-servers-gpu-del) - Remove a GPU from a server
+            - [del](docs/Commands.md#rpk-servers-gpu-del) - Remove a GPU from a server
+            - [set](docs/Commands.md#rpk-servers-gpu-set) - Update properties of a server GPU
+            - [set](docs/Commands.md#rpk-servers-gpu-set) - Update properties of a server GPU
+        - [label](docs/Commands.md#rpk-servers-label) - Manage labels on a server
+            - [add](docs/Commands.md#rpk-servers-label-add) - Add a label to a server
+            - [add](docs/Commands.md#rpk-servers-label-add) - Add a label to a server
+            - [remove](docs/Commands.md#rpk-servers-label-remove) - Remove a label from a server
+            - [remove](docs/Commands.md#rpk-servers-label-remove) - Remove a label from a server
+        - [nic](docs/Commands.md#rpk-servers-nic) - Manage network interface cards (NICs) for a server
+            - [add](docs/Commands.md#rpk-servers-nic-add) - Add a NIC to a server
+            - [add](docs/Commands.md#rpk-servers-nic-add) - Add a NIC to a server
+            - [del](docs/Commands.md#rpk-servers-nic-del) - Remove a NIC from a server
+            - [del](docs/Commands.md#rpk-servers-nic-del) - Remove a NIC from a server
+            - [set](docs/Commands.md#rpk-servers-nic-set) - Update properties of a server NIC
+            - [set](docs/Commands.md#rpk-servers-nic-set) - Update properties of a server NIC
+        - [set](docs/Commands.md#rpk-servers-set) - Update properties of an existing server
+        - [set](docs/Commands.md#rpk-servers-set) - Update properties of an existing server
+        - [summary](docs/Commands.md#rpk-servers-summary) - Show a summarized hardware report for all servers
+        - [summary](docs/Commands.md#rpk-servers-summary) - Show a summarized hardware report for all servers
+        - [tree](docs/Commands.md#rpk-servers-tree) - Display the dependency tree of a server
+        - [tree](docs/Commands.md#rpk-servers-tree) - Display the dependency tree of a server
     - [services](docs/Commands.md#rpk-services) - Manage services and their configurations
-        - [summary](docs/Commands.md#rpk-services-summary) - Show a summary report for all services
         - [add](docs/Commands.md#rpk-services-add) - Add a new service
-        - [list](docs/Commands.md#rpk-services-list) - List all services
-        - [get](docs/Commands.md#rpk-services-get) - Retrieve a service by name
-        - [describe](docs/Commands.md#rpk-services-describe) - Show detailed information about a service
-        - [set](docs/Commands.md#rpk-services-set) - Update properties of a service
+        - [add](docs/Commands.md#rpk-services-add) - Add a new service
         - [del](docs/Commands.md#rpk-services-del) - Delete a service
-        - [subnets](docs/Commands.md#rpk-services-subnets) - List subnets associated with a service, optionally filtered
-          by CIDR
+        - [del](docs/Commands.md#rpk-services-del) - Delete a service
+        - [describe](docs/Commands.md#rpk-services-describe) - Show detailed information about a service
+        - [describe](docs/Commands.md#rpk-services-describe) - Show detailed information about a service
+        - [get](docs/Commands.md#rpk-services-get) - Retrieve a service by name
+        - [get](docs/Commands.md#rpk-services-get) - Retrieve a service by name
+        - [label](docs/Commands.md#rpk-services-label) - Manage labels on a service
+            - [add](docs/Commands.md#rpk-services-label-add) - Add a label to a service
+            - [add](docs/Commands.md#rpk-services-label-add) - Add a label to a service
+            - [remove](docs/Commands.md#rpk-services-label-remove) - Remove a label from a service
+            - [remove](docs/Commands.md#rpk-services-label-remove) - Remove a label from a service
+        - [list](docs/Commands.md#rpk-services-list) - List all services
+        - [list](docs/Commands.md#rpk-services-list) - List all services
+        - [set](docs/Commands.md#rpk-services-set) - Update properties of a service
+        - [set](docs/Commands.md#rpk-services-set) - Update properties of a service
+        - [subnets](docs/Commands.md#rpk-services-subnets) - List subnets associated with a service, optionally filtered by CIDR
+        - [subnets](docs/Commands.md#rpk-services-subnets) - List subnets associated with a service, optionally filtered by CIDR
+        - [summary](docs/Commands.md#rpk-services-summary) - Show a summary report for all services
+        - [summary](docs/Commands.md#rpk-services-summary) - Show a summary report for all services
+    - [ssh](docs/Commands.md#rpk-ssh) - Generate SSH configuration from infrastructure
+        - [export](docs/Commands.md#rpk-ssh-export) - Generate an SSH config file
+        - [export](docs/Commands.md#rpk-ssh-export) - Generate an SSH config file
+    - [summary](docs/Commands.md#rpk-summary) - Show a summarized report of all resources in the system
+    - [summary](docs/Commands.md#rpk-summary) - Show a summarized report of all resources in the system
+    - [switches](docs/Commands.md#rpk-switches) - Manage network switches
+        - [add](docs/Commands.md#rpk-switches-add) - Add a new network switch to the inventory
+        - [add](docs/Commands.md#rpk-switches-add) - Add a new network switch to the inventory
+        - [del](docs/Commands.md#rpk-switches-del) - Delete a switch from the inventory
+        - [del](docs/Commands.md#rpk-switches-del) - Delete a switch from the inventory
+        - [describe](docs/Commands.md#rpk-switches-describe) - Show detailed information about a switch
+        - [describe](docs/Commands.md#rpk-switches-describe) - Show detailed information about a switch
+        - [get](docs/Commands.md#rpk-switches-get) - Retrieve details of a specific switch by name
+        - [get](docs/Commands.md#rpk-switches-get) - Retrieve details of a specific switch by name
+        - [label](docs/Commands.md#rpk-switches-label) - Manage labels on a switch
+            - [add](docs/Commands.md#rpk-switches-label-add) - Add a label to a switch
+            - [add](docs/Commands.md#rpk-switches-label-add) - Add a label to a switch
+            - [remove](docs/Commands.md#rpk-switches-label-remove) - Remove a label from a switch
+            - [remove](docs/Commands.md#rpk-switches-label-remove) - Remove a label from a switch
+        - [list](docs/Commands.md#rpk-switches-list) - List all switches in the system
+        - [list](docs/Commands.md#rpk-switches-list) - List all switches in the system
+        - [port](docs/Commands.md#rpk-switches-port) - Manage ports on a network switch
+            - [add](docs/Commands.md#rpk-switches-port-add) - Add a port to a switch
+            - [add](docs/Commands.md#rpk-switches-port-add) - Add a port to a switch
+            - [del](docs/Commands.md#rpk-switches-port-del) - Remove a port from a switch
+            - [del](docs/Commands.md#rpk-switches-port-del) - Remove a port from a switch
+            - [set](docs/Commands.md#rpk-switches-port-set) - Update a switch port
+            - [set](docs/Commands.md#rpk-switches-port-set) - Update a switch port
+        - [set](docs/Commands.md#rpk-switches-set) - Update properties of a switch
+        - [set](docs/Commands.md#rpk-switches-set) - Update properties of a switch
+        - [summary](docs/Commands.md#rpk-switches-summary) - Show a hardware report for all switches
+        - [summary](docs/Commands.md#rpk-switches-summary) - Show a hardware report for all switches
+    - [systems](docs/Commands.md#rpk-systems) - Manage systems and their dependencies
+        - [add](docs/Commands.md#rpk-systems-add) - Add a new system to the inventory
+        - [add](docs/Commands.md#rpk-systems-add) - Add a new system to the inventory
+        - [del](docs/Commands.md#rpk-systems-del) - Delete a system from the inventory
+        - [del](docs/Commands.md#rpk-systems-del) - Delete a system from the inventory
+        - [describe](docs/Commands.md#rpk-systems-describe) - Display detailed information about a system
+        - [describe](docs/Commands.md#rpk-systems-describe) - Display detailed information about a system
+        - [get](docs/Commands.md#rpk-systems-get) - Retrieve a system by name
+        - [get](docs/Commands.md#rpk-systems-get) - Retrieve a system by name
+        - [label](docs/Commands.md#rpk-systems-label) - Manage labels on a system
+            - [add](docs/Commands.md#rpk-systems-label-add) - Add a label to a system
+            - [add](docs/Commands.md#rpk-systems-label-add) - Add a label to a system
+            - [remove](docs/Commands.md#rpk-systems-label-remove) - Remove a label from a system
+            - [remove](docs/Commands.md#rpk-systems-label-remove) - Remove a label from a system
+        - [list](docs/Commands.md#rpk-systems-list) - List all systems
+        - [list](docs/Commands.md#rpk-systems-list) - List all systems
+        - [set](docs/Commands.md#rpk-systems-set) - Update properties of a system
+        - [set](docs/Commands.md#rpk-systems-set) - Update properties of a system
+        - [summary](docs/Commands.md#rpk-systems-summary) - Show a summary report for all systems
+        - [summary](docs/Commands.md#rpk-systems-summary) - Show a summary report for all systems
+        - [tree](docs/Commands.md#rpk-systems-tree) - Display the dependency tree for a system
+        - [tree](docs/Commands.md#rpk-systems-tree) - Display the dependency tree for a system
+    - [ups](docs/Commands.md#rpk-ups) - Manage UPS units
+        - [add](docs/Commands.md#rpk-ups-add) - Add a new UPS unit
+        - [add](docs/Commands.md#rpk-ups-add) - Add a new UPS unit
+        - [del](docs/Commands.md#rpk-ups-del) - Delete a UPS unit
+        - [del](docs/Commands.md#rpk-ups-del) - Delete a UPS unit
+        - [describe](docs/Commands.md#rpk-ups-describe) - Show detailed information about a UPS unit
+        - [describe](docs/Commands.md#rpk-ups-describe) - Show detailed information about a UPS unit
+        - [get](docs/Commands.md#rpk-ups-get) - Retrieve a UPS unit by name
+        - [get](docs/Commands.md#rpk-ups-get) - Retrieve a UPS unit by name
+        - [label](docs/Commands.md#rpk-ups-label) - Manage labels on a UPS unit
+            - [add](docs/Commands.md#rpk-ups-label-add) - Add a label to a UPS unit
+            - [add](docs/Commands.md#rpk-ups-label-add) - Add a label to a UPS unit
+            - [remove](docs/Commands.md#rpk-ups-label-remove) - Remove a label from a UPS unit
+            - [remove](docs/Commands.md#rpk-ups-label-remove) - Remove a label from a UPS unit
+        - [list](docs/Commands.md#rpk-ups-list) - List all UPS units
+        - [list](docs/Commands.md#rpk-ups-list) - List all UPS units
+        - [set](docs/Commands.md#rpk-ups-set) - Update properties of a UPS unit
+        - [set](docs/Commands.md#rpk-ups-set) - Update properties of a UPS unit
+        - [summary](docs/Commands.md#rpk-ups-summary) - Show a hardware report for all UPS units
+        - [summary](docs/Commands.md#rpk-ups-summary) - Show a hardware report for all UPS units
