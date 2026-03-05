@@ -6,9 +6,9 @@ using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using Shared.Rcl.Commands;
+using Shared.Rcl.Commands.Connections;
 using Shared.Rcl.Commands.AccessPoints;
 using Shared.Rcl.Commands.AccessPoints.Labels;
-using Shared.Rcl.Commands.Connections;
 using Shared.Rcl.Commands.Desktops;
 using Shared.Rcl.Commands.Desktops.Cpus;
 using Shared.Rcl.Commands.Desktops.Drive;
@@ -578,7 +578,7 @@ public static class CliBootstrap {
                 hosts.AddCommand<GenerateHostsFileCommand>("export")
                     .WithDescription("Generate a /etc/hosts compatible file.");
             });
-
+            
             config.AddBranch("connections", connections => {
                 connections.SetDescription("Manage physical or logical port connections.");
 
@@ -587,6 +587,13 @@ public static class CliBootstrap {
 
                 connections.AddCommand<ConnectionRemoveCommand>("remove")
                     .WithDescription("Remove the connection from a specific port.");
+            });
+            
+            config.AddBranch("mermaid", mermaid => {
+                mermaid.SetDescription("Generate Mermaid diagrams from infrastructure.");
+
+                mermaid.AddCommand<GenerateMermaidDiagramCommand>("export")
+                    .WithDescription("Generate a Mermaid infrastructure diagram.");
             });
         });
     }
