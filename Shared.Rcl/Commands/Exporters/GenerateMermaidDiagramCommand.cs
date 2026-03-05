@@ -6,20 +6,17 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Exporters;
 
 public sealed class GenerateMermaidDiagramCommand(IServiceProvider provider)
-    : AsyncCommand<GenerateMermaidDiagramSettings>
-{
+    : AsyncCommand<GenerateMermaidDiagramSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         GenerateMermaidDiagramSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = provider.CreateScope();
 
         MermaidDiagramExportUseCase useCase = scope.ServiceProvider
             .GetRequiredService<MermaidDiagramExportUseCase>();
 
-        var options = new MermaidExportOptions
-        {
+        var options = new MermaidExportOptions {
             IncludeTags = ParseCsv(settings.IncludeTags),
             DiagramType = settings.DiagramType ?? "flowchart TD",
             IncludeLabels = !settings.NoLabels,
@@ -29,22 +26,19 @@ public sealed class GenerateMermaidDiagramCommand(IServiceProvider provider)
 
         MermaidExportResult? result = await useCase.ExecuteAsync(options);
 
-        if (result is null)
-        {
+        if (result is null) {
             AnsiConsole.MarkupLine("[red]Mermaid export returned null.[/]");
             return -1;
         }
 
-        if (result.Warnings.Any())
-        {
+        if (result.Warnings.Any()) {
             AnsiConsole.MarkupLine("[yellow]Warnings:[/]");
             foreach (var warning in result.Warnings)
                 AnsiConsole.MarkupLine($"[yellow]- {Markup.Escape(warning)}[/]");
             AnsiConsole.WriteLine();
         }
 
-        if (!string.IsNullOrWhiteSpace(settings.OutputPath))
-        {
+        if (!string.IsNullOrWhiteSpace(settings.OutputPath)) {
             await File.WriteAllTextAsync(
                 settings.OutputPath,
                 result.DiagramText,
@@ -53,8 +47,7 @@ public sealed class GenerateMermaidDiagramCommand(IServiceProvider provider)
             AnsiConsole.MarkupLine(
                 $"[green]Mermaid diagram written to:[/] {Markup.Escape(settings.OutputPath)}");
         }
-        else
-        {
+        else {
             AnsiConsole.MarkupLine("[green]Generated Mermaid Diagram:[/]");
             AnsiConsole.WriteLine();
             AnsiConsole.Write(result.DiagramText);
@@ -63,8 +56,7 @@ public sealed class GenerateMermaidDiagramCommand(IServiceProvider provider)
         return 0;
     }
 
-    private static IReadOnlyList<string> ParseCsv(string? raw)
-    {
+    private static IReadOnlyList<string> ParseCsv(string? raw) {
         if (string.IsNullOrWhiteSpace(raw))
             return Array.Empty<string>();
 
