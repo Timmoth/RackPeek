@@ -1,11 +1,23 @@
-using RackPeek.Domain.Persistence;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using RackPeek.Domain.Resources;
+using RackPeek.Domain.Persistence;
 
-namespace RackPeek.Domain.UseCases.Mermaid;
+namespace RackPeek.Domain.UseCases.Mermaid
+{
+    public class MermaidDiagramExportUseCase : IUseCase
+    {
+        private readonly IResourceCollection _repository;
 
-public class MermaidDiagramExportUseCase(IResourceCollection repository) : IUseCase {
-    public async Task<MermaidExportResult?> ExecuteAsync(MermaidExportOptions options) {
-        IReadOnlyList<Resource> resources = await repository.GetAllOfTypeAsync<Resource>();
-        return resources.ToMermaidDiagram(options);
+        public MermaidDiagramExportUseCase(IResourceCollection repository)
+        {
+            _repository = repository;
+        }
+
+        public async Task<MermaidExportResult?> ExecuteAsync(MermaidExportOptions options)
+        {
+            IReadOnlyList<Resource> resources = await _repository.GetAllOfTypeAsync<Resource>();
+            return resources.ToMermaidDiagram(options);
+        }
     }
 }
