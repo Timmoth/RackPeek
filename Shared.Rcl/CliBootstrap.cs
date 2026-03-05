@@ -577,7 +577,7 @@ public static class CliBootstrap {
                 hosts.AddCommand<GenerateHostsFileCommand>("export")
                     .WithDescription("Generate a /etc/hosts compatible file.");
             });
-            
+
             // ----------------------------
             // Mermaid
             // ----------------------------

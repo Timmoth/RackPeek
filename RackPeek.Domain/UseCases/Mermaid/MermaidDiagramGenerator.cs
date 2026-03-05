@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using RackPeek.Domain.Resources;
 
-namespace RackPeek.Domain.UseCases.Mermaid
-{
-    public static class MermaidDiagramGenerator
-    {
+namespace RackPeek.Domain.UseCases.Mermaid {
+    public static class MermaidDiagramGenerator {
         public static MermaidExportResult ToMermaidDiagram(
             this IReadOnlyList<Resource> resources,
-            MermaidExportOptions? options = null)
-        {
+            MermaidExportOptions? options = null) {
             MermaidExportOptions resolvedOptions = options ?? new MermaidExportOptions();
             var sb = new StringBuilder();
             var warnings = new List<string>();
@@ -25,11 +22,9 @@ namespace RackPeek.Domain.UseCases.Mermaid
                 .GroupBy(r => r.Kind)
                 .OrderBy(g => g.Key);
 
-            foreach (IGrouping<string, Resource> group in grouped)
-            {
+            foreach (IGrouping<string, Resource> group in grouped) {
                 sb.AppendLine($"  subgraph {SanitizeId(group.Key)}");
-                foreach (Resource r in group.OrderBy(x => x.Name))
-                {
+                foreach (Resource r in group.OrderBy(x => x.Name)) {
                     var nodeId = SanitizeId(r.Name);
                     var label = BuildNodeLabel(r, resolvedOptions);
                     sb.AppendLine($"    {nodeId}[\"{label}\"]");
@@ -38,13 +33,10 @@ namespace RackPeek.Domain.UseCases.Mermaid
             }
 
             // Map RunsOn relationships if requested
-            if (resolvedOptions.IncludeEdges)
-            {
-                foreach (Resource r in resources)
-                {
+            if (resolvedOptions.IncludeEdges) {
+                foreach (Resource r in resources) {
                     var nodeId = SanitizeId(r.Name);
-                    foreach (var depName in r.RunsOn ?? new List<string>())
-                    {
+                    foreach (var depName in r.RunsOn ?? new List<string>()) {
                         var depId = SanitizeId(depName);
                         sb.AppendLine($"  {nodeId} --> {depId}");
                     }
@@ -57,8 +49,7 @@ namespace RackPeek.Domain.UseCases.Mermaid
             return new MermaidExportResult(sb.ToString().TrimEnd(), warnings);
         }
 
-        private static string BuildNodeLabel(Resource r, MermaidExportOptions options)
-        {
+        private static string BuildNodeLabel(Resource r, MermaidExportOptions options) {
             if (!options.IncludeLabels || r.Labels.Count == 0)
                 return r.Name;
 
@@ -70,11 +61,9 @@ namespace RackPeek.Domain.UseCases.Mermaid
             return labelParts.Count == 0 ? r.Name : $"{r.Name}\\n{string.Join("\\n", labelParts)}";
         }
 
-        private static string SanitizeId(string name)
-        {
+        private static string SanitizeId(string name) {
             var sb = new StringBuilder();
-            foreach (var ch in name.Trim().ToLowerInvariant())
-            {
+            foreach (var ch in name.Trim().ToLowerInvariant()) {
                 if (char.IsLetterOrDigit(ch) || ch == '_')
                     sb.Append(ch);
                 else if (ch == '-' || ch == '.' || ch == ' ')

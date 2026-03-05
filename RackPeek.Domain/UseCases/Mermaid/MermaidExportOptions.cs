@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 
-namespace RackPeek.Domain.UseCases.Mermaid
-{
-    public sealed record MermaidExportOptions
-    {
+namespace RackPeek.Domain.UseCases.Mermaid {
+    public sealed record MermaidExportOptions {
         /// <summary>
         /// Only include resources with these tags (optional)
         /// </summary>
