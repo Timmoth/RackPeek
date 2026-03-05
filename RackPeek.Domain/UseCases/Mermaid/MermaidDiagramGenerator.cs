@@ -19,7 +19,7 @@ namespace RackPeek.Domain.UseCases.Mermaid {
             IOrderedEnumerable<IGrouping<string, Resource>> grouped = resources
                 .Where(r => resolvedOptions.IncludeTags.Count == 0
                             || (r.Tags != null && r.Tags.Any(t => resolvedOptions.IncludeTags.Contains(t, StringComparer.OrdinalIgnoreCase))))
-                .GroupBy(r => r.Kind)
+                .GroupBy(r => Resource.KindToPlural(r.Kind))
                 .OrderBy(g => g.Key);
 
             foreach (IGrouping<string, Resource> group in grouped) {
@@ -34,11 +34,20 @@ namespace RackPeek.Domain.UseCases.Mermaid {
 
             // Map RunsOn relationships if requested
             if (resolvedOptions.IncludeEdges) {
+                
+                var resourceLookup = resources.ToDictionary(r => r.Name, r => SanitizeId(r.Name), StringComparer.OrdinalIgnoreCase);
+                    
                 foreach (Resource r in resources) {
                     var nodeId = SanitizeId(r.Name);
-                    foreach (var depName in r.RunsOn ?? new List<string>()) {
-                        var depId = SanitizeId(depName);
-                        sb.AppendLine($"  {nodeId} --> {depId}");
+                    foreach (var depName in r.RunsOn) {
+                        if (resourceLookup.TryGetValue(depName, out var depId))
+                        {
+                            sb.AppendLine($"  {nodeId} --> {depId}");
+                        }
+                        else
+                        {
+                            warnings.Add($"RunsOn reference '{depName}' for '{r.Name}' not found in resources");
+                        }
                     }
                 }
             }
@@ -50,7 +59,7 @@ namespace RackPeek.Domain.UseCases.Mermaid {
         }
 
         private static string BuildNodeLabel(Resource r, MermaidExportOptions options) {
-            if (!options.IncludeLabels || r.Labels.Count == 0)
+            if (!options.IncludeLabels)
                 return r.Name;
 
             IEnumerable<KeyValuePair<string, string>> filtered = options.LabelWhitelist is null
