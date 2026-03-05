@@ -577,6 +577,16 @@ public static class CliBootstrap {
                 hosts.AddCommand<GenerateHostsFileCommand>("export")
                     .WithDescription("Generate a /etc/hosts compatible file.");
             });
+
+            // ----------------------------
+            // Mermaid
+            // ----------------------------
+            config.AddBranch("mermaid", mermaid => {
+                mermaid.SetDescription("Generate Mermaid diagrams from infrastructure.");
+
+                mermaid.AddCommand<GenerateMermaidDiagramCommand>("export")
+                    .WithDescription("Generate a Mermaid infrastructure diagram.");
+            });
         });
     }
 
