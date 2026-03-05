@@ -10,7 +10,6 @@ using RackPeek.Domain.UseCases.Cpus;
 using RackPeek.Domain.UseCases.Drives;
 using RackPeek.Domain.UseCases.Gpus;
 using RackPeek.Domain.UseCases.Labels;
-using RackPeek.Domain.UseCases.Nics;
 using RackPeek.Domain.UseCases.Ports;
 using RackPeek.Domain.UseCases.Tags;
 
@@ -70,10 +69,6 @@ public static class ServiceCollectionExtensions {
         services.AddScoped(typeof(IAddPortUseCase<>), typeof(AddPortUseCase<>));
         services.AddScoped(typeof(IRemovePortUseCase<>), typeof(RemovePortUseCase<>));
         services.AddScoped(typeof(IUpdatePortUseCase<>), typeof(UpdatePortUseCase<>));
-
-        services.AddScoped(typeof(IAddNicUseCase<>), typeof(AddNicUseCase<>));
-        services.AddScoped(typeof(IRemoveNicUseCase<>), typeof(RemoveNicUseCase<>));
-        services.AddScoped(typeof(IUpdateNicUseCase<>), typeof(UpdateNicUseCase<>));
 
         IEnumerable<Type>? usecases = Assembly.GetAssembly(typeof(IUseCase))
             ?.GetTypes()

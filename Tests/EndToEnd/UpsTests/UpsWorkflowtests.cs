@@ -37,7 +37,7 @@ public class UpsWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
         Assert.Equal("UPS 'ups01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 2
+                     version: 3
                      resources:
                      - kind: Ups
                        model: APC-SmartUPS-1500
@@ -58,7 +58,7 @@ public class UpsWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
         Assert.Equal("UPS 'ups02' updated.\n", output);
 
         Assert.Equal("""
-                     version: 2
+                     version: 3
                      resources:
                      - kind: Ups
                        model: APC-SmartUPS-1500

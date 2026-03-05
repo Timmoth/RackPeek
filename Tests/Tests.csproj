@@ -38,5 +38,38 @@
     <ItemGroup>
         <None Include="schemas\**\*.json" CopyToOutputDirectory="PreserveNewest"/>
         <None Include="TestConfigs\**\*.yaml" CopyToOutputDirectory="PreserveNewest"/>
+        <None Update="TestConfigs\v3\01-server.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="TestConfigs\v3\02-firewall.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="TestConfigs\v3\03-router.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="TestConfigs\v3\04-switch.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="TestConfigs\v3\05-accesspoint.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="TestConfigs\v3\06-ups.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="TestConfigs\v3\07-desktop.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="TestConfigs\v3\08-laptop.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="TestConfigs\v3\09-service.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="TestConfigs\v3\10-system.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="TestConfigs\v3\11-demo-config.yaml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>

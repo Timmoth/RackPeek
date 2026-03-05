@@ -3,7 +3,7 @@
 @using RackPeek.Domain.UseCases.Cpus
 @using RackPeek.Domain.UseCases.Drives
 @using RackPeek.Domain.UseCases.Gpus
-@using RackPeek.Domain.UseCases.Nics
+@using RackPeek.Domain.UseCases.Ports
 @inject IAddCpuUseCase<Server> AddCpuUseCase
 @inject IRemoveCpuUseCase<Server> RemoveCpuUseCase
 @inject IUpdateCpuUseCase<Server> UpdateCpuUseCase
@@ -12,9 +12,9 @@
 @inject IUpdateDriveUseCase<Server> UpdateDriveUseCase
 @inject IRemoveDriveUseCase<Server> RemoveDriveUseCase
 
-@inject IAddNicUseCase<Server> AddNicUseCase
-@inject IUpdateNicUseCase<Server> UpdateNicUseCase
-@inject IRemoveNicUseCase<Server> RemoveNicUseCase
+@inject IAddPortUseCase<Server> AddNicUseCase
+@inject IUpdatePortUseCase<Server> UpdateNicUseCase
+@inject IRemovePortUseCase<Server> RemoveNicUseCase
 
 @inject IAddGpuUseCase<Server> AddGpuUseCase
 @inject IUpdateGpuUseCase<Server> UpdateGpuUseCase
@@ -181,9 +181,9 @@
                 </div>
             </div>
 
-            @if (Server.Nics?.Any() == true)
+            @if (Server.Ports?.Any() == true)
             {
-                @foreach (var nic in Server.Nics)
+                @foreach (var nic in Server.Ports)
                 {
                     <div
                         class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
@@ -191,7 +191,7 @@
                             class="hover:text-emerald-400"
                             title="Edit NIC"
                             @onclick="() => OpenEditNic(nic)">
-                            @nic.Type — @nic.Speed Gbps (@nic.Ports ports)
+                            @nic.Type — @nic.Speed Gbps (@nic.Count ports)
                         </button>
                     </div>
                 }
@@ -287,7 +287,7 @@
     TestIdPrefix="server-drive"/>
 
 
-<NicModal
+<PortModal
     IsOpen="@_nicModalOpen"
     IsOpenChanged="v => _nicModalOpen = v"
     Value="@_editingNic"
@@ -456,7 +456,7 @@
 
     bool _nicModalOpen;
     int _editingNicIndex;
-    Nic? _editingNic;
+    Port? _editingNic;
 
     void OpenAddNic()
     {
@@ -465,17 +465,17 @@
         _nicModalOpen = true;
     }
 
-    void OpenEditNic(Nic nic)
+    void OpenEditNic(Port nic)
     {
-        Server.Nics ??= new List<Nic>();
-        _editingNicIndex = Server.Nics.IndexOf(nic);
+        Server.Ports ??= new List<Port>();
+        _editingNicIndex = Server.Ports.IndexOf(nic);
         _editingNic = nic;
         _nicModalOpen = true;
     }
 
-    async Task HandleNicSubmit(Nic nic)
+    async Task HandleNicSubmit(Port nic)
     {
-        Server.Nics ??= new List<Nic>();
+        Server.Ports ??= new List<Port>();
 
         if (_editingNicIndex < 0)
         {
@@ -483,7 +483,7 @@
                 Server.Name,
                 nic.Type,
                 nic.Speed,
-                nic.Ports);
+                nic.Count);
         }
         else
         {
@@ -492,13 +492,13 @@
                 _editingNicIndex,
                 nic.Type,
                 nic.Speed,
-                nic.Ports);
+                nic.Count);
         }
 
         Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
     }
 
-    async Task HandleNicDelete(Nic nic)
+    async Task HandleNicDelete(Port nic)
     {
         await RemoveNicUseCase.ExecuteAsync(Server.Name, _editingNicIndex);
         Server = await GetByNameUseCase.ExecuteAsync(Server.Name);

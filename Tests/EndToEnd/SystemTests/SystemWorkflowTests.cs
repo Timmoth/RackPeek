@@ -46,7 +46,7 @@ public class SystemWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
 
         outputHelper.WriteLine(yaml);
         Assert.Equal("""
-                     version: 2
+                     version: 3
                      resources:
                      - kind: Server
                        name: proxmox-node01
@@ -157,7 +157,7 @@ public class SystemWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
 
         // Assert resulting YAML
         Assert.Equal("""
-                     version: 2
+                     version: 3
                      resources:
                      - kind: Server
                        name: proxmox-node01

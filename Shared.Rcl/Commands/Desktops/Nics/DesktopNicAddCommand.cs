@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Desktops;
-using RackPeek.Domain.UseCases.Nics;
+using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -32,7 +32,7 @@ public class DesktopNicAddCommand(IServiceProvider provider)
         DesktopNicAddSettings settings,
         CancellationToken cancellationToken) {
         using IServiceScope scope = provider.CreateScope();
-        IAddNicUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IAddNicUseCase<Desktop>>();
+        IAddPortUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IAddPortUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Type, settings.Speed, settings.Ports);
 
