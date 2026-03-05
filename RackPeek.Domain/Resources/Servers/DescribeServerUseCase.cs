@@ -5,6 +5,7 @@ namespace RackPeek.Domain.Resources.Servers;
 
 public record ServerDescription(
     string Name,
+    string? Model,
     string CpuSummary,
     int TotalCores,
     int TotalThreads,
@@ -32,6 +33,7 @@ public class DescribeServerUseCase(IResourceCollection repository) : IUseCase {
 
         return new ServerDescription(
             server.Name,
+            server.Model,
             cpuSummary,
             server.Cpus?.Sum(c => c.Cores) ?? 0,
             server.Cpus?.Sum(c => c.Threads) ?? 0,

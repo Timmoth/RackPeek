@@ -25,6 +25,7 @@ public class ServerDescribeCommand(
             .AddColumn();
 
         grid.AddRow("Name", server.Name);
+        grid.AddRow("Model", server.Model ?? "Unknown");
         grid.AddRow("IPMI", server.Ipmi == true ? "yes" : "no");
         grid.AddRow("RAM", $"{server.Ram?.Size ?? 0} GB");
 

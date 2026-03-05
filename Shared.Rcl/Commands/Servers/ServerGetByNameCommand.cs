@@ -20,7 +20,7 @@ public class ServerGetByNameCommand(
         Server server = await useCase.ExecuteAsync(settings.Name);
 
         AnsiConsole.MarkupLine(
-            $"[green]{server.Name}[/]  RAM: {server.Ram?.Size} GB, IPMI: {(server.Ipmi == true ? "yes" : "no")}");
+            $"[green]{server.Name}[/]  Model: {server.Model ?? "Unknown"}, RAM: {server.Ram?.Size} GB, IPMI: {(server.Ipmi == true ? "yes" : "no")}");
 
         return 0;
     }

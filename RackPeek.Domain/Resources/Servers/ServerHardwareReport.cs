@@ -9,6 +9,7 @@ public record ServerHardwareReport(
 
 public record ServerHardwareRow(
     string Name,
+    string? Model,
     string CpuSummary,
     int TotalCores,
     int TotalThreads,
@@ -82,6 +83,7 @@ public class ServerHardwareReportUseCase(IResourceCollection repository) : IUseC
 
             return new ServerHardwareRow(
                 server.Name,
+                server.Model,
                 cpuSummary,
                 totalCores,
                 totalThreads,

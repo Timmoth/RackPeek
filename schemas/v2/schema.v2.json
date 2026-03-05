@@ -153,6 +153,7 @@
           "properties": {
             "kind": { "const": "Server" },
 
+            "model": { "type": "string" },
             "ram": { "$ref": "#/$defs/ram" },
             "ipmi": { "type": "boolean" },
             "cpus": { "type": "array", "items": { "$ref": "#/$defs/cpu" } },
@@ -173,6 +174,7 @@
           "properties": {
             "kind": { "const": "Desktop" },
 
+            "model": { "type": "string" },
             "ram": { "$ref": "#/$defs/ram" },
             "cpus": { "type": "array", "items": { "$ref": "#/$defs/cpu" } },
             "drives": { "type": "array", "items": { "$ref": "#/$defs/drive" } },
@@ -192,6 +194,7 @@
           "properties": {
             "kind": { "const": "Laptop" },
 
+            "model": { "type": "string" },
             "ram": { "$ref": "#/$defs/ram" },
             "cpus": { "type": "array", "items": { "$ref": "#/$defs/cpu" } },
             "drives": { "type": "array", "items": { "$ref": "#/$defs/drive" } }

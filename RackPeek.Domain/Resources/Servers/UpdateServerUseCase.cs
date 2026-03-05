@@ -10,17 +10,19 @@ public class UpdateServerUseCase(IResourceCollection repository) : IUseCase {
         double? ramGb = null,
         int? ramMts = null,
         bool? ipmi = null,
-        string? notes = null
+        string? notes = null,
+        string? model = null
     ) {
-        // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
-        // ToDo validate / normalize all inputs
-
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
         var server = await repository.GetByNameAsync(name) as Server;
         if (server == null)
             throw new NotFoundException($"Server '{name}' not found.");
+
+        // ---- Model ----
+        if (!string.IsNullOrWhiteSpace(model))
+            server.Model = model;
 
         // ---- RAM ----
         if (ramGb.HasValue) {

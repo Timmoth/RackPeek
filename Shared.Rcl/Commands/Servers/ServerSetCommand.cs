@@ -6,6 +6,7 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Servers;
 
 public class ServerSetSettings : ServerNameSettings {
+    [CommandOption("--Model")] public string? Model { get; set; }
     [CommandOption("--ram <GB>")] public int RamGb { get; set; }
     [CommandOption("--ram_mts <MTs>")] public int RamMts { get; set; }
 
@@ -26,7 +27,8 @@ public class ServerSetCommand(
             settings.Name,
             settings.RamGb,
             settings.RamMts,
-            settings.Ipmi);
+            settings.Ipmi,
+            model: settings.Model);
 
         AnsiConsole.MarkupLine($"[green]Server '{settings.Name}' updated.[/]");
         return 0;

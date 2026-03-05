@@ -24,6 +24,7 @@ public class ServerGetCommand(
         Table table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumn("Name")
+            .AddColumn("Model")
             .AddColumn("CPU")
             .AddColumn("C/T")
             .AddColumn("RAM")
@@ -34,6 +35,7 @@ public class ServerGetCommand(
         foreach (ServerHardwareRow s in report.Servers)
             table.AddRow(
                 s.Name,
+                s.Model ?? "Unknown",
                 s.CpuSummary,
                 $"{s.TotalCores}/{s.TotalThreads}",
                 $"{s.RamGb} GB",

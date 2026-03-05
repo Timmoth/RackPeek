@@ -71,6 +71,48 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
 
+        <!-- Model -->
+        <div data-testid="server-model-section">
+            <div class="text-zinc-400 mb-1">Model</div>
+
+            @if (_editingModel)
+            {
+                <div class="flex gap-2">
+                    <input data-testid="server-model-input"
+                           class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
+                           @bind="_modelDraft"/>
+                    <button data-testid="save-model-button"
+                            class="text-xs text-emerald-400 hover:text-emerald-300"
+                            @onclick="SaveModel">
+                        Save
+                    </button>
+                    <button data-testid="cancel-model-button"
+                            class="text-xs text-zinc-500 hover:text-zinc-300"
+                            @onclick="CancelModelEdit">
+                        Cancel
+                    </button>
+                </div>
+            }
+            else if (!string.IsNullOrWhiteSpace(Server.Model))
+            {
+                <div class="flex items-center gap-2 text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
+                    <button data-testid="edit-model-button"
+                            class="hover:text-emerald-400"
+                            @onclick="BeginModelEdit">
+                        @Server.Model
+                    </button>
+                </div>
+            }
+            else
+            {
+                <button data-testid="add-model-button"
+                        class="text-xs text-zinc-500 hover:text-emerald-400"
+                        @onclick="BeginModelEdit">
+                    + Add model
+                </button>
+            }
+        </div>
+
         <div data-testid="server-cpu-section">
             <div class="flex items-center justify-between mb-1 group">
                 <div class="text-zinc-400">CPU
@@ -339,6 +381,33 @@
 
 @code {
     [Parameter] [EditorRequired] public Server Server { get; set; } = default!;
+
+    #region Model
+
+    bool _editingModel;
+    string? _modelDraft;
+
+    void BeginModelEdit()
+    {
+        _editingModel = true;
+        _modelDraft = Server.Model;
+    }
+
+    void CancelModelEdit()
+    {
+        _editingModel = false;
+        _modelDraft = null;
+    }
+
+    async Task SaveModel()
+    {
+        _editingModel = false;
+        await UpdateUseCase.ExecuteAsync(Server.Name, model: _modelDraft);
+        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
+        _modelDraft = null;
+    }
+
+    #endregion
 
     #region RAM
 
