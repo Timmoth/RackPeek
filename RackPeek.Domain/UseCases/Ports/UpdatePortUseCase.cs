@@ -1,6 +1,7 @@
 using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
+using RackPeek.Domain.Resources.Connections;
 using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.SubResources;
 
@@ -41,6 +42,18 @@ public class UpdatePortUseCase<T>(IResourceCollection repository) : IUpdatePortU
             throw new NotFoundException($"Port index {index} not found on '{name}'.");
 
         Port nic = pr.Ports[index];
+
+        var oldCount = nic.Count ?? 0;
+        var newCount = ports ?? oldCount;
+
+        if (newCount < oldCount)
+            for (var i = newCount; i < oldCount; i++)
+                await repository.RemoveConnectionsForPortAsync(new PortReference {
+                    Resource = name,
+                    PortGroup = index,
+                    PortIndex = i
+                });
+
         nic.Type = nicType;
         nic.Speed = speed;
         nic.Count = ports;

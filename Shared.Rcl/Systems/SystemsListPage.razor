@@ -10,10 +10,7 @@
                         TestId="systems"
                         Resources="@Systems"
                         ShouldGroup="true"
-                        GroupBy="@(s =>
-                                 {
-                                     return s.RunsOn.FirstOrDefault();
-                                 })"
+                        GroupBy="@(s => { return s.RunsOn.FirstOrDefault(); })"
                         OnCreated="NavigateToNewResource">
 
     <ItemTemplate Context="systemResource">

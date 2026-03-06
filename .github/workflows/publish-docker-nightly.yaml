@@ -2,7 +2,7 @@ name: Docker Nightly Publish (amd64)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ staging ]
   workflow_dispatch:
 
 permissions:

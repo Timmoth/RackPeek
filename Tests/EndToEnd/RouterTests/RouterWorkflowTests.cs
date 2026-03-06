@@ -41,13 +41,14 @@ public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
         Assert.Equal("Router 'rt01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 2
+                     version: 3
                      resources:
                      - kind: Router
                        model: Ubiquiti EdgeRouter 4
                        managed: true
                        poe: false
                        name: rt01
+                     connections: []
 
                      """, yaml);
 
@@ -64,7 +65,7 @@ public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
         Assert.Equal("Router 'rt02' updated.\n", output);
 
         Assert.Equal("""
-                     version: 2
+                     version: 3
                      resources:
                      - kind: Router
                        model: Ubiquiti EdgeRouter 4
@@ -76,6 +77,7 @@ public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
                        managed: false
                        poe: false
                        name: rt02
+                     connections: []
 
                      """, yaml);
 

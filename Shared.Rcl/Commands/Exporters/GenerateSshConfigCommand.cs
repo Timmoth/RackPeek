@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using RackPeek.Domain.UseCases.Ssh;
+using RackPeek.Domain.UseCases.SSH;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

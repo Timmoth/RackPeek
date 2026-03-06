@@ -34,8 +34,9 @@ public class PlaywrightFixture : IAsyncLifetime {
 
         Browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions {
             Headless = true,
+            SlowMo = 400,
             //Headless = false,
-            SlowMo = 500,
+            //SlowMo = 1500,
             Args = new[]
             {
                 "--disable-dev-shm-usage",

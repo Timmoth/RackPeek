@@ -41,13 +41,14 @@ public class FirewallWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outp
         Assert.Equal("Firewall 'fw01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 2
+                     version: 3
                      resources:
                      - kind: Firewall
                        model: Fortinet FG-60F
                        managed: true
                        poe: false
                        name: fw01
+                     connections: []
 
                      """, yaml);
 
@@ -64,7 +65,7 @@ public class FirewallWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outp
         Assert.Equal("Firewall 'fw02' updated.\n", output);
 
         Assert.Equal("""
-                     version: 2
+                     version: 3
                      resources:
                      - kind: Firewall
                        model: Fortinet FG-60F
@@ -76,6 +77,7 @@ public class FirewallWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outp
                        managed: false
                        poe: false
                        name: fw02
+                     connections: []
 
                      """, yaml);
 

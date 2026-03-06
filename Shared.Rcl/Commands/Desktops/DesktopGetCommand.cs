@@ -39,7 +39,7 @@ public class DesktopGetCommand(IServiceProvider provider)
                 (d.Cpus?.Count ?? 0).ToString(),
                 d.Ram == null ? "None" : $"{d.Ram.Size}GB",
                 (d.Drives?.Count ?? 0).ToString(),
-                (d.Nics?.Count ?? 0).ToString(),
+                (d.Ports?.Count ?? 0).ToString(),
                 (d.Gpus?.Count ?? 0).ToString()
             );
 

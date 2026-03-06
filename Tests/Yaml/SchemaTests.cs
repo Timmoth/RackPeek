@@ -64,6 +64,7 @@ public class SchemaConformanceTests {
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
+    [InlineData(3)]
     public void All_yaml_files_conform_to_schema(int version) {
         // Arrange
         JsonSchema schema = LoadSchema(version);

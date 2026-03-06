@@ -1,0 +1,336 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timmoth.github.io/RackPeek/schemas/v2/schema.v2.json",
+  "title": "RackPeek Infrastructure Specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "resources"],
+  "properties": {
+    "version": { "type": "integer", "const": 2 },
+    "resources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/resource" }
+    }
+  },
+
+  "$defs": {
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+
+    "runsOn": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+
+    "resourceBase": {
+      "type": "object",
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": { "type": "string" },
+        "name": { "type": "string", "minLength": 1 },
+
+        "tags": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "labels": { "$ref": "#/$defs/labels", "default": {} },
+        "notes": { "type": ["string", "null"] },
+
+        "runsOn": {
+          "type": ["array", "null"],
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "resource": {
+      "oneOf": [
+        { "$ref": "#/$defs/server" },
+        { "$ref": "#/$defs/firewall" },
+        { "$ref": "#/$defs/router" },
+        { "$ref": "#/$defs/switch" },
+        { "$ref": "#/$defs/accessPoint" },
+        { "$ref": "#/$defs/ups" },
+        { "$ref": "#/$defs/desktop" },
+        { "$ref": "#/$defs/laptop" },
+        { "$ref": "#/$defs/service" },
+        { "$ref": "#/$defs/system" }
+      ]
+    },
+
+    "ram": {
+      "type": "object",
+      "required": ["size"],
+      "additionalProperties": false,
+      "properties": {
+        "size": { "type": "number", "minimum": 0 },
+        "mts": { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "cpu": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model": { "type": "string" },
+        "cores": { "type": "integer", "minimum": 1 },
+        "threads": { "type": "integer", "minimum": 1 }
+      }
+    },
+
+    "drive": {
+      "type": "object",
+      "required": ["size"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["nvme", "ssd", "hdd", "sas", "sata", "usb", "sdcard", "micro-sd"]
+        },
+        "size": { "type": "number", "minimum": 1 }
+      }
+    },
+
+    "gpu": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model": { "type": "string" },
+        "vram": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "nic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "rj45", "sfp", "sfp+", "sfp28", "sfp56",
+            "qsfp+", "qsfp28", "qsfp56", "qsfp-dd",
+            "osfp", "xfp", "cx4", "mgmt"
+          ]
+        },
+        "speed": { "type": "number", "minimum": 0 },
+        "ports": { "type": "integer", "minimum": 1 }
+      }
+    },
+
+    "port": {
+      "type": "object",
+      "required": ["type", "speed", "count"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string" },
+        "speed": { "type": "number", "minimum": 0 },
+        "count": { "type": "integer", "minimum": 1 }
+      }
+    },
+
+    "network": {
+      "type": "object",
+      "required": ["ip", "port", "protocol"],
+      "additionalProperties": false,
+      "properties": {
+        "ip": {
+          "type": "string",
+          "pattern": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}$"
+        },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "protocol": { "type": "string", "enum": ["TCP", "UDP"] },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+
+    "server": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "Server" },
+
+            "ram": { "$ref": "#/$defs/ram" },
+            "ipmi": { "type": "boolean" },
+            "cpus": { "type": "array", "items": { "$ref": "#/$defs/cpu" } },
+            "drives": { "type": "array", "items": { "$ref": "#/$defs/drive" } },
+            "gpus": { "type": "array", "items": { "$ref": "#/$defs/gpu" } },
+            "nics": { "type": "array", "items": { "$ref": "#/$defs/nic" } }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+
+    "desktop": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "Desktop" },
+
+            "ram": { "$ref": "#/$defs/ram" },
+            "cpus": { "type": "array", "items": { "$ref": "#/$defs/cpu" } },
+            "drives": { "type": "array", "items": { "$ref": "#/$defs/drive" } },
+            "gpus": { "type": "array", "items": { "$ref": "#/$defs/gpu" } },
+            "nics": { "type": "array", "items": { "$ref": "#/$defs/nic" } }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+
+    "laptop": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "Laptop" },
+
+            "ram": { "$ref": "#/$defs/ram" },
+            "cpus": { "type": "array", "items": { "$ref": "#/$defs/cpu" } },
+            "drives": { "type": "array", "items": { "$ref": "#/$defs/drive" } }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+
+    "firewall": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "required": ["ports"],
+          "properties": {
+            "kind": { "const": "Firewall" },
+
+            "model": { "type": "string" },
+            "managed": { "type": "boolean" },
+            "poe": { "type": "boolean" },
+            "ports": { "type": "array", "items": { "$ref": "#/$defs/port" } }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+
+    "router": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "required": ["ports"],
+          "properties": {
+            "kind": { "const": "Router" },
+
+            "model": { "type": "string" },
+            "managed": { "type": "boolean" },
+            "poe": { "type": "boolean" },
+            "ports": { "type": "array", "items": { "$ref": "#/$defs/port" } }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+
+    "switch": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "required": ["ports"],
+          "properties": {
+            "kind": { "const": "Switch" },
+
+            "model": { "type": "string" },
+            "managed": { "type": "boolean" },
+            "poe": { "type": "boolean" },
+            "ports": { "type": "array", "items": { "$ref": "#/$defs/port" } }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+
+    "accessPoint": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "AccessPoint" },
+
+            "model": { "type": "string" },
+            "speed": { "type": "number", "minimum": 0 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+
+    "ups": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "Ups" },
+
+            "model": { "type": "string" },
+            "va": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+
+    "service": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "required": ["network"],
+          "properties": {
+            "kind": { "const": "Service" },
+            "network": { "$ref": "#/$defs/network" }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+
+    "system": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "required": ["type", "os", "cores", "ram"],
+          "properties": {
+            "kind": { "const": "System" },
+
+            "type": {
+              "type": "string",
+              "enum": [
+                "baremetal", "Baremetal",
+                "hypervisor", "Hypervisor",
+                "vm", "VM",
+                "container", "embedded", "cloud", "other"
+              ]
+            },
+            "os": { "type": "string" },
+            "cores": { "type": "integer", "minimum": 1 },
+            "ram": { "type": "number", "minimum": 0 },
+            "drives": { "type": "array", "items": { "$ref": "#/$defs/drive" } }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  }
+}

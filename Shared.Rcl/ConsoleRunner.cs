@@ -1,3 +1,4 @@
+using System.Text;
 using RackPeek.Domain;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -28,7 +29,7 @@ public class ConsoleEmulator : IConsoleEmulator {
 
     internal static string[] ParseArguments(string input) {
         var args = new List<string>();
-        var current = new System.Text.StringBuilder();
+        var current = new StringBuilder();
         char? quote = null;
 
         for (var i = 0; i < input.Length; i++) {

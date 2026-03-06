@@ -22,7 +22,8 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
         ListOfMigrations = new List<Func<IServiceProvider, Dictionary<object, object>, ValueTask>>
         {
             EnsureSchemaVersionExists,
-            ConvertScalarRunsOnToList
+            ConvertScalarRunsOnToList,
+            ConvertNicsToPortsV3
         };
 
     public RackPeekConfigMigrationDeserializer(IServiceProvider serviceProvider,
@@ -106,6 +107,60 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
                         $"Cannot convert {runsOn.GetType()} to List<string> for resource '{resourceDict}'.");
             }
         }
+
+        return ValueTask.CompletedTask;
+    }
+
+    public static ValueTask ConvertNicsToPortsV3(
+        IServiceProvider serviceProvider,
+        Dictionary<object, object> obj) {
+        if (!obj.TryGetValue("resources", out var resourcesObj))
+            return ValueTask.CompletedTask;
+
+        if (resourcesObj is not List<object> resources)
+            return ValueTask.CompletedTask;
+
+        foreach (var resourceObj in resources) {
+            if (resourceObj is not Dictionary<object, object> resourceDict)
+                continue;
+
+            if (!resourceDict.TryGetValue("nics", out var nicsObj))
+                continue;
+
+            if (nicsObj is not List<object> nics)
+                continue;
+
+            var ports = new List<Dictionary<object, object>>();
+
+            foreach (var nicObj in nics) {
+                if (nicObj is not Dictionary<object, object> nicDict)
+                    continue;
+
+                var port = new Dictionary<object, object>();
+
+                if (nicDict.TryGetValue("type", out var type))
+                    port["type"] = type;
+
+                if (nicDict.TryGetValue("speed", out var speed))
+                    port["speed"] = speed;
+
+                if (nicDict.TryGetValue("ports", out var portCount))
+                    port["count"] = portCount;
+
+                ports.Add(port);
+            }
+
+            resourceDict.Remove("nics");
+
+            if (resourceDict.TryGetValue("ports", out var existingPortsObj)
+                && existingPortsObj is List<object> existingPorts)
+                foreach (Dictionary<object, object> p in ports)
+                    existingPorts.Add(p);
+            else
+                resourceDict["ports"] = ports.Cast<object>().ToList();
+        }
+
+        obj["version"] = 3;
 
         return ValueTask.CompletedTask;
     }

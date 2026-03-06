@@ -40,7 +40,7 @@ public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
         Assert.Equal("Server 'srv01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 2
+                     version: 3
                      resources:
                      - kind: Server
                        ram:
@@ -48,6 +48,7 @@ public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
                          mts: 3200
                        ipmi: true
                        name: srv01
+                     connections: []
 
                      """, yaml);
 

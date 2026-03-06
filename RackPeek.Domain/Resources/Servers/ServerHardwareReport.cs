@@ -22,13 +22,13 @@ public record ServerHardwareRow(
     int TotalGpuVramGb,
     string GpuSummary,
     bool Ipmi,
-    IReadOnlyList<Nic> Nics
+    IReadOnlyList<Port> Ports
 ) {
     public string NicSummary =>
         string.Join(", ",
-            (Nics ?? [])
+            (Ports ?? [])
             .SelectMany(n => {
-                var ports = n.Ports ?? 1;
+                var ports = n.Count ?? 1;
                 var speed = n.Speed ?? 0;
                 return Enumerable.Repeat(speed, ports);
             })
@@ -64,8 +64,8 @@ public class ServerHardwareReportUseCase(IResourceCollection repository) : IUseC
                 .Where(d => d.Type == "hdd")
                 .Sum(d => d.Size) ?? 0;
 
-            var totalNicPorts = server.Nics?.Sum(n => n.Ports) ?? 0;
-            var maxNicSpeed = server.Nics?.Max(n => n.Speed) ?? 0;
+            var totalNicPorts = server.Ports?.Sum(n => n.Count) ?? 0;
+            var maxNicSpeed = server.Ports?.Max(n => n.Speed) ?? 0;
 
             var gpuCount = server.Gpus?.Count ?? 0;
 
@@ -95,7 +95,7 @@ public class ServerHardwareReportUseCase(IResourceCollection repository) : IUseC
                 totalGpuVram,
                 gpuSummary,
                 server.Ipmi ?? false,
-                server.Nics ?? new List<Nic>()
+                server.Ports ?? new List<Port>()
             );
         }).ToList();
 

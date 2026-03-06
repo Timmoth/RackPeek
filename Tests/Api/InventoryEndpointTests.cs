@@ -94,7 +94,7 @@ public class InventoryEndpointTests(ITestOutputHelper output) : ApiTestBase(outp
             new { Yaml = initial });
 
         var update = """
-                     version: 2
+                     version: 3
                      resources:
                      - kind: Server
                        name: server-update
@@ -264,7 +264,7 @@ public class InventoryEndpointTests(ITestOutputHelper output) : ApiTestBase(outp
         await client.PostAsJsonAsync("/api/inventory", new { yaml = initial });
 
         var update = """
-                     version: 2
+                     version: 3
                      resources:
                        - kind: Server
                          name: nested-test
@@ -355,7 +355,7 @@ public class InventoryEndpointTests(ITestOutputHelper output) : ApiTestBase(outp
         await client.PostAsJsonAsync("/api/inventory", new { yaml = initial });
 
         var update = """
-                     version: 2
+                     version: 3
                      resources:
                        - kind: Firewall
                          name: polymorph-test

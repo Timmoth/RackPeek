@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
+using RackPeek.Domain.Resources.Connections;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
@@ -10,7 +11,6 @@ using RackPeek.Domain.UseCases.Cpus;
 using RackPeek.Domain.UseCases.Drives;
 using RackPeek.Domain.UseCases.Gpus;
 using RackPeek.Domain.UseCases.Labels;
-using RackPeek.Domain.UseCases.Nics;
 using RackPeek.Domain.UseCases.Ports;
 using RackPeek.Domain.UseCases.Tags;
 
@@ -71,9 +71,11 @@ public static class ServiceCollectionExtensions {
         services.AddScoped(typeof(IRemovePortUseCase<>), typeof(RemovePortUseCase<>));
         services.AddScoped(typeof(IUpdatePortUseCase<>), typeof(UpdatePortUseCase<>));
 
-        services.AddScoped(typeof(IAddNicUseCase<>), typeof(AddNicUseCase<>));
-        services.AddScoped(typeof(IRemoveNicUseCase<>), typeof(RemoveNicUseCase<>));
-        services.AddScoped(typeof(IUpdateNicUseCase<>), typeof(UpdateNicUseCase<>));
+        services.AddScoped(typeof(IAddConnectionUseCase), typeof(AddConnectionUseCase));
+        services.AddScoped(typeof(IGetConnectionForPortUseCase), typeof(GetConnectionForPortUseCase));
+        services.AddScoped(typeof(IGetConnectionsForResourceUseCase), typeof(GetConnectionsForResourceUseCase));
+        services.AddScoped(typeof(IRemoveConnectionUseCase), typeof(RemoveConnectionUseCase));
+
 
         IEnumerable<Type>? usecases = Assembly.GetAssembly(typeof(IUseCase))
             ?.GetTypes()

@@ -1,7 +1,7 @@
 using System.Text;
 using RackPeek.Domain.Resources;
 
-namespace RackPeek.Domain.UseCases.Ssh;
+namespace RackPeek.Domain.UseCases.SSH;
 
 public static class SshConfigGenerator {
     public static SshExportResult ToSshConfig(

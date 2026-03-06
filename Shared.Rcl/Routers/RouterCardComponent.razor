@@ -1,13 +1,9 @@
 @using RackPeek.Domain.Resources.Routers
-@using RackPeek.Domain.Resources.SubResources
-@using RackPeek.Domain.UseCases.Ports
 @using Router = RackPeek.Domain.Resources.Routers.Router
+@using Shared.Rcl.Hardware
 
 @inject UpdateRouterUseCase UpdateUseCase
 @inject IGetResourceByNameUseCase<Router> GetByNameUseCase
-@inject IAddPortUseCase<Router> AddPortUseCase
-@inject IUpdatePortUseCase<Router> UpdatePortUseCase
-@inject IRemovePortUseCase<Router> RemovePortUseCase
 @inject IDeleteResourceUseCase<Router> DeleteUseCase
 @inject IRenameResourceUseCase<Router> RenameUseCase
 @inject ICloneResourceUseCase<Router> CloneUseCase
@@ -135,35 +131,10 @@
         </div>
 
         <!-- Ports -->
-        <div class="md:col-span-2"
-             data-testid="router-ports-section">
-
-            <div class="flex items-center justify-between mb-1 group">
-                <div class="text-zinc-400">
-                    Ports
-                    <button data-testid="add-port-button"
-                            class="hover:text-emerald-400 ml-1"
-                            @onclick="OpenAddPort">
-                        +
-                    </button>
-                </div>
-            </div>
-
-            @if (Router.Ports?.Any() == true)
-            {
-                @foreach (var port in Router.Ports)
-                {
-                    <div
-                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
-                        <button data-testid=@($"edit-port-{port.Type}-{port.Speed}")
-                                class="hover:text-emerald-400"
-                                @onclick="() => OpenEditPort(port)">
-                            @port.Count× @port.Type — @port.Speed Gbps
-                        </button>
-                    </div>
-                }
-            }
-        </div>
+        <PortGroupEditor T="Router"
+                         Resource="Router"
+                         OnResourceChanged="r => Router = r"
+                         TestIdPrefix="router-ports"/>
 
         <ResourceTagEditor Resource="Router"
                            TestIdPrefix="router"/>
@@ -193,12 +164,6 @@
 
     </div>
 </div>
-
-<PortModal IsOpen="@_portModalOpen"
-           IsOpenChanged="v => _portModalOpen = v"
-           Value="@_editingPort"
-           OnSubmit="HandlePortSubmit"
-           OnDelete="HandlePortDelete"/>
 
 <ConfirmModal IsOpen="_confirmDeleteOpen"
               IsOpenChanged="v => _confirmDeleteOpen = v"
@@ -258,63 +223,6 @@
     {
         _isEditing = false;
     }
-
-    #region Ports
-
-    bool _portModalOpen;
-    int _editingPortIndex;
-    Port? _editingPort;
-
-    void OpenAddPort()
-    {
-        _editingPortIndex = -1;
-        _editingPort = null;
-        _portModalOpen = true;
-    }
-
-    void OpenEditPort(Port port)
-    {
-        Router.Ports ??= new List<Port>();
-        _editingPortIndex = Router.Ports.IndexOf(port);
-        _editingPort = port;
-        _portModalOpen = true;
-    }
-
-    async Task HandlePortSubmit(Port port)
-    {
-        if (_editingPortIndex < 0)
-        {
-            await AddPortUseCase.ExecuteAsync(
-                Router.Name,
-                port.Type,
-                port.Speed,
-                port.Count);
-        }
-        else
-        {
-            await UpdatePortUseCase.ExecuteAsync(
-                Router.Name,
-                _editingPortIndex,
-                port.Type,
-                port.Speed,
-                port.Count);
-        }
-
-        Router = await GetByNameUseCase.ExecuteAsync(Router.Name);
-        StateHasChanged();
-    }
-
-    async Task HandlePortDelete(Port _)
-    {
-        await RemovePortUseCase.ExecuteAsync(
-            Router.Name,
-            _editingPortIndex);
-
-        Router = await GetByNameUseCase.ExecuteAsync(Router.Name);
-        StateHasChanged();
-    }
-
-    #endregion
 
     public class RouterEditModel
     {

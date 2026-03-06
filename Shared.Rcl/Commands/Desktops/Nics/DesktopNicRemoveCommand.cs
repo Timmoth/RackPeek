@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Desktops;
-using RackPeek.Domain.UseCases.Nics;
+using RackPeek.Domain.UseCases.Ports;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -24,7 +24,7 @@ public class DesktopNicRemoveCommand(IServiceProvider provider)
         DesktopNicRemoveSettings settings,
         CancellationToken cancellationToken) {
         using IServiceScope scope = provider.CreateScope();
-        IRemoveNicUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IRemoveNicUseCase<Desktop>>();
+        IRemovePortUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Desktop>>();
 
         await useCase.ExecuteAsync(settings.DesktopName, settings.Index);
 
