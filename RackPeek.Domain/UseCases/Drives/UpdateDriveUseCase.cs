@@ -7,12 +7,15 @@ using RackPeek.Domain.Resources.SubResources;
 namespace RackPeek.Domain.UseCases.Drives;
 
 public interface IUpdateDriveUseCase<T> : IResourceUseCase<T>
-    where T : Resource {
+    where T : Resource
+{
     public Task ExecuteAsync(string name, int index, string? type, int? size);
 }
 
-public class UpdateDriveUseCase<T>(IResourceCollection repository) : IUpdateDriveUseCase<T> where T : Resource {
-    public async Task ExecuteAsync(string name, int index, string? type, int? size) {
+public class UpdateDriveUseCase<T>(IResourceCollection repository) : IUpdateDriveUseCase<T> where T : Resource
+{
+    public async Task ExecuteAsync(string name, int index, string? type, int? size)
+    {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
         // ToDo validate / normalize all inputs
 

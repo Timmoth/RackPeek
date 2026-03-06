@@ -2,7 +2,8 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class RouterListPom(IPage page) {
+public class RouterListPom(IPage page)
+{
     public AddResourceComponent AddRouter => new(page, "router");
 
     public ILocator PageRoot => page.GetByTestId("routers-page-root");
@@ -27,32 +28,38 @@ public class RouterListPom(IPage page) {
     public ILocator OpenLink(string name)
         => page.GetByTestId($"router-item-{Sanitize(name)}-link");
 
-    public ILocator EditButton(string name) {
+    public ILocator EditButton(string name)
+    {
         return RouterItem(name)
             .GetByTestId("edit-router-button");
     }
 
-    public ILocator SaveButton(string name) {
+    public ILocator SaveButton(string name)
+    {
         return RouterItem(name)
             .GetByTestId("save-router-button");
     }
 
-    public ILocator CancelButton(string name) {
+    public ILocator CancelButton(string name)
+    {
         return RouterItem(name)
             .GetByTestId("cancel-router-button");
     }
 
-    public ILocator RenameButton(string name) {
+    public ILocator RenameButton(string name)
+    {
         return RouterItem(name)
             .GetByTestId("rename-router-button");
     }
 
-    public ILocator CloneButton(string name) {
+    public ILocator CloneButton(string name)
+    {
         return RouterItem(name)
             .GetByTestId("clone-router-button");
     }
 
-    public ILocator DeleteButton(string name) {
+    public ILocator DeleteButton(string name)
+    {
         return RouterItem(name)
             .GetByTestId("delete-router-button");
     }
@@ -61,12 +68,14 @@ public class RouterListPom(IPage page) {
     // Navigation
     // -------------------------------------------------
 
-    public async Task GotoAsync(string baseUrl) {
+    public async Task GotoAsync(string baseUrl)
+    {
         await page.GotoAsync($"{baseUrl}/routers/list");
         await AssertLoadedAsync();
     }
 
-    public async Task AssertLoadedAsync() {
+    public async Task AssertLoadedAsync()
+    {
         await Assertions.Expect(PageRoot).ToBeVisibleAsync();
         await Assertions.Expect(PageTitle).ToBeVisibleAsync();
     }
@@ -77,13 +86,15 @@ public class RouterListPom(IPage page) {
     // Actions
     // -------------------------------------------------
 
-    public async Task AddRouterAsync(string name) {
+    public async Task AddRouterAsync(string name)
+    {
         await AddRouter.AddAsync(name);
         await Assertions.Expect(RouterItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task DeleteRouterAsync(string name) {
+    public async Task DeleteRouterAsync(string name)
+    {
         await DeleteButton(name).ClickAsync();
         await page.GetByTestId("Router-confirm-modal-confirm").ClickAsync();
 
@@ -91,17 +102,20 @@ public class RouterListPom(IPage page) {
             .Not.ToBeVisibleAsync();
     }
 
-    public async Task OpenRouterAsync(string name) {
+    public async Task OpenRouterAsync(string name)
+    {
         await OpenLink(name).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{name}");
     }
 
-    public async Task AssertRouterExists(string name) {
+    public async Task AssertRouterExists(string name)
+    {
         await Assertions.Expect(RouterItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task AssertRouterDoesNotExist(string name) {
+    public async Task AssertRouterDoesNotExist(string name)
+    {
         await Assertions.Expect(RouterItem(name))
             .Not.ToBeVisibleAsync();
     }

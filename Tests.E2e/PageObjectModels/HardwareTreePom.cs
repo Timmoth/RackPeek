@@ -2,7 +2,8 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class HardwareTreePom(IPage page) {
+public class HardwareTreePom(IPage page)
+{
     // -------------------------------------------------
     // Root & State
     // -------------------------------------------------
@@ -28,12 +29,14 @@ public class HardwareTreePom(IPage page) {
     public ILocator NavDesktops => page.GetByTestId("nav-desktops");
     public ILocator NavLaptops => page.GetByTestId("nav-laptops");
 
-    public async Task GotoAsync(string baseUrl) {
+    public async Task GotoAsync(string baseUrl)
+    {
         await page.GotoAsync($"{baseUrl}/hardware/tree");
         await AssertLoadedAsync();
     }
 
-    public async Task AssertLoadedAsync() {
+    public async Task AssertLoadedAsync()
+    {
         await Assertions.Expect(PageRoot).ToBeVisibleAsync();
         await Assertions.Expect(PageTitle).ToBeVisibleAsync();
     }
@@ -61,7 +64,8 @@ public class HardwareTreePom(IPage page) {
 
     public ILocator HardwareName(string hardwareName) => page.GetByTestId($"hardware-name-{hardwareName}");
 
-    public async Task OpenHardwareAsync(string hardwareName) {
+    public async Task OpenHardwareAsync(string hardwareName)
+    {
         await HardwareLink(hardwareName).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{hardwareName}");
     }
@@ -76,7 +80,8 @@ public class HardwareTreePom(IPage page) {
 
     public ILocator SystemLink(string systemName) => page.GetByTestId($"system-link-{systemName}");
 
-    public async Task OpenSystemAsync(string systemName) {
+    public async Task OpenSystemAsync(string systemName)
+    {
         await SystemLink(systemName).ClickAsync();
         await page.WaitForURLAsync($"**/resources/systems/{systemName}");
     }
@@ -94,7 +99,8 @@ public class HardwareTreePom(IPage page) {
 
     public ILocator ServiceLink(string serviceName) => page.GetByTestId($"service-link-{serviceName}");
 
-    public async Task OpenServiceAsync(string serviceName) {
+    public async Task OpenServiceAsync(string serviceName)
+    {
         await ServiceLink(serviceName).ClickAsync();
         await page.WaitForURLAsync($"**/resources/services/{serviceName}");
     }
@@ -106,42 +112,50 @@ public class HardwareTreePom(IPage page) {
     // Secondary Navigation Actions
     // -------------------------------------------------
 
-    public async Task GotoServersListAsync() {
+    public async Task GotoServersListAsync()
+    {
         await NavServers.ClickAsync();
         await page.WaitForURLAsync("**/servers/list");
     }
 
-    public async Task GotoSwitchesListAsync() {
+    public async Task GotoSwitchesListAsync()
+    {
         await NavSwitches.ClickAsync();
         await page.WaitForURLAsync("**/switches/list");
     }
 
-    public async Task GotoFirewallsListAsync() {
+    public async Task GotoFirewallsListAsync()
+    {
         await NavFirewalls.ClickAsync();
         await page.WaitForURLAsync("**/firewalls/list");
     }
 
-    public async Task GotoRoutersListAsync() {
+    public async Task GotoRoutersListAsync()
+    {
         await NavRouters.ClickAsync();
         await page.WaitForURLAsync("**/routers/list");
     }
 
-    public async Task GotoAccessPointsListAsync() {
+    public async Task GotoAccessPointsListAsync()
+    {
         await NavAccessPoints.ClickAsync();
         await page.WaitForURLAsync("**/accesspoints/list");
     }
 
-    public async Task GotoUpsListAsync() {
+    public async Task GotoUpsListAsync()
+    {
         await NavUps.ClickAsync();
         await page.WaitForURLAsync("**/ups/list");
     }
 
-    public async Task GotoDesktopsListAsync() {
+    public async Task GotoDesktopsListAsync()
+    {
         await NavDesktops.ClickAsync();
         await page.WaitForURLAsync("**/desktops/list");
     }
 
-    public async Task GotoLaptopsListAsync() {
+    public async Task GotoLaptopsListAsync()
+    {
         await NavLaptops.ClickAsync();
         await page.WaitForURLAsync("**/laptops/list");
     }

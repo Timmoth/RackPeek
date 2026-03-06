@@ -6,11 +6,13 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Ups;
 
 public class UpsGetByNameCommand(IServiceProvider provider)
-    : AsyncCommand<UpsNameSettings> {
+    : AsyncCommand<UpsNameSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         UpsNameSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = provider.CreateScope();
         DescribeUpsUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeUpsUseCase>();
 

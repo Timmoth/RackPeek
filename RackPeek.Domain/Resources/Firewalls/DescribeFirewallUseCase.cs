@@ -15,8 +15,10 @@ public record FirewallDescription(
     Dictionary<string, string> Labels
 );
 
-public class DescribeFirewallUseCase(IResourceCollection repository) : IUseCase {
-    public async Task<FirewallDescription> ExecuteAsync(string name) {
+public class DescribeFirewallUseCase(IResourceCollection repository) : IUseCase
+{
+    public async Task<FirewallDescription> ExecuteAsync(string name)
+    {
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
@@ -36,7 +38,8 @@ public class DescribeFirewallUseCase(IResourceCollection repository) : IUseCase 
         // Build a port summary string
         IEnumerable<string> portGroups = ports
             .GroupBy(p => p.Type ?? "Unknown")
-            .Select(g => {
+            .Select(g =>
+            {
                 var count = g.Sum(x => x.Count ?? 0);
                 var speed = g.Sum(x => (x.Speed ?? 0) * (x.Count ?? 0));
                 return $"{g.Key}: {count} ports ({speed} Gb total)";

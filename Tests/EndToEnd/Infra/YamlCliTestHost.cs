@@ -9,22 +9,26 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd.Infra;
 
-public static class YamlCliTestHost {
+public static class YamlCliTestHost
+{
     public static async Task<string> RunAsync(
         string[] args,
         string hardwarePath,
         ITestOutputHelper output,
-        string yamlFile) {
+        string yamlFile)
+    {
         var services = new ServiceCollection();
 
         IConfigurationRoot config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?> {
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
                 ["HardwarePath"] = hardwarePath
             })
             .Build();
 
         await CliBootstrap.RegisterInternals(services, config, hardwarePath, yamlFile);
-        services.AddLogging(builder => {
+        services.AddLogging(builder =>
+        {
             builder.ClearProviders();
             builder.AddProvider(new XUnitLoggerProvider(output));
         });

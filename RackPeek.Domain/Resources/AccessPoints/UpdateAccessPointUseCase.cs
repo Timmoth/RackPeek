@@ -3,13 +3,15 @@ using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.AccessPoints;
 
-public class UpdateAccessPointUseCase(IResourceCollection repository) : IUseCase {
+public class UpdateAccessPointUseCase(IResourceCollection repository) : IUseCase
+{
     public async Task ExecuteAsync(
         string name,
         string? model = null,
         double? speed = null,
         string? notes = null
-    ) {
+    )
+    {
         // ToDo validate / normalize all inputs
 
         name = Normalize.HardwareName(name);
@@ -18,12 +20,14 @@ public class UpdateAccessPointUseCase(IResourceCollection repository) : IUseCase
         if (ap == null)
             throw new NotFoundException($"Access point '{name}' not found.");
 
-        if (!string.IsNullOrWhiteSpace(model)) {
+        if (!string.IsNullOrWhiteSpace(model))
+        {
             ThrowIfInvalid.AccessPointModelName(model);
             ap.Model = model;
         }
 
-        if (speed.HasValue) {
+        if (speed.HasValue)
+        {
             ThrowIfInvalid.NetworkSpeed(speed.Value);
             ap.Speed = speed.Value;
         }

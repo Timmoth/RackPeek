@@ -7,14 +7,17 @@ namespace Shared.Rcl.Commands.Ups;
 
 public class UpsReportCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand {
-    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken) {
+) : AsyncCommand
+{
+    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
+    {
         using IServiceScope scope = serviceProvider.CreateScope();
         UpsHardwareReportUseCase useCase = scope.ServiceProvider.GetRequiredService<UpsHardwareReportUseCase>();
 
         UpsHardwareReport report = await useCase.ExecuteAsync();
 
-        if (report.UpsUnits.Count == 0) {
+        if (report.UpsUnits.Count == 0)
+        {
             AnsiConsole.MarkupLine("[yellow]No UPS units found.[/]");
             return 0;
         }

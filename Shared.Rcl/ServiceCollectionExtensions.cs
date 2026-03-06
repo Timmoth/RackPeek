@@ -4,9 +4,11 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl;
 
-public static class ServiceCollectionExtensions {
+public static class ServiceCollectionExtensions
+{
     public static IServiceCollection AddCommands(
-        this IServiceCollection services) {
+        this IServiceCollection services)
+    {
         IEnumerable<Type>? commandTypes = Assembly.GetAssembly(typeof(ServiceCollectionExtensions))
             ?.GetTypes()
             .Where(t =>
@@ -21,8 +23,10 @@ public static class ServiceCollectionExtensions {
         return services;
     }
 
-    private static bool IsAsyncCommand(Type type) {
-        while (type != null) {
+    private static bool IsAsyncCommand(Type type)
+    {
+        while (type != null)
+        {
             if (type.IsGenericType &&
                 type.GetGenericTypeDefinition() == typeof(AsyncCommand<>))
                 return true;

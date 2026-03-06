@@ -8,11 +8,13 @@ namespace Shared.Rcl.Commands.Servers;
 
 public class ServerGetByNameCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<ServerNameSettings> {
+) : AsyncCommand<ServerNameSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerNameSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = serviceProvider.CreateScope();
         IGetResourceByNameUseCase<Server> useCase =
             scope.ServiceProvider.GetRequiredService<IGetResourceByNameUseCase<Server>>();

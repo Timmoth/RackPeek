@@ -5,8 +5,10 @@ namespace Tests.EndToEnd.SystemTests;
 
 [Collection("Yaml CLI tests")]
 public class SystemWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture> {
-    private async Task<(string, string)> ExecuteAsync(params string[] args) {
+    : IClassFixture<TempYamlCliFixture>
+{
+    private async Task<(string, string)> ExecuteAsync(params string[] args)
+    {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -23,13 +25,14 @@ public class SystemWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
     }
 
     [Fact]
-    public async Task systems_cli_workflow_test() {
+    public async Task systems_cli_workflow_test()
+    {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         await ExecuteAsync("servers", "add", "proxmox-node01");
 
         // Add system
-        (var output, var yaml) = await ExecuteAsync("systems", "add", "sys01");
+        var (output, yaml) = await ExecuteAsync("systems", "add", "sys01");
         Assert.Equal("System 'sys01' added.\n", output);
         Assert.Contains("name: sys01", yaml);
 
@@ -113,14 +116,15 @@ public class SystemWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
     }
 
     [Fact]
-    public async Task systems_cli_workflow_runs_on_hardware_and_systems_test() {
+    public async Task systems_cli_workflow_runs_on_hardware_and_systems_test()
+    {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         // Create hardware (server)
         await ExecuteAsync("servers", "add", "proxmox-node01");
 
         // Add first system
-        (var output, var yaml) = await ExecuteAsync("systems", "add", "sys01");
+        var (output, yaml) = await ExecuteAsync("systems", "add", "sys01");
         Assert.Equal("System 'sys01' added.\n", output);
         Assert.Contains("name: sys01", yaml);
 

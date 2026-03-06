@@ -1,5 +1,4 @@
 @using RackPeek.Domain.Resources.Firewalls
-@using Shared.Rcl.Hardware
 @inject UpdateFirewallUseCase UpdateUseCase
 @inject IGetResourceByNameUseCase<Firewall> GetByNameUseCase
 @inject IDeleteResourceUseCase<Firewall> DeleteUseCase
@@ -131,7 +130,7 @@
         <!-- Ports -->
         <PortGroupEditor T="Firewall"
                          Resource="Firewall"
-                         OnResourceChanged="r => Firewall = r" 
+                         OnResourceChanged="r => Firewall = r"
                          TestIdPrefix="firewall-ports"/>
 
         <ResourceTagEditor Resource="Firewall"
@@ -221,7 +220,7 @@
     {
         _isEditing = false;
     }
-    
+
     public class FirewallEditModel
     {
         public string? Model { get; set; }

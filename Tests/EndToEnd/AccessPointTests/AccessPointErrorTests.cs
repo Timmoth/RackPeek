@@ -5,8 +5,10 @@ namespace Tests.EndToEnd.AccessPointTests;
 
 [Collection("Yaml CLI tests")]
 public class AccessPointErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture> {
-    private async Task<(string, string)> ExecuteAsync(params string[] args) {
+    : IClassFixture<TempYamlCliFixture>
+{
+    private async Task<(string, string)> ExecuteAsync(params string[] args)
+    {
         var output = await YamlCliTestHost.RunAsync(
             args,
             fs.Root,
@@ -18,24 +20,27 @@ public class AccessPointErrorTests(TempYamlCliFixture fs, ITestOutputHelper outp
     }
 
     [Fact]
-    public async Task adding_duplicate_access_point_returns_error() {
+    public async Task adding_duplicate_access_point_returns_error()
+    {
         await ExecuteAsync("accesspoints", "add", "ap01");
 
-        (var output, var _) = await ExecuteAsync("accesspoints", "add", "ap01");
+        var (output, _) = await ExecuteAsync("accesspoints", "add", "ap01");
 
         Assert.Contains("already exists", output, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task get_missing_access_point_returns_error() {
-        (var output, var _) = await ExecuteAsync("accesspoints", "get", "ghost");
+    public async Task get_missing_access_point_returns_error()
+    {
+        var (output, _) = await ExecuteAsync("accesspoints", "get", "ghost");
 
         Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task set_missing_access_point_returns_error() {
-        (var output, var _) = await ExecuteAsync(
+    public async Task set_missing_access_point_returns_error()
+    {
+        var (output, _) = await ExecuteAsync(
             "accesspoints", "set", "ghost",
             "--model", "X",
             "--speed", "1"
@@ -45,17 +50,19 @@ public class AccessPointErrorTests(TempYamlCliFixture fs, ITestOutputHelper outp
     }
 
     [Fact]
-    public async Task delete_missing_access_point_returns_error() {
-        (var output, var _) = await ExecuteAsync("accesspoints", "del", "ghost");
+    public async Task delete_missing_access_point_returns_error()
+    {
+        var (output, _) = await ExecuteAsync("accesspoints", "del", "ghost");
 
         Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task invalid_speed_value_returns_error() {
+    public async Task invalid_speed_value_returns_error()
+    {
         await ExecuteAsync("accesspoints", "add", "ap01");
 
-        (var output, var _) = await ExecuteAsync(
+        var (output, _) = await ExecuteAsync(
             "accesspoints", "set", "ap01",
             "--speed", "not-a-number"
         );

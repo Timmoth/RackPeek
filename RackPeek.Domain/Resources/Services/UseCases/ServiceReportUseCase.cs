@@ -16,14 +16,18 @@ public record ServiceReportRow(
     List<string>? RunsOnPhysicalHost
 );
 
-public class ServiceReportUseCase(IResourceCollection repository) : IUseCase {
-    public async Task<ServiceReport> ExecuteAsync() {
+public class ServiceReportUseCase(IResourceCollection repository) : IUseCase
+{
+    public async Task<ServiceReport> ExecuteAsync()
+    {
         IReadOnlyList<Service> services = await repository.GetAllOfTypeAsync<Service>();
 
-        var rows = services.Select(async s => {
+        var rows = services.Select(async s =>
+        {
             var runsOnPhysicalHost = new List<string>();
             if (s.RunsOn is not null)
-                foreach (var system in s.RunsOn) {
+                foreach (var system in s.RunsOn)
+                {
                     Resource? systemResource = await repository.GetByNameAsync(system);
                     if (systemResource?.RunsOn is not null)
                         foreach (var parent in systemResource.RunsOn)

@@ -7,11 +7,13 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Laptops;
 
 public class LaptopAddCommand(IServiceProvider provider)
-    : AsyncCommand<LaptopNameSettings> {
+    : AsyncCommand<LaptopNameSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         LaptopNameSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = provider.CreateScope();
         IAddResourceUseCase<Laptop> useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Laptop>>();
 

@@ -5,7 +5,8 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers;
 
-public class ServerSetSettings : ServerNameSettings {
+public class ServerSetSettings : ServerNameSettings
+{
     [CommandOption("--ram <GB>")] public int RamGb { get; set; }
     [CommandOption("--ram_mts <MTs>")] public int RamMts { get; set; }
 
@@ -14,11 +15,13 @@ public class ServerSetSettings : ServerNameSettings {
 
 public class ServerSetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<ServerSetSettings> {
+) : AsyncCommand<ServerSetSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerSetSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = serviceProvider.CreateScope();
         UpdateServerUseCase useCase = scope.ServiceProvider.GetRequiredService<UpdateServerUseCase>();
 

@@ -1,6 +1,7 @@
 namespace RackPeek.Domain.Resources.Services;
 
-public interface IServiceRepository {
+public interface IServiceRepository
+{
     Task<int> GetCountAsync();
     Task<int> GetIpAddressCountAsync();
 

@@ -7,14 +7,17 @@ namespace Shared.Rcl.Commands.Laptops;
 
 public class LaptopReportCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand {
-    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken) {
+) : AsyncCommand
+{
+    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
+    {
         using IServiceScope scope = serviceProvider.CreateScope();
         LaptopHardwareReportUseCase useCase = scope.ServiceProvider.GetRequiredService<LaptopHardwareReportUseCase>();
 
         LaptopHardwareReport report = await useCase.ExecuteAsync();
 
-        if (report.Laptops.Count == 0) {
+        if (report.Laptops.Count == 0)
+        {
             AnsiConsole.MarkupLine("[yellow]No Laptops found.[/]");
             return 0;
         }

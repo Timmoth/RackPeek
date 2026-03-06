@@ -2,7 +2,8 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class AnsibleInventoryPagePom(IPage page) {
+public class AnsibleInventoryPagePom(IPage page)
+{
     // -------------------------------------------------
     // Root
     // -------------------------------------------------

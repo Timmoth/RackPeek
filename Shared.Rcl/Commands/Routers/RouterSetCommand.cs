@@ -6,7 +6,8 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Routers;
 
-public class RouterSetSettings : ServerNameSettings {
+public class RouterSetSettings : ServerNameSettings
+{
     [CommandOption("--Model")] public string Model { get; set; } = default!;
 
     [CommandOption("--managed")] public bool Managed { get; set; }
@@ -16,11 +17,13 @@ public class RouterSetSettings : ServerNameSettings {
 
 public class RouterSetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<RouterSetSettings> {
+) : AsyncCommand<RouterSetSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         RouterSetSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = serviceProvider.CreateScope();
         UpdateRouterUseCase useCase = scope.ServiceProvider.GetRequiredService<UpdateRouterUseCase>();
 

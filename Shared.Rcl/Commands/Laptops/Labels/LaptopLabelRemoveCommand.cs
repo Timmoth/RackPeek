@@ -6,13 +6,16 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Laptops.Labels;
 
-public class LaptopLabelRemoveSettings : LaptopNameSettings {
+public class LaptopLabelRemoveSettings : LaptopNameSettings
+{
     [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
 }
 
-public class LaptopLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<LaptopLabelRemoveSettings> {
+public class LaptopLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<LaptopLabelRemoveSettings>
+{
     public override async Task<int> ExecuteAsync(CommandContext context, LaptopLabelRemoveSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = serviceProvider.CreateScope();
         IRemoveLabelUseCase<Laptop> useCase = scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<Laptop>>();
         await useCase.ExecuteAsync(settings.Name, settings.Key);

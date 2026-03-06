@@ -7,7 +7,8 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Desktops.Nics;
 
-public class DesktopNicRemoveSettings : CommandSettings {
+public class DesktopNicRemoveSettings : CommandSettings
+{
     [CommandArgument(0, "<desktop>")]
     [Description("The desktop name.")]
     public string DesktopName { get; set; } = default!;
@@ -18,11 +19,13 @@ public class DesktopNicRemoveSettings : CommandSettings {
 }
 
 public class DesktopNicRemoveCommand(IServiceProvider provider)
-    : AsyncCommand<DesktopNicRemoveSettings> {
+    : AsyncCommand<DesktopNicRemoveSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DesktopNicRemoveSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = provider.CreateScope();
         IRemovePortUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Desktop>>();
 

@@ -5,8 +5,10 @@ namespace Tests.E2e.Infra;
 
 public abstract class E2ETestBase(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) : IClassFixture<PlaywrightFixture> {
-    public async Task<(IBrowserContext, IPage)> CreatePageAsync() {
+    ITestOutputHelper output) : IClassFixture<PlaywrightFixture>
+{
+    public async Task<(IBrowserContext, IPage)> CreatePageAsync()
+    {
         IBrowserContext context = await fixture.Browser.NewContextAsync();
         IPage page = await context.NewPageAsync();
 

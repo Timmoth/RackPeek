@@ -3,17 +3,22 @@ using RackPeek.Domain.Resources.Services.Networking;
 
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
-public class ServiceSubnetsUseCase(IResourceCollection repo) : IUseCase {
-    public async Task<ServiceSubnetsResult> ExecuteAsync(string? cidr, int? prefix, CancellationToken token) {
+public class ServiceSubnetsUseCase(IResourceCollection repo) : IUseCase
+{
+    public async Task<ServiceSubnetsResult> ExecuteAsync(string? cidr, int? prefix, CancellationToken token)
+    {
         IReadOnlyList<Service> services = await repo.GetAllOfTypeAsync<Service>();
 
         // If CIDR is provided → filter mode
-        if (cidr is not null) {
+        if (cidr is not null)
+        {
             Cidr parsed;
-            try {
+            try
+            {
                 parsed = Cidr.Parse(cidr);
             }
-            catch {
+            catch
+            {
                 return ServiceSubnetsResult.InvalidCidr(cidr);
             }
 
@@ -51,7 +56,8 @@ public record SubnetSummary(string Cidr, int Count);
 
 public record ServiceSummary(string Name, string Ip, List<string>? RunsOn);
 
-public class ServiceSubnetsResult {
+public class ServiceSubnetsResult
+{
     public bool IsInvalidCidr { get; private set; }
     public string? InvalidCidrValue { get; private set; }
 

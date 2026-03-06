@@ -8,11 +8,13 @@ namespace Shared.Rcl.Commands.Routers;
 
 public class RouterDeleteCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<RouterNameSettings> {
+) : AsyncCommand<RouterNameSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         RouterNameSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = serviceProvider.CreateScope();
         IDeleteResourceUseCase<Router> useCase =
             scope.ServiceProvider.GetRequiredService<IDeleteResourceUseCase<Router>>();

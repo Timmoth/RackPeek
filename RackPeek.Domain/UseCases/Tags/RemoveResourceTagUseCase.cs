@@ -5,14 +5,17 @@ using RackPeek.Domain.Resources;
 namespace RackPeek.Domain.UseCases.Tags;
 
 public interface IRemoveTagUseCase<T> : IResourceUseCase<T>
-    where T : Resource {
+    where T : Resource
+{
     Task ExecuteAsync(string name, string tag);
 }
 
 public class RemoveTagUseCase<T>(IResourceCollection repo)
     : IRemoveTagUseCase<T>
-    where T : Resource {
-    public async Task ExecuteAsync(string name, string tag) {
+    where T : Resource
+{
+    public async Task ExecuteAsync(string name, string tag)
+    {
         tag = Normalize.Tag(tag);
 
         name = Normalize.HardwareName(name);

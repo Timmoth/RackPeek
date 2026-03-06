@@ -5,8 +5,10 @@ namespace Tests.EndToEnd.SwitchTests;
 
 [Collection("Yaml CLI tests")]
 public class SwitchErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture> {
-    private async Task<(string, string)> ExecuteAsync(params string[] args) {
+    : IClassFixture<TempYamlCliFixture>
+{
+    private async Task<(string, string)> ExecuteAsync(params string[] args)
+    {
         var output = await YamlCliTestHost.RunAsync(
             args,
             fs.Root,
@@ -19,34 +21,39 @@ public class SwitchErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
     }
 
     [Fact]
-    public async Task adding_duplicate_switch_returns_error() {
+    public async Task adding_duplicate_switch_returns_error()
+    {
         await ExecuteAsync("switches", "add", "sw01");
-        (var output, var _) = await ExecuteAsync("switches", "add", "sw01");
+        var (output, _) = await ExecuteAsync("switches", "add", "sw01");
         Assert.Contains("already exists", output, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task get_missing_switch_returns_error() {
-        (var output, var _) = await ExecuteAsync("switches", "get", "ghost");
+    public async Task get_missing_switch_returns_error()
+    {
+        var (output, _) = await ExecuteAsync("switches", "get", "ghost");
         Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task set_missing_switch_returns_error() {
-        (var output, var _) = await ExecuteAsync("switches", "set", "ghost", "--Model", "X");
+    public async Task set_missing_switch_returns_error()
+    {
+        var (output, _) = await ExecuteAsync("switches", "set", "ghost", "--Model", "X");
         Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task delete_missing_switch_returns_error() {
-        (var output, var _) = await ExecuteAsync("switches", "del", "ghost");
+    public async Task delete_missing_switch_returns_error()
+    {
+        var (output, _) = await ExecuteAsync("switches", "del", "ghost");
         Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
 
     // Port errors
     [Fact]
-    public async Task port_add_missing_switch_returns_error() {
-        (var output, var _) = await ExecuteAsync(
+    public async Task port_add_missing_switch_returns_error()
+    {
+        var (output, _) = await ExecuteAsync(
             "switches", "port", "add", "ghost",
             "--type", "rj45",
             "--speed", "1",
@@ -57,10 +64,11 @@ public class SwitchErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
     }
 
     [Fact]
-    public async Task port_set_invalid_index_returns_error() {
+    public async Task port_set_invalid_index_returns_error()
+    {
         await ExecuteAsync("switches", "add", "sw01");
 
-        (var output, var _) = await ExecuteAsync(
+        var (output, _) = await ExecuteAsync(
             "switches", "port", "set", "sw01",
             "--index", "5",
             "--type", "rj45"
@@ -70,10 +78,11 @@ public class SwitchErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
     }
 
     [Fact]
-    public async Task port_del_invalid_index_returns_error() {
+    public async Task port_del_invalid_index_returns_error()
+    {
         await ExecuteAsync("switches", "add", "sw01");
 
-        (var output, var _) = await ExecuteAsync(
+        var (output, _) = await ExecuteAsync(
             "switches", "port", "del", "sw01",
             "--index", "3"
         );

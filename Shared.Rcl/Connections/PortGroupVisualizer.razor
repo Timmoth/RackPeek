@@ -1,14 +1,13 @@
-﻿@using RackPeek.Domain.Resources.Connections
+﻿@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources.Connections
 @using RackPeek.Domain.Resources.SubResources
-@using RackPeek.Domain.Persistence
-
 @inject IResourceCollection Repository
 
 @if (PortGroup is not null && !string.IsNullOrWhiteSpace(ResourceName))
 {
     <div class="flex flex-wrap">
 
-        @for (int i = 0; i < PortGroup.Count; i++)
+        @for (var i = 0; i < PortGroup.Count; i++)
         {
             var index = i;
 
@@ -20,7 +19,7 @@
             };
 
             var conn = GetConnection(port);
-            bool selected = SelectedPortIndex == index;
+            var selected = SelectedPortIndex == index;
 
             <button type="button"
                     title="@GetTooltip(conn, port)"
@@ -32,17 +31,17 @@
                             border-t border-b border-r
                             @(index == 0 ? "border-l" : "")
                             @(selected
-                                ? "bg-emerald-500 border-emerald-400"
-                                : conn != null
-                                    ? "bg-blue-600 border-blue-500"
-                                    : "bg-zinc-800 border-zinc-700 group-hover:bg-zinc-700")">
+                                                                                                                       ? "bg-emerald-500 border-emerald-400"
+                                                                                                                       : conn != null
+                                                                                                                           ? "bg-blue-600 border-blue-500"
+                                                                                                                           : "bg-zinc-800 border-zinc-700 group-hover:bg-zinc-700")">
 
                     <div class="w-2 h-[1.5px]
                                 @(selected
-                                    ? "bg-black"
-                                    : conn != null
-                                        ? "bg-blue-200"
-                                        : "bg-zinc-600")">
+                                                                    ? "bg-black"
+                                                                    : conn != null
+                                                                        ? "bg-blue-200"
+                                                                        : "bg-zinc-600")">
                     </div>
 
                 </div>
@@ -110,4 +109,5 @@
 
         return $"{other.Resource} (port {other.PortIndex + 1})";
     }
+
 }

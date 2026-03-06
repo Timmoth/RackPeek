@@ -7,11 +7,13 @@ namespace Shared.Rcl.Commands.Systems;
 
 public class SystemGetByNameCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<SystemNameSettings> {
+) : AsyncCommand<SystemNameSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         SystemNameSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = serviceProvider.CreateScope();
         DescribeSystemUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeSystemUseCase>();
 

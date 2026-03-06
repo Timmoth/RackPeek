@@ -6,16 +6,19 @@ using RackPeek.Domain.Resources.Servers;
 namespace RackPeek.Domain.UseCases.Cpus;
 
 public interface IRemoveCpuUseCase<T> : IResourceUseCase<T>
-    where T : Resource {
+    where T : Resource
+{
     public Task ExecuteAsync(
         string name,
         int index);
 }
 
-public class RemoveCpuUseCase<T>(IResourceCollection repo) : IRemoveCpuUseCase<T> where T : Resource {
+public class RemoveCpuUseCase<T>(IResourceCollection repo) : IRemoveCpuUseCase<T> where T : Resource
+{
     public async Task ExecuteAsync(
         string name,
-        int index) {
+        int index)
+    {
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 

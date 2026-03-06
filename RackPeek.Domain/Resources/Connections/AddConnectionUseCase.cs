@@ -5,7 +5,8 @@ using RackPeek.Domain.Resources.SubResources;
 
 namespace RackPeek.Domain.Resources.Connections;
 
-public interface IAddConnectionUseCase {
+public interface IAddConnectionUseCase
+{
     Task ExecuteAsync(
         PortReference a,
         PortReference b,
@@ -14,12 +15,14 @@ public interface IAddConnectionUseCase {
 }
 
 public class AddConnectionUseCase(IResourceCollection repository)
-    : IAddConnectionUseCase {
+    : IAddConnectionUseCase
+{
     public async Task ExecuteAsync(
         PortReference a,
         PortReference b,
         string? label,
-        string? notes) {
+        string? notes)
+    {
         a.Resource = Normalize.HardwareName(a.Resource);
         b.Resource = Normalize.HardwareName(b.Resource);
 
@@ -39,7 +42,8 @@ public class AddConnectionUseCase(IResourceCollection repository)
         await repository.RemoveConnectionsForPortAsync(a);
         await repository.RemoveConnectionsForPortAsync(b);
 
-        var connection = new Connection {
+        var connection = new Connection
+        {
             A = a,
             B = b,
             Label = label,
@@ -49,7 +53,8 @@ public class AddConnectionUseCase(IResourceCollection repository)
         await repository.AddConnectionAsync(connection);
     }
 
-    private async Task ValidatePortReference(PortReference port) {
+    private async Task ValidatePortReference(PortReference port)
+    {
         Resource resource =
             await repository.GetByNameAsync<Resource>(port.Resource)
             ?? throw new NotFoundException($"Resource '{port.Resource}' not found.");
@@ -66,7 +71,8 @@ public class AddConnectionUseCase(IResourceCollection repository)
             throw new NotFoundException($"Port index {port.PortIndex} not found.");
     }
 
-    private static bool PortsMatch(PortReference a, PortReference b) {
+    private static bool PortsMatch(PortReference a, PortReference b)
+    {
         return a.Resource.Equals(b.Resource, StringComparison.OrdinalIgnoreCase)
                && a.PortGroup == b.PortGroup
                && a.PortIndex == b.PortIndex;

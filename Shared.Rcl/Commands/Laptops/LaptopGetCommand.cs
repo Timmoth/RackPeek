@@ -7,17 +7,20 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Laptops;
 
 public class LaptopGetCommand(IServiceProvider provider)
-    : AsyncCommand {
+    : AsyncCommand
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = provider.CreateScope();
         IGetAllResourcesByKindUseCase<Laptop> useCase =
             scope.ServiceProvider.GetRequiredService<IGetAllResourcesByKindUseCase<Laptop>>();
 
         IReadOnlyList<Laptop> laptops = await useCase.ExecuteAsync();
 
-        if (laptops.Count == 0) {
+        if (laptops.Count == 0)
+        {
             AnsiConsole.MarkupLine("[yellow]No Laptops found.[/]");
             return 0;
         }

@@ -6,16 +6,19 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Nics;
 
-public class ServerNicRemoveSettings : ServerNameSettings {
+public class ServerNicRemoveSettings : ServerNameSettings
+{
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 }
 
 public class ServerNicRemoveCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<ServerNicRemoveSettings> {
+    : AsyncCommand<ServerNicRemoveSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerNicRemoveSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = serviceProvider.CreateScope();
         IRemovePortUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IRemovePortUseCase<Server>>();
 

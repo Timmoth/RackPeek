@@ -4,14 +4,16 @@ using RackPeek.Domain.Resources.SubResources;
 
 namespace RackPeek.Domain.Resources.Laptops;
 
-public class UpdateLaptopUseCase(IResourceCollection repository) : IUseCase {
+public class UpdateLaptopUseCase(IResourceCollection repository) : IUseCase
+{
     public async Task ExecuteAsync(
         string name,
         string? model = null,
         double? ramGb = null,
         int? ramMts = null,
         string? notes = null
-    ) {
+    )
+    {
         // ToDo validate / normalize all inputs
 
         name = Normalize.HardwareName(name);
@@ -25,18 +27,21 @@ public class UpdateLaptopUseCase(IResourceCollection repository) : IUseCase {
             laptop.Model = model;
 
         // ---- RAM ----
-        if (ramGb.HasValue) {
+        if (ramGb.HasValue)
+        {
             ThrowIfInvalid.RamGb(ramGb);
             laptop.Ram ??= new Ram();
             laptop.Ram.Size = ramGb.Value;
         }
 
-        if (ramMts.HasValue) {
+        if (ramMts.HasValue)
+        {
             laptop.Ram ??= new Ram();
             laptop.Ram.Mts = ramMts.Value;
         }
 
-        if (laptop.Ram != null) {
+        if (laptop.Ram != null)
+        {
             if (laptop.Ram.Size == 0) laptop.Ram.Size = null;
 
             if (laptop.Ram.Mts == 0) laptop.Ram.Mts = null;

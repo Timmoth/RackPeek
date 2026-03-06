@@ -7,16 +7,19 @@ namespace Tests.E2e;
 
 public class DesktopTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) : E2ETestBase(fixture, output) {
+    ITestOutputHelper output) : E2ETestBase(fixture, output)
+{
     private readonly PlaywrightFixture _fixture = fixture;
     private readonly ITestOutputHelper _output = output;
 
     [Fact]
-    public async Task User_Can_Add_And_Delete_Desktop() {
+    public async Task User_Can_Add_And_Delete_Desktop()
+    {
         (IBrowserContext context, IPage page) = await CreatePageAsync();
         var resourceName = $"e2e-ap-{Guid.NewGuid():N}"[..16];
 
-        try {
+        try
+        {
             // Go home
             await page.GotoAsync(_fixture.BaseUrl);
 
@@ -39,7 +42,8 @@ public class DesktopTests(
 
             await context.CloseAsync();
         }
-        catch (Exception) {
+        catch (Exception)
+        {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
 
             _output.WriteLine($"Current URL: {page.Url}");
@@ -51,7 +55,8 @@ public class DesktopTests(
 
             throw;
         }
-        finally {
+        finally
+        {
             await context.CloseAsync();
         }
     }

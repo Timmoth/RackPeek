@@ -1,6 +1,7 @@
 namespace RackPeek.Domain.UseCases.SSH;
 
-public sealed record SshExportOptions {
+public sealed record SshExportOptions
+{
     /// <summary>
     ///     Only include resources with this tag (optional)
     /// </summary>

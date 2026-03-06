@@ -7,7 +7,8 @@ using RackPeek.Domain.Resources.SubResources;
 namespace RackPeek.Domain.UseCases.Cpus;
 
 public interface IUpdateCpuUseCase<T> : IResourceUseCase<T>
-    where T : Resource {
+    where T : Resource
+{
     public Task ExecuteAsync(
         string name,
         int index,
@@ -16,13 +17,15 @@ public interface IUpdateCpuUseCase<T> : IResourceUseCase<T>
         int? threads);
 }
 
-public class UpdateCpuUseCase<T>(IResourceCollection repo) : IUpdateCpuUseCase<T> where T : Resource {
+public class UpdateCpuUseCase<T>(IResourceCollection repo) : IUpdateCpuUseCase<T> where T : Resource
+{
     public async Task ExecuteAsync(
         string name,
         int index,
         string? model,
         int? cores,
-        int? threads) {
+        int? threads)
+    {
         // ToDo pass in properties as inputs, construct the entity in the usecase
         // ToDo validate / normalize all inputs
 

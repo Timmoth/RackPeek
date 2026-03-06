@@ -6,16 +6,19 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Labels;
 
-public class ServerLabelRemoveSettings : ServerNameSettings {
+public class ServerLabelRemoveSettings : ServerNameSettings
+{
     [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
 }
 
 public class ServerLabelRemoveCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<ServerLabelRemoveSettings> {
+    : AsyncCommand<ServerLabelRemoveSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerLabelRemoveSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = serviceProvider.CreateScope();
         IRemoveLabelUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<Server>>();
 

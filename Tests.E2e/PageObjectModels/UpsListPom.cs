@@ -2,7 +2,8 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class UpsListPom(IPage page) {
+public class UpsListPom(IPage page)
+{
     public AddResourceComponent AddUps => new(page, "ups");
 
     public ILocator PageRoot => page.GetByTestId("ups-page-root");
@@ -24,37 +25,44 @@ public class UpsListPom(IPage page) {
 
     public ILocator UpsItem(string name) => page.GetByTestId($"ups-item-{Sanitize(name)}");
 
-    public ILocator OpenLink(string name) {
+    public ILocator OpenLink(string name)
+    {
         return UpsItem(name)
             .GetByTestId("open-ups-link");
     }
 
-    public ILocator EditButton(string name) {
+    public ILocator EditButton(string name)
+    {
         return UpsItem(name)
             .GetByTestId("edit-ups-button");
     }
 
-    public ILocator SaveButton(string name) {
+    public ILocator SaveButton(string name)
+    {
         return UpsItem(name)
             .GetByTestId("save-ups-button");
     }
 
-    public ILocator CancelButton(string name) {
+    public ILocator CancelButton(string name)
+    {
         return UpsItem(name)
             .GetByTestId("cancel-ups-button");
     }
 
-    public ILocator RenameButton(string name) {
+    public ILocator RenameButton(string name)
+    {
         return UpsItem(name)
             .GetByTestId("rename-ups-button");
     }
 
-    public ILocator CloneButton(string name) {
+    public ILocator CloneButton(string name)
+    {
         return UpsItem(name)
             .GetByTestId("clone-ups-button");
     }
 
-    public ILocator DeleteButton(string name) {
+    public ILocator DeleteButton(string name)
+    {
         return UpsItem(name)
             .GetByTestId("delete-ups-button");
     }
@@ -63,12 +71,14 @@ public class UpsListPom(IPage page) {
     // Navigation
     // -------------------------------------------------
 
-    public async Task GotoAsync(string baseUrl) {
+    public async Task GotoAsync(string baseUrl)
+    {
         await page.GotoAsync($"{baseUrl}/ups/list");
         await AssertLoadedAsync();
     }
 
-    public async Task AssertLoadedAsync() {
+    public async Task AssertLoadedAsync()
+    {
         await Assertions.Expect(PageRoot).ToBeVisibleAsync();
         await Assertions.Expect(PageTitle).ToBeVisibleAsync();
     }
@@ -79,13 +89,15 @@ public class UpsListPom(IPage page) {
     // Actions
     // -------------------------------------------------
 
-    public async Task AddUpsAsync(string name) {
+    public async Task AddUpsAsync(string name)
+    {
         await AddUps.AddAsync(name);
         await Assertions.Expect(UpsItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task DeleteUpsAsync(string name) {
+    public async Task DeleteUpsAsync(string name)
+    {
         await DeleteButton(name).ClickAsync();
         await page.GetByTestId("Ups-confirm-modal-confirm").ClickAsync();
 
@@ -93,17 +105,20 @@ public class UpsListPom(IPage page) {
             .Not.ToBeVisibleAsync();
     }
 
-    public async Task OpenUpsAsync(string name) {
+    public async Task OpenUpsAsync(string name)
+    {
         await OpenLink(name).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{name}");
     }
 
-    public async Task AssertUpsExists(string name) {
+    public async Task AssertUpsExists(string name)
+    {
         await Assertions.Expect(UpsItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task AssertUpsDoesNotExist(string name) {
+    public async Task AssertUpsDoesNotExist(string name)
+    {
         await Assertions.Expect(UpsItem(name))
             .Not.ToBeVisibleAsync();
     }

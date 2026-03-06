@@ -6,11 +6,13 @@ using Spectre.Console.Cli;
 namespace Shared.Rcl.Commands.Desktops;
 
 public class DesktopDescribeCommand(IServiceProvider provider)
-    : AsyncCommand<DesktopNameSettings> {
+    : AsyncCommand<DesktopNameSettings>
+{
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         DesktopNameSettings settings,
-        CancellationToken cancellationToken) {
+        CancellationToken cancellationToken)
+    {
         using IServiceScope scope = provider.CreateScope();
         DescribeDesktopUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeDesktopUseCase>();
 

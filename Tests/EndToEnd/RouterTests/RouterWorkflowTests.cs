@@ -5,8 +5,10 @@ namespace Tests.EndToEnd.RouterTests;
 
 [Collection("Yaml CLI tests")]
 public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture> {
-    private async Task<(string, string)> ExecuteAsync(params string[] args) {
+    : IClassFixture<TempYamlCliFixture>
+{
+    private async Task<(string, string)> ExecuteAsync(params string[] args)
+    {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -23,11 +25,12 @@ public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
     }
 
     [Fact]
-    public async Task routers_cli_workflow_test() {
+    public async Task routers_cli_workflow_test()
+    {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         // Add router
-        (var output, var yaml) = await ExecuteAsync("routers", "add", "rt01");
+        var (output, yaml) = await ExecuteAsync("routers", "add", "rt01");
         Assert.Equal("Router 'rt01' added.\n", output);
         Assert.Contains("name: rt01", yaml);
 
@@ -49,7 +52,7 @@ public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
                        poe: false
                        name: rt01
                      connections: []
-                     
+
                      """, yaml);
 
         // Add second router

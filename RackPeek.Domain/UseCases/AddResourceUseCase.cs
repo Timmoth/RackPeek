@@ -5,12 +5,15 @@ using RackPeek.Domain.Resources;
 namespace RackPeek.Domain.UseCases;
 
 public interface IAddResourceUseCase<T> : IResourceUseCase<T>
-    where T : Resource {
+    where T : Resource
+{
     Task ExecuteAsync(string name, List<string>? runsOn = null);
 }
 
-public class AddResourceUseCase<T>(IResourceCollection repo) : IAddResourceUseCase<T> where T : Resource {
-    public async Task ExecuteAsync(string name, List<string>? runsOn = null) {
+public class AddResourceUseCase<T>(IResourceCollection repo) : IAddResourceUseCase<T> where T : Resource
+{
+    public async Task ExecuteAsync(string name, List<string>? runsOn = null)
+    {
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
@@ -19,7 +22,8 @@ public class AddResourceUseCase<T>(IResourceCollection repo) : IAddResourceUseCa
             throw new ConflictException($"Resource '{name}' ({existingResource.Kind}) already exists.");
 
         if (runsOn != null)
-            foreach (var parent in runsOn) {
+            foreach (var parent in runsOn)
+            {
                 var normalizedParent = Normalize.HardwareName(parent);
                 ThrowIfInvalid.ResourceName(normalizedParent);
                 Resource? parentResource = await repo.GetByNameAsync(normalizedParent);
