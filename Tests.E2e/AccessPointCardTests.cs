@@ -295,4 +295,102 @@ public class AccessPointCardTests(
             await context.CloseAsync();
         }
     }
+
+    [Fact]
+    public async Task User_Can_Add_Ports_To_Two_AccessPoints_And_Connect_Them() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
+
+        var ap1 = $"e2e-ap-{Guid.NewGuid():N}"[..16];
+        var ap2 = $"e2e-ap-{Guid.NewGuid():N}"[..16];
+
+        try {
+            await page.GotoAsync(_fixture.BaseUrl);
+
+            var layout = new MainLayoutPom(page);
+            await layout.AssertLoadedAsync();
+            await layout.GotoHardwareAsync();
+
+            var hardwareTree = new HardwareTreePom(page);
+            await hardwareTree.AssertLoadedAsync();
+            await hardwareTree.GotoAccessPointsListAsync();
+
+            var list = new AccessPointsListPom(page);
+            await list.AssertLoadedAsync();
+
+            // -------------------------------------------------
+            // Create first AP
+            // -------------------------------------------------
+
+            await list.AddAccessPointAsync(ap1);
+            await page.WaitForURLAsync($"**/resources/hardware/{ap1}");
+
+            var card = new AccessPointCardPom(page);
+            await card.AssertCardVisibleAsync(ap1);
+
+            // Add port group to AP1
+            await card.AddPortGroupAsync(
+                "rj45",
+                "1",
+                2);
+
+            // -------------------------------------------------
+            // Create second AP
+            // -------------------------------------------------
+
+            await layout.GotoHardwareAsync();
+            await hardwareTree.AssertLoadedAsync();
+            await hardwareTree.GotoAccessPointsListAsync();
+            await list.AssertLoadedAsync();
+
+            await list.AddAccessPointAsync(ap2);
+            await page.WaitForURLAsync($"**/resources/hardware/{ap2}");
+
+            await card.AssertCardVisibleAsync(ap2);
+
+            // Add port group to AP2
+            await card.AddPortGroupAsync(
+                "sfp+",
+                "2.5",
+                2);
+            // -------------------------------------------------
+            // Go back to AP1 to create connection
+            // -------------------------------------------------
+
+            await layout.GotoHardwareAsync();
+            await hardwareTree.GotoAccessPointsListAsync();
+            await list.AssertLoadedAsync();
+            await list.OpenAccessPointAsync(ap1);
+
+            await card.AssertCardVisibleAsync(ap1);
+
+            // -------------------------------------------------
+            // Open connection modal from port
+            // -------------------------------------------------
+
+            await card.OpenConnectionFromPortAsync(0, 0);
+
+            // -------------------------------------------------
+            // Create connection
+            // -------------------------------------------------
+
+            await card.CreateConnectionAsync(
+                ap1,
+                "rj45 — 1 Gbps (2)", // example label — adjust if needed
+                "Port 1",
+                ap2,
+                "sfp+ — 2.5 Gbps (2)",
+                "Port 1");
+
+            // -------------------------------------------------
+            // Verify connection indicator appears
+            // -------------------------------------------------
+
+            await card.Ports.AssertPortVisibleAsync("accesspoint-ports", 0, 0);
+
+            await context.CloseAsync();
+        }
+        finally {
+            await context.CloseAsync();
+        }
+    }
 }

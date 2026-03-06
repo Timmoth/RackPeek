@@ -14,8 +14,9 @@
     <div class="flex items-center justify-between mb-1 group">
         <div class="text-zinc-400">
             Ports
+
             <button
-                data-testid="@($"{BaseTestId}-add-button")"
+                data-testid="@($"{BaseTestId}-add")"
                 class="hover:text-emerald-400 group-hover:opacity-100 transition"
                 title="Add Port"
                 @onclick="OpenAddNic">
@@ -38,20 +39,22 @@
                     <button
                         data-testid="@($"{BaseTestId}-edit-{idx}")"
                         class="hover:text-emerald-400 text-sm"
-                        title="Edit NIC"
+                        title="Edit Port Group"
                         @onclick="() => OpenEditNic(nic)">
                         @nic.Type — @nic.Speed Gbps (@nic.Count ports)
                     </button>
 
                 </div>
 
-                <div class="pl-1"
-                     data-testid="@($"{BaseTestId}-ports-{idx}")">
+                <div
+                    class="pl-1"
+                    data-testid="@($"{BaseTestId}-ports-{idx}")">
 
                     <PortGroupVisualizer
                         ResourceName="@Resource.Name"
                         PortGroupIndex="@idx"
                         PortGroup="@nic"
+                        TestIdPrefix="@($"{BaseTestId}-visualizer-{idx}")"
                         OnPortClicked="HandlePortClicked"/>
 
                 </div>
@@ -62,22 +65,19 @@
 
 </div>
 
-
 <PortModal
     IsOpen="@_nicModalOpen"
     IsOpenChanged="v => _nicModalOpen = v"
     Value="@_editingNic"
     OnSubmit="HandleNicSubmit"
     OnDelete="HandleNicDelete"
-    TestIdPrefix="@($"{BaseTestId}-modal")"/>
-
+    TestIdPrefix="@($"{BaseTestId}")"/>
 
 <PortConnectionModal
     IsOpen="@_connectionModalOpen"
     IsOpenChanged="v => _connectionModalOpen = v"
     SeedPort="@_selectedPort"
-    TestIdPrefix="@($"{BaseTestId}-connection")"/>
-
+    TestIdPrefix="@($"{BaseTestId}")"/>
 
 @code {
 

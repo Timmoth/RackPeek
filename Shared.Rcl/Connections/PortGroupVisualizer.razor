@@ -20,28 +20,29 @@
 
             var conn = GetConnection(port);
             var selected = SelectedPortIndex == index;
-
+            
             <button type="button"
+                    data-testid="@($"{BaseTestId}-port-{index}")"
                     title="@GetTooltip(conn, port)"
                     class="group flex flex-col items-center w-6 leading-none"
                     @onclick="() => SelectPort(index, port)">
-
+                
                 <div class="w-6 h-3 flex items-center justify-center
                             shadow-inner
                             border-t border-b border-r
                             @(index == 0 ? "border-l" : "")
                             @(selected
-                                                                                                                       ? "bg-emerald-500 border-emerald-400"
-                                                                                                                       : conn != null
-                                                                                                                           ? "bg-blue-600 border-blue-500"
-                                                                                                                           : "bg-zinc-800 border-zinc-700 group-hover:bg-zinc-700")">
+                                ? "bg-emerald-500 border-emerald-400"
+                                : conn != null
+                                    ? "bg-blue-600 border-blue-500"
+                                    : "bg-zinc-800 border-zinc-700 group-hover:bg-zinc-700")">
 
                     <div class="w-2 h-[1.5px]
                                 @(selected
-                                                                    ? "bg-black"
-                                                                    : conn != null
-                                                                        ? "bg-blue-200"
-                                                                        : "bg-zinc-600")">
+                                    ? "bg-black"
+                                    : conn != null
+                                        ? "bg-blue-200"
+                                        : "bg-zinc-600")">
                     </div>
 
                 </div>
@@ -61,6 +62,7 @@
     [Parameter] public string ResourceName { get; set; } = "";
     [Parameter] public int PortGroupIndex { get; set; }
     [Parameter] public Port? PortGroup { get; set; }
+    [Parameter] public string? TestIdPrefix { get; set; }
 
     [Parameter] public int? SelectedPortIndex { get; set; }
     [Parameter] public EventCallback<int?> SelectedPortIndexChanged { get; set; }
@@ -68,7 +70,11 @@
     [Parameter] public EventCallback<PortReference> OnPortClicked { get; set; }
 
     private List<Connection> _connections = new();
-
+    private string BaseTestId =>
+        string.IsNullOrWhiteSpace(TestIdPrefix)
+            ? "port-visualizer"
+            : TestIdPrefix;
+    
     protected override async Task OnParametersSetAsync()
     {
         _connections = (await Repository.GetConnectionsAsync()).ToList();

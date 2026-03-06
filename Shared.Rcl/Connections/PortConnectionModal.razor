@@ -12,8 +12,10 @@
 
         <div class="absolute inset-0 bg-black/70" @onclick="Cancel"></div>
 
-        <div class="relative bg-zinc-900 border border-zinc-800 rounded w-full max-w-3xl p-4">
-
+        <div
+            class="relative bg-zinc-900 border border-zinc-800 rounded w-full max-w-3xl p-4"
+            data-testid="@($"{BaseTestId}-container")">
+            
             <div class="flex justify-between mb-4">
                 <div class="text-zinc-100 text-sm font-medium">
                     Create Connection
@@ -33,6 +35,7 @@
                     <div class="text-zinc-400">Side A</div>
 
                     <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                            data-testid="@($"{BaseTestId}-resource-a")"
                             @bind="_resourceAIndex">
 
                         <option value="">Select resource</option>
@@ -48,6 +51,7 @@
                     @if (_resourceA?.Ports?.Any() == true)
                     {
                         <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                data-testid="@($"{BaseTestId}-group-a")"
                                 @bind="_groupAIndex">
 
                             <option value="">Select group</option>
@@ -64,6 +68,7 @@
                     @if (_groupA is not null)
                     {
                         <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                data-testid="@($"{BaseTestId}-port-a")"
                                 @bind="_portAIndex">
 
                             <option value="">Select port</option>
@@ -92,6 +97,7 @@
                     <div class="text-zinc-400">Side B</div>
 
                     <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                            data-testid="@($"{BaseTestId}-resource-b")"
                             @bind="_resourceBIndex">
 
                         <option value="">Select resource</option>
@@ -107,6 +113,7 @@
                     @if (_resourceB?.Ports?.Any() == true)
                     {
                         <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                data-testid="@($"{BaseTestId}-group-b")"
                                 @bind="_groupBIndex">
 
                             <option value="">Select group</option>
@@ -123,6 +130,7 @@
                     @if (_groupB is not null)
                     {
                         <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                data-testid="@($"{BaseTestId}-port-b")"
                                 @bind="_portBIndex">
 
                             <option value="">Select port</option>
@@ -149,12 +157,14 @@
             <div class="flex justify-end gap-2 mt-6">
 
                 <button class="px-3 py-1 border border-zinc-700 rounded text-zinc-300"
+                        data-testid="@($"{BaseTestId}-cancel")"
                         @onclick="Cancel">
                     Cancel
                 </button>
 
                 <button class="px-3 py-1 rounded bg-emerald-600 text-black"
                         disabled="@(!CanSubmit)"
+                        data-testid="@($"{BaseTestId}-submit")"
                         @onclick="HandleSubmit">
                     Add Connection
                 </button>

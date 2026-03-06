@@ -6,7 +6,9 @@ namespace Tests.E2e.PageObjectModels;
 public class AccessPointCardPom(IPage page) {
     public TagsPom Tags => new(page);
     public LabelsPom Labels => new(page);
+    public PortsPom Ports => new(page);
 
+    private const string _portsPrefix = "accesspoint-ports";
     // Modals
     public ILocator DeleteConfirmModal => page.GetByTestId("AccessPoint-confirm-modal");
     public ILocator DeleteConfirmButton => page.GetByTestId("AccessPoint-confirm-modal-confirm");
@@ -153,4 +155,37 @@ public class AccessPointCardPom(IPage page) {
 
     private static string Sanitize(string value)
         => value.Replace(" ", "-");
+
+    // -------------------------------------------------
+    // Ports
+    // -------------------------------------------------
+
+    public async Task AddPortGroupAsync(
+        string type,
+        string speed,
+        int count) {
+        await Ports.AddPortGroupAsync(
+            "accesspoint-ports",
+            type,
+            speed,
+            count);
+    }
+    public async Task OpenConnectionFromPortAsync(int groupIndex, int portIndex) => await Ports.OpenConnectionFromPortAsync(_portsPrefix, groupIndex, portIndex);
+
+    public async Task CreateConnectionAsync(
+        string resourceA,
+        string groupA,
+        string portA,
+        string resourceB,
+        string groupB,
+        string portB) {
+        await Ports.CreateConnectionAsync(
+            _portsPrefix,
+            resourceA,
+            groupA,
+            portA,
+            resourceB,
+            groupB,
+            portB);
+    }
 }
