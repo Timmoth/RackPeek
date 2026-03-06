@@ -1,12 +1,60 @@
-name: WebUi Tests
+name: Tests
 
 on:
   pull_request:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-24.04  # pin for consistency (22.04 is also fine)
+
+  format:
+    name: Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Check Formatting
+        run: dotnet format --verify-no-changes
+
+
+  cli-tests:
+    name: CLI Tests
+    runs-on: ubuntu-latest
+    needs: format
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run CLI Tests
+        run: dotnet test Tests --no-build --configuration Release --verbosity normal
+
+
+  webui-tests:
+    name: WebUI / Playwright Tests
+    runs-on: ubuntu-24.04
+    needs: cli-tests
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,7 +72,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Cache Playwright browsers (Chromium)
+      - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
@@ -38,8 +86,7 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      # Prefer the Playwright script that comes with the NuGet package (no global tool install)
-      - name: Install Playwright Browsers (Chromium only)
+      - name: Install Playwright Browsers
         shell: bash
         run: |
           pwsh Tests.E2e/bin/Release/net*/playwright.ps1 install --with-deps chromium
