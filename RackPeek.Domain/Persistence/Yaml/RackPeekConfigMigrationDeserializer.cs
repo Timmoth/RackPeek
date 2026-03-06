@@ -10,6 +10,7 @@ using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.Switches;
 using RackPeek.Domain.Resources.SystemResources;
+using RackPeek.Domain.Resources.OtherHardware;
 using RackPeek.Domain.Resources.UpsUnits;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -45,6 +46,7 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
                         { Laptop.KindLabel, typeof(Laptop) },
                         { AccessPoint.KindLabel, typeof(AccessPoint) },
                         { Ups.KindLabel, typeof(Ups) },
+                        { Other.KindLabel, typeof(Other) },
                         { SystemResource.KindLabel, typeof(SystemResource) },
                         { Service.KindLabel, typeof(Service) }
                     });

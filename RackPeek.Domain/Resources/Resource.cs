@@ -7,6 +7,7 @@ using RackPeek.Domain.Resources.Servers;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.Switches;
 using RackPeek.Domain.Resources.SystemResources;
+using RackPeek.Domain.Resources.OtherHardware;
 using RackPeek.Domain.Resources.UpsUnits;
 
 namespace RackPeek.Domain.Resources;
@@ -14,7 +15,7 @@ namespace RackPeek.Domain.Resources;
 public abstract class Resource
 {
     private static readonly string[] HardwareTypes =
-        ["server", "switch", "firewall", "router", "accesspoint", "desktop", "laptop", "ups"];
+        ["server", "switch", "firewall", "router", "accesspoint", "desktop", "laptop", "ups", "other"];
 
     public static bool IsHardware(string kind)
     {
@@ -52,6 +53,7 @@ public abstract class Resource
         { "desktop", "desktops" },
         { "laptop", "laptops" },
         { "ups", "ups" },
+        { "other", "other" },
         { "system", "systems" },
         { "service", "services" }
     };
@@ -67,6 +69,7 @@ public abstract class Resource
         { typeof(Desktop), "Desktop" },
         { typeof(Laptop), "Laptop" },
         { typeof(Ups), "Ups" },
+        { typeof(Other), "Other" },
         { typeof(SystemResource), "System" },
         { typeof(Service), "Service" }
     };

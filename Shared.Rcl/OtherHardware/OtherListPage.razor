@@ -1,0 +1,32 @@
+@page "/other/list"
+@using RackPeek.Domain.Resources.OtherHardware
+@inject NavigationManager Nav
+
+<ResourcesListComponent TResource="Other"
+                        Title="Other"
+                        TestId="other"
+                        OnCreated="NavigateToNewResource">
+
+    <ItemTemplate Context="other">
+        <OtherCardComponent Other="other"
+                          OnDeleted="Reload"/>
+    </ItemTemplate>
+
+</ResourcesListComponent>
+
+@code {
+
+    [Inject] IGetAllResourcesByKindUseCase<Other> GetAllUseCase { get; set; } = default!;
+
+    private Task NavigateToNewResource(string name)
+    {
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(name)}");
+        return Task.CompletedTask;
+    }
+
+    private async Task Reload(string _)
+    {
+        await GetAllUseCase.ExecuteAsync();
+    }
+
+}

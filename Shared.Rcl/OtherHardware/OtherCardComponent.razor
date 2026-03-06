@@ -1,0 +1,262 @@
+@using RackPeek.Domain.Resources.OtherHardware
+@inject UpdateOtherUseCase UpdateUseCase
+@inject IGetResourceByNameUseCase<Other> GetByNameUseCase
+@inject IDeleteResourceUseCase<Other> DeleteUseCase
+@inject IRenameResourceUseCase<Other> RenameUseCase
+@inject ICloneResourceUseCase<Other> CloneUseCase
+@inject NavigationManager Nav
+
+<div class="border border-zinc-800 rounded p-4 bg-zinc-900"
+     data-testid=@($"other-item-{Other.Name.Replace(" ", "-")}")>
+
+    <div class="flex justify-between items-center mb-3">
+
+        <div class="text-zinc-100 hover:text-emerald-300">
+            <NavLink href="@($"resources/hardware/{Uri.EscapeDataString(Other.Name)}")"
+                     class="block"
+                     data-testid=@($"other-item-{Other.Name.Replace(" ", "-")}-link")>
+                @Other.Name
+            </NavLink>
+        </div>
+
+        <div class="flex gap-3 text-xs">
+            @if (!_isEditing)
+            {
+                <button data-testid="edit-other-button"
+                        class="text-zinc-400 hover:text-zinc-200"
+                        @onclick="BeginEdit">
+                    Edit
+                </button>
+
+                <button data-testid="rename-other-button"
+                        class="text-blue-400 hover:text-blue-300 transition"
+                        @onclick="OpenRename">
+                    Rename
+                </button>
+
+                <button data-testid="clone-other-button"
+                        class="text-emerald-400 hover:text-emerald-300 transition"
+                        @onclick="OpenClone">
+                    Clone
+                </button>
+
+                <button data-testid="delete-other-button"
+                        class="text-red-400 hover:text-red-300 transition"
+                        @onclick="ConfirmDelete">
+                    Delete
+                </button>
+            }
+            else
+            {
+                <button data-testid="save-other-button"
+                        class="text-emerald-400 hover:text-emerald-300"
+                        @onclick="Save">
+                    Save
+                </button>
+
+                <button data-testid="cancel-other-button"
+                        class="text-zinc-500 hover:text-zinc-300"
+                        @onclick="Cancel">
+                    Cancel
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+        <!-- Model -->
+        <div data-testid="other-model-section">
+            <div class="text-zinc-400 mb-1">Model</div>
+
+            @if (_isEditing)
+            {
+                <input data-testid="other-model-input"
+                       class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
+                       @bind="_edit.Model" />
+            }
+            else if (!string.IsNullOrWhiteSpace(Other.Model))
+            {
+                <div class="text-zinc-300"
+                     data-testid="other-model-value">
+                    @Other.Model
+                </div>
+            }
+        </div>
+
+        <!-- Description -->
+        <div data-testid="other-description-section">
+            <div class="text-zinc-400 mb-1">Description</div>
+
+            @if (_isEditing)
+            {
+                <input data-testid="other-description-input"
+                       class="w-full px-3 py-2 rounded-md bg-zinc-800 text-zinc-100 border border-zinc-600"
+                       @bind="_edit.Description" />
+            }
+            else if (!string.IsNullOrWhiteSpace(Other.Description))
+            {
+                <div class="text-zinc-300"
+                     data-testid="other-description-value">
+                    @Other.Description
+                </div>
+            }
+        </div>
+
+        <ResourceTagEditor Resource="Other"
+                           TestIdPrefix="other" />
+
+        <ResourceLabelEditor Resource="Other"
+                             TestIdPrefix="other" />
+
+        <div class="md:col-span-2"
+             data-testid="other-notes-section">
+
+            <div class="text-zinc-400 mb-1">Notes</div>
+
+            @if (_isEditing)
+            {
+                <MarkdownEditor @bind-Value="_edit.Notes"
+                                ShowActionButtons="false"
+                                TestIdPrefix="other-notes-editor" />
+            }
+            else
+            {
+                <MarkdownViewer Value="@Other.Notes"
+                                ShowEditButton="false"
+                                TestIdPrefix="other-notes-viewer" />
+            }
+        </div>
+    </div>
+</div>
+
+<ConfirmModal IsOpen="_confirmDeleteOpen"
+              IsOpenChanged="v => _confirmDeleteOpen = v"
+              Title="Delete Other Hardware"
+              ConfirmText="Delete"
+              ConfirmClass="bg-red-600 hover:bg-red-500"
+              OnConfirm="DeleteOther"
+              TestIdPrefix="Other">
+    Are you sure you want to delete <strong>@Other.Name</strong>?
+</ConfirmModal>
+
+<StringValueModal IsOpen="_renameOpen"
+                  IsOpenChanged="v => _renameOpen = v"
+                  Title="Rename Other Hardware"
+                  Description="Enter a new name for this hardware"
+                  Label="New name"
+                  Value="@Other.Name"
+                  OnSubmit="HandleRenameSubmit"
+                  TestIdPrefix="other-rename" />
+
+<StringValueModal IsOpen="_cloneOpen"
+                  IsOpenChanged="v => _cloneOpen = v"
+                  Title="Clone resource"
+                  Description="Enter a name for the cloned resource"
+                  Label="New resource name"
+                  Value="@($"{Other.Name}-copy")"
+                  OnSubmit="HandleCloneSubmit"
+                  TestIdPrefix="other-clone" />
+
+@code {
+    [Parameter] [EditorRequired] public Other Other { get; set; } = default!;
+
+    [Parameter] public EventCallback<string> OnDeleted { get; set; }
+
+    bool _isEditing;
+    bool _confirmDeleteOpen;
+
+    OtherEditModel _edit = new();
+
+    void BeginEdit()
+    {
+        _edit = OtherEditModel.From(Other);
+        _isEditing = true;
+    }
+
+    async Task Save()
+    {
+        _isEditing = false;
+
+        await UpdateUseCase.ExecuteAsync(
+            Other.Name,
+            _edit.Model,
+            _edit.Description,
+            _edit.Notes);
+
+        Other = await GetByNameUseCase.ExecuteAsync(Other.Name);
+    }
+
+    void Cancel()
+    {
+        _isEditing = false;
+    }
+
+    void ConfirmDelete()
+    {
+        _confirmDeleteOpen = true;
+    }
+
+    async Task DeleteOther()
+    {
+        _confirmDeleteOpen = false;
+
+        await DeleteUseCase.ExecuteAsync(Other.Name);
+
+        if (OnDeleted.HasDelegate)
+            await OnDeleted.InvokeAsync(Other.Name);
+    }
+
+    public class OtherEditModel
+    {
+        public string? Model { get; set; }
+        public string? Description { get; set; }
+        public string? Notes { get; set; }
+
+        public static OtherEditModel From(Other other)
+        {
+            return new OtherEditModel
+            {
+                Model = other.Model,
+                Description = other.Description,
+                Notes = other.Notes
+            };
+        }
+    }
+
+}
+
+@code
+{
+    bool _renameOpen;
+
+    void OpenRename()
+    {
+        _renameOpen = true;
+    }
+
+    async Task HandleRenameSubmit(string newName)
+    {
+        await RenameUseCase.ExecuteAsync(Other.Name, newName);
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(newName)}");
+    }
+
+}
+
+@code
+{
+    bool _cloneOpen;
+
+    void OpenClone()
+    {
+        _cloneOpen = true;
+    }
+
+    async Task HandleCloneSubmit(string newName)
+    {
+        await CloneUseCase.ExecuteAsync(Other.Name, newName);
+
+        Nav.NavigateTo($"resources/hardware/{Uri.EscapeDataString(newName)}");
+    }
+
+}

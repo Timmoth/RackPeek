@@ -53,6 +53,7 @@
         { "$ref": "#/$defs/switch" },
         { "$ref": "#/$defs/accessPoint" },
         { "$ref": "#/$defs/ups" },
+        { "$ref": "#/$defs/other" },
         { "$ref": "#/$defs/desktop" },
         { "$ref": "#/$defs/laptop" },
         { "$ref": "#/$defs/service" },
@@ -284,6 +285,22 @@
 
             "model": { "type": "string" },
             "va": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+
+    "other": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceBase" },
+        {
+          "type": "object",
+          "properties": {
+            "kind": { "const": "Other" },
+
+            "model": { "type": "string" },
+            "description": { "type": "string" }
           }
         }
       ],
