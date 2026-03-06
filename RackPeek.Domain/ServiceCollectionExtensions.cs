@@ -76,7 +76,7 @@ public static class ServiceCollectionExtensions {
         services.AddScoped(typeof(IGetConnectionsForResourceUseCase), typeof(GetConnectionsForResourceUseCase));
         services.AddScoped(typeof(IRemoveConnectionUseCase), typeof(RemoveConnectionUseCase));
 
-        
+
         IEnumerable<Type>? usecases = Assembly.GetAssembly(typeof(IUseCase))
             ?.GetTypes()
             .Where(t =>

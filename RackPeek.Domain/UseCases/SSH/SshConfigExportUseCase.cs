@@ -1,7 +1,7 @@
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
 
-namespace RackPeek.Domain.UseCases.Ssh;
+namespace RackPeek.Domain.UseCases.SSH;
 
 public class SshConfigExportUseCase(IResourceCollection repository) : IUseCase {
     public async Task<SshExportResult?> ExecuteAsync(SshExportOptions options) {

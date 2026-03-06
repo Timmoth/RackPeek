@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.ConnectionTests;
 
 [Collection("Yaml CLI tests")]
 public class PortConnectionWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -26,8 +24,7 @@ public class PortConnectionWorkflowTests(TempYamlCliFixture fs, ITestOutputHelpe
     [Theory]
     [InlineData("switches", "routers")]
     [InlineData("firewalls", "routers")]
-    public async Task removing_port_removes_connections(string aType, string bType)
-    {
+    public async Task removing_port_removes_connections(string aType, string bType) {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         await ExecuteAsync(aType, "add", "node-a");
@@ -59,8 +56,7 @@ public class PortConnectionWorkflowTests(TempYamlCliFixture fs, ITestOutputHelpe
     [Theory]
     [InlineData("switches", "routers")]
     [InlineData("firewalls", "routers")]
-    public async Task removing_port_shifts_connection_groups(string aType, string bType)
-    {
+    public async Task removing_port_shifts_connection_groups(string aType, string bType) {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         await ExecuteAsync(aType, "add", "node-a");
@@ -101,8 +97,7 @@ public class PortConnectionWorkflowTests(TempYamlCliFixture fs, ITestOutputHelpe
     [Theory]
     [InlineData("switches", "routers")]
     [InlineData("firewalls", "routers")]
-    public async Task shrinking_port_count_removes_connections(string aType, string bType)
-    {
+    public async Task shrinking_port_count_removes_connections(string aType, string bType) {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         await ExecuteAsync(aType, "add", "node-a");
@@ -138,8 +133,7 @@ public class PortConnectionWorkflowTests(TempYamlCliFixture fs, ITestOutputHelpe
     [Theory]
     [InlineData("switches", "routers")]
     [InlineData("firewalls", "routers")]
-    public async Task shrinking_port_count_preserves_valid_connections(string aType, string bType)
-    {
+    public async Task shrinking_port_count_preserves_valid_connections(string aType, string bType) {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         await ExecuteAsync(aType, "add", "node-a");

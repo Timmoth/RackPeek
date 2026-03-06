@@ -6,8 +6,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Connections;
 
-public class ConnectionAddSettings : CommandSettings
-{
+public class ConnectionAddSettings : CommandSettings {
     [CommandArgument(0, "<A_RESOURCE>")]
     [Description("Resource name for endpoint A.")]
     public string AResource { get; set; } = null!;
@@ -43,27 +42,23 @@ public class ConnectionAddSettings : CommandSettings
 
 public class ConnectionAddCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<ConnectionAddSettings>
-{
+) : AsyncCommand<ConnectionAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ConnectionAddSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
 
         IAddConnectionUseCase useCase =
             scope.ServiceProvider.GetRequiredService<IAddConnectionUseCase>();
 
-        var a = new PortReference
-        {
+        var a = new PortReference {
             Resource = settings.AResource,
             PortGroup = settings.AGroup,
             PortIndex = settings.AIndex
         };
 
-        var b = new PortReference
-        {
+        var b = new PortReference {
             Resource = settings.BResource,
             PortGroup = settings.BGroup,
             PortIndex = settings.BIndex

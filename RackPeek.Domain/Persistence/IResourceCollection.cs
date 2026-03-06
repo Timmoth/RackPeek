@@ -36,9 +36,9 @@ public interface IResourceCollection {
     Task<IReadOnlyList<Resource>> GetDependantsAsync(string name);
 
     Task Merge(string incomingYaml, MergeMode mode);
-    
-    
-    
+
+
+
     Task AddConnectionAsync(Connection connection);
     Task RemoveConnectionAsync(Connection connection);
     Task RemoveConnectionsForPortAsync(PortReference port);

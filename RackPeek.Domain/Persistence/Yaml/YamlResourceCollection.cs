@@ -194,7 +194,7 @@ public sealed class YamlResourceCollection(
 
         if (root.Resources != null)
             resourceCollection.Resources.AddRange(root.Resources);
-        
+
         resourceCollection.Connections.Clear();
 
         if (root.Connections != null)
@@ -321,13 +321,13 @@ public sealed class YamlResourceCollection(
 
         // Preserve ordering: version first, then resources
         Debug.Assert(root != null, nameof(root) + " != null");
-        
+
         var payload = new OrderedDictionary {
             ["version"] = root.Version,
             ["resources"] = (root.Resources ?? new List<Resource>()).Select(SerializeResource).ToList(),
             ["connections"] = root.Connections ?? new List<Connection>()
         };
-        
+
         await fileStore.WriteAllTextAsync(filePath, serializer.Serialize(payload));
     }
 
@@ -373,40 +373,32 @@ public sealed class YamlResourceCollection(
 
         return map;
     }
-    
-    private static bool PortsMatch(PortReference a, PortReference b)
-    {
+
+    private static bool PortsMatch(PortReference a, PortReference b) {
         return a.Resource.Equals(b.Resource, StringComparison.OrdinalIgnoreCase)
                && a.PortGroup == b.PortGroup
                && a.PortIndex == b.PortIndex;
     }
-    public Task AddConnectionAsync(Connection connection)
-    {
-        return UpdateConnectionsWithLockAsync(list =>
-        {
+    public Task AddConnectionAsync(Connection connection) {
+        return UpdateConnectionsWithLockAsync(list => {
             list.Add(connection);
         });
     }
-    public Task RemoveConnectionAsync(Connection connection)
-    {
-        return UpdateConnectionsWithLockAsync(list =>
-        {
+    public Task RemoveConnectionAsync(Connection connection) {
+        return UpdateConnectionsWithLockAsync(list => {
             list.RemoveAll(c =>
                 (PortsMatch(c.A, connection.A) && PortsMatch(c.B, connection.B)) ||
                 (PortsMatch(c.A, connection.B) && PortsMatch(c.B, connection.A)));
         });
     }
-    public Task RemoveConnectionsForPortAsync(PortReference port)
-    {
-        return UpdateConnectionsWithLockAsync(list =>
-        {
+    public Task RemoveConnectionsForPortAsync(PortReference port) {
+        return UpdateConnectionsWithLockAsync(list => {
             list.RemoveAll(c =>
                 PortsMatch(c.A, port) ||
                 PortsMatch(c.B, port));
         });
     }
-    public Task<IReadOnlyList<Connection>> GetConnectionsAsync()
-    {
+    public Task<IReadOnlyList<Connection>> GetConnectionsAsync() {
         IReadOnlyList<Connection> result =
             resourceCollection.Connections
                 .ToList()
@@ -414,8 +406,7 @@ public sealed class YamlResourceCollection(
 
         return Task.FromResult(result);
     }
-    public Task<IReadOnlyList<Connection>> GetConnectionsForResourceAsync(string resource)
-    {
+    public Task<IReadOnlyList<Connection>> GetConnectionsForResourceAsync(string resource) {
         IReadOnlyList<Connection> result =
             resourceCollection.Connections
                 .Where(c =>
@@ -426,8 +417,7 @@ public sealed class YamlResourceCollection(
 
         return Task.FromResult(result);
     }
-    public Task<Connection?> GetConnectionForPortAsync(PortReference port)
-    {
+    public Task<Connection?> GetConnectionForPortAsync(PortReference port) {
         Connection? connection =
             resourceCollection.Connections
                 .FirstOrDefault(c =>
@@ -436,15 +426,12 @@ public sealed class YamlResourceCollection(
 
         return Task.FromResult(connection);
     }
-    private async Task UpdateConnectionsWithLockAsync(Action<List<Connection>> action)
-    {
+    private async Task UpdateConnectionsWithLockAsync(Action<List<Connection>> action) {
         await resourceCollection.FileLock.WaitAsync();
-        try
-        {
+        try {
             action(resourceCollection.Connections);
 
-            var root = new YamlRoot
-            {
+            var root = new YamlRoot {
                 Version = _currentSchemaVersion,
                 Resources = resourceCollection.Resources,
                 Connections = resourceCollection.Connections
@@ -452,8 +439,7 @@ public sealed class YamlResourceCollection(
 
             await SaveRootAsync(root);
         }
-        finally
-        {
+        finally {
             resourceCollection.FileLock.Release();
         }
     }
@@ -462,6 +448,6 @@ public sealed class YamlResourceCollection(
 public class YamlRoot {
     public int Version { get; set; }
     public List<Resource>? Resources { get; set; }
-    
+
     public List<Connection>? Connections { get; set; }
 }

@@ -1,4 +1,4 @@
-namespace RackPeek.Domain.UseCases.Ssh;
+namespace RackPeek.Domain.UseCases.SSH;
 
 public sealed record SshExportOptions {
     /// <summary>

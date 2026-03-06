@@ -7,8 +7,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Connections;
 
-public class ConnectionRemoveSettings : CommandSettings
-{
+public class ConnectionRemoveSettings : CommandSettings {
     [CommandArgument(0, "<RESOURCE>")]
     [Description("Resource name.")]
     public string Resource { get; set; } = null!;
@@ -24,20 +23,17 @@ public class ConnectionRemoveSettings : CommandSettings
 
 public class ConnectionRemoveCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<ConnectionRemoveSettings>
-{
+) : AsyncCommand<ConnectionRemoveSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ConnectionRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
 
         IRemoveConnectionUseCase useCase =
             scope.ServiceProvider.GetRequiredService<IRemoveConnectionUseCase>();
 
-        var port = new PortReference
-        {
+        var port = new PortReference {
             Resource = settings.Resource,
             PortGroup = settings.PortGroup,
             PortIndex = settings.PortIndex

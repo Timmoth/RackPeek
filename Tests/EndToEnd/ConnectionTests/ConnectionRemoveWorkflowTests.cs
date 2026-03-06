@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.ConnectionTests;
 
 [Collection("Yaml CLI tests")]
 public class ConnectionRemoveWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -26,8 +24,7 @@ public class ConnectionRemoveWorkflowTests(TempYamlCliFixture fs, ITestOutputHel
     [Theory]
     [InlineData("switches", "routers")]
     [InlineData("firewalls", "routers")]
-    public async Task connections_remove_cli_workflow_test(string aType, string bType)
-    {
+    public async Task connections_remove_cli_workflow_test(string aType, string bType) {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         // Create resources
@@ -70,8 +67,7 @@ public class ConnectionRemoveWorkflowTests(TempYamlCliFixture fs, ITestOutputHel
     }
 
     [Fact]
-    public async Task removing_connection_from_other_endpoint_works()
-    {
+    public async Task removing_connection_from_other_endpoint_works() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         await ExecuteAsync("servers", "add", "srv01");
@@ -110,8 +106,7 @@ public class ConnectionRemoveWorkflowTests(TempYamlCliFixture fs, ITestOutputHel
     }
 
     [Fact]
-    public async Task removing_nonexistent_connection_is_safe()
-    {
+    public async Task removing_nonexistent_connection_is_safe() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         await ExecuteAsync("switches", "add", "sw01");

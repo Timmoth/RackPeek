@@ -578,9 +578,8 @@ public static class CliBootstrap {
                 hosts.AddCommand<GenerateHostsFileCommand>("export")
                     .WithDescription("Generate a /etc/hosts compatible file.");
             });
-            
-            config.AddBranch("connections", connections =>
-            {
+
+            config.AddBranch("connections", connections => {
                 connections.SetDescription("Manage physical or logical port connections.");
 
                 connections.AddCommand<ConnectionAddCommand>("add")

@@ -1,9 +1,7 @@
 namespace RackPeek.Domain.Resources.Connections;
 
-public static class ConnectionHelpers
-{
-    public static bool Matches(PortReference a, PortReference b)
-    {
+public static class ConnectionHelpers {
+    public static bool Matches(PortReference a, PortReference b) {
         return a.Resource == b.Resource
                && a.PortGroup == b.PortGroup
                && a.PortIndex == b.PortIndex;

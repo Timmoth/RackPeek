@@ -5,10 +5,8 @@ namespace Tests.EndToEnd.ConnectionTests;
 
 [Collection("Yaml CLI tests")]
 public class ConnectionWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -27,8 +25,7 @@ public class ConnectionWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper ou
     [InlineData("switches", "routers")]
     [InlineData("firewalls", "routers")]
 
-    public async Task connections_cli_workflow_test(string aType, string bType)
-    {
+    public async Task connections_cli_workflow_test(string aType, string bType) {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         // Create resources
@@ -69,8 +66,7 @@ public class ConnectionWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper ou
     }
 
     [Fact]
-    public async Task connections_overwrite_existing_port_connection()
-    {
+    public async Task connections_overwrite_existing_port_connection() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         await ExecuteAsync("servers", "add", "srv01");
@@ -122,8 +118,7 @@ public class ConnectionWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper ou
     }
 
     [Fact]
-    public async Task connections_cannot_connect_port_to_itself()
-    {
+    public async Task connections_cannot_connect_port_to_itself() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 
         await ExecuteAsync("servers", "add", "srv01");
