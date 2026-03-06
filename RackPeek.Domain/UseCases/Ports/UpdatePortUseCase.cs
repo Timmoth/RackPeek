@@ -46,15 +46,13 @@ public class UpdatePortUseCase<T>(IResourceCollection repository) : IUpdatePortU
         var oldCount = nic.Count ?? 0;
         var newCount = ports ?? oldCount;
 
-        if (newCount < oldCount) {
-            for (var i = newCount; i < oldCount; i++) {
+        if (newCount < oldCount)
+            for (var i = newCount; i < oldCount; i++)
                 await repository.RemoveConnectionsForPortAsync(new PortReference {
                     Resource = name,
                     PortGroup = index,
                     PortIndex = i
                 });
-            }
-        }
 
         nic.Type = nicType;
         nic.Speed = speed;

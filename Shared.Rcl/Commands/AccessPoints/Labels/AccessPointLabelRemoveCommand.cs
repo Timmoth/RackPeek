@@ -6,17 +6,14 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.AccessPoints.Labels;
 
-public class AccessPointLabelRemoveSettings : AccessPointNameSettings
-{
+public class AccessPointLabelRemoveSettings : AccessPointNameSettings {
     [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
 }
 
 public class AccessPointLabelRemoveCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<AccessPointLabelRemoveSettings>
-{
+    : AsyncCommand<AccessPointLabelRemoveSettings> {
     public override async Task<int> ExecuteAsync(CommandContext context, AccessPointLabelRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         IRemoveLabelUseCase<AccessPoint> useCase =
             scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<AccessPoint>>();

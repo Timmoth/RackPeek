@@ -131,7 +131,7 @@
         <!-- Ports -->
         <PortGroupEditor T="Switch"
                          Resource="Switch"
-                         OnResourceChanged="r => Switch = r" 
+                         OnResourceChanged="r => Switch = r"
                          TestIdPrefix="switch-ports"/>
 
         <ResourceTagEditor Resource="Switch"
@@ -222,7 +222,7 @@
     {
         _isEditing = false;
     }
-    
+
     public class SwitchEditModel
     {
         public string? Model { get; set; }
@@ -241,6 +241,7 @@
             };
         }
     }
+
 }
 
 @code {

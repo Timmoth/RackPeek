@@ -8,10 +8,8 @@ using Shared.Rcl;
 
 namespace RackPeek.Web.Viewer;
 
-public class Program
-{
-    public static async Task Main(string[] args)
-    {
+public class Program {
+    public static async Task Main(string[] args) {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
@@ -19,11 +17,9 @@ public class Program
         IServiceCollection services = builder.Services;
 
 
-        builder.Services.AddScoped(sp =>
-        {
+        builder.Services.AddScoped(sp => {
             NavigationManager nav = sp.GetRequiredService<NavigationManager>();
-            return new HttpClient
-            {
+            return new HttpClient {
                 BaseAddress = new Uri(nav.BaseUri)
             };
         });

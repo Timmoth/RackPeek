@@ -118,7 +118,7 @@ public class ConnectionRemoveWorkflowTests(TempYamlCliFixture fs, ITestOutputHel
             "--count", "2"
         );
 
-        (var output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "connections", "remove",
             "sw01", "0", "0"
         );

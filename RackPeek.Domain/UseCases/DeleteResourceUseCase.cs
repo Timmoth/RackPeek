@@ -5,15 +5,12 @@ using RackPeek.Domain.Resources;
 namespace RackPeek.Domain.UseCases;
 
 public interface IDeleteResourceUseCase<T> : IResourceUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     Task ExecuteAsync(string name);
 }
 
-public class DeleteResourceUseCase<T>(IResourceCollection repo) : IDeleteResourceUseCase<T> where T : Resource
-{
-    public async Task ExecuteAsync(string name)
-    {
+public class DeleteResourceUseCase<T>(IResourceCollection repo) : IDeleteResourceUseCase<T> where T : Resource {
+    public async Task ExecuteAsync(string name) {
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
@@ -22,8 +19,7 @@ public class DeleteResourceUseCase<T>(IResourceCollection repo) : IDeleteResourc
             throw new NotFoundException($"Resource '{name}' does not exist.");
 
         IReadOnlyList<Resource> dependants = await repo.GetDependantsAsync(name);
-        foreach (Resource resource in dependants)
-        {
+        foreach (Resource resource in dependants) {
             resource.RunsOn.Remove(name);
             await repo.UpdateAsync(resource);
         }

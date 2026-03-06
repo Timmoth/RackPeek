@@ -7,8 +7,7 @@ using RackPeek.Domain.Resources.SubResources;
 namespace RackPeek.Domain.UseCases.Ports;
 
 public interface IAddPortUseCase<T> : IResourceUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     public Task ExecuteAsync(
         string name,
         string? type,
@@ -16,14 +15,12 @@ public interface IAddPortUseCase<T> : IResourceUseCase<T>
         int? ports);
 }
 
-public class AddPortUseCase<T>(IResourceCollection repository) : IAddPortUseCase<T> where T : Resource
-{
+public class AddPortUseCase<T>(IResourceCollection repository) : IAddPortUseCase<T> where T : Resource {
     public async Task ExecuteAsync(
         string name,
         string? type,
         double? speed,
-        int? ports)
-    {
+        int? ports) {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
         // ToDo validate / normalize all inputs
 
@@ -39,8 +36,7 @@ public class AddPortUseCase<T>(IResourceCollection repository) : IAddPortUseCase
         if (resource is not IPortResource pr) throw new NotFoundException($"Resource '{name}' not found.");
 
         pr.Ports ??= new List<Port>();
-        pr.Ports.Add(new Port
-        {
+        pr.Ports.Add(new Port {
             Type = nicType,
             Speed = speed,
             Count = ports

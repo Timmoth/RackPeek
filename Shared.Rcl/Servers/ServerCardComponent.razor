@@ -4,7 +4,6 @@
 @using RackPeek.Domain.UseCases.Drives
 @using RackPeek.Domain.UseCases.Gpus
 @using RackPeek.Domain.UseCases.Ports
-@using Shared.Rcl.Connections
 @using Shared.Rcl.Hardware
 @inject IAddCpuUseCase<Server> AddCpuUseCase
 @inject IRemoveCpuUseCase<Server> RemoveCpuUseCase
@@ -174,7 +173,7 @@
                          Resource="Server"
                          OnResourceChanged="r => Server = r"
                          TestIdPrefix="server-ports"/>
-        
+
         <div>
             <div class="flex items-center justify-between mb-1 group">
                 <div class="text-zinc-400">
@@ -420,7 +419,7 @@
     }
 
     #endregion
-    
+
 
     #region GPUs
 

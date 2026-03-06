@@ -3,8 +3,7 @@ using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.SystemResources.UseCases;
 
-public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
-{
+public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase {
     public async Task ExecuteAsync(
         string name,
         string? type = null,
@@ -14,8 +13,7 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         string? ip = null,
         List<string>? runsOn = null,
         string? notes = null
-    )
-    {
+    ) {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
         // ToDo validate / normalize all inputs
 
@@ -27,8 +25,7 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
         if (system is null)
             throw new InvalidOperationException($"System '{name}' not found.");
 
-        if (!string.IsNullOrWhiteSpace(type))
-        {
+        if (!string.IsNullOrWhiteSpace(type)) {
             var normalizedSystemType = Normalize.SystemType(type);
             ThrowIfInvalid.SystemType(normalizedSystemType);
             system.Type = normalizedSystemType;
@@ -49,8 +46,7 @@ public class UpdateSystemUseCase(IResourceCollection repository) : IUseCase
 
         if (runsOn?.Count > 0)
             foreach (var parent in runsOn)
-                if (!string.IsNullOrWhiteSpace(parent))
-                {
+                if (!string.IsNullOrWhiteSpace(parent)) {
                     ThrowIfInvalid.ResourceName(parent);
                     Resource? parentHardware = await repository.GetByNameAsync(parent);
 

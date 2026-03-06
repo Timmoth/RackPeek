@@ -8,8 +8,7 @@ namespace RackPeek.Domain.UseCases.Labels;
 ///     Adds or updates a key-value label on a resource.
 /// </summary>
 public interface IAddLabelUseCase<T> : IResourceUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     /// <summary>
     ///     Adds or overwrites a label on the resource. If the key already exists, the value is updated.
     /// </summary>
@@ -25,11 +24,9 @@ public interface IAddLabelUseCase<T> : IResourceUseCase<T>
 ///     Adds or updates a key-value label on a resource.
 /// </summary>
 public class AddLabelUseCase<T>(IResourceCollection repo) : IAddLabelUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     /// <inheritdoc />
-    public async Task ExecuteAsync(string name, string key, string value)
-    {
+    public async Task ExecuteAsync(string name, string key, string value) {
         key = Normalize.LabelKey(key);
         value = Normalize.LabelValue(value);
 

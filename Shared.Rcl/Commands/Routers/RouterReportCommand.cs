@@ -7,17 +7,14 @@ namespace Shared.Rcl.Commands.Routers;
 
 public class RouterReportCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand
-{
-    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken)
-    {
+) : AsyncCommand {
+    public override async Task<int> ExecuteAsync(CommandContext context, CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         RouterHardwareReportUseCase useCase = scope.ServiceProvider.GetRequiredService<RouterHardwareReportUseCase>();
 
         RouterHardwareReport report = await useCase.ExecuteAsync();
 
-        if (report.Routers.Count == 0)
-        {
+        if (report.Routers.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No Routers found.[/]");
             return 0;
         }

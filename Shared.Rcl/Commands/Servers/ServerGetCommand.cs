@@ -7,19 +7,16 @@ namespace Shared.Rcl.Commands.Servers;
 
 public class ServerGetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand
-{
+) : AsyncCommand {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         ServerHardwareReportUseCase useCase = scope.ServiceProvider.GetRequiredService<ServerHardwareReportUseCase>();
 
         ServerHardwareReport report = await useCase.ExecuteAsync();
 
-        if (report.Servers.Count == 0)
-        {
+        if (report.Servers.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No servers found.[/]");
             return 0;
         }

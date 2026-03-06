@@ -8,8 +8,7 @@ namespace RackPeek.Domain.UseCases.Labels;
 ///     Removes a label by key from a resource.
 /// </summary>
 public interface IRemoveLabelUseCase<T> : IResourceUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     /// <summary>
     ///     Removes the label with the given key. No-op if the key does not exist.
     /// </summary>
@@ -24,11 +23,9 @@ public interface IRemoveLabelUseCase<T> : IResourceUseCase<T>
 ///     Removes a label by key from a resource.
 /// </summary>
 public class RemoveLabelUseCase<T>(IResourceCollection repo) : IRemoveLabelUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     /// <inheritdoc />
-    public async Task ExecuteAsync(string name, string key)
-    {
+    public async Task ExecuteAsync(string name, string key) {
         key = Normalize.LabelKey(key);
 
         name = Normalize.HardwareName(name);

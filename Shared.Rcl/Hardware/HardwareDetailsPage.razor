@@ -10,8 +10,8 @@
 @using RackPeek.Domain.Resources.Switches
 @using RackPeek.Domain.Resources.SystemResources
 @using RackPeek.Domain.Resources.UpsUnits
-@using RackPeek.Domain.Resources.SubResources
 @using Shared.Rcl.AccessPoints
+@using Shared.Rcl.Connections
 @using Shared.Rcl.Desktops
 @using Shared.Rcl.Firewalls
 @using Shared.Rcl.Laptops
@@ -19,7 +19,6 @@
 @using Shared.Rcl.Servers
 @using Shared.Rcl.Switches
 @using Shared.Rcl.Ups
-@using Shared.Rcl.Connections
 @using Router = RackPeek.Domain.Resources.Routers.Router
 
 @inject IResourceCollection Repo
@@ -45,7 +44,6 @@
     }
     else
     {
-
         @* ================= Hardware Card ================= *@
 
         @if (_hardware != null)
@@ -119,7 +117,7 @@
                     Ports
                 </div>
 
-                @for (int i = 0; i < portResource.Ports.Count; i++)
+                @for (var i = 0; i < portResource.Ports.Count; i++)
                 {
                     var portGroup = portResource.Ports[i];
 
@@ -142,14 +140,13 @@
             </div>
         }
 
-        
+
         <div class="m-4">
             <AddResourceComponent TResource="SystemResource"
                                   Placeholder="System name"
                                   OnCreated="NavigateToNewResource"
                                   RunsOn="@(new List<string> { HardwareName })"/>
         </div>
-
     }
 
 </div>

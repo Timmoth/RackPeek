@@ -1,15 +1,12 @@
 namespace RackPeek.Domain.Resources.Services.UseCases;
 
-public sealed class AllServicesSummary(int totalServices, int totalIpAddresses)
-{
+public sealed class AllServicesSummary(int totalServices, int totalIpAddresses) {
     public int TotalServices { get; } = totalServices;
     public int TotalIpAddresses { get; } = totalIpAddresses;
 }
 
-public class GetServiceSummaryUseCase(IServiceRepository repository) : IUseCase
-{
-    public async Task<AllServicesSummary> ExecuteAsync()
-    {
+public class GetServiceSummaryUseCase(IServiceRepository repository) : IUseCase {
+    public async Task<AllServicesSummary> ExecuteAsync() {
         Task<int> serviceCountTask = repository.GetCountAsync();
         Task<int> ipAddressCountTask = repository.GetIpAddressCountAsync();
 

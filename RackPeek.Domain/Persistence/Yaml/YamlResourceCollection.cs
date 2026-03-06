@@ -226,6 +226,55 @@ public sealed class YamlResourceCollection(
             list.RemoveAll(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
     }
 
+    public Task AddConnectionAsync(Connection connection) => UpdateConnectionsWithLockAsync(list => { list.Add(connection); });
+
+    public Task RemoveConnectionAsync(Connection connection) {
+        return UpdateConnectionsWithLockAsync(list => {
+            list.RemoveAll(c =>
+                (PortsMatch(c.A, connection.A) && PortsMatch(c.B, connection.B)) ||
+                (PortsMatch(c.A, connection.B) && PortsMatch(c.B, connection.A)));
+        });
+    }
+
+    public Task RemoveConnectionsForPortAsync(PortReference port) {
+        return UpdateConnectionsWithLockAsync(list => {
+            list.RemoveAll(c =>
+                PortsMatch(c.A, port) ||
+                PortsMatch(c.B, port));
+        });
+    }
+
+    public Task<IReadOnlyList<Connection>> GetConnectionsAsync() {
+        IReadOnlyList<Connection> result =
+            resourceCollection.Connections
+                .ToList()
+                .AsReadOnly();
+
+        return Task.FromResult(result);
+    }
+
+    public Task<IReadOnlyList<Connection>> GetConnectionsForResourceAsync(string resource) {
+        IReadOnlyList<Connection> result =
+            resourceCollection.Connections
+                .Where(c =>
+                    c.A.Resource.Equals(resource, StringComparison.OrdinalIgnoreCase) ||
+                    c.B.Resource.Equals(resource, StringComparison.OrdinalIgnoreCase))
+                .ToList()
+                .AsReadOnly();
+
+        return Task.FromResult(result);
+    }
+
+    public Task<Connection?> GetConnectionForPortAsync(PortReference port) {
+        Connection? connection =
+            resourceCollection.Connections
+                .FirstOrDefault(c =>
+                    PortsMatch(c.A, port) ||
+                    PortsMatch(c.B, port));
+
+        return Task.FromResult(connection);
+    }
+
     private string? ResolveSystemIp(
         SystemResource system,
         Dictionary<string, SystemResource> systemsByName,
@@ -379,53 +428,7 @@ public sealed class YamlResourceCollection(
                && a.PortGroup == b.PortGroup
                && a.PortIndex == b.PortIndex;
     }
-    public Task AddConnectionAsync(Connection connection) {
-        return UpdateConnectionsWithLockAsync(list => {
-            list.Add(connection);
-        });
-    }
-    public Task RemoveConnectionAsync(Connection connection) {
-        return UpdateConnectionsWithLockAsync(list => {
-            list.RemoveAll(c =>
-                (PortsMatch(c.A, connection.A) && PortsMatch(c.B, connection.B)) ||
-                (PortsMatch(c.A, connection.B) && PortsMatch(c.B, connection.A)));
-        });
-    }
-    public Task RemoveConnectionsForPortAsync(PortReference port) {
-        return UpdateConnectionsWithLockAsync(list => {
-            list.RemoveAll(c =>
-                PortsMatch(c.A, port) ||
-                PortsMatch(c.B, port));
-        });
-    }
-    public Task<IReadOnlyList<Connection>> GetConnectionsAsync() {
-        IReadOnlyList<Connection> result =
-            resourceCollection.Connections
-                .ToList()
-                .AsReadOnly();
 
-        return Task.FromResult(result);
-    }
-    public Task<IReadOnlyList<Connection>> GetConnectionsForResourceAsync(string resource) {
-        IReadOnlyList<Connection> result =
-            resourceCollection.Connections
-                .Where(c =>
-                    c.A.Resource.Equals(resource, StringComparison.OrdinalIgnoreCase) ||
-                    c.B.Resource.Equals(resource, StringComparison.OrdinalIgnoreCase))
-                .ToList()
-                .AsReadOnly();
-
-        return Task.FromResult(result);
-    }
-    public Task<Connection?> GetConnectionForPortAsync(PortReference port) {
-        Connection? connection =
-            resourceCollection.Connections
-                .FirstOrDefault(c =>
-                    PortsMatch(c.A, port) ||
-                    PortsMatch(c.B, port));
-
-        return Task.FromResult(connection);
-    }
     private async Task UpdateConnectionsWithLockAsync(Action<List<Connection>> action) {
         await resourceCollection.FileLock.WaitAsync();
         try {

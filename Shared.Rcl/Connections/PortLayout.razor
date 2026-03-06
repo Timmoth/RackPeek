@@ -1,8 +1,7 @@
-﻿@using RackPeek.Domain.Resources.Connections
-@using RackPeek.Domain.Resources.SubResources
-@using RackPeek.Domain.Persistence
+﻿@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources.Connections
 @using RackPeek.Domain.Resources.Servers
-
+@using RackPeek.Domain.Resources.SubResources
 @inject IResourceCollection Repository
 
 @if (PortGroup is null || string.IsNullOrWhiteSpace(ResourceName))
@@ -15,7 +14,7 @@ else
 {
     <div class="flex flex-wrap border border-zinc-800 w-fit">
 
-        @for (int i = 0; i < PortGroup.Count; i++)
+        @for (var i = 0; i < PortGroup.Count; i++)
         {
             var index = i;
 
@@ -97,7 +96,7 @@ else
     [Parameter] public EventCallback<PortReference> OnPortClicked { get; set; }
 
     private List<Connection> _connections = new();
-    private Dictionary<string, IPortResource?> _portResources = new();
+    private readonly Dictionary<string, IPortResource?> _portResources = new();
 
     protected override async Task OnParametersSetAsync()
     {

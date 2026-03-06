@@ -153,13 +153,11 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
             resourceDict.Remove("nics");
 
             if (resourceDict.TryGetValue("ports", out var existingPortsObj)
-                && existingPortsObj is List<object> existingPorts) {
+                && existingPortsObj is List<object> existingPorts)
                 foreach (Dictionary<object, object> p in ports)
                     existingPorts.Add(p);
-            }
-            else {
+            else
                 resourceDict["ports"] = ports.Cast<object>().ToList();
-            }
         }
 
         obj["version"] = 3;

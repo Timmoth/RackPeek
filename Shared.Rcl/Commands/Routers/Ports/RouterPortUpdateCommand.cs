@@ -6,8 +6,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Routers.Ports;
 
-public class RouterPortUpdateSettings : RouterNameSettings
-{
+public class RouterPortUpdateSettings : RouterNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
     [CommandOption("--type")] public string? Type { get; set; }
     [CommandOption("--speed")] public double? Speed { get; set; }
@@ -15,10 +14,8 @@ public class RouterPortUpdateSettings : RouterNameSettings
 }
 
 public class RouterPortUpdateCommand(IServiceProvider sp)
-    : AsyncCommand<RouterPortUpdateSettings>
-{
-    public override async Task<int> ExecuteAsync(CommandContext ctx, RouterPortUpdateSettings s, CancellationToken ct)
-    {
+    : AsyncCommand<RouterPortUpdateSettings> {
+    public override async Task<int> ExecuteAsync(CommandContext ctx, RouterPortUpdateSettings s, CancellationToken ct) {
         using IServiceScope scope = sp.CreateScope();
         IUpdatePortUseCase<Router> useCase = scope.ServiceProvider.GetRequiredService<IUpdatePortUseCase<Router>>();
 

@@ -7,18 +7,15 @@ namespace Tests.E2e;
 
 public class ServiceTests(
     PlaywrightFixture fixture,
-    ITestOutputHelper output) : E2ETestBase(fixture, output)
-{
+    ITestOutputHelper output) : E2ETestBase(fixture, output) {
     private readonly PlaywrightFixture _fixture = fixture;
     private readonly ITestOutputHelper _output = output;
 
     [Fact]
-    public async Task User_Can_Add_And_Delete_System()
-    {
+    public async Task User_Can_Add_And_Delete_System() {
         (IBrowserContext context, IPage page) = await CreatePageAsync();
 
-        try
-        {
+        try {
             // Go home
             await page.GotoAsync(_fixture.BaseUrl);
 
@@ -42,8 +39,7 @@ public class ServiceTests(
 
             await context.CloseAsync();
         }
-        catch (Exception)
-        {
+        catch (Exception) {
             _output.WriteLine("TEST FAILED — Capturing diagnostics");
 
             _output.WriteLine($"Current URL: {page.Url}");
@@ -55,8 +51,7 @@ public class ServiceTests(
 
             throw;
         }
-        finally
-        {
+        finally {
             await context.CloseAsync();
         }
     }

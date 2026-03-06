@@ -3,10 +3,8 @@ using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.Laptops;
 
-public class DescribeLaptopUseCase(IResourceCollection repository) : IUseCase
-{
-    public async Task<LaptopDescription> ExecuteAsync(string name)
-    {
+public class DescribeLaptopUseCase(IResourceCollection repository) : IUseCase {
+    public async Task<LaptopDescription> ExecuteAsync(string name) {
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 

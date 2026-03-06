@@ -4,16 +4,14 @@ using RackPeek.Domain.Resources.SubResources;
 
 namespace RackPeek.Domain.Resources.Servers;
 
-public class UpdateServerUseCase(IResourceCollection repository) : IUseCase
-{
+public class UpdateServerUseCase(IResourceCollection repository) : IUseCase {
     public async Task ExecuteAsync(
         string name,
         double? ramGb = null,
         int? ramMts = null,
         bool? ipmi = null,
         string? notes = null
-    )
-    {
+    ) {
         // ToDo pass in properties as inputs, construct the entity in the usecase, ensure optional inputs are nullable
         // ToDo validate / normalize all inputs
 
@@ -25,21 +23,18 @@ public class UpdateServerUseCase(IResourceCollection repository) : IUseCase
             throw new NotFoundException($"Server '{name}' not found.");
 
         // ---- RAM ----
-        if (ramGb.HasValue)
-        {
+        if (ramGb.HasValue) {
             ThrowIfInvalid.RamGb(ramGb);
             server.Ram ??= new Ram();
             server.Ram.Size = ramGb.Value;
         }
 
-        if (ramMts.HasValue)
-        {
+        if (ramMts.HasValue) {
             server.Ram ??= new Ram();
             server.Ram.Mts = ramMts.Value;
         }
 
-        if (server.Ram != null)
-        {
+        if (server.Ram != null) {
             if (server.Ram.Size == 0) server.Ram.Size = null;
 
             if (server.Ram.Mts == 0) server.Ram.Mts = null;

@@ -1,13 +1,11 @@
 namespace RackPeek.Domain.Resources.Services.Networking;
 
-public readonly struct Cidr
-{
+public readonly struct Cidr {
     public uint Network { get; }
     public uint Mask { get; }
     public int Prefix { get; }
 
-    public Cidr(uint network, uint mask, int prefix)
-    {
+    public Cidr(uint network, uint mask, int prefix) {
         Network = network;
         Mask = mask;
         Prefix = prefix;
@@ -17,8 +15,7 @@ public readonly struct Cidr
 
     public override string ToString() => $"{IpHelper.ToIp(Network)}/{Prefix}";
 
-    public static Cidr Parse(string cidr)
-    {
+    public static Cidr Parse(string cidr) {
         var parts = cidr.Split('/');
         if (parts.Length != 2)
             throw new ArgumentException($"CIDR must be in format a.b.c.d/nn: {cidr}");

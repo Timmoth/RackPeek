@@ -3,16 +3,14 @@ using RackPeek.Domain.Persistence;
 
 namespace RackPeek.Domain.Resources.Firewalls;
 
-public class UpdateFirewallUseCase(IResourceCollection repository) : IUseCase
-{
+public class UpdateFirewallUseCase(IResourceCollection repository) : IUseCase {
     public async Task ExecuteAsync(
         string name,
         string? model = null,
         bool? managed = null,
         bool? poe = null,
         string? notes = null
-    )
-    {
+    ) {
         // ToDo validate / normalize all inputs
 
         name = Normalize.HardwareName(name);

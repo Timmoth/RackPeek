@@ -6,16 +6,13 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Firewalls.Labels;
 
-public class FirewallLabelRemoveSettings : FirewallNameSettings
-{
+public class FirewallLabelRemoveSettings : FirewallNameSettings {
     [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
 }
 
-public class FirewallLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<FirewallLabelRemoveSettings>
-{
+public class FirewallLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<FirewallLabelRemoveSettings> {
     public override async Task<int> ExecuteAsync(CommandContext context, FirewallLabelRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         IRemoveLabelUseCase<Firewall> useCase =
             scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<Firewall>>();

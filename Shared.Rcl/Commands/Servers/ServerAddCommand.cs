@@ -6,20 +6,17 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers;
 
-public class ServerAddSettings : CommandSettings
-{
+public class ServerAddSettings : CommandSettings {
     [CommandArgument(0, "<name>")] public string Name { get; set; } = default!;
 }
 
 public class ServerAddCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<ServerAddSettings>
-{
+) : AsyncCommand<ServerAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerAddSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         IAddResourceUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IAddResourceUseCase<Server>>();
 

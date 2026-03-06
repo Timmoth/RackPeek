@@ -2,8 +2,7 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.PageObjectModels;
 
-public class FirewallsListPom(IPage page)
-{
+public class FirewallsListPom(IPage page) {
     public AddResourceComponent AddFirewall => new(page, "firewall");
 
     public ILocator PageRoot => page.GetByTestId("firewalls-page-root");
@@ -28,38 +27,32 @@ public class FirewallsListPom(IPage page)
     public ILocator OpenLink(string name)
         => FirewallItem(name).GetByTestId($"firewall-item-{Sanitize(name)}-link");
 
-    public ILocator EditButton(string name)
-    {
+    public ILocator EditButton(string name) {
         return FirewallItem(name)
             .GetByTestId("edit-firewall-button");
     }
 
-    public ILocator SaveButton(string name)
-    {
+    public ILocator SaveButton(string name) {
         return FirewallItem(name)
             .GetByTestId("save-firewall-button");
     }
 
-    public ILocator CancelButton(string name)
-    {
+    public ILocator CancelButton(string name) {
         return FirewallItem(name)
             .GetByTestId("cancel-firewall-button");
     }
 
-    public ILocator RenameButton(string name)
-    {
+    public ILocator RenameButton(string name) {
         return FirewallItem(name)
             .GetByTestId("rename-firewall-button");
     }
 
-    public ILocator CloneButton(string name)
-    {
+    public ILocator CloneButton(string name) {
         return FirewallItem(name)
             .GetByTestId("clone-firewall-button");
     }
 
-    public ILocator DeleteButton(string name)
-    {
+    public ILocator DeleteButton(string name) {
         return FirewallItem(name)
             .GetByTestId("delete-firewall-button");
     }
@@ -68,14 +61,12 @@ public class FirewallsListPom(IPage page)
     // Navigation
     // -------------------------------------------------
 
-    public async Task GotoAsync(string baseUrl)
-    {
+    public async Task GotoAsync(string baseUrl) {
         await page.GotoAsync($"{baseUrl}/firewalls/list");
         await AssertLoadedAsync();
     }
 
-    public async Task AssertLoadedAsync()
-    {
+    public async Task AssertLoadedAsync() {
         await Assertions.Expect(PageRoot).ToBeVisibleAsync();
         await Assertions.Expect(PageTitle).ToBeVisibleAsync();
     }
@@ -86,15 +77,13 @@ public class FirewallsListPom(IPage page)
     // Actions
     // -------------------------------------------------
 
-    public async Task AddFirewallAsync(string name)
-    {
+    public async Task AddFirewallAsync(string name) {
         await AddFirewall.AddAsync(name);
         await Assertions.Expect(FirewallItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task DeleteFirewallAsync(string name)
-    {
+    public async Task DeleteFirewallAsync(string name) {
         await DeleteButton(name).ClickAsync();
         await page.GetByTestId("Firewall-confirm-modal-confirm").ClickAsync();
 
@@ -102,20 +91,17 @@ public class FirewallsListPom(IPage page)
             .Not.ToBeVisibleAsync();
     }
 
-    public async Task OpenFirewallAsync(string name)
-    {
+    public async Task OpenFirewallAsync(string name) {
         await OpenLink(name).ClickAsync();
         await page.WaitForURLAsync($"**/resources/hardware/{name}");
     }
 
-    public async Task AssertFirewallExists(string name)
-    {
+    public async Task AssertFirewallExists(string name) {
         await Assertions.Expect(FirewallItem(name))
             .ToBeVisibleAsync();
     }
 
-    public async Task AssertFirewallDoesNotExist(string name)
-    {
+    public async Task AssertFirewallDoesNotExist(string name) {
         await Assertions.Expect(FirewallItem(name))
             .Not.ToBeVisibleAsync();
     }

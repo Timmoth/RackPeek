@@ -1,9 +1,8 @@
-﻿@typeparam T where T : Resource, RackPeek.Domain.Resources.Servers.IPortResource
-@using RackPeek.Domain.Resources
+﻿@using RackPeek.Domain.Resources.Connections
 @using RackPeek.Domain.Resources.SubResources
 @using RackPeek.Domain.UseCases.Ports
-@using RackPeek.Domain.Resources.Connections
 @using Shared.Rcl.Connections
+@typeparam T where T : RackPeek.Domain.Resources.Resource, RackPeek.Domain.Resources.Servers.IPortResource
 
 @inject IAddPortUseCase<T> AddNicUseCase
 @inject IUpdatePortUseCase<T> UpdateNicUseCase
@@ -53,7 +52,7 @@
                         ResourceName="@Resource.Name"
                         PortGroupIndex="@idx"
                         PortGroup="@nic"
-                        OnPortClicked="HandlePortClicked" />
+                        OnPortClicked="HandlePortClicked"/>
 
                 </div>
 
@@ -70,19 +69,19 @@
     Value="@_editingNic"
     OnSubmit="HandleNicSubmit"
     OnDelete="HandleNicDelete"
-    TestIdPrefix="@($"{BaseTestId}-modal")" />
+    TestIdPrefix="@($"{BaseTestId}-modal")"/>
 
 
 <PortConnectionModal
     IsOpen="@_connectionModalOpen"
     IsOpenChanged="v => _connectionModalOpen = v"
     SeedPort="@_selectedPort"
-    TestIdPrefix="@($"{BaseTestId}-connection")" />
+    TestIdPrefix="@($"{BaseTestId}-connection")"/>
 
 
 @code {
 
-    [Parameter, EditorRequired] public T Resource { get; set; } = default!;
+    [Parameter][EditorRequired] public T Resource { get; set; } = default!;
     [Parameter] public EventCallback<T> OnResourceChanged { get; set; }
     [Parameter] public string? TestIdPrefix { get; set; }
 

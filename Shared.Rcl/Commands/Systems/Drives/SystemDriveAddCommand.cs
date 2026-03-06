@@ -6,21 +6,18 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Systems.Drives;
 
-public class SystemDriveAddSettings : SystemNameSettings
-{
+public class SystemDriveAddSettings : SystemNameSettings {
     [CommandOption("--type <TYPE>")] public string Type { get; set; } = default!;
 
     [CommandOption("--size <SIZE>")] public int Size { get; set; }
 }
 
 public class SystemDriveAddCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<SystemDriveAddSettings>
-{
+    : AsyncCommand<SystemDriveAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         SystemDriveAddSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         IAddDriveUseCase<SystemResource> useCase =
             scope.ServiceProvider.GetRequiredService<IAddDriveUseCase<SystemResource>>();

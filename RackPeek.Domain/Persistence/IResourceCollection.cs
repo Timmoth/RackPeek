@@ -6,8 +6,7 @@ using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Persistence;
 
-public interface IResourceCollection
-{
+public interface IResourceCollection {
     IReadOnlyList<Hardware> HardwareResources { get; }
     IReadOnlyList<SystemResource> SystemResources { get; }
     IReadOnlyList<Service> ServiceResources { get; }

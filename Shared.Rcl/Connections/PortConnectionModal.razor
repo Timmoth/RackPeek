@@ -1,401 +1,399 @@
-﻿@using RackPeek.Domain.Resources
+﻿@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources
 @using RackPeek.Domain.Resources.Connections
-@using RackPeek.Domain.Resources.SubResources
-@using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources.Servers
-
+@using RackPeek.Domain.Resources.SubResources
 @inject IResourceCollection Repository
 @inject IAddConnectionUseCase AddConnectionUseCase
 
 @if (IsOpen)
 {
-<div class="fixed inset-0 z-50 flex items-center justify-center">
+    <div class="fixed inset-0 z-50 flex items-center justify-center">
 
-    <div class="absolute inset-0 bg-black/70" @onclick="Cancel"></div>
+        <div class="absolute inset-0 bg-black/70" @onclick="Cancel"></div>
 
-    <div class="relative bg-zinc-900 border border-zinc-800 rounded w-full max-w-3xl p-4">
+        <div class="relative bg-zinc-900 border border-zinc-800 rounded w-full max-w-3xl p-4">
 
-        <div class="flex justify-between mb-4">
-            <div class="text-zinc-100 text-sm font-medium">
-                Create Connection
+            <div class="flex justify-between mb-4">
+                <div class="text-zinc-100 text-sm font-medium">
+                    Create Connection
+                </div>
+
+                <button class="text-zinc-400 hover:text-zinc-200"
+                        @onclick="Cancel">
+                    ✕
+                </button>
             </div>
 
-            <button class="text-zinc-400 hover:text-zinc-200"
-                    @onclick="Cancel">
-                ✕
-            </button>
-        </div>
+            <div class="grid grid-cols-2 gap-6 text-sm">
 
-        <div class="grid grid-cols-2 gap-6 text-sm">
+                <!-- SIDE A -->
+                <div class="space-y-3">
 
-            <!-- SIDE A -->
-            <div class="space-y-3">
+                    <div class="text-zinc-400">Side A</div>
 
-                <div class="text-zinc-400">Side A</div>
+                    <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                            @bind="_resourceAIndex">
 
-                <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
-                        @bind="_resourceAIndex">
+                        <option value="">Select resource</option>
 
-                    <option value="">Select resource</option>
+                        @for (var i = 0; i < HardwareWithPorts.Count; i++)
+                        {
+                            var hw = (Resource)HardwareWithPorts[i];
+                            <option value="@i">@hw.Name</option>
+                        }
 
-                    @for (int i = 0; i < HardwareWithPorts.Count; i++)
+                    </select>
+
+                    @if (_resourceA?.Ports?.Any() == true)
                     {
-                        var hw = (Resource)HardwareWithPorts[i];
-                        <option value="@i">@hw.Name</option>
+                        <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                @bind="_groupAIndex">
+
+                            <option value="">Select group</option>
+
+                            @for (var i = 0; i < _resourceA.Ports.Count; i++)
+                            {
+                                var g = _resourceA.Ports[i];
+                                <option value="@i">@g.Type — @g.Speed Gbps (@g.Count)</option>
+                            }
+
+                        </select>
                     }
 
-                </select>
-
-                @if (_resourceA?.Ports?.Any() == true)
-                {
-                    <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
-                            @bind="_groupAIndex">
-
-                        <option value="">Select group</option>
-
-                        @for (int i = 0; i < _resourceA.Ports.Count; i++)
-                        {
-                            var g = _resourceA.Ports[i];
-                            <option value="@i">@g.Type — @g.Speed Gbps (@g.Count)</option>
-                        }
-
-                    </select>
-                }
-
-                @if (_groupA is not null)
-                {
-                    <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
-                            @bind="_portAIndex">
-
-                        <option value="">Select port</option>
-
-                        @for (int i = 0; i < _groupA.Count; i++)
-                        {
-                            <option value="@i">Port @(i + 1)</option>
-                        }
-
-                    </select>
-
-                    <PortGroupVisualizer
-                        ResourceName="@_portA.Resource"
-                        PortGroupIndex="@_portA.PortGroup"
-                        PortGroup="@_groupA"
-                        @bind-SelectedPortIndex="_portAIndex"
-                        OnPortClicked="HandleLeftPortClicked" />
-                }
-
-            </div>
-
-
-            <!-- SIDE B -->
-            <div class="space-y-3">
-
-                <div class="text-zinc-400">Side B</div>
-
-                <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
-                        @bind="_resourceBIndex">
-
-                    <option value="">Select resource</option>
-
-                    @for (int i = 0; i < HardwareWithPorts.Count; i++)
+                    @if (_groupA is not null)
                     {
-                        var hw = (Resource)HardwareWithPorts[i];
-                        <option value="@i">@hw.Name</option>
+                        <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                @bind="_portAIndex">
+
+                            <option value="">Select port</option>
+
+                            @for (var i = 0; i < _groupA.Count; i++)
+                            {
+                                <option value="@i">Port @(i + 1)</option>
+                            }
+
+                        </select>
+
+                        <PortGroupVisualizer
+                            ResourceName="@_portA.Resource"
+                            PortGroupIndex="@_portA.PortGroup"
+                            PortGroup="@_groupA"
+                            @bind-SelectedPortIndex="_portAIndex"
+                            OnPortClicked="HandleLeftPortClicked"/>
                     }
 
-                </select>
+                </div>
 
-                @if (_resourceB?.Ports?.Any() == true)
-                {
+
+                <!-- SIDE B -->
+                <div class="space-y-3">
+
+                    <div class="text-zinc-400">Side B</div>
+
                     <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
-                            @bind="_groupBIndex">
+                            @bind="_resourceBIndex">
 
-                        <option value="">Select group</option>
+                        <option value="">Select resource</option>
 
-                        @for (int i = 0; i < _resourceB.Ports.Count; i++)
+                        @for (var i = 0; i < HardwareWithPorts.Count; i++)
                         {
-                            var g = _resourceB.Ports[i];
-                            <option value="@i">@g.Type — @g.Speed Gbps (@g.Count)</option>
-                        }
-
-                    </select>
-                }
-
-                @if (_groupB is not null)
-                {
-                    <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
-                            @bind="_portBIndex">
-
-                        <option value="">Select port</option>
-
-                        @for (int i = 0; i < _groupB.Count; i++)
-                        {
-                            <option value="@i">Port @(i + 1)</option>
+                            var hw = (Resource)HardwareWithPorts[i];
+                            <option value="@i">@hw.Name</option>
                         }
 
                     </select>
 
-                    <PortGroupVisualizer
-                        ResourceName="@_portB.Resource"
-                        PortGroupIndex="@_portB.PortGroup"
-                        PortGroup="@_groupB"
-                        @bind-SelectedPortIndex="_portBIndex"
-                        OnPortClicked="HandleRightPortClicked" />
-                }
+                    @if (_resourceB?.Ports?.Any() == true)
+                    {
+                        <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                @bind="_groupBIndex">
+
+                            <option value="">Select group</option>
+
+                            @for (var i = 0; i < _resourceB.Ports.Count; i++)
+                            {
+                                var g = _resourceB.Ports[i];
+                                <option value="@i">@g.Type — @g.Speed Gbps (@g.Count)</option>
+                            }
+
+                        </select>
+                    }
+
+                    @if (_groupB is not null)
+                    {
+                        <select class="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-100"
+                                @bind="_portBIndex">
+
+                            <option value="">Select port</option>
+
+                            @for (var i = 0; i < _groupB.Count; i++)
+                            {
+                                <option value="@i">Port @(i + 1)</option>
+                            }
+
+                        </select>
+
+                        <PortGroupVisualizer
+                            ResourceName="@_portB.Resource"
+                            PortGroupIndex="@_portB.PortGroup"
+                            PortGroup="@_groupB"
+                            @bind-SelectedPortIndex="_portBIndex"
+                            OnPortClicked="HandleRightPortClicked"/>
+                    }
+
+                </div>
 
             </div>
 
-        </div>
+            <div class="flex justify-end gap-2 mt-6">
 
-        <div class="flex justify-end gap-2 mt-6">
+                <button class="px-3 py-1 border border-zinc-700 rounded text-zinc-300"
+                        @onclick="Cancel">
+                    Cancel
+                </button>
 
-            <button class="px-3 py-1 border border-zinc-700 rounded text-zinc-300"
-                    @onclick="Cancel">
-                Cancel
-            </button>
+                <button class="px-3 py-1 rounded bg-emerald-600 text-black"
+                        disabled="@(!CanSubmit)"
+                        @onclick="HandleSubmit">
+                    Add Connection
+                </button>
 
-            <button class="px-3 py-1 rounded bg-emerald-600 text-black"
-                    disabled="@(!CanSubmit)"
-                    @onclick="HandleSubmit">
-                Add Connection
-            </button>
+            </div>
 
         </div>
 
     </div>
-
-</div>
 }
 
 @code {
 
-[Parameter] public bool IsOpen { get; set; }
-[Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
 
-[Parameter] public string? TestIdPrefix { get; set; }
+    [Parameter] public string? TestIdPrefix { get; set; }
 
-private string BaseTestId =>
-    string.IsNullOrWhiteSpace(TestIdPrefix)
-        ? "connection-modal"
-        : $"{TestIdPrefix}-connection-modal";
+    private string BaseTestId =>
+        string.IsNullOrWhiteSpace(TestIdPrefix)
+            ? "connection-modal"
+            : $"{TestIdPrefix}-connection-modal";
 
-[Parameter] public PortReference? SeedPort { get; set; }
+    [Parameter] public PortReference? SeedPort { get; set; }
 
-List<IPortResource> HardwareWithPorts = new();
+    List<IPortResource> HardwareWithPorts = new();
 
-IPortResource? _resourceA;
-IPortResource? _resourceB;
+    IPortResource? _resourceA;
+    IPortResource? _resourceB;
 
-Port? _groupA;
-Port? _groupB;
+    Port? _groupA;
+    Port? _groupB;
 
-PortReference _portA = new();
-PortReference _portB = new();
+    readonly PortReference _portA = new();
+    readonly PortReference _portB = new();
 
-int? _resourceAIndexValue;
-int? _resourceBIndexValue;
+    int? _resourceAIndexValue;
+    int? _resourceBIndexValue;
 
-int? _groupAIndexValue;
-int? _groupBIndexValue;
+    int? _groupAIndexValue;
+    int? _groupBIndexValue;
 
-int? _portAIndex;
-int? _portBIndex;
+    int? _portAIndex;
+    int? _portBIndex;
 
 
-int? _resourceAIndex
-{
-    get => _resourceAIndexValue;
-    set
+    int? _resourceAIndex
     {
-        _resourceAIndexValue = value;
-
-        if (value is null)
+        get => _resourceAIndexValue;
+        set
         {
-            _resourceA = null;
-            _groupA = null;
+            _resourceAIndexValue = value;
+
+            if (value is null)
+            {
+                _resourceA = null;
+                _groupA = null;
+                _portAIndex = null;
+                return;
+            }
+
+            _resourceA = HardwareWithPorts[value.Value];
+
+            _portA.Resource = ((Resource)_resourceA).Name;
+
+            _groupAIndex = null;
             _portAIndex = null;
-            return;
         }
-
-        _resourceA = HardwareWithPorts[value.Value];
-
-        _portA.Resource = ((Resource)_resourceA).Name;
-
-        _groupAIndex = null;
-        _portAIndex = null;
     }
-}
 
 
-int? _resourceBIndex
-{
-    get => _resourceBIndexValue;
-    set
+    int? _resourceBIndex
     {
-        _resourceBIndexValue = value;
-
-        if (value is null)
+        get => _resourceBIndexValue;
+        set
         {
-            _resourceB = null;
-            _groupB = null;
+            _resourceBIndexValue = value;
+
+            if (value is null)
+            {
+                _resourceB = null;
+                _groupB = null;
+                _portBIndex = null;
+                return;
+            }
+
+            _resourceB = HardwareWithPorts[value.Value];
+
+            _portB.Resource = ((Resource)_resourceB).Name;
+
+            _groupBIndex = null;
             _portBIndex = null;
-            return;
         }
-
-        _resourceB = HardwareWithPorts[value.Value];
-
-        _portB.Resource = ((Resource)_resourceB).Name;
-
-        _groupBIndex = null;
-        _portBIndex = null;
     }
-}
 
 
-int? _groupAIndex
-{
-    get => _groupAIndexValue;
-    set
+    int? _groupAIndex
     {
-        _groupAIndexValue = value;
-
-        if (value is null || _resourceA == null)
+        get => _groupAIndexValue;
+        set
         {
-            _groupA = null;
+            _groupAIndexValue = value;
+
+            if (value is null || _resourceA == null)
+            {
+                _groupA = null;
+                _portAIndex = null;
+                return;
+            }
+
+            _groupA = _resourceA.Ports![value.Value];
+
+            _portA.PortGroup = value.Value;
+
             _portAIndex = null;
-            return;
         }
-
-        _groupA = _resourceA.Ports![value.Value];
-
-        _portA.PortGroup = value.Value;
-
-        _portAIndex = null;
     }
-}
 
 
-int? _groupBIndex
-{
-    get => _groupBIndexValue;
-    set
+    int? _groupBIndex
     {
-        _groupBIndexValue = value;
-
-        if (value is null || _resourceB == null)
+        get => _groupBIndexValue;
+        set
         {
-            _groupB = null;
+            _groupBIndexValue = value;
+
+            if (value is null || _resourceB == null)
+            {
+                _groupB = null;
+                _portBIndex = null;
+                return;
+            }
+
+            _groupB = _resourceB.Ports![value.Value];
+
+            _portB.PortGroup = value.Value;
+
             _portBIndex = null;
-            return;
         }
-
-        _groupB = _resourceB.Ports![value.Value];
-
-        _portB.PortGroup = value.Value;
-
-        _portBIndex = null;
     }
-}
 
 
-bool CanSubmit =>
-    _groupA != null &&
-    _groupB != null &&
-    _portAIndex != null &&
-    _portBIndex != null;
+    bool CanSubmit =>
+        _groupA != null &&
+        _groupB != null &&
+        _portAIndex != null &&
+        _portBIndex != null;
 
 
-protected override async Task OnParametersSetAsync()
-{
-    if (!IsOpen) return;
-
-    var all = await Repository.GetAllOfTypeAsync<IPortResource>();
-
-    HardwareWithPorts = all
-        .Where(h => h.Ports?.Any() == true)
-        .ToList();
-
-    if (SeedPort != null)
-        SeedSinglePortA(SeedPort);
-}
-
-
-async Task HandleLeftPortClicked(PortReference port)
-{
-    var existing = await Repository.GetConnectionForPortAsync(port);
-
-    if (existing != null)
-        SeedConnection(existing);
-    else
-        SeedSinglePortA(port);
-}
-
-
-async Task HandleRightPortClicked(PortReference port)
-{
-    var existing = await Repository.GetConnectionForPortAsync(port);
-
-    if (existing != null)
-        SeedConnection(existing);
-    else
-        SeedSinglePortB(port);
-}
-
-
-void SeedSinglePortA(PortReference port)
-{
-    _resourceAIndex = HardwareWithPorts.FindIndex(r => ((Resource)r).Name == port.Resource);
-
-    _groupAIndex = port.PortGroup;
-
-    _portAIndex = port.PortIndex;
-}
-
-
-void SeedSinglePortB(PortReference port)
-{
-    _resourceBIndex = HardwareWithPorts.FindIndex(r => ((Resource)r).Name == port.Resource);
-
-    _groupBIndex = port.PortGroup;
-
-    _portBIndex = port.PortIndex;
-}
-
-
-void SeedConnection(Connection conn)
-{
-    SeedSinglePortA(conn.A);
-    SeedSinglePortB(conn.B);
-}
-
-async Task HandleSubmit()
-{
-    if (!CanSubmit) return;
-
-    var a = new PortReference
+    protected override async Task OnParametersSetAsync()
     {
-        Resource = _portA.Resource,
-        PortGroup = _portA.PortGroup,
-        PortIndex = _portAIndex!.Value
-    };
+        if (!IsOpen) return;
 
-    var b = new PortReference
+        var all = await Repository.GetAllOfTypeAsync<IPortResource>();
+
+        HardwareWithPorts = all
+            .Where(h => h.Ports?.Any() == true)
+            .ToList();
+
+        if (SeedPort != null)
+            SeedSinglePortA(SeedPort);
+    }
+
+
+    async Task HandleLeftPortClicked(PortReference port)
     {
-        Resource = _portB.Resource,
-        PortGroup = _portB.PortGroup,
-        PortIndex = _portBIndex!.Value
-    };
+        var existing = await Repository.GetConnectionForPortAsync(port);
 
-    await AddConnectionUseCase.ExecuteAsync(a, b, null, null);
-
-    await Cancel();
-}
+        if (existing != null)
+            SeedConnection(existing);
+        else
+            SeedSinglePortA(port);
+    }
 
 
+    async Task HandleRightPortClicked(PortReference port)
+    {
+        var existing = await Repository.GetConnectionForPortAsync(port);
 
-async Task Cancel()
-{
-    await IsOpenChanged.InvokeAsync(false);
-}
+        if (existing != null)
+            SeedConnection(existing);
+        else
+            SeedSinglePortB(port);
+    }
+
+
+    void SeedSinglePortA(PortReference port)
+    {
+        _resourceAIndex = HardwareWithPorts.FindIndex(r => ((Resource)r).Name == port.Resource);
+
+        _groupAIndex = port.PortGroup;
+
+        _portAIndex = port.PortIndex;
+    }
+
+
+    void SeedSinglePortB(PortReference port)
+    {
+        _resourceBIndex = HardwareWithPorts.FindIndex(r => ((Resource)r).Name == port.Resource);
+
+        _groupBIndex = port.PortGroup;
+
+        _portBIndex = port.PortIndex;
+    }
+
+
+    void SeedConnection(Connection conn)
+    {
+        SeedSinglePortA(conn.A);
+        SeedSinglePortB(conn.B);
+    }
+
+    async Task HandleSubmit()
+    {
+        if (!CanSubmit) return;
+
+        var a = new PortReference
+        {
+            Resource = _portA.Resource,
+            PortGroup = _portA.PortGroup,
+            PortIndex = _portAIndex!.Value
+        };
+
+        var b = new PortReference
+        {
+            Resource = _portB.Resource,
+            PortGroup = _portB.PortGroup,
+            PortIndex = _portBIndex!.Value
+        };
+
+        await AddConnectionUseCase.ExecuteAsync(a, b);
+
+        await Cancel();
+    }
+
+
+    async Task Cancel()
+    {
+        await IsOpenChanged.InvokeAsync(false);
+    }
 
 }

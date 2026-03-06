@@ -6,17 +6,14 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Firewalls.Labels;
 
-public class FirewallLabelAddSettings : FirewallNameSettings
-{
+public class FirewallLabelAddSettings : FirewallNameSettings {
     [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
     [CommandOption("--value <VALUE>")] public string Value { get; set; } = default!;
 }
 
-public class FirewallLabelAddCommand(IServiceProvider serviceProvider) : AsyncCommand<FirewallLabelAddSettings>
-{
+public class FirewallLabelAddCommand(IServiceProvider serviceProvider) : AsyncCommand<FirewallLabelAddSettings> {
     public override async Task<int> ExecuteAsync(CommandContext context, FirewallLabelAddSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         IAddLabelUseCase<Firewall> useCase = scope.ServiceProvider.GetRequiredService<IAddLabelUseCase<Firewall>>();
         await useCase.ExecuteAsync(settings.Name, settings.Key, settings.Value);

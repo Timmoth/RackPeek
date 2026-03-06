@@ -7,10 +7,8 @@ namespace Tests.EndToEnd.ExporterTests;
 public class HostsExportWorkflowTests(
     TempYamlCliFixture fs,
     ITestOutputHelper outputHelper)
-    : IClassFixture<TempYamlCliFixture>
-{
-    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args)
-    {
+    : IClassFixture<TempYamlCliFixture> {
+    private async Task<(string output, string yaml)> ExecuteAsync(params string[] args) {
         outputHelper.WriteLine($"rpk {string.Join(" ", args)}");
 
         var output = await YamlCliTestHost.RunAsync(
@@ -26,8 +24,7 @@ public class HostsExportWorkflowTests(
     }
 
     [Fact]
-    public async Task hosts_export_basic_workflow_test()
-    {
+    public async Task hosts_export_basic_workflow_test() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), """
                                                                            version: 1
                                                                            resources:
@@ -44,7 +41,7 @@ public class HostsExportWorkflowTests(
                                                                                ip: 192.168.1.20
                                                                            """);
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "hosts", "export",
             "--no-header",
             "--no-localhost"
@@ -59,8 +56,7 @@ public class HostsExportWorkflowTests(
     }
 
     [Fact]
-    public async Task hosts_export_with_domain_suffix_test()
-    {
+    public async Task hosts_export_with_domain_suffix_test() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), """
                                                                            version: 1
                                                                            resources:
@@ -71,7 +67,7 @@ public class HostsExportWorkflowTests(
                                                                                ip: 10.0.0.1
                                                                            """);
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "hosts", "export",
             "--domain-suffix", "home.local",
             "--no-header",
@@ -86,8 +82,7 @@ public class HostsExportWorkflowTests(
     }
 
     [Fact]
-    public async Task hosts_export_respects_tag_filter()
-    {
+    public async Task hosts_export_respects_tag_filter() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), """
                                                                            version: 1
                                                                            resources:
@@ -108,7 +103,7 @@ public class HostsExportWorkflowTests(
                                                                                ip: 10.0.0.2
                                                                            """);
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "hosts", "export",
             "--include-tags", "prod",
             "--no-header",
@@ -120,8 +115,7 @@ public class HostsExportWorkflowTests(
     }
 
     [Fact]
-    public async Task hosts_export_is_sorted_by_name()
-    {
+    public async Task hosts_export_is_sorted_by_name() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), """
                                                                            version: 1
                                                                            resources:
@@ -138,7 +132,7 @@ public class HostsExportWorkflowTests(
                                                                                ip: 10.0.0.1
                                                                            """);
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "hosts", "export",
             "--no-header",
             "--no-localhost"
@@ -151,8 +145,7 @@ public class HostsExportWorkflowTests(
     }
 
     [Fact]
-    public async Task hosts_export_skips_resources_without_address()
-    {
+    public async Task hosts_export_skips_resources_without_address() {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), """
                                                                            version: 1
                                                                            resources:
@@ -167,7 +160,7 @@ public class HostsExportWorkflowTests(
                                                                              name: without-ip
                                                                            """);
 
-        var (output, _) = await ExecuteAsync(
+        (var output, var _) = await ExecuteAsync(
             "hosts", "export",
             "--no-header",
             "--no-localhost"

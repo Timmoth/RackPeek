@@ -6,8 +6,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Servers.Cpus;
 
-public class ServerCpuAddSettings : ServerNameSettings
-{
+public class ServerCpuAddSettings : ServerNameSettings {
     [CommandOption("--model <MODEL>")] public string? Model { get; set; }
 
     [CommandOption("--cores <CORES>")] public int Cores { get; set; }
@@ -17,13 +16,11 @@ public class ServerCpuAddSettings : ServerNameSettings
 
 public class ServerCpuAddCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<ServerCpuAddSettings>
-{
+) : AsyncCommand<ServerCpuAddSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         ServerCpuAddSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         IAddCpuUseCase<Server> useCase = scope.ServiceProvider.GetRequiredService<IAddCpuUseCase<Server>>();
 

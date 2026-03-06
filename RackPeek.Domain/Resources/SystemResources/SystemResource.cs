@@ -3,8 +3,7 @@ using RackPeek.Domain.Resources.SubResources;
 
 namespace RackPeek.Domain.Resources.SystemResources;
 
-public class SystemResource : Resource, IDriveResource
-{
+public class SystemResource : Resource, IDriveResource {
     public const string KindLabel = "System";
 
     public static readonly string[] ValidSystemTypes =

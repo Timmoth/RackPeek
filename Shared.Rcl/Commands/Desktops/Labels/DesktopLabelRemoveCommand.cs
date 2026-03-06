@@ -6,16 +6,13 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Desktops.Labels;
 
-public class DesktopLabelRemoveSettings : DesktopNameSettings
-{
+public class DesktopLabelRemoveSettings : DesktopNameSettings {
     [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
 }
 
-public class DesktopLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<DesktopLabelRemoveSettings>
-{
+public class DesktopLabelRemoveCommand(IServiceProvider serviceProvider) : AsyncCommand<DesktopLabelRemoveSettings> {
     public override async Task<int> ExecuteAsync(CommandContext context, DesktopLabelRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         IRemoveLabelUseCase<Desktop> useCase = scope.ServiceProvider.GetRequiredService<IRemoveLabelUseCase<Desktop>>();
         await useCase.ExecuteAsync(settings.Name, settings.Key);

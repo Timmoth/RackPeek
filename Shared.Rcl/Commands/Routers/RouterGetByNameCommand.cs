@@ -7,13 +7,11 @@ namespace Shared.Rcl.Commands.Routers;
 
 public class RouterGetByNameCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand<RouterNameSettings>
-{
+) : AsyncCommand<RouterNameSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         RouterNameSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         DescribeRouterUseCase useCase = scope.ServiceProvider.GetRequiredService<DescribeRouterUseCase>();
 

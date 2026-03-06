@@ -6,8 +6,7 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Systems.Drives;
 
-public class SystemDriveUpdateSettings : SystemNameSettings
-{
+public class SystemDriveUpdateSettings : SystemNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 
     [CommandOption("--type <TYPE>")] public string Type { get; set; } = default!;
@@ -16,13 +15,11 @@ public class SystemDriveUpdateSettings : SystemNameSettings
 }
 
 public class SystemDriveUpdateCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<SystemDriveUpdateSettings>
-{
+    : AsyncCommand<SystemDriveUpdateSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         SystemDriveUpdateSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         IUpdateDriveUseCase<SystemResource> useCase =
             scope.ServiceProvider.GetRequiredService<IUpdateDriveUseCase<SystemResource>>();

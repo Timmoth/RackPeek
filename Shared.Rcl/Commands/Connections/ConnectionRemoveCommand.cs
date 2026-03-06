@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Resources.Connections;
-using RackPeek.Domain.Resources.SubResources;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

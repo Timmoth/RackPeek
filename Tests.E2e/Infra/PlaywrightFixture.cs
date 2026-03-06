@@ -4,8 +4,7 @@ using Microsoft.Playwright;
 
 namespace Tests.E2e.Infra;
 
-public class PlaywrightFixture : IAsyncLifetime
-{
+public class PlaywrightFixture : IAsyncLifetime {
     // Change this if needed
     private const string _dockerImage = "rackpeek:ci";
     private IContainer _container = default!;
@@ -14,8 +13,7 @@ public class PlaywrightFixture : IAsyncLifetime
     public IBrowser Browser { get; private set; } = default!;
     public string BaseUrl { get; private set; } = default!;
 
-    public async Task InitializeAsync()
-    {
+    public async Task InitializeAsync() {
         _container = new ContainerBuilder(_dockerImage)
             .WithPortBinding(8080, true) // random host port
             .WithWaitStrategy(
@@ -34,8 +32,7 @@ public class PlaywrightFixture : IAsyncLifetime
 
         _playwright = await Playwright.CreateAsync();
 
-        Browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-        {
+        Browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions {
             Headless = true,
             //Headless = false,
             SlowMo = 500,
@@ -48,8 +45,7 @@ public class PlaywrightFixture : IAsyncLifetime
         Assertions.SetDefaultExpectTimeout(15000);
     }
 
-    public async Task DisposeAsync()
-    {
+    public async Task DisposeAsync() {
         if (Browser != null)
             await Browser.DisposeAsync();
 

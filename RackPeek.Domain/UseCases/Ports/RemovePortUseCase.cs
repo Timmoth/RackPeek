@@ -7,16 +7,13 @@ using RackPeek.Domain.Resources.Servers;
 namespace RackPeek.Domain.UseCases.Ports;
 
 public interface IRemovePortUseCase<T> : IResourceUseCase<T>
-    where T : Resource
-{
+    where T : Resource {
     Task ExecuteAsync(string name, int index);
 }
 
 public class RemovePortUseCase<T>(IResourceCollection repository)
-    : IRemovePortUseCase<T> where T : Resource
-{
-    public async Task ExecuteAsync(string name, int index)
-    {
+    : IRemovePortUseCase<T> where T : Resource {
+    public async Task ExecuteAsync(string name, int index) {
         name = Normalize.HardwareName(name);
         ThrowIfInvalid.ResourceName(name);
 
@@ -35,26 +32,21 @@ public class RemovePortUseCase<T>(IResourceCollection repository)
         var toRemove = new List<Connection>();
         var toAdd = new List<Connection>();
 
-        foreach (Connection connection in connections)
-        {
+        foreach (Connection connection in connections) {
             var changed = false;
 
             PortReference a = connection.A;
             PortReference b = connection.B;
 
             // handle A side
-            if (a.Resource.Equals(name, StringComparison.OrdinalIgnoreCase))
-            {
-                if (a.PortGroup == index)
-                {
+            if (a.Resource.Equals(name, StringComparison.OrdinalIgnoreCase)) {
+                if (a.PortGroup == index) {
                     toRemove.Add(connection);
                     continue;
                 }
 
-                if (a.PortGroup > index)
-                {
-                    a = new PortReference
-                    {
+                if (a.PortGroup > index) {
+                    a = new PortReference {
                         Resource = a.Resource,
                         PortGroup = a.PortGroup - 1,
                         PortIndex = a.PortIndex
@@ -65,18 +57,14 @@ public class RemovePortUseCase<T>(IResourceCollection repository)
             }
 
             // handle B side
-            if (b.Resource.Equals(name, StringComparison.OrdinalIgnoreCase))
-            {
-                if (b.PortGroup == index)
-                {
+            if (b.Resource.Equals(name, StringComparison.OrdinalIgnoreCase)) {
+                if (b.PortGroup == index) {
                     toRemove.Add(connection);
                     continue;
                 }
 
-                if (b.PortGroup > index)
-                {
-                    b = new PortReference
-                    {
+                if (b.PortGroup > index) {
+                    b = new PortReference {
                         Resource = b.Resource,
                         PortGroup = b.PortGroup - 1,
                         PortIndex = b.PortIndex
@@ -86,12 +74,10 @@ public class RemovePortUseCase<T>(IResourceCollection repository)
                 }
             }
 
-            if (changed)
-            {
+            if (changed) {
                 toRemove.Add(connection);
 
-                toAdd.Add(new Connection
-                {
+                toAdd.Add(new Connection {
                     A = a,
                     B = b,
                     Label = connection.Label,

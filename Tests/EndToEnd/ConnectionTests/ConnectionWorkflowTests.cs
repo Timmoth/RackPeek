@@ -24,7 +24,6 @@ public class ConnectionWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper ou
     [Theory]
     [InlineData("switches", "routers")]
     [InlineData("firewalls", "routers")]
-
     public async Task connections_cli_workflow_test(string aType, string bType) {
         await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), "");
 

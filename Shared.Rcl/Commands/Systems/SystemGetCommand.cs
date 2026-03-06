@@ -7,19 +7,16 @@ namespace Shared.Rcl.Commands.Systems;
 
 public class SystemGetCommand(
     IServiceProvider serviceProvider
-) : AsyncCommand
-{
+) : AsyncCommand {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         SystemReportUseCase useCase = scope.ServiceProvider.GetRequiredService<SystemReportUseCase>();
 
         SystemReport report = await useCase.ExecuteAsync();
 
-        if (report.Systems.Count == 0)
-        {
+        if (report.Systems.Count == 0) {
             AnsiConsole.MarkupLine("[yellow]No systems found.[/]");
             return 0;
         }

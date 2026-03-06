@@ -17,11 +17,11 @@
 </div>
 
 @code {
-    [Parameter][EditorRequired] public ResourceType ResourceType { get; set; }
+    [Parameter] [EditorRequired] public ResourceType ResourceType { get; set; }
 
     public string Kind { get; set; } = string.Empty;
 
-    [Parameter][EditorRequired] public string ResourceName { get; set; } = default!;
+    [Parameter] [EditorRequired] public string ResourceName { get; set; } = default!;
 
     private List<List<Breadcrumb>> Levels { get; } = new();
 

@@ -6,19 +6,16 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.Systems.Drives;
 
-public class SystemDriveRemoveSettings : SystemNameSettings
-{
+public class SystemDriveRemoveSettings : SystemNameSettings {
     [CommandOption("--index <INDEX>")] public int Index { get; set; }
 }
 
 public class SystemDriveRemoveCommand(IServiceProvider serviceProvider)
-    : AsyncCommand<SystemDriveRemoveSettings>
-{
+    : AsyncCommand<SystemDriveRemoveSettings> {
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         SystemDriveRemoveSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         IRemoveDriveUseCase<SystemResource> useCase =
             scope.ServiceProvider.GetRequiredService<IRemoveDriveUseCase<SystemResource>>();

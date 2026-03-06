@@ -6,17 +6,14 @@ using Spectre.Console.Cli;
 
 namespace Shared.Rcl.Commands.AccessPoints.Labels;
 
-public class AccessPointLabelAddSettings : AccessPointNameSettings
-{
+public class AccessPointLabelAddSettings : AccessPointNameSettings {
     [CommandOption("--key <KEY>")] public string Key { get; set; } = default!;
     [CommandOption("--value <VALUE>")] public string Value { get; set; } = default!;
 }
 
-public class AccessPointLabelAddCommand(IServiceProvider serviceProvider) : AsyncCommand<AccessPointLabelAddSettings>
-{
+public class AccessPointLabelAddCommand(IServiceProvider serviceProvider) : AsyncCommand<AccessPointLabelAddSettings> {
     public override async Task<int> ExecuteAsync(CommandContext context, AccessPointLabelAddSettings settings,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         using IServiceScope scope = serviceProvider.CreateScope();
         IAddLabelUseCase<AccessPoint> useCase =
             scope.ServiceProvider.GetRequiredService<IAddLabelUseCase<AccessPoint>>();
