@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using RackPeek.Domain;
 using RackPeek.Domain.Git;
+using RackPeek.Domain.Git.UseCases;
+using RackPeek.Domain.Git.Queries;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using Shared.Rcl;
@@ -26,7 +28,19 @@ public class Program {
         });
 
 
-        builder.Services.AddSingleton<IGitService>(new NullGitService());
+        builder.Services.AddSingleton<IGitRepository>(new NullGitRepository());
+        builder.Services.AddSingleton<IInitRepoUseCase, InitRepoUseCase>();
+        builder.Services.AddSingleton<ICommitAllUseCase, CommitAllUseCase>();
+        builder.Services.AddSingleton<IRestoreAllUseCase, RestoreAllUseCase>();
+        builder.Services.AddSingleton<IPushUseCase, PushUseCase>();
+        builder.Services.AddSingleton<IPullUseCase, PullUseCase>();
+        builder.Services.AddSingleton<IAddRemoteUseCase, AddRemoteUseCase>();
+        builder.Services.AddSingleton<IGetStatusQuery, GetStatusQuery>();
+        builder.Services.AddSingleton<IGetBranchQuery, GetBranchQuery>();
+        builder.Services.AddSingleton<IGetDiffQuery, GetDiffQuery>();
+        builder.Services.AddSingleton<IGetChangedFilesQuery, GetChangedFilesQuery>();
+        builder.Services.AddSingleton<IGetLogQuery, GetLogQuery>();
+        builder.Services.AddSingleton<IGetSyncStatusQuery, GetSyncStatusQuery>();
         builder.Services.AddScoped<ITextFileStore, WasmTextFileStore>();
 
         var resources = new ResourceCollection();
