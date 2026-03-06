@@ -1,6 +1,7 @@
 ﻿@page "/resources/hardware/{HardwareName}"
 @using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources.AccessPoints
+@using RackPeek.Domain.Resources.Connections
 @using RackPeek.Domain.Resources.Desktops
 @using RackPeek.Domain.Resources.Firewalls
 @using RackPeek.Domain.Resources.Hardware
@@ -9,6 +10,7 @@
 @using RackPeek.Domain.Resources.Switches
 @using RackPeek.Domain.Resources.SystemResources
 @using RackPeek.Domain.Resources.UpsUnits
+@using RackPeek.Domain.Resources.SubResources
 @using Shared.Rcl.AccessPoints
 @using Shared.Rcl.Desktops
 @using Shared.Rcl.Firewalls
@@ -17,7 +19,9 @@
 @using Shared.Rcl.Servers
 @using Shared.Rcl.Switches
 @using Shared.Rcl.Ups
+@using Shared.Rcl.Connections
 @using Router = RackPeek.Domain.Resources.Routers.Router
+
 @inject IResourceCollection Repo
 @inject GetHardwareSystemTreeUseCase GetHardwareSystemTreeUseCase
 @inject NavigationManager Nav
@@ -30,6 +34,7 @@
 />
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6">
+
     @if (_hardware is null && !_loading)
     {
         <div class="text-zinc-500">Hardware not found</div>
@@ -40,6 +45,9 @@
     }
     else
     {
+
+        @* ================= Hardware Card ================= *@
+
         @if (_hardware != null)
         {
             <h1 class="text-lg text-zinc-100 mb-6">
@@ -87,6 +95,8 @@
         }
 
 
+        @* ================= Dependency Tree ================= *@
+
         @if (_tree is not null && _tree.Systems.Any())
         {
             <HardwareDependencyTreeComponent Tree="_tree"/>
@@ -98,21 +108,71 @@
             </div>
         }
 
+
+        @* ================= Ports ================= *@
+
+        @if (_hardware is IPortResource portResource && portResource.Ports?.Any() == true)
+        {
+            <div class="mt-8 space-y-6">
+
+                <div class="text-zinc-400 text-sm uppercase tracking-wide">
+                    Ports
+                </div>
+
+                @for (int i = 0; i < portResource.Ports.Count; i++)
+                {
+                    var portGroup = portResource.Ports[i];
+
+                    <div class="space-y-2">
+
+                        <div class="text-xs text-zinc-500">
+                            @portGroup.Type — @portGroup.Speed Gbps (@portGroup.Count ports)
+                        </div>
+
+                        <PortLayout
+                            ResourceName="@_hardware!.Name"
+                            PortGroupIndex="i"
+                            PortGroup="portGroup"
+                            OnPortClicked="HandlePortClicked"
+                        />
+
+                    </div>
+                }
+
+            </div>
+        }
+
+        
         <div class="m-4">
             <AddResourceComponent TResource="SystemResource"
                                   Placeholder="System name"
                                   OnCreated="NavigateToNewResource"
-                                  RunsOn="@(new List<string>  { HardwareName })"/>
+                                  RunsOn="@(new List<string> { HardwareName })"/>
         </div>
+
     }
+
 </div>
 
+
+<PortConnectionModal
+    IsOpen="@_connectionModalOpen"
+    IsOpenChanged="v => _connectionModalOpen = v"
+    SeedPort="@_selectedPort"
+/>
+
+
 @code {
+
     [Parameter] public string HardwareName { get; set; } = string.Empty;
 
     private Hardware? _hardware;
     private bool _loading = true;
     private HardwareDependencyTree? _tree;
+
+    private bool _connectionModalOpen;
+    private PortReference? _selectedPort;
+
 
     protected override async Task OnParametersSetAsync()
     {
@@ -130,15 +190,24 @@
         _loading = false;
     }
 
+
+    void HandlePortClicked(PortReference port)
+    {
+        _selectedPort = port;
+        _connectionModalOpen = true;
+    }
+
+
     private Task DeleteCallback(string obj)
     {
         Nav.NavigateTo("/hardware/tree");
         return Task.CompletedTask;
     }
 
-    private Task NavigateToNewResource(string serverName)
+
+    private Task NavigateToNewResource(string systemName)
     {
-        Nav.NavigateTo($"resources/systems/{Uri.EscapeDataString(serverName)}");
+        Nav.NavigateTo($"resources/systems/{Uri.EscapeDataString(systemName)}");
         return Task.CompletedTask;
     }
 

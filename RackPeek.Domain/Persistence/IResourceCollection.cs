@@ -1,4 +1,5 @@
 using RackPeek.Domain.Resources;
+using RackPeek.Domain.Resources.Connections;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
@@ -35,4 +36,13 @@ public interface IResourceCollection {
     Task<IReadOnlyList<Resource>> GetDependantsAsync(string name);
 
     Task Merge(string incomingYaml, MergeMode mode);
+    
+    
+    
+    Task AddConnectionAsync(Connection connection);
+    Task RemoveConnectionAsync(Connection connection);
+    Task RemoveConnectionsForPortAsync(PortReference port);
+    Task<IReadOnlyList<Connection>> GetConnectionsAsync();
+    Task<IReadOnlyList<Connection>> GetConnectionsForResourceAsync(string resource);
+    Task<Connection?> GetConnectionForPortAsync(PortReference port);
 }

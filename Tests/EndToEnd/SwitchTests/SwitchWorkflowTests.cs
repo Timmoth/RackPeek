@@ -49,6 +49,7 @@ public class SwitchWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
                        managed: true
                        poe: true
                        name: sw01
+                     connections: []
 
                      """, yaml);
 
@@ -78,6 +79,7 @@ public class SwitchWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
                        managed: false
                        poe: false
                        name: sw02
+                     connections: []
 
                      """, yaml);
 

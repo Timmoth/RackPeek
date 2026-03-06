@@ -41,6 +41,7 @@ public class AccessPointWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper o
                        model: Unifi-U6-Lite
                        speed: 1
                        name: ap01
+                     connections: []
 
                      """, yaml);
 
@@ -65,6 +66,7 @@ public class AccessPointWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper o
                        model: Aruba-AP-515
                        speed: 2.5
                        name: ap02
+                     connections: []
 
                      """, yaml);
 

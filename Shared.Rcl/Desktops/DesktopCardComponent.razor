@@ -3,7 +3,7 @@
 @using RackPeek.Domain.UseCases.Cpus
 @using RackPeek.Domain.UseCases.Drives
 @using RackPeek.Domain.UseCases.Gpus
-@using RackPeek.Domain.UseCases.Ports
+@using Shared.Rcl.Hardware
 @inject IGetResourceByNameUseCase<Desktop> GetByNameUseCase
 @inject UpdateDesktopUseCase UpdateUseCase
 @inject IDeleteResourceUseCase<Desktop> DeleteUseCase
@@ -13,9 +13,6 @@
 @inject IAddDriveUseCase<Desktop> AddDriveUseCase
 @inject IUpdateDriveUseCase<Desktop> UpdateDriveUseCase
 @inject IRemoveDriveUseCase<Desktop> RemoveDriveUseCase
-@inject IAddPortUseCase<Desktop> AddNicUseCase
-@inject IUpdatePortUseCase<Desktop> UpdateNicUseCase
-@inject IRemovePortUseCase<Desktop> RemoveNicUseCase
 @inject IAddGpuUseCase<Desktop> AddGpuUseCase
 @inject IUpdateGpuUseCase<Desktop> UpdateGpuUseCase
 @inject IRemoveGpuUseCase<Desktop> RemoveGpuUseCase
@@ -152,35 +149,12 @@
         </div>
 
         <!-- NICs -->
-        <div data-testid="desktop-nic-section">
-            <div class="flex items-center justify-between mb-1 group">
-                <div class="text-zinc-400">
-                    NICs
-                    <button data-testid="add-nic-button"
-                            class="hover:text-emerald-400 transition"
-                            @onclick="OpenAddNic">
-                        +
-                    </button>
-                </div>
-            </div>
+        <PortGroupEditor T="Desktop"
+                         Resource="Desktop"
+                         OnResourceChanged="r => Desktop = r" 
+                         TestIdPrefix="desktop-ports"/>
 
-            @if (Desktop.Ports?.Any() == true)
-            {
-                @foreach (var nic in Desktop.Ports)
-                {
-                    <div
-                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
-                        <button data-testid=@($"edit-nic-{nic.Type}-{nic.Speed}")
-                                class="hover:text-emerald-400"
-                                @onclick="() => OpenEditNic(nic)">
-                            @nic.Type — @nic.Speed Gbps (@nic.Count ports)
-                        </button>
-                    </div>
-                }
-            }
-        </div>
-
-        <!-- GPUs -->
+                         <!-- GPUs -->
         <div data-testid="desktop-gpu-section">
             <div class="flex items-center justify-between mb-1 group">
                 <div class="text-zinc-400">
@@ -297,15 +271,6 @@
           OnDelete="HandleGpuDelete"
           TestIdPrefix="desktop"/>
 
-
-<PortModal
-    IsOpen="@_nicModalOpen"
-    IsOpenChanged="v => _nicModalOpen = v"
-    Value="@_editingNic"
-    OnSubmit="HandleNicSubmit"
-    OnDelete="HandleNicDelete"
-    TestIdPrefix="desktop-nic"/>
-
 @code {
     [Parameter] [EditorRequired] public Desktop Desktop { get; set; } = default!;
 
@@ -420,61 +385,7 @@
     }
 
     #endregion
-
-    #region NICs
-
-    bool _nicModalOpen;
-    int _editingNicIndex;
-    Port? _editingNic;
-
-    void OpenAddNic()
-    {
-        _editingNicIndex = -1;
-        _editingNic = null;
-        _nicModalOpen = true;
-    }
-
-    void OpenEditNic(Port nic)
-    {
-        Desktop.Ports ??= new List<Port>();
-        _editingNicIndex = Desktop.Ports.IndexOf(nic);
-        _editingNic = nic;
-        _nicModalOpen = true;
-    }
-
-    async Task HandleNicSubmit(Port nic)
-    {
-        Desktop.Ports ??= new List<Port>();
-
-        if (_editingNicIndex < 0)
-        {
-            await AddNicUseCase.ExecuteAsync(
-                Desktop.Name,
-                nic.Type,
-                nic.Speed,
-                nic.Count);
-        }
-        else
-        {
-            await UpdateNicUseCase.ExecuteAsync(
-                Desktop.Name,
-                _editingNicIndex,
-                nic.Type,
-                nic.Speed,
-                nic.Count);
-        }
-
-        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
-    }
-
-    async Task HandleNicDelete(Port nic)
-    {
-        await RemoveNicUseCase.ExecuteAsync(Desktop.Name, _editingNicIndex);
-        Desktop = await GetByNameUseCase.ExecuteAsync(Desktop.Name);
-    }
-
-    #endregion
-
+    
     #region GPUs
 
     bool _gpuModalOpen;

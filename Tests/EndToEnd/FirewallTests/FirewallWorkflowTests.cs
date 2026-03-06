@@ -48,7 +48,8 @@ public class FirewallWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outp
                        managed: true
                        poe: false
                        name: fw01
-
+                     connections: []
+                     
                      """, yaml);
 
         // Add second firewall
@@ -76,7 +77,8 @@ public class FirewallWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outp
                        managed: false
                        poe: false
                        name: fw02
-
+                     connections: []
+                     
                      """, yaml);
 
         // Get firewall

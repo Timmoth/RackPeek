@@ -59,6 +59,7 @@ public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
                        name: svc01
                        runsOn:
                        - sys01
+                     connections: []
 
                      """, yaml);
 

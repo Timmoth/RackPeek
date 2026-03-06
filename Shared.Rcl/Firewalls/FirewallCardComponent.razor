@@ -1,11 +1,7 @@
 @using RackPeek.Domain.Resources.Firewalls
-@using RackPeek.Domain.Resources.SubResources
-@using RackPeek.Domain.UseCases.Ports
+@using Shared.Rcl.Hardware
 @inject UpdateFirewallUseCase UpdateUseCase
 @inject IGetResourceByNameUseCase<Firewall> GetByNameUseCase
-@inject IAddPortUseCase<Firewall> AddPortUseCase
-@inject IUpdatePortUseCase<Firewall> UpdatePortUseCase
-@inject IRemovePortUseCase<Firewall> RemovePortUseCase
 @inject IDeleteResourceUseCase<Firewall> DeleteUseCase
 @inject ICloneResourceUseCase<Firewall> CloneUseCase
 @inject IRenameResourceUseCase<Firewall> RenameUseCase
@@ -133,35 +129,10 @@
         </div>
 
         <!-- Ports -->
-        <div class="md:col-span-2"
-             data-testid="firewall-ports-section">
-
-            <div class="flex items-center justify-between mb-1 group">
-                <div class="text-zinc-400">
-                    Ports
-                    <button data-testid="add-port-button"
-                            class="hover:text-emerald-400 ml-1"
-                            @onclick="OpenAddPort">
-                        +
-                    </button>
-                </div>
-            </div>
-
-            @if (Firewall.Ports?.Any() == true)
-            {
-                @foreach (var port in Firewall.Ports)
-                {
-                    <div
-                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
-                        <button data-testid=@($"edit-port-{port.Type}-{port.Speed}")
-                                class="hover:text-emerald-400"
-                                @onclick="() => OpenEditPort(port)">
-                            @port.Count× @port.Type — @port.Speed Gbps
-                        </button>
-                    </div>
-                }
-            }
-        </div>
+        <PortGroupEditor T="Firewall"
+                         Resource="Firewall"
+                         OnResourceChanged="r => Firewall = r" 
+                         TestIdPrefix="firewall-ports"/>
 
         <ResourceTagEditor Resource="Firewall"
                            TestIdPrefix="firewall"/>
@@ -191,12 +162,6 @@
 
     </div>
 </div>
-
-<PortModal IsOpen="@_portModalOpen"
-           IsOpenChanged="v => _portModalOpen = v"
-           Value="@_editingPort"
-           OnSubmit="HandlePortSubmit"
-           OnDelete="HandlePortDelete"/>
 
 <ConfirmModal IsOpen="_confirmDeleteOpen"
               IsOpenChanged="v => _confirmDeleteOpen = v"
@@ -256,64 +221,7 @@
     {
         _isEditing = false;
     }
-
-    #region Ports
-
-    bool _portModalOpen;
-    int _editingPortIndex;
-    Port? _editingPort;
-
-    void OpenAddPort()
-    {
-        _editingPortIndex = -1;
-        _editingPort = null;
-        _portModalOpen = true;
-    }
-
-    void OpenEditPort(Port port)
-    {
-        Firewall.Ports ??= new List<Port>();
-        _editingPortIndex = Firewall.Ports.IndexOf(port);
-        _editingPort = port;
-        _portModalOpen = true;
-    }
-
-    async Task HandlePortSubmit(Port port)
-    {
-        if (_editingPortIndex < 0)
-        {
-            await AddPortUseCase.ExecuteAsync(
-                Firewall.Name,
-                port.Type,
-                port.Speed,
-                port.Count);
-        }
-        else
-        {
-            await UpdatePortUseCase.ExecuteAsync(
-                Firewall.Name,
-                _editingPortIndex,
-                port.Type,
-                port.Speed,
-                port.Count);
-        }
-
-        Firewall = await GetByNameUseCase.ExecuteAsync(Firewall.Name);
-        StateHasChanged();
-    }
-
-    async Task HandlePortDelete(Port _)
-    {
-        await RemovePortUseCase.ExecuteAsync(
-            Firewall.Name,
-            _editingPortIndex);
-
-        Firewall = await GetByNameUseCase.ExecuteAsync(Firewall.Name);
-        StateHasChanged();
-    }
-
-    #endregion
-
+    
     public class FirewallEditModel
     {
         public string? Model { get; set; }

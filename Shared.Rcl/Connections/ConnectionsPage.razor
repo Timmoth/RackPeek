@@ -1,0 +1,30 @@
+﻿@page "/connections"
+
+<div class="p-6 space-y-4">
+
+    <div class="text-zinc-200 text-lg">
+        Connections
+    </div>
+
+    <button class="px-3 py-1 rounded bg-emerald-600 text-black hover:bg-emerald-500"
+            @onclick="OpenModal">
+        Add Connection
+    </button>
+
+</div>
+
+<PortConnectionModal
+    IsOpen="_modalOpen"
+    IsOpenChanged="v => _modalOpen = v"
+    TestIdPrefix="connections"/>
+
+@code {
+
+    bool _modalOpen;
+
+    void OpenModal()
+    {
+        _modalOpen = true;
+    }
+
+}

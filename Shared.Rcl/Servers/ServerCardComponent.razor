@@ -4,6 +4,8 @@
 @using RackPeek.Domain.UseCases.Drives
 @using RackPeek.Domain.UseCases.Gpus
 @using RackPeek.Domain.UseCases.Ports
+@using Shared.Rcl.Connections
+@using Shared.Rcl.Hardware
 @inject IAddCpuUseCase<Server> AddCpuUseCase
 @inject IRemoveCpuUseCase<Server> RemoveCpuUseCase
 @inject IUpdateCpuUseCase<Server> UpdateCpuUseCase
@@ -168,37 +170,11 @@
             }
         </div>
 
-        <div>
-            <div class="flex items-center justify-between mb-1 group">
-                <div class="text-zinc-400">
-                    NICs
-                    <button
-                        class="hover:text-emerald-400 group-hover:opacity-100 transition"
-                        title="Add NIC"
-                        @onclick="OpenAddNic">
-                        +
-                    </button>
-                </div>
-            </div>
-
-            @if (Server.Ports?.Any() == true)
-            {
-                @foreach (var nic in Server.Ports)
-                {
-                    <div
-                        class="flex items-center justify-between text-zinc-300 group hover:bg-zinc-800/40 rounded px-1 py-0.5">
-                        <button
-                            class="hover:text-emerald-400"
-                            title="Edit NIC"
-                            @onclick="() => OpenEditNic(nic)">
-                            @nic.Type — @nic.Speed Gbps (@nic.Count ports)
-                        </button>
-                    </div>
-                }
-            }
-        </div>
-
-
+        <PortGroupEditor T="Server"
+                         Resource="Server"
+                         OnResourceChanged="r => Server = r"
+                         TestIdPrefix="server-ports"/>
+        
         <div>
             <div class="flex items-center justify-between mb-1 group">
                 <div class="text-zinc-400">
@@ -287,13 +263,6 @@
     TestIdPrefix="server-drive"/>
 
 
-<PortModal
-    IsOpen="@_nicModalOpen"
-    IsOpenChanged="v => _nicModalOpen = v"
-    Value="@_editingNic"
-    OnSubmit="HandleNicSubmit"
-    OnDelete="HandleNicDelete"
-    TestIdPrefix="server-nic"/>
 
 <GpuModal
     IsOpen="@_gpuModalOpen"
@@ -451,60 +420,7 @@
     }
 
     #endregion
-
-    #region NICs
-
-    bool _nicModalOpen;
-    int _editingNicIndex;
-    Port? _editingNic;
-
-    void OpenAddNic()
-    {
-        _editingNicIndex = -1;
-        _editingNic = null;
-        _nicModalOpen = true;
-    }
-
-    void OpenEditNic(Port nic)
-    {
-        Server.Ports ??= new List<Port>();
-        _editingNicIndex = Server.Ports.IndexOf(nic);
-        _editingNic = nic;
-        _nicModalOpen = true;
-    }
-
-    async Task HandleNicSubmit(Port nic)
-    {
-        Server.Ports ??= new List<Port>();
-
-        if (_editingNicIndex < 0)
-        {
-            await AddNicUseCase.ExecuteAsync(
-                Server.Name,
-                nic.Type,
-                nic.Speed,
-                nic.Count);
-        }
-        else
-        {
-            await UpdateNicUseCase.ExecuteAsync(
-                Server.Name,
-                _editingNicIndex,
-                nic.Type,
-                nic.Speed,
-                nic.Count);
-        }
-
-        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
-    }
-
-    async Task HandleNicDelete(Port nic)
-    {
-        await RemoveNicUseCase.ExecuteAsync(Server.Name, _editingNicIndex);
-        Server = await GetByNameUseCase.ExecuteAsync(Server.Name);
-    }
-
-    #endregion
+    
 
     #region GPUs
 

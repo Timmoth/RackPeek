@@ -1,5 +1,6 @@
 ﻿@page "/hardware/tree"
 @using RackPeek.Domain.Resources.Hardware
+@using Shared.Rcl.Connections
 @inject IHardwareRepository HardwareRepository
 
 <PageTitle>Hardware</PageTitle>
@@ -8,6 +9,8 @@
     data-testid="hardware-page-title">
     Hardware
 </h1>
+
+
 
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono p-6"
      data-testid="hardware-page-root">

@@ -1,0 +1,181 @@
+﻿@using RackPeek.Domain.Resources.Connections
+@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.Persistence
+@using RackPeek.Domain.Resources.Servers
+
+@inject IResourceCollection Repository
+
+@if (PortGroup is null || string.IsNullOrWhiteSpace(ResourceName))
+{
+    <div class="text-zinc-500 text-xs">
+        No ports available.
+    </div>
+}
+else
+{
+    <div class="flex flex-wrap border border-zinc-800 w-fit">
+
+        @for (int i = 0; i < PortGroup.Count; i++)
+        {
+            var index = i;
+
+            var port = new PortReference
+            {
+                Resource = ResourceName,
+                PortGroup = PortGroupIndex,
+                PortIndex = index
+            };
+
+            var conn = GetConnection(port);
+            var other = GetOther(conn, port);
+            var isConnected = other != null;
+
+            Port? otherGroup = null;
+
+            if (isConnected)
+            {
+                otherGroup = GetDestinationPortGroup(other!);
+            }
+
+            if (isConnected)
+            {
+                <NavLink href="@($"resources/hardware/{Uri.EscapeDataString(other!.Resource)}")"
+                         class="block">
+
+                    <div class="@PortClass(true)">
+
+                        <div class="text-zinc-500">
+                            @(index + 1)
+                        </div>
+
+                        <div class="truncate">
+                            @other!.Resource
+                        </div>
+
+                        @if (otherGroup != null)
+                        {
+                            <div class="text-[9px] text-zinc-400 leading-tight">
+                                @otherGroup.Type — @otherGroup.Speed Gbps
+                                (port @(other.PortIndex + 1) / @otherGroup.Count)
+                            </div>
+                        }
+
+                    </div>
+
+                </NavLink>
+            }
+            else
+            {
+                <button class="block text-left"
+                        @onclick="() => HandlePortClick(port)">
+
+                    <div class="@PortClass(false)">
+
+                        <div class="text-zinc-500">
+                            @(index + 1)
+                        </div>
+
+                        <div class="text-zinc-700 italic">
+                            free
+                        </div>
+
+                    </div>
+
+                </button>
+            }
+        }
+
+    </div>
+}
+
+@code {
+
+    [Parameter] public string ResourceName { get; set; } = "";
+    [Parameter] public int PortGroupIndex { get; set; }
+    [Parameter] public Port? PortGroup { get; set; }
+
+    [Parameter] public EventCallback<PortReference> OnPortClicked { get; set; }
+
+    private List<Connection> _connections = new();
+    private Dictionary<string, IPortResource?> _portResources = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _connections = (await Repository.GetConnectionsAsync()).ToList();
+    }
+
+    async Task HandlePortClick(PortReference port)
+    {
+        if (OnPortClicked.HasDelegate)
+            await OnPortClicked.InvokeAsync(port);
+    }
+
+    string PortClass(bool connected)
+    {
+        return $@"
+            w-28
+            h-12
+            border-r
+            border-b
+            border-zinc-800
+            text-[10px]
+            leading-tight
+            flex
+            flex-col
+            justify-center
+            px-1
+            transition
+            hover:bg-zinc-800
+            {(connected ? "bg-blue-950/40 text-blue-200" : "text-zinc-500")}
+        ";
+    }
+
+    Connection? GetConnection(PortReference port)
+    {
+        return _connections.FirstOrDefault(c =>
+            (c.A.Resource == port.Resource &&
+             c.A.PortGroup == port.PortGroup &&
+             c.A.PortIndex == port.PortIndex)
+            ||
+            (c.B.Resource == port.Resource &&
+             c.B.PortGroup == port.PortGroup &&
+             c.B.PortIndex == port.PortIndex));
+    }
+
+    PortReference? GetOther(Connection? conn, PortReference port)
+    {
+        if (conn == null)
+            return null;
+
+        if (conn.A.Resource == port.Resource &&
+            conn.A.PortGroup == port.PortGroup &&
+            conn.A.PortIndex == port.PortIndex)
+            return conn.B;
+
+        return conn.A;
+    }
+
+    Port? GetDestinationPortGroup(PortReference other)
+    {
+        if (!_portResources.ContainsKey(other.Resource))
+        {
+            var res = Repository.GetByNameAsync(other.Resource).Result;
+
+            if (res is IPortResource pr)
+                _portResources[other.Resource] = pr;
+            else
+                _portResources[other.Resource] = null;
+        }
+
+        var portResource = _portResources[other.Resource];
+
+        if (portResource?.Ports == null)
+            return null;
+
+        if (other.PortGroup < 0 || other.PortGroup >= portResource.Ports.Count)
+            return null;
+
+        return portResource.Ports[other.PortGroup];
+    }
+
+}

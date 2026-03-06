@@ -48,7 +48,8 @@ public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
                        managed: true
                        poe: false
                        name: rt01
-
+                     connections: []
+                     
                      """, yaml);
 
         // Add second router
@@ -76,6 +77,7 @@ public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
                        managed: false
                        poe: false
                        name: rt02
+                     connections: []
 
                      """, yaml);
 

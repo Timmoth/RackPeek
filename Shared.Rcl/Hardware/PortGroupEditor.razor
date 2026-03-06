@@ -1,0 +1,172 @@
+﻿@typeparam T where T : Resource, RackPeek.Domain.Resources.Servers.IPortResource
+@using RackPeek.Domain.Resources
+@using RackPeek.Domain.Resources.SubResources
+@using RackPeek.Domain.UseCases.Ports
+@using RackPeek.Domain.Resources.Connections
+@using Shared.Rcl.Connections
+
+@inject IAddPortUseCase<T> AddNicUseCase
+@inject IUpdatePortUseCase<T> UpdateNicUseCase
+@inject IRemovePortUseCase<T> RemoveNicUseCase
+@inject IGetResourceByNameUseCase<T> GetByNameUseCase
+
+<div data-testid="@($"{BaseTestId}-section")">
+
+    <div class="flex items-center justify-between mb-1 group">
+        <div class="text-zinc-400">
+            Ports
+            <button
+                data-testid="@($"{BaseTestId}-add-button")"
+                class="hover:text-emerald-400 group-hover:opacity-100 transition"
+                title="Add Port"
+                @onclick="OpenAddNic">
+                +
+            </button>
+        </div>
+    </div>
+
+    @if (Resource.Ports?.Any() == true)
+    {
+        @foreach (var nic in Resource.Ports)
+        {
+            var idx = GetPortIndex(nic);
+
+            <div class="group hover:bg-zinc-800/40 rounded px-1 py-1 space-y-1"
+                 data-testid="@($"{BaseTestId}-item-{idx}")">
+
+                <div class="flex items-center justify-between text-zinc-300">
+
+                    <button
+                        data-testid="@($"{BaseTestId}-edit-{idx}")"
+                        class="hover:text-emerald-400 text-sm"
+                        title="Edit NIC"
+                        @onclick="() => OpenEditNic(nic)">
+                        @nic.Type — @nic.Speed Gbps (@nic.Count ports)
+                    </button>
+
+                </div>
+
+                <div class="pl-1"
+                     data-testid="@($"{BaseTestId}-ports-{idx}")">
+
+                    <PortGroupVisualizer
+                        ResourceName="@Resource.Name"
+                        PortGroupIndex="@idx"
+                        PortGroup="@nic"
+                        OnPortClicked="HandlePortClicked" />
+
+                </div>
+
+            </div>
+        }
+    }
+
+</div>
+
+
+<PortModal
+    IsOpen="@_nicModalOpen"
+    IsOpenChanged="v => _nicModalOpen = v"
+    Value="@_editingNic"
+    OnSubmit="HandleNicSubmit"
+    OnDelete="HandleNicDelete"
+    TestIdPrefix="@($"{BaseTestId}-modal")" />
+
+
+<PortConnectionModal
+    IsOpen="@_connectionModalOpen"
+    IsOpenChanged="v => _connectionModalOpen = v"
+    SeedPort="@_selectedPort"
+    TestIdPrefix="@($"{BaseTestId}-connection")" />
+
+
+@code {
+
+    [Parameter, EditorRequired] public T Resource { get; set; } = default!;
+    [Parameter] public EventCallback<T> OnResourceChanged { get; set; }
+    [Parameter] public string? TestIdPrefix { get; set; }
+
+    private string BaseTestId =>
+        string.IsNullOrWhiteSpace(TestIdPrefix)
+            ? "port-group-editor"
+            : $"{TestIdPrefix}-port-group";
+
+    bool _nicModalOpen;
+    bool _connectionModalOpen;
+
+    int _editingNicIndex;
+    Port? _editingNic;
+
+    PortReference? _selectedPort;
+
+    void OpenAddNic()
+    {
+        _editingNicIndex = -1;
+        _editingNic = null;
+        _nicModalOpen = true;
+    }
+
+    void OpenEditNic(Port nic)
+    {
+        Resource.Ports ??= new List<Port>();
+
+        _editingNicIndex = Resource.Ports.IndexOf(nic);
+        _editingNic = nic;
+
+        _nicModalOpen = true;
+    }
+
+    async Task HandleNicSubmit(Port nic)
+    {
+        Resource.Ports ??= new List<Port>();
+
+        if (_editingNicIndex < 0)
+        {
+            await AddNicUseCase.ExecuteAsync(
+                Resource.Name,
+                nic.Type,
+                nic.Speed,
+                nic.Count);
+        }
+        else
+        {
+            await UpdateNicUseCase.ExecuteAsync(
+                Resource.Name,
+                _editingNicIndex,
+                nic.Type,
+                nic.Speed,
+                nic.Count);
+        }
+
+        await RefreshResource();
+    }
+
+    async Task HandleNicDelete(Port nic)
+    {
+        await RemoveNicUseCase.ExecuteAsync(Resource.Name, _editingNicIndex);
+        await RefreshResource();
+    }
+
+    async Task RefreshResource()
+    {
+        Resource = await GetByNameUseCase.ExecuteAsync(Resource.Name);
+
+        if (OnResourceChanged.HasDelegate)
+            await OnResourceChanged.InvokeAsync(Resource);
+
+        StateHasChanged();
+    }
+
+    int GetPortIndex(Port port)
+    {
+        Resource.Ports ??= new List<Port>();
+        return Resource.Ports.IndexOf(port);
+    }
+
+    void HandlePortClicked(PortReference port)
+    {
+        _selectedPort = port;
+        _connectionModalOpen = true;
+    }
+
+}

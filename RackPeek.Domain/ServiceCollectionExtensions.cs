@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
+using RackPeek.Domain.Resources.Connections;
 using RackPeek.Domain.Resources.Hardware;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
@@ -70,6 +71,12 @@ public static class ServiceCollectionExtensions {
         services.AddScoped(typeof(IRemovePortUseCase<>), typeof(RemovePortUseCase<>));
         services.AddScoped(typeof(IUpdatePortUseCase<>), typeof(UpdatePortUseCase<>));
 
+        services.AddScoped(typeof(IAddConnectionUseCase), typeof(AddConnectionUseCase));
+        services.AddScoped(typeof(IGetConnectionForPortUseCase), typeof(GetConnectionForPortUseCase));
+        services.AddScoped(typeof(IGetConnectionsForResourceUseCase), typeof(GetConnectionsForResourceUseCase));
+        services.AddScoped(typeof(IRemoveConnectionUseCase), typeof(RemoveConnectionUseCase));
+
+        
         IEnumerable<Type>? usecases = Assembly.GetAssembly(typeof(IUseCase))
             ?.GetTypes()
             .Where(t =>

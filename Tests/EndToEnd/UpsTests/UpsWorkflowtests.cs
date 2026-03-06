@@ -43,6 +43,7 @@ public class UpsWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
                        model: APC-SmartUPS-1500
                        va: 1500
                        name: ups01
+                     connections: []
 
                      """, yaml);
 
@@ -68,6 +69,7 @@ public class UpsWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
                        model: CyberPower-2200VA
                        va: 2200
                        name: ups02
+                     connections: []
 
                      """, yaml);
 

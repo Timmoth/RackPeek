@@ -48,6 +48,7 @@ public class ServerWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
                          mts: 3200
                        ipmi: true
                        name: srv01
+                     connections: []
 
                      """, yaml);
 
