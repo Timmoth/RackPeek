@@ -452,3 +452,71 @@ resources:
     name: vm-monitoring
     runsOn:
       - proxmox-node01
+  - kind: System
+    type: VM
+    os: test
+    cores: 1
+    ram: 1
+    name: test-system
+    runsOn:
+      - proxmox-node01
+  - kind: Service
+    name: test-service
+    network:
+      ip: 192.168.0.250
+      port: 8080
+      protocol: TCP
+    runsOn:
+      - test-system
+  - kind: Service
+    name: test-service-no-host
+    network:
+      ip: 192.168.0.251
+      port: 8080
+      protocol: TCP
+  - kind: Service
+    name: test-ha-service
+    network:
+      ip: 192.168.0.252
+      port: 8080
+      protocol: TCP
+    runsOn:
+      - test-system
+      - proxmox-cluster-node01
+  - kind: AccessPoint
+    name: lounge-ap
+    model: UniFi-U6-Pro
+    speed: 2.5
+    ports:
+      - type: rj45
+        speed: 2.5
+        count: 1
+connections:
+  - a:
+      resource: core-router
+      portGroup: 0
+      portIndex: 0
+    b:
+      resource: pfsense-fw
+      portGroup: 0
+      portIndex: 0
+
+  - a:
+      resource: pfsense-fw
+      portGroup: 1
+      portIndex: 0
+    b:
+      resource: core-switch
+      portGroup: 2
+      portIndex: 0
+
+  - a:
+      resource: core-switch
+      portGroup: 2
+      portIndex: 1
+    b:
+      resource: access-switch
+      portGroup: 1
+      portIndex: 0
+    label: router-firewall
+    notes: internal uplink

@@ -137,7 +137,8 @@ public sealed class YamlResourceCollection(
 
             var rootToSave = new YamlRoot {
                 Version = RackPeekConfigMigrationDeserializer.ListOfMigrations.Count,
-                Resources = resourceCollection.Resources
+                Resources = resourceCollection.Resources,
+                Connections = resourceCollection.Connections
             };
 
             await SaveRootAsync(rootToSave);
@@ -286,7 +287,8 @@ public sealed class YamlResourceCollection(
             // Always write current schema version when app writes the file.
             var root = new YamlRoot {
                 Version = _currentSchemaVersion,
-                Resources = resourceCollection.Resources
+                Resources = resourceCollection.Resources,
+                Connections = resourceCollection.Connections
             };
 
             await SaveRootAsync(root);
