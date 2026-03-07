@@ -31,14 +31,6 @@ public sealed class LibGit2GitRepository(
     public void Init() {
         Repository.Init(configDirectory);
 
-        using Repository repo = OpenRepo();
-
-        // create main branch if it doesn't exist
-        if (repo.Branches["main"] == null) {
-            Branch? branch = repo.CreateBranch("main");
-            Commands.Checkout(repo, branch);
-        }
-
         _isAvailable = true;
     }
 
@@ -67,7 +59,16 @@ public sealed class LibGit2GitRepository(
 
     public void StageAll() {
         using Repository repo = OpenRepo();
-        Commands.Stage(repo, "*");
+
+        var files = repo.RetrieveStatus()
+            .Where(e => e.State != FileStatus.Ignored)
+            .Select(e => e.FilePath)
+            .ToList();
+
+        if (files.Count == 0)
+            return;
+
+        Commands.Stage(repo, files);
     }
 
     public void Commit(string message) {
@@ -80,13 +81,14 @@ public sealed class LibGit2GitRepository(
     public string GetDiff() {
         using Repository repo = OpenRepo();
 
+        Tree? tree = repo.Head.Tip?.Tree;
+
         Patch patch = repo.Diff.Compare<Patch>(
-            repo.Head.Tip?.Tree,
+            tree,
             DiffTargets.Index | DiffTargets.WorkingDirectory);
 
         return patch?.Content ?? string.Empty;
     }
-
     public string[] GetChangedFiles() {
         using Repository repo = OpenRepo();
 
@@ -146,7 +148,7 @@ public sealed class LibGit2GitRepository(
         using Repository repo = OpenRepo();
 
         if (!repo.Network.Remotes.Any())
-            return new(0, 0, false);
+            return new GitSyncStatus(0, 0, false);
 
         Remote remote = GetRemote(repo);
 
@@ -157,21 +159,24 @@ public sealed class LibGit2GitRepository(
             new FetchOptions { CredentialsProvider = _credentials },
             null);
 
+        // If the repo has no commits yet (unborn branch)
+        if (repo.Head.Tip == null)
+            return new GitSyncStatus(0, 0, true);
+
         Branch? remoteBranch = repo.Branches[$"{remote.Name}/{repo.Head.FriendlyName}"];
 
-        if (remoteBranch == null)
-            return new(repo.Commits.Count(), 0, true);
+        if (remoteBranch?.Tip == null)
+            return new GitSyncStatus(repo.Commits.Count(), 0, true);
 
         HistoryDivergence? divergence = repo.ObjectDatabase.CalculateHistoryDivergence(
             repo.Head.Tip,
             remoteBranch.Tip);
 
-        return new(
+        return new GitSyncStatus(
             divergence.AheadBy ?? 0,
             divergence.BehindBy ?? 0,
             true);
     }
-
     public void Push() {
         using Repository repo = OpenRepo();
 
@@ -218,7 +223,6 @@ public sealed class LibGit2GitRepository(
                 }
             });
     }
-
     public void AddRemote(string name, string url) {
         using Repository repo = OpenRepo();
 
@@ -226,6 +230,86 @@ public sealed class LibGit2GitRepository(
             return;
 
         repo.Network.Remotes.Add(name, url);
+
+        Remote remote = repo.Network.Remotes[name];
+
+        // fetch remote state
+        Commands.Fetch(
+            repo,
+            remote.Name,
+            remote.FetchRefSpecs.Select(r => r.Specification),
+            new FetchOptions { CredentialsProvider = _credentials },
+            null);
+
+        // detect if remote has a default branch
+        Branch? remoteMain =
+            repo.Branches[$"{remote.Name}/main"] ??
+            repo.Branches[$"{remote.Name}/master"];
+
+        var hasLocalFiles =
+            repo.RetrieveStatus()
+                .Any(e => e.State != FileStatus.Ignored);
+
+        // CASE 1: remote repo already has commits
+        if (remoteMain != null && remoteMain.Tip != null) {
+            Branch local = repo.CreateBranch(remoteMain.FriendlyName, remoteMain.Tip);
+            Commands.Checkout(repo, local);
+
+            repo.Branches.Update(local,
+                b => b.TrackedBranch = remoteMain.CanonicalName);
+
+            if (hasLocalFiles) {
+                // import existing config to a new branch
+                var importBranchName = $"rackpeek-{DateTime.UtcNow:yyyyMMddHHmmss}";
+
+                Branch importBranch = repo.CreateBranch(importBranchName);
+                Commands.Checkout(repo, importBranch);
+
+                Commands.Stage(repo, "*");
+
+                Signature sig = GetSignature(repo);
+
+                repo.Commit(
+                    "rackpeek: import existing config",
+                    sig,
+                    sig);
+
+                repo.Network.Push(
+                    remote,
+                    $"refs/heads/{importBranchName}:refs/heads/{importBranchName}",
+                    new PushOptions { CredentialsProvider = _credentials });
+
+                repo.Branches.Update(importBranch,
+                    b => b.TrackedBranch = $"refs/remotes/{remote.Name}/{importBranchName}");
+            }
+
+            return;
+        }
+
+        // CASE 2: remote repo is empty
+        if (hasLocalFiles) {
+            var branchName = "main";
+
+            Branch branch = repo.CreateBranch(branchName);
+            Commands.Checkout(repo, branch);
+
+            Commands.Stage(repo, "*");
+
+            Signature sig = GetSignature(repo);
+
+            repo.Commit(
+                "rackpeek: initial config",
+                sig,
+                sig);
+
+            repo.Network.Push(
+                remote,
+                $"refs/heads/{branchName}:refs/heads/{branchName}",
+                new PushOptions { CredentialsProvider = _credentials });
+
+            repo.Branches.Update(branch,
+                b => b.TrackedBranch = $"refs/remotes/{remote.Name}/{branchName}");
+        }
     }
 
     private static string FormatRelativeDate(DateTimeOffset date) {
