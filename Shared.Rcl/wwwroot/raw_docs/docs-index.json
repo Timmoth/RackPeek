@@ -2,6 +2,7 @@
   "overview.md",
   "resource-levels.md",
   "install-guide.md",
+  "git-integration.md",
   "ansible-generator-guide.md",
   "docker-gen-guide.md",
   "cli-commands.md",
