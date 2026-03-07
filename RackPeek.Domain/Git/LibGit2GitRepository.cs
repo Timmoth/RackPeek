@@ -211,17 +211,28 @@ public sealed class LibGit2GitRepository(
     }
 
     private void PullInternal(Repository repo) {
-        Commands.Pull(
+        if (!repo.Network.Remotes.Any())
+            return;
+
+        Remote remote = GetRemote(repo);
+
+        Commands.Fetch(
             repo,
-            GetSignature(repo),
-            new PullOptions {
-                FetchOptions = new FetchOptions {
-                    CredentialsProvider = _credentials
-                },
-                MergeOptions = new MergeOptions {
-                    FailOnConflict = false
-                }
-            });
+            remote.Name,
+            remote.FetchRefSpecs.Select(r => r.Specification),
+            new FetchOptions { CredentialsProvider = _credentials },
+            null);
+
+        Branch? remoteBranch = repo.Branches[$"{remote.Name}/{repo.Head.FriendlyName}"];
+
+        if (remoteBranch?.Tip == null)
+            return;
+
+        // hard reset to remote branch
+        repo.Reset(ResetMode.Hard, remoteBranch.Tip);
+
+        repo.Branches.Update(repo.Head,
+            b => b.TrackedBranch = remoteBranch.CanonicalName);
     }
     public void AddRemote(string name, string url) {
         using Repository repo = OpenRepo();
