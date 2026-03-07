@@ -6,6 +6,7 @@ namespace RackPeek.Domain.Git;
 public interface IGitCredentialsProvider {
     CredentialsHandler GetHandler();
 }
+
 public sealed class GitHubTokenCredentialsProvider(string username, string token) : IGitCredentialsProvider {
     private readonly string _username = username ?? throw new ArgumentNullException(nameof(username));
     private readonly string _token = token ?? throw new ArgumentNullException(nameof(token));
@@ -29,6 +30,15 @@ public sealed class LibGit2GitRepository(
 
     public void Init() {
         Repository.Init(configDirectory);
+
+        using Repository repo = OpenRepo();
+
+        // create main branch if it doesn't exist
+        if (repo.Branches["main"] == null) {
+            Branch? branch = repo.CreateBranch("main");
+            Commands.Checkout(repo, branch);
+        }
+
         _isAvailable = true;
     }
 
@@ -41,7 +51,8 @@ public sealed class LibGit2GitRepository(
         return new Signature(name, email, DateTimeOffset.Now);
     }
 
-    private static Remote GetRemote(Repository repo) => repo.Network.Remotes["origin"] ?? repo.Network.Remotes.First();
+    private static Remote GetRemote(Repository repo)
+        => repo.Network.Remotes["origin"] ?? repo.Network.Remotes.First();
 
     public GitRepoStatus GetStatus() {
         if (!_isAvailable)
@@ -146,14 +157,14 @@ public sealed class LibGit2GitRepository(
             new FetchOptions { CredentialsProvider = _credentials },
             null);
 
-        Branch? tracking = repo.Head.TrackedBranch;
+        Branch? remoteBranch = repo.Branches[$"{remote.Name}/{repo.Head.FriendlyName}"];
 
-        if (tracking is null)
+        if (remoteBranch == null)
             return new(repo.Commits.Count(), 0, true);
 
-        HistoryDivergence divergence = repo.ObjectDatabase.CalculateHistoryDivergence(
+        HistoryDivergence? divergence = repo.ObjectDatabase.CalculateHistoryDivergence(
             repo.Head.Tip,
-            tracking.Tip);
+            remoteBranch.Tip);
 
         return new(
             divergence.AheadBy ?? 0,
@@ -161,34 +172,29 @@ public sealed class LibGit2GitRepository(
             true);
     }
 
-    public void Push()
-    {
+    public void Push() {
         using Repository repo = OpenRepo();
-    
+
         Remote remote = GetRemote(repo);
         var branch = repo.Head.FriendlyName;
         var refSpec = $"refs/heads/{branch}:refs/heads/{branch}";
-    
-        try
-        {
+
+        try {
             repo.Network.Push(
                 remote,
                 refSpec,
                 new PushOptions { CredentialsProvider = _credentials });
         }
-        catch (LibGit2Sharp.NonFastForwardException)
-        {
-            // remote has commits we don't have
-            Pull();
-    
+        catch (NonFastForwardException) {
+            PullInternal(repo);
+
             repo.Network.Push(
                 remote,
                 refSpec,
                 new PushOptions { CredentialsProvider = _credentials });
         }
-    
-        if (repo.Head.TrackedBranch is null)
-        {
+
+        if (repo.Head.TrackedBranch is null) {
             repo.Branches.Update(repo.Head,
                 b => b.TrackedBranch = $"refs/remotes/{remote.Name}/{branch}");
         }
@@ -196,7 +202,10 @@ public sealed class LibGit2GitRepository(
 
     public void Pull() {
         using Repository repo = OpenRepo();
+        PullInternal(repo);
+    }
 
+    private void PullInternal(Repository repo) {
         Commands.Pull(
             repo,
             GetSignature(repo),
@@ -212,6 +221,10 @@ public sealed class LibGit2GitRepository(
 
     public void AddRemote(string name, string url) {
         using Repository repo = OpenRepo();
+
+        if (repo.Network.Remotes[name] != null)
+            return;
+
         repo.Network.Remotes.Add(name, url);
     }
 
