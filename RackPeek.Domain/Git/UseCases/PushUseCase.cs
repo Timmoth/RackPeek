@@ -1,19 +1,32 @@
-namespace RackPeek.Domain.Git.UseCases;
+using RackPeek.Domain;
+using RackPeek.Domain.Git;
 
-
-public class PushUseCase(IGitRepository repo) : IUseCase {
-    public Task<string?> ExecuteAsync() {
+public class PushUseCase(IGitRepository repo) : IUseCase
+{
+    public Task<string?> ExecuteAsync()
+    {
         if (!repo.IsAvailable)
             return Task.FromResult<string?>("Git is not available.");
 
         if (!repo.HasRemote())
             return Task.FromResult<string?>("No remote configured.");
 
-        try {
-            repo.Push();
+        try
+        {
+            try
+            {
+                repo.Push();
+            }
+            catch
+            {
+                repo.Pull();
+                repo.Push();
+            }
+
             return Task.FromResult<string?>(null);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             return Task.FromResult<string?>($"Push failed: {ex.Message}");
         }
     }

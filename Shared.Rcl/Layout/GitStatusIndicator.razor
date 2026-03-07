@@ -215,7 +215,7 @@ else
                             @(_isPushing ? "Pushing..." : "Push")
                         </button>
                         <button class="w-full text-left px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-700 hover:text-white transition disabled:opacity-50"
-                                disabled="@(_isSyncing || _syncStatus.Behind == 0 || _syncStatus.Error is not null)"
+                                disabled="@(_isSyncing || _syncStatus.Error is not null)"
                                 data-testid="git-pull-button"
                                 @onclick="PullAsync">
                             @(_isPulling ? "Pulling..." : "Pull")

@@ -181,15 +181,22 @@ public sealed class LibGit2GitRepository(
         }
     }
 
-    public void Pull() {
+    public void Pull()
+    {
         using Repository repo = OpenRepo();
 
         Commands.Pull(
             repo,
             GetSignature(repo),
-            new PullOptions {
-                FetchOptions = new FetchOptions {
+            new PullOptions
+            {
+                FetchOptions = new FetchOptions
+                {
                     CredentialsProvider = _credentials
+                },
+                MergeOptions = new MergeOptions
+                {
+                    FailOnConflict = false
                 }
             });
     }
