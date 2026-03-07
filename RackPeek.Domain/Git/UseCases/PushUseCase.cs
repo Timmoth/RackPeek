@@ -1,5 +1,5 @@
-namespace RackPeek.Domain.Git.UseCases;
-
+using RackPeek.Domain;
+using RackPeek.Domain.Git;
 
 public class PushUseCase(IGitRepository repo) : IUseCase {
     public Task<string?> ExecuteAsync() {
@@ -10,7 +10,14 @@ public class PushUseCase(IGitRepository repo) : IUseCase {
             return Task.FromResult<string?>("No remote configured.");
 
         try {
-            repo.Push();
+            try {
+                repo.Push();
+            }
+            catch {
+                repo.Pull();
+                repo.Push();
+            }
+
             return Task.FromResult<string?>(null);
         }
         catch (Exception ex) {

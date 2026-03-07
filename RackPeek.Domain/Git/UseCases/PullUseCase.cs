@@ -1,4 +1,5 @@
-namespace RackPeek.Domain.Git.UseCases;
+using RackPeek.Domain;
+using RackPeek.Domain.Git;
 
 public class PullUseCase(IGitRepository repo) : IUseCase {
     public Task<string?> ExecuteAsync() {

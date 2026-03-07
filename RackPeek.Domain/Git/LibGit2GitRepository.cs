@@ -165,11 +165,24 @@ public sealed class LibGit2GitRepository(
         using Repository repo = OpenRepo();
 
         Remote remote = GetRemote(repo);
+        var refSpec = $"refs/heads/{repo.Head.FriendlyName}";
 
-        repo.Network.Push(
-            remote,
-            $"refs/heads/{repo.Head.FriendlyName}",
-            new PushOptions { CredentialsProvider = _credentials });
+        try {
+            repo.Network.Push(
+                remote,
+                refSpec,
+                new PushOptions { CredentialsProvider = _credentials });
+        }
+        catch (LibGit2Sharp.NonFastForwardException) {
+            // remote has commits we don't have
+            Pull();
+
+            // retry push
+            repo.Network.Push(
+                remote,
+                refSpec,
+                new PushOptions { CredentialsProvider = _credentials });
+        }
 
         if (repo.Head.TrackedBranch is null) {
             Branch remoteBranch = repo.Branches[$"{remote.Name}/{repo.Head.FriendlyName}"];
@@ -190,6 +203,9 @@ public sealed class LibGit2GitRepository(
             new PullOptions {
                 FetchOptions = new FetchOptions {
                     CredentialsProvider = _credentials
+                },
+                MergeOptions = new MergeOptions {
+                    FailOnConflict = false
                 }
             });
     }
