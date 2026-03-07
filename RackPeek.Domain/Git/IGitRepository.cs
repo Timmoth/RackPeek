@@ -1,7 +1,6 @@
 namespace RackPeek.Domain.Git;
 
-public interface IGitRepository
-{
+public interface IGitRepository {
     bool IsAvailable { get; }
     void Init();
     GitRepoStatus GetStatus();

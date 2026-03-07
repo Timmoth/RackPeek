@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using RackPeek.Domain;
 using RackPeek.Domain.Git;
-using RackPeek.Domain.Git.UseCases;
-using RackPeek.Domain.Git.Queries;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Web.Api;
@@ -29,20 +27,6 @@ public class Program {
             : Path.Combine(basePath, yamlDir);
 
         Directory.CreateDirectory(yamlPath);
-
-        builder.Services.AddSingleton<IGitRepository>(new LibGit2GitRepository(yamlPath));
-        builder.Services.AddSingleton<IInitRepoUseCase, InitRepoUseCase>();
-        builder.Services.AddSingleton<ICommitAllUseCase, CommitAllUseCase>();
-        builder.Services.AddSingleton<IRestoreAllUseCase, RestoreAllUseCase>();
-        builder.Services.AddSingleton<IPushUseCase, PushUseCase>();
-        builder.Services.AddSingleton<IPullUseCase, PullUseCase>();
-        builder.Services.AddSingleton<IAddRemoteUseCase, AddRemoteUseCase>();
-        builder.Services.AddSingleton<IGetStatusQuery, GetStatusQuery>();
-        builder.Services.AddSingleton<IGetBranchQuery, GetBranchQuery>();
-        builder.Services.AddSingleton<IGetDiffQuery, GetDiffQuery>();
-        builder.Services.AddSingleton<IGetChangedFilesQuery, GetChangedFilesQuery>();
-        builder.Services.AddSingleton<IGetLogQuery, GetLogQuery>();
-        builder.Services.AddSingleton<IGetSyncStatusQuery, GetSyncStatusQuery>();
 
         var yamlFilePath = Path.Combine(yamlPath, yamlFileName);
 
@@ -70,9 +54,10 @@ public class Program {
             };
         });
 
+        builder.Services.AddGitServices(builder.Configuration, yamlPath);
+
         var resources = new ResourceCollection();
         builder.Services.AddSingleton(resources);
-
         builder.Services.AddScoped<RackPeekConfigMigrationDeserializer>();
         builder.Services.AddScoped<IResourceYamlMigrationService, ResourceYamlMigrationService>();
 

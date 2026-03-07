@@ -1,24 +1,15 @@
 namespace RackPeek.Domain.Git.UseCases;
 
-public interface IRestoreAllUseCase
-{
-    Task<string?> ExecuteAsync();
-}
-
-public class RestoreAllUseCase(IGitRepository repo) : IRestoreAllUseCase
-{
-    public Task<string?> ExecuteAsync()
-    {
+public class RestoreAllUseCase(IGitRepository repo) : IUseCase {
+    public Task<string?> ExecuteAsync() {
         if (!repo.IsAvailable)
             return Task.FromResult<string?>("Git is not available.");
 
-        try
-        {
+        try {
             repo.RestoreAll();
             return Task.FromResult<string?>(null);
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             return Task.FromResult<string?>($"Restore failed: {ex.Message}");
         }
     }

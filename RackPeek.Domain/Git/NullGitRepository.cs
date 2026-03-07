@@ -1,7 +1,6 @@
 namespace RackPeek.Domain.Git;
 
-public sealed class NullGitRepository : IGitRepository
-{
+public sealed class NullGitRepository : IGitRepository {
     public bool IsAvailable => false;
     public void Init() { }
     public GitRepoStatus GetStatus() => GitRepoStatus.NotAvailable;

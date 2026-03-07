@@ -1,19 +1,11 @@
 namespace RackPeek.Domain.Git.UseCases;
 
-public interface ICommitAllUseCase
-{
-    Task<string?> ExecuteAsync(string message);
-}
-
-public class CommitAllUseCase(IGitRepository repo) : ICommitAllUseCase
-{
-    public Task<string?> ExecuteAsync(string message)
-    {
+public class CommitAllUseCase(IGitRepository repo) : IUseCase {
+    public Task<string?> ExecuteAsync(string message) {
         if (!repo.IsAvailable)
             return Task.FromResult<string?>("Git is not available.");
 
-        try
-        {
+        try {
             repo.StageAll();
 
             if (repo.GetStatus() != GitRepoStatus.Dirty)
@@ -22,8 +14,7 @@ public class CommitAllUseCase(IGitRepository repo) : ICommitAllUseCase
             repo.Commit(message);
             return Task.FromResult<string?>(null);
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             return Task.FromResult<string?>($"Commit failed: {ex.Message}");
         }
     }

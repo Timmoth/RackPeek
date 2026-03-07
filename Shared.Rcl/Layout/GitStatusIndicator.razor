@@ -1,18 +1,11 @@
 @using RackPeek.Domain.Git
 @using RackPeek.Domain.Git.UseCases
-@using RackPeek.Domain.Git.Queries
-@inject IGetStatusQuery GetStatus
-@inject IGetBranchQuery GetBranch
-@inject IGetDiffQuery GetDiff
-@inject IGetChangedFilesQuery GetChangedFiles
-@inject IGetLogQuery GetLog
-@inject IGetSyncStatusQuery GetSyncStatus
-@inject IInitRepoUseCase InitRepo
-@inject ICommitAllUseCase CommitAll
-@inject IRestoreAllUseCase RestoreAll
-@inject IPushUseCase PushUseCase
-@inject IPullUseCase PullUseCase
-@inject IAddRemoteUseCase AddRemoteUseCase
+@inject InitRepoUseCase InitRepo
+@inject CommitAllUseCase CommitAll
+@inject RestoreAllUseCase RestoreAll
+@inject PushUseCase PushUseCase
+@inject PullUseCase PullUseCase
+@inject AddRemoteUseCase AddRemoteUseCase
 @inject IGitRepository GitRepo
 @implements IDisposable
 
@@ -381,14 +374,17 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _status = GetStatus.Execute();
+        _status = GitRepo.GetStatus();
 
         if (_status == GitRepoStatus.NotAvailable)
             return;
 
-        _branch = GetBranch.Execute();
+        _branch = GitRepo.GetCurrentBranch();
         _hasRemote = GitRepo.HasRemote();
 
+        _cts?.Cancel();
+        _timer?.Dispose();
+        
         _cts = new CancellationTokenSource();
         _timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
         _ = PollStatusAsync(_cts.Token);
@@ -400,21 +396,26 @@ else
     {
         try
         {
-            while (await _timer!.WaitForNextTickAsync(ct))
+            while (_timer != null && await _timer.WaitForNextTickAsync(ct))
             {
-                if (_isBusy) continue;
+                if (_isBusy)
+                    continue;
 
-                GitRepoStatus newStatus = GetStatus.Execute();
+                var newStatus = GitRepo.GetStatus();
+
                 if (newStatus != _status)
                 {
                     _status = newStatus;
                     _confirmDiscard = false;
                     _showDropdown = false;
+
                     await InvokeAsync(StateHasChanged);
                 }
             }
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+        }
     }
 
     private async Task InitRepoAsync()
@@ -425,18 +426,23 @@ else
         try
         {
             var error = await InitRepo.ExecuteAsync();
+
             if (error is not null)
             {
                 _errorMessage = error;
                 return;
             }
 
-            _status = GetStatus.Execute();
-            _branch = GetBranch.Execute();
+            _status = GitRepo.GetStatus();
+            _branch = GitRepo.GetCurrentBranch();
             _hasRemote = GitRepo.HasRemote();
+
+            _cts?.Cancel();
+            _timer?.Dispose();
 
             _cts = new CancellationTokenSource();
             _timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+
             _ = PollStatusAsync(_cts.Token);
         }
         catch (Exception ex)
@@ -493,7 +499,7 @@ else
             if (error is not null)
                 _errorMessage = error;
 
-            _status = GetStatus.Execute();
+            _status = GitRepo.GetStatus();
         }
         catch (Exception ex)
         {
@@ -527,7 +533,7 @@ else
 
         try
         {
-            _syncStatus = GetSyncStatus.Execute();
+            _syncStatus = GitRepo.FetchAndGetSyncStatus();
             if (_syncStatus.Error is not null)
                 _errorMessage = _syncStatus.Error;
         }
@@ -551,8 +557,8 @@ else
     private void OpenDiffAsync()
     {
         _showDropdown = false;
-        _changedFiles = GetChangedFiles.Execute();
-        _diffContent = GetDiff.Execute();
+        _changedFiles = GitRepo.GetChangedFiles();
+        _diffContent = GitRepo.GetDiff();
         _showDiff = true;
     }
 
@@ -573,7 +579,7 @@ else
 
         _showDropdown = false;
         _showSyncDropdown = false;
-        _logEntries = GetLog.Execute();
+        _logEntries = GitRepo.GetLog(20);
         _showHistory = true;
     }
 
@@ -596,7 +602,7 @@ else
             if (error is not null)
                 _errorMessage = error;
 
-            _status = GetStatus.Execute();
+            _status = GitRepo.GetStatus();
         }
         catch (Exception ex)
         {
@@ -619,7 +625,7 @@ else
             if (error is not null)
                 _errorMessage = error;
 
-            _syncStatus = GetSyncStatus.Execute();
+            _syncStatus = GitRepo.FetchAndGetSyncStatus();
         }
         catch (Exception ex)
         {
@@ -642,8 +648,8 @@ else
             if (error is not null)
                 _errorMessage = error;
 
-            _syncStatus = GetSyncStatus.Execute();
-            _status = GetStatus.Execute();
+            _syncStatus = GitRepo.FetchAndGetSyncStatus();
+            _status = GitRepo.GetStatus();
         }
         catch (Exception ex)
         {

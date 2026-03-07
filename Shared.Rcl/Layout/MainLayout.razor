@@ -27,59 +27,62 @@
         </NavLink>
 
         <div class="flex items-center gap-6">
-            <GitStatusIndicator />
+            @if (RpkConstants.HasGitServices)
+            {
+                <GitStatusIndicator/>
+            }
 
             <nav class="space-x-6 text-sm" data-testid="main-nav">
 
-            <NavLink href=""
-                     Match="NavLinkMatch.All"
-                     data-testid="nav-home"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold">
-                Home
-            </NavLink>
+                <NavLink href=""
+                         Match="NavLinkMatch.All"
+                         data-testid="nav-home"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold">
+                    Home
+                </NavLink>
 
-            <NavLink href="cli"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-cli">
-                CLI
-            </NavLink>
+                <NavLink href="cli"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-cli">
+                    CLI
+                </NavLink>
 
-            <NavLink href="yaml"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-yaml">
-                Yaml
-            </NavLink>
+                <NavLink href="yaml"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-yaml">
+                    Yaml
+                </NavLink>
 
-            <NavLink href="hardware/tree"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-hardware">
-                Hardware
-            </NavLink>
+                <NavLink href="hardware/tree"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-hardware">
+                    Hardware
+                </NavLink>
 
-            <NavLink href="systems/list"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-systems">
-                Systems
-            </NavLink>
+                <NavLink href="systems/list"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-systems">
+                    Systems
+                </NavLink>
 
-            <NavLink href="services/list"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-services">
-                Services
-            </NavLink>
+                <NavLink href="services/list"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-services">
+                    Services
+                </NavLink>
 
-            <NavLink href="docs"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-docs">
-                Docs
-            </NavLink>
+                <NavLink href="docs"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-docs">
+                    Docs
+                </NavLink>
 
 
 

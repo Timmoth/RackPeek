@@ -1,7 +1,6 @@
 namespace RackPeek.Domain.Git;
 
-public enum GitRepoStatus
-{
+public enum GitRepoStatus {
     NotAvailable,
     Clean,
     Dirty
