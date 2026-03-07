@@ -1,27 +1,11 @@
 [![RackPeek demo](./assets/rackpeek_banner_thin.png)](./assets/rackpeek_banner_thin.png)
 
-![Version](https://img.shields.io/badge/Version-1.0.0-2ea44f) ![Status](https://img.shields.io/badge/Status-Stable-success)
+![Version](https://img.shields.io/badge/Version-1.3.0-2ea44f) ![Status](https://img.shields.io/badge/Status-Stable-success)
 [![Join our Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/egXRPdesee) [![Live Demo](https://img.shields.io/badge/Live%20Demo-Try%20RackPeek%20Online-2ea44f?logo=githubpages&logoColor=white)](https://timmoth.github.io/RackPeek/) [![Docker Hub](https://img.shields.io/badge/Docker%20Hub-rackpeek-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/aptacode/rackpeek/)
 
-```
-Announcing v1.0.0, officially out of beta.  
-
-Thanks to everyone who tried early versions, opened issues, suggested changes, or used it in their lab and shared feedback.  
-   
-Appreciate all the support.
-```
-
-RackPeek is a lightweight, opinionated CLI tool / webui for documenting and managing home lab and small-scale IT infrastructure.
+RackPeek is a webui & CLI tool for documenting and managing home lab and small-scale IT infrastructure.
 
 It helps you track hardware, services, networks, and their relationships in a clear, scriptable, and reusable way without enterprise bloat or proprietary lock-in or drowning in unnecessary metadata or process.
-
-## Roadmap
-- Proxmox config / auto system creation
-- docker-gen ingestion / auto service creation
-- Support for IoT and networked devices (amongst other new hardware types)
-- Enhanced networking and port mapping
-- Git integration (version-controlled, shared configuration)
-- Diagramming tools
 
 ### The roadmap for the next wave of features is actively being discussed, please make your voice heard! 
 
@@ -91,10 +75,6 @@ volumes:
 * 
   [**Versioning**](https://timmoth.github.io/RackPeek/docs/versioning)
 
-
-## Contribution Guide
-
-We are now gearing up for the full v1.0.0 release, so development focus is on stability / bug fixes / essential core missing features. Please raise any suggestions / bugs / feedback in the Github issues.
 
 ## Questionnaire
 

@@ -1,5 +1,7 @@
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RackPeek.Domain.Git;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Connections;
@@ -20,6 +22,31 @@ public interface IResourceUseCase<T> where T : Resource {
 }
 
 public static class ServiceCollectionExtensions {
+
+    public static IServiceCollection AddGitServices(
+        this IServiceCollection services,
+        IConfiguration config,
+        string? yamlPath = null) {
+        var gitToken = config["GIT_TOKEN"];
+        if (!string.IsNullOrEmpty(gitToken) && !string.IsNullOrWhiteSpace(yamlPath)) {
+            var gitUsername = config["GIT_USERNAME"] ?? "git";
+
+            services.AddSingleton<IGitCredentialsProvider>(
+                _ => new GitHubTokenCredentialsProvider(gitUsername, gitToken));
+
+            services.AddSingleton<IGitRepository>(sp => {
+                IGitCredentialsProvider creds = sp.GetRequiredService<IGitCredentialsProvider>();
+                return new LibGit2GitRepository(yamlPath, creds);
+            });
+            RpkConstants.HasGitServices = true;
+        }
+        else {
+            RpkConstants.HasGitServices = false;
+            services.AddSingleton<IGitRepository, NullGitRepository>();
+        }
+
+        return services;
+    }
     public static IServiceCollection AddResourceUseCases(
         this IServiceCollection services,
         Assembly assembly) {

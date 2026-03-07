@@ -26,60 +26,68 @@
             </div>
         </NavLink>
 
-        <nav class="space-x-6 text-sm" data-testid="main-nav">
+        <div class="flex items-center gap-6">
+            @if (RpkConstants.HasGitServices)
+            {
+                <GitStatusIndicator/>
+            }
 
-            <NavLink href=""
-                     Match="NavLinkMatch.All"
-                     data-testid="nav-home"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold">
-                Home
-            </NavLink>
+            <nav class="space-x-6 text-sm" data-testid="main-nav">
 
-            <NavLink href="cli"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-cli">
-                CLI
-            </NavLink>
+                <NavLink href=""
+                         Match="NavLinkMatch.All"
+                         data-testid="nav-home"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold">
+                    Home
+                </NavLink>
 
-            <NavLink href="yaml"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-yaml">
-                Yaml
-            </NavLink>
+                <NavLink href="cli"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-cli">
+                    CLI
+                </NavLink>
 
-            <NavLink href="hardware/tree"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-hardware">
-                Hardware
-            </NavLink>
+                <NavLink href="yaml"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-yaml">
+                    Yaml
+                </NavLink>
 
-            <NavLink href="systems/list"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-systems">
-                Systems
-            </NavLink>
+                <NavLink href="hardware/tree"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-hardware">
+                    Hardware
+                </NavLink>
 
-            <NavLink href="services/list"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-services">
-                Services
-            </NavLink>
+                <NavLink href="systems/list"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-systems">
+                    Systems
+                </NavLink>
 
-            <NavLink href="docs"
-                     class="hover:text-emerald-400"
-                     activeClass="text-emerald-400 font-semibold"
-                     data-testid="nav-docs">
-                Docs
-            </NavLink>
+                <NavLink href="services/list"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-services">
+                    Services
+                </NavLink>
+
+                <NavLink href="docs"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold"
+                         data-testid="nav-docs">
+                    Docs
+                </NavLink>
 
 
-        </nav>
+
+            </nav>
+        </div>
     </header>
 
     <main class="p-6" data-testid="page-content">

@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using RackPeek.Domain;
+using RackPeek.Domain.Git;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Web.Api;
@@ -53,9 +54,10 @@ public class Program {
             };
         });
 
+        builder.Services.AddGitServices(builder.Configuration, yamlPath);
+
         var resources = new ResourceCollection();
         builder.Services.AddSingleton(resources);
-
         builder.Services.AddScoped<RackPeekConfigMigrationDeserializer>();
         builder.Services.AddScoped<IResourceYamlMigrationService, ResourceYamlMigrationService>();
 
