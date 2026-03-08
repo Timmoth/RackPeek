@@ -61,7 +61,7 @@
         <div class="space-y-6"
              data-testid="subnet-browser-list">
 
-            @foreach (var subnetGroup in _grouped.OrderBy(x => x.Key))
+            @foreach (var subnetGroup in _grouped.OrderBy(x => IpToSortable(x.Key.Replace(".x", ".0"))))  
             {
                 <div data-testid=@($"subnet-group-{subnetGroup.Key.Replace('.', '-')}")>
 
@@ -90,7 +90,7 @@
                     </div>
 
                     <ul class="ml-2 border-l border-zinc-800 pl-4 space-y-3">
-                        @foreach (var ipGroup in subnetGroup.Value.OrderBy(x => x.Key))
+                        @foreach (var ipGroup in subnetGroup.Value.OrderBy(x => IpToSortable(x.Key)))
                         {
                             <li>
 
@@ -303,6 +303,21 @@
         }
 
         return -1;
+    }
+    
+    private static uint IpToSortable(string ip)
+    {
+        var parts = ip.Split('.')
+            .Select(p => byte.TryParse(p, out var b) ? b : (byte)0)
+            .ToArray();
+
+        if (parts.Length != 4)
+            return 0;
+
+        return ((uint)parts[0] << 24)
+               | ((uint)parts[1] << 16)
+               | ((uint)parts[2] << 8)
+               | parts[3];
     }
 
 }

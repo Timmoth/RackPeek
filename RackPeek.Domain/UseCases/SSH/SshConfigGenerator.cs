@@ -1,5 +1,6 @@
 using System.Text;
 using RackPeek.Domain.Resources;
+using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.UseCases.SSH;
 
@@ -58,6 +59,11 @@ public static class SshConfigGenerator {
     }
 
     private static string? GetAddress(Resource r) {
+        if (r is SystemResource { Ip: not null } system &&
+            !string.IsNullOrWhiteSpace(system!.Ip)) {
+            return system.Ip;
+        }
+
         if (r.Labels.TryGetValue("ip", out var ip) && !string.IsNullOrWhiteSpace(ip))
             return ip;
 
