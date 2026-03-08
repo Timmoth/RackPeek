@@ -358,6 +358,11 @@ public sealed class YamlResourceCollection(
     }
 
     private async Task SaveRootAsync(YamlRoot? root) {
+        var contents = SerializeRootAsync(root);
+        await fileStore.WriteAllTextAsync(filePath, contents);
+    }
+
+    public static string SerializeRootAsync(YamlRoot? root) {
         ISerializer serializer = new SerializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .WithTypeConverter(new StorageSizeYamlConverter())
@@ -377,10 +382,11 @@ public sealed class YamlResourceCollection(
             ["connections"] = root.Connections ?? new List<Connection>()
         };
 
-        await fileStore.WriteAllTextAsync(filePath, serializer.Serialize(payload));
+        return serializer.Serialize(payload);
     }
 
-    private string GetKind(Resource resource) {
+
+    private static string GetKind(Resource resource) {
         return resource switch {
             Server => "Server",
             Switch => "Switch",
@@ -396,7 +402,7 @@ public sealed class YamlResourceCollection(
         };
     }
 
-    private OrderedDictionary SerializeResource(Resource resource) {
+    public static OrderedDictionary SerializeResource(Resource resource) {
         var map = new OrderedDictionary {
             ["kind"] = GetKind(resource)
         };

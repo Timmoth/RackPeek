@@ -1,9 +1,11 @@
+using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources;
+using RackPeek.Domain.Resources.Connections;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -49,24 +51,14 @@ public class UpsertInventoryUseCase(
                                rawJson,
                                _jsonOptions)
                            ?? throw new ValidationException("Invalid JSON structure.");
-            // Generate YAML only for persistence layer
-            ISerializer yamlSerializer = new SerializerBuilder()
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                .WithTypeConverter(new StorageSizeYamlConverter())
-                .WithTypeConverter(new NotesStringYamlConverter())
-                .ConfigureDefaultValuesHandling(
-                    DefaultValuesHandling.OmitNull |
-                    DefaultValuesHandling.OmitEmptyCollections)
-                .Build();
 
-            yamlInput = yamlSerializer.Serialize(incomingRoot);
+            yamlInput = YamlResourceCollection.SerializeRootAsync(incomingRoot);
         }
 
         if (incomingRoot.Resources == null)
             throw new ValidationException("Missing 'resources' section.");
 
         // 2️Compute Diff
-
         List<Resource>? incomingResources = incomingRoot.Resources;
         IReadOnlyList<Resource> currentResources = await repo.GetAllOfTypeAsync<Resource>();
 
