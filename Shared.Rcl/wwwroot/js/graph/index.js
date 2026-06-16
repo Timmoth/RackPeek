@@ -135,13 +135,21 @@
 
         const svgEl = stillLive.querySelector("svg");
         if (svgEl) {
-            // Let the SVG fill its container rather than honouring the
-            // intrinsic max-width Mermaid sets, so pan/zoom feels natural.
+            // Render responsively but cap at the diagram's natural size, so a
+            // narrow/tall diagram (e.g. the logical view, which stacks subnet →
+            // host cards vertically) isn't upscaled to fill the pane — that blew
+            // node text and subgraph titles up many times over. Width fills the
+            // container only up to the diagram's natural width (from the
+            // viewBox); a wider-than-pane diagram still scales down to fit.
+            // Height follows the aspect ratio.
+            const viewBox = (svgEl.getAttribute("viewBox") || "").trim().split(/\s+/);
+            const naturalWidth = viewBox.length === 4 ? parseFloat(viewBox[2]) : NaN;
             svgEl.removeAttribute("width");
             svgEl.removeAttribute("height");
-            svgEl.style.maxWidth = "100%";
             svgEl.style.width = "100%";
-            svgEl.style.height = "100%";
+            svgEl.style.height = "auto";
+            svgEl.style.maxWidth = Number.isFinite(naturalWidth) ? `${naturalWidth}px` : "100%";
+            svgEl.style.maxHeight = "100%";
         }
 
         if (result.bindFunctions) result.bindFunctions(stillLive);
