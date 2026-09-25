@@ -1,0 +1,17 @@
+version: 4
+resources:
+  - kind: System
+    name: example-system
+    discoveryId: rpk1:sys:a3f9c2e1b8d47e60
+    notes: Virtual machine instance
+    runsOn:
+      - rack-a1
+      - rack-a2
+    type: VM
+    os: ubuntu-22.04
+    cores: 4
+    ram: 8
+    ip: 10.0.20.10
+    drives:
+      - size: 128
+      - size: 256

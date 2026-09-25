@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RackPeek.Domain.Discovery;
 using RackPeek.Domain.Git;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Resources;
@@ -72,6 +73,12 @@ public static class ServiceCollectionExtensions {
 
     public static IServiceCollection AddUseCases(
         this IServiceCollection services) {
+        // Discovery probes. Both are registered on every platform and every host (CLI,
+        // web console, viewer); the command picks whichever reports itself supported,
+        // so an unsupported host fails with a message rather than a missing registration.
+        services.AddSingleton<ISystemProbe, LinuxSystemProbe>();
+        services.AddSingleton<ISystemProbe, MacSystemProbe>();
+
         services.AddScoped(typeof(IAddResourceUseCase<>), typeof(AddResourceUseCase<>));
         services.AddScoped(typeof(IAddLabelUseCase<>), typeof(AddLabelUseCase<>));
         services.AddScoped(typeof(IAddTagUseCase<>), typeof(AddTagUseCase<>));

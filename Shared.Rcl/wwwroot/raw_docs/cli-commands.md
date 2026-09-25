@@ -5,6 +5,13 @@
 USAGE:
     rpk [OPTIONS] <COMMAND>
 
+EXAMPLES:
+    rpk discover system
+    rpk discover system --name nas01 --push
+    rpk discover docker
+    rpk discover docker --push
+    rpk discover proxmox --host https://pve.lan:8006 --insecure
+
 OPTIONS:
     -h, --help       Prints help information   
     -v, --version    Prints version information
@@ -22,6 +29,7 @@ COMMANDS:
     desktops        Manage desktop computers and their components              
     laptops         Manage Laptop computers and their components               
     services        Manage services and their configurations                   
+    discover        Read infrastructure and emit it as RackPeek YAML           
     ansible         Generate and manage Ansible inventory                      
     ssh             Generate SSH configuration from infrastructure             
     hosts           Generate a hosts file from infrastructure                  
@@ -3723,6 +3731,119 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help    Prints help information
+```
+
+## `rpk discover`
+```
+DESCRIPTION:
+Read infrastructure and emit it as RackPeek YAML
+
+USAGE:
+    rpk discover [OPTIONS] <COMMAND>
+
+EXAMPLES:
+    rpk discover system
+    rpk discover system --name nas01 --push
+    rpk discover docker
+    rpk discover docker --push
+    rpk discover proxmox --host https://pve.lan:8006 --insecure
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    system     Inspect this machine and emit it as a System resource            
+    docker     Read the Docker API and emit each published container as a       
+               Service on this host's System                                    
+    proxmox    Read a Proxmox cluster and emit its nodes and guests as Systems  
+```
+
+## `rpk discover system`
+```
+DESCRIPTION:
+Inspect this machine and emit it as a System resource
+
+USAGE:
+    rpk discover system [OPTIONS]
+
+EXAMPLES:
+    rpk discover system
+    rpk discover system --name nas01 --push
+
+OPTIONS:
+    -h, --help             Prints help information                              
+        --push             Upload the result to a RackPeek server instead of    
+                           printing it                                          
+        --server <URL>     RackPeek server to upload to. Defaults to the        
+                           RPK_SERVER environment variable                      
+        --api-key <KEY>    API key for the server. Defaults to the RPK_API_KEY  
+                           environment variable                                 
+        --dry-run          Ask the server what would change, without changing   
+                           anything. Implies --push                             
+    -n, --name <NAME>      Name for this machine. Defaults to its hostname.     
+                           Recommended when running from a timer                
+```
+
+## `rpk discover docker`
+```
+DESCRIPTION:
+Read the Docker API and emit each published container as a Service on this 
+host's System
+
+USAGE:
+    rpk discover docker [OPTIONS]
+
+EXAMPLES:
+    rpk discover docker
+    rpk discover docker --push
+
+OPTIONS:
+    -h, --help                 Prints help information                          
+        --push                 Upload the result to a RackPeek server instead of
+                               printing it                                      
+        --server <URL>         RackPeek server to upload to. Defaults to the    
+                               RPK_SERVER environment variable                  
+        --api-key <KEY>        API key for the server. Defaults to the          
+                               RPK_API_KEY environment variable                 
+        --dry-run              Ask the server what would change, without        
+                               changing anything. Implies --push                
+        --docker-host <URI>    Docker endpoint, e.g. unix:///var/run/docker.sock
+                               or tcp://host:2375. Defaults to DOCKER_HOST, then
+                               the local socket                                 
+        --host <NAME>          Name of the machine these containers run on.     
+                               Defaults to its hostname                         
+```
+
+## `rpk discover proxmox`
+```
+DESCRIPTION:
+Read a Proxmox cluster and emit its nodes and guests as Systems
+
+USAGE:
+    rpk discover proxmox [OPTIONS]
+
+EXAMPLES:
+    rpk discover proxmox --host https://pve.lan:8006 --insecure
+    rpk discover proxmox --host pve.lan --push
+
+OPTIONS:
+    -h, --help                     Prints help information                      
+        --push                     Upload the result to a RackPeek server       
+                                   instead of printing it                       
+        --server <URL>             RackPeek server to upload to. Defaults to the
+                                   RPK_SERVER environment variable              
+        --api-key <KEY>            API key for the server. Defaults to the      
+                                   RPK_API_KEY environment variable             
+        --dry-run                  Ask the server what would change, without    
+                                   changing anything. Implies --push            
+        --host <URL>               Proxmox host, e.g. https://pve.lan:8006. A   
+                                   bare host name gets https and :8006          
+        --token-id <ID>            API token id, e.g. root@pam!rackpeek.        
+                                   Defaults to RPK_PVE_TOKEN_ID                 
+        --token-secret <SECRET>    API token secret. Defaults to                
+                                   RPK_PVE_TOKEN_SECRET                         
+        --insecure                 Accept a self-signed certificate, which      
+                                   Proxmox ships with by default                
 ```
 
 ## `rpk ansible`

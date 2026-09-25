@@ -9,26 +9,32 @@ using Xunit.Abstractions;
 namespace Tests.Api;
 
 public abstract class ApiTestBase : IDisposable {
-    private readonly string _tempDir;
+    /// <summary>
+    ///     The config directory the server is pointed at. Writing to it before the first
+    ///     call to <see cref="CreateClient" /> seeds an inventory, because the host is
+    ///     not built until then.
+    /// </summary>
+    protected readonly string TempDir;
     protected readonly WebApplicationFactory<Program> Factory;
     protected readonly ITestOutputHelper Output;
 
     protected ApiTestBase(ITestOutputHelper output) {
         Output = output;
 
-        _tempDir = Path.Combine(
+        TempDir = Path.Combine(
             Path.GetTempPath(),
             "rackpeek-tests",
             Guid.NewGuid().ToString());
 
-        Directory.CreateDirectory(_tempDir);
+        Directory.CreateDirectory(TempDir);
 
         Factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder => {
-                builder.UseSetting("RPK_YAML_DIR", _tempDir);
+                builder.UseSetting("RPK_YAML_DIR", TempDir);
 
                 builder.ConfigureAppConfiguration((context, configBuilder) => {
                     var baseConfig = new Dictionary<string, string?> {
+                        ["RPK_YAML_DIR"] = TempDir,
                         ["RPK_API_KEY"] = "test-key-123"
                     };
 
@@ -41,7 +47,7 @@ public abstract class ApiTestBase : IDisposable {
                     CliBootstrap.RegisterInternals(
                             new ServiceCollection(),
                             configuration,
-                            _tempDir,
+                            TempDir,
                             "test.yaml")
                         .GetAwaiter()
                         .GetResult();
@@ -63,8 +69,8 @@ public abstract class ApiTestBase : IDisposable {
         try {
             Factory.Dispose();
 
-            if (Directory.Exists(_tempDir))
-                Directory.Delete(_tempDir, true);
+            if (Directory.Exists(TempDir))
+                Directory.Delete(TempDir, true);
         }
         catch {
             // ignore cleanup issues

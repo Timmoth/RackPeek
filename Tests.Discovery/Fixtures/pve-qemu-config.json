@@ -1,0 +1,15 @@
+{"data":{
+  "ostype":"l26",
+  "name":"docker-01",
+  "cores":4,
+  "sockets":1,
+  "memory":8192,
+  "bios":"ovmf",
+  "efidisk0":"local-lvm:vm-104-disk-0,efitype=4m,size=4M",
+  "scsi0":"local-lvm:vm-104-disk-1,iothread=1,size=64G",
+  "scsi1":"tank:vm-104-disk-0,backup=0,size=2T",
+  "ide2":"local:iso/debian-12.5.0-amd64-netinst.iso,media=cdrom,size=629M",
+  "unused0":"local-lvm:vm-104-disk-9",
+  "net0":"virtio=BC:24:11:12:34:56,bridge=vmbr0",
+  "smbios1":"uuid=5c8e1f2a-3b4d-5e6f-7a8b-9c0d1e2f3a4b"
+}}

@@ -37,7 +37,7 @@ public class OtherWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputH
         Assert.Equal("Other hardware 'radio01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: Other
                        model: Building-Bridge-XG
@@ -59,7 +59,7 @@ public class OtherWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputH
         Assert.Equal("Other hardware 'bridge01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: Other
                        model: Building-Bridge-XG

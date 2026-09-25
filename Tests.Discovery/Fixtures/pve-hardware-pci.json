@@ -1,0 +1,64 @@
+{
+  "data": [
+    {
+      "iommugroup": -1,
+      "device": "0x14d9",
+      "vendor_name": "Advanced Micro Devices, Inc. [AMD]",
+      "subsystem_vendor": "0x1022",
+      "id": "0000:00:00.2",
+      "subsystem_vendor_name": "Advanced Micro Devices, Inc. [AMD]",
+      "subsystem_device": "0x14d9",
+      "vendor": "0x1022",
+      "device_name": "Raphael/Granite Ridge IOMMU",
+      "class": "0x080600"
+    },
+    {
+      "class": "0x0c0500",
+      "device_name": "FCH SMBus Controller",
+      "subsystem_vendor_name": "ASRock Incorporation",
+      "subsystem_device": "0x790b",
+      "vendor": "0x1022",
+      "subsystem_vendor": "0x1849",
+      "id": "0000:00:14.0",
+      "vendor_name": "Advanced Micro Devices, Inc. [AMD]",
+      "iommugroup": 11,
+      "device": "0x790b"
+    },
+    {
+      "iommugroup": 13,
+      "device": "0x2204",
+      "vendor_name": "NVIDIA Corporation",
+      "subsystem_vendor": "0x10de",
+      "id": "0000:01:00.0",
+      "vendor": "0x10de",
+      "subsystem_device": "0x147d",
+      "subsystem_vendor_name": "NVIDIA Corporation",
+      "class": "0x030000",
+      "device_name": "GA102 [GeForce RTX 3090]"
+    },
+    {
+      "device_name": "GA102 [GeForce RTX 3090]",
+      "class": "0x030000",
+      "subsystem_vendor_name": "NVIDIA Corporation",
+      "vendor": "0x10de",
+      "subsystem_device": "0x147d",
+      "subsystem_vendor": "0x10de",
+      "id": "0000:02:00.0",
+      "vendor_name": "NVIDIA Corporation",
+      "device": "0x2204",
+      "iommugroup": 14
+    },
+    {
+      "class": "0x030000",
+      "device_name": "Raphael",
+      "subsystem_vendor_name": "ASRock Incorporation",
+      "subsystem_device": "0x364e",
+      "vendor": "0x1002",
+      "subsystem_vendor": "0x1849",
+      "vendor_name": "Advanced Micro Devices, Inc. [AMD/ATI]",
+      "id": "0000:10:00.0",
+      "device": "0x164e",
+      "iommugroup": 27
+    }
+  ]
+}

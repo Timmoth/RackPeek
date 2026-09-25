@@ -52,6 +52,13 @@ public abstract class Resource {
 
     public required string Name { get; set; }
 
+    /// <summary>
+    ///     Stable machine-generated identity, set by <c>rpk discover</c>. Optional, and
+    ///     absent on everything entered by hand. Lets a re-run find this resource again
+    ///     after the user has renamed it. See <c>RackPeek.Domain.Discovery.DiscoveryId</c>.
+    /// </summary>
+    public string? DiscoveryId { get; set; }
+
     public string[] Tags { get; set; } = [];
     public Dictionary<string, string> Labels { get; set; } = new();
     public string? Notes { get; set; }

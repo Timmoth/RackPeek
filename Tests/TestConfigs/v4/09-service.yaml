@@ -1,0 +1,13 @@
+version: 4
+resources:
+  - kind: Service
+    name: example-service
+    discoveryId: rpk1:docker:1359175a57049554
+    runsOn:
+      - rack-a1
+      - rack-a2
+    network:
+      ip: 192.168.1.10
+      port: 8080
+      protocol: TCP
+      url: http://example.local:8080

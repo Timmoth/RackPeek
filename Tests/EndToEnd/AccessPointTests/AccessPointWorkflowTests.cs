@@ -35,7 +35,7 @@ public class AccessPointWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper o
         Assert.Equal("Access Point 'ap01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: AccessPoint
                        model: Unifi-U6-Lite
@@ -56,7 +56,7 @@ public class AccessPointWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper o
         Assert.Equal("Access Point 'ap02' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: AccessPoint
                        model: Unifi-U6-Lite

@@ -27,6 +27,11 @@ public class CloneResourceUseCase<T>(IResourceCollection repo) : ICloneResourceU
         T clone = Clone.DeepClone(original);
         clone.Name = cloneName;
 
+        // A discoveryId names one machine; a copy of its card is not that machine.
+        // Keeping it would also put two resources with the same id in the store,
+        // which DiscoveryIdResolver rejects on every subsequent discovery import.
+        clone.DiscoveryId = null;
+
         await repo.AddAsync(clone);
     }
 }
