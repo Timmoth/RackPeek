@@ -226,6 +226,10 @@
     - [tag](docs/Commands.md#rpk-services-tag) - Manage tags on a service
       - [add](docs/Commands.md#rpk-services-tag-add) - Add a tag to a service
       - [remove](docs/Commands.md#rpk-services-tag-remove) - Remove a tag from a service
+  - [discover](docs/Commands.md#rpk-discover) - Read infrastructure and emit it as RackPeek YAML
+    - [system](docs/Commands.md#rpk-discover-system) - Inspect this machine and emit it as a System resource
+    - [docker](docs/Commands.md#rpk-discover-docker) - Read the Docker API and emit each published container as a Service on this
+    - [proxmox](docs/Commands.md#rpk-discover-proxmox) - Read a Proxmox cluster and emit its nodes and guests as Systems
   - [ansible](docs/Commands.md#rpk-ansible) - Generate and manage Ansible inventory
     - [inventory](docs/Commands.md#rpk-ansible-inventory) - Generate an Ansible inventory
   - [ssh](docs/Commands.md#rpk-ssh) - Generate SSH configuration from infrastructure

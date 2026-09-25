@@ -1,0 +1,4 @@
+{"data":[
+  {"vmid":201,"name":"pihole","status":"running","cpus":1,"maxmem":1073741824,"maxdisk":8589934592,"tags":"dns","type":"lxc"},
+  {"vmid":202,"name":"Paperless Stack","status":"running","cpus":2,"maxmem":4294967296,"maxdisk":21474836480,"type":"lxc"}
+]}

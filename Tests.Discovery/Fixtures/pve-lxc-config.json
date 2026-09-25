@@ -1,0 +1,11 @@
+{"data":{
+  "ostype":"debian",
+  "hostname":"pihole",
+  "arch":"amd64",
+  "cores":1,
+  "memory":1024,
+  "rootfs":"local-lvm:vm-201-disk-0,size=8G",
+  "mp0":"tank:subvol-201-disk-0,mp=/data,size=100G",
+  "net0":"name=eth0,bridge=vmbr0,firewall=1,gw=192.168.1.1,hwaddr=BC:24:11:AA:BB:CC,ip=192.168.1.53/24,type=veth",
+  "swap":512
+}}

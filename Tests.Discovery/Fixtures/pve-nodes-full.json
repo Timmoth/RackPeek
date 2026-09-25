@@ -1,0 +1,4 @@
+{"data":[
+  {"node":"pve01","status":"online","type":"node","maxcpu":12,"maxmem":67438305280,"uptime":1209600},
+  {"node":"pve02","status":"online","type":"node","maxcpu":8,"maxmem":33719152640,"uptime":864000}
+]}

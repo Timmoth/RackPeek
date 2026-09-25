@@ -26,6 +26,7 @@ using Shared.Rcl.Commands.Desktops.Gpus;
 using Shared.Rcl.Commands.Desktops.Labels;
 using Shared.Rcl.Commands.Desktops.Nics;
 using Shared.Rcl.Commands.Desktops.Rename;
+using Shared.Rcl.Commands.Discovery;
 using Shared.Rcl.Commands.Exporters;
 using Shared.Rcl.Commands.Firewalls;
 using Shared.Rcl.Commands.Firewalls.Labels;
@@ -90,15 +91,28 @@ public static class CliBootstrap {
         services.AddSingleton(configuration);
         var appBasePath = AppContext.BaseDirectory;
 
+        // The store lives next to the binary, which is fine when rpk is run from its
+        // own directory but not when it is dropped somewhere read-only — a container,
+        // or /usr/local/bin as a non-root user. `rpk discover` is designed to run on
+        // machines that hold no inventory at all, so an unavailable store must not stop
+        // the process starting; commands that actually need one fail when they use it.
         var resolvedYamlDir = Path.IsPathRooted(yamlDir)
             ? yamlDir
             : Path.Combine(appBasePath, yamlDir);
 
-        Directory.CreateDirectory(resolvedYamlDir);
-
         var fullYamlPath = Path.Combine(resolvedYamlDir, yamlFile);
 
-        if (!File.Exists(fullYamlPath)) await File.WriteAllTextAsync(fullYamlPath, "");
+        try {
+            Directory.CreateDirectory(resolvedYamlDir);
+
+            if (!File.Exists(fullYamlPath)) await File.WriteAllTextAsync(fullYamlPath, "");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+            await System.Console.Error.WriteLineAsync(
+                $"Warning: cannot use the config at {fullYamlPath} ({ex.Message}). " +
+                "Continuing with an empty inventory — reads will show nothing, and " +
+                "writes are refused until the config can be read.");
+        }
 
         services.AddLogging();
         services.AddScoped<RackPeekConfigMigrationDeserializer>();
@@ -113,13 +127,20 @@ public static class CliBootstrap {
             b.GetRequiredService<IResourceYamlMigrationService>());
 
 
-        await collection.LoadAsync();
+        try {
+            await collection.LoadAsync();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+            // Unreadable store, warned about above. A malformed config is a different
+            // matter and is still allowed to fail loudly — the user has one to fix.
+            await System.Console.Error.WriteLineAsync($"Warning: could not read {fullYamlPath} ({ex.Message}).");
+        }
         services.AddSingleton<IResourceCollection>(collection);
 
         // Infrastructure
         services.AddYamlRepos();
 
-        // Application
+        // Application (also registers the discovery probes, for every host)
         services.AddUseCases();
         services.AddCommands();
     }
@@ -728,6 +749,25 @@ public static class CliBootstrap {
             // ----------------------------
             // Ansible
             // ----------------------------
+            config.AddBranch("discover", discover => {
+                discover.SetDescription("Read infrastructure and emit it as RackPeek YAML.");
+
+                discover.AddCommand<DiscoverSystemCommand>("system")
+                    .WithDescription("Inspect this machine and emit it as a System resource.")
+                    .WithExample("discover", "system")
+                    .WithExample("discover", "system", "--name", "nas01", "--push");
+
+                discover.AddCommand<DiscoverDockerCommand>("docker")
+                    .WithDescription("Read the Docker API and emit each published container as a Service on this host's System.")
+                    .WithExample("discover", "docker")
+                    .WithExample("discover", "docker", "--push");
+
+                discover.AddCommand<DiscoverProxmoxCommand>("proxmox")
+                    .WithDescription("Read a Proxmox cluster and emit its nodes and guests as Systems.")
+                    .WithExample("discover", "proxmox", "--host", "https://pve.lan:8006", "--insecure")
+                    .WithExample("discover", "proxmox", "--host", "pve.lan", "--push");
+            });
+
             config.AddBranch("ansible", ansible => {
                 ansible.SetDescription("Generate and manage Ansible inventory.");
 

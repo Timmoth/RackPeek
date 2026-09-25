@@ -86,6 +86,9 @@ volumes:
   [**Ansible Inventory Generator Guide**](https://timmoth.github.io/RackPeek/docs/ansible-generator-guide)
 
 * 
+  [**Auto Discovery Guide**](https://timmoth.github.io/RackPeek/docs/discovery-guide)
+
+* 
   [**CLI Commands Reference**](https://timmoth.github.io/RackPeek/docs/cli-commands)
 
 * 
