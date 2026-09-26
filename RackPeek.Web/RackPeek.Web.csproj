@@ -13,13 +13,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj"/>
+        <ProjectReference Include="..\Shared.Rcl\Shared.Rcl.csproj" />
+        <ProjectReference Include="..\RackPeek.Mcp\RackPeek.Mcp.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <Content Include="..\.dockerignore">
             <Link>.dockerignore</Link>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
