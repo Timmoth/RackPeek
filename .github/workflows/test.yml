@@ -26,6 +26,36 @@ jobs:
         run: dotnet format --verify-no-changes
 
 
+  discovery-tests:
+    name: Discovery Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: format
+
+    # Discovery runs on the machines being inventoried rather than on the RackPeek
+    # host, so its tests are the ones that have to pass on every platform. They are
+    # driven entirely from captured fixtures and never read the runner itself.
+    # windows-latest joins this list when the Windows probe lands.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore Tests.Discovery
+
+      - name: Run Discovery Tests
+        run: dotnet test Tests.Discovery --configuration Release --verbosity normal
+
+
   cli-tests:
     name: CLI Tests
     runs-on: ubuntu-latest

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <!-- Discovery is the one part of RackPeek that runs on the machines being
+         inventoried rather than on the RackPeek host, so these tests are kept in
+         their own project and run on every OS in the CI matrix. Nothing here may
+         touch the host it runs on: probes are the untested seam, everything else
+         is driven from the captured fixtures below. -->
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.12"/>
+        <PackageReference Include="JsonSchema.Net" Version="9.4.0"/>
+        <PackageReference Include="YamlDotNet" Version="18.1.0"/>
+        <PackageReference Include="xunit" Version="2.9.3"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0"/>
+        <PackageReference Include="coverlet.collector" Version="10.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\RackPeek.Domain\RackPeek.Domain.csproj"/>
+        <ProjectReference Include="..\RackPeek.Web\RackPeek.Web.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="Fixtures\**\*" CopyToOutputDirectory="PreserveNewest"/>
+        <None Include="..\schemas\**\*.json" Link="schemas\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
+
+</Project>

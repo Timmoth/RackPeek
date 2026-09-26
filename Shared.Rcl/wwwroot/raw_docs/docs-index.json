@@ -4,6 +4,7 @@
   "install-guide.md",
   "git-integration.md",
   "ansible-generator-guide.md",
+  "discovery-guide.md",
   "docker-gen-guide.md",
   "cli-commands.md",
   "cli-commands-index.md",

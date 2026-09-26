@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using RackPeek.Domain.Discovery;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.AccessPoints;
 using RackPeek.Domain.Resources.Connections;
@@ -24,6 +25,14 @@ public class ResourceCollection {
     public readonly SemaphoreSlim FileLock = new(1, 1);
     public List<Resource> Resources { get; } = new();
     public List<Connection> Connections { get; } = new();
+
+    /// <summary>
+    ///     Whether the store has ever been read successfully. Guarded by
+    ///     <see cref="FileLock" />. Write paths check it so a boot that survived an
+    ///     unreadable config cannot later persist the empty in-memory collection over
+    ///     the user's file.
+    /// </summary>
+    public bool Loaded { get; set; }
 }
 
 public sealed class YamlResourceCollection(
@@ -125,9 +134,17 @@ public sealed class YamlResourceCollection(
 
         await resourceCollection.FileLock.WaitAsync();
         try {
+            await EnsureLoadedAsync();
+
             YamlRoot incomingRoot = await migrationService.DeserializeAsync(incomingYaml);
 
             List<Resource> incomingResources = incomingRoot.Resources ?? new List<Resource>();
+
+            DiscoveryIdResolver.ResolveNames(
+                resourceCollection.Resources,
+                incomingResources,
+                incomingRoot.Connections);
+
             List<Resource> merged = ResourceCollectionMerger.Merge(
                 resourceCollection.Resources,
                 incomingResources,
@@ -200,27 +217,45 @@ public sealed class YamlResourceCollection(
         // "Index was outside the bounds of the array" out of List.Clear.
         await resourceCollection.FileLock.WaitAsync();
         try {
-            var yaml = await fileStore.ReadAllTextAsync(filePath);
-
-            YamlRoot root = await migrationService.DeserializeAsync(
-                yaml,
-                async originalYaml => await BackupOriginalAsync(originalYaml),
-                async migratedRoot => await SaveRootAsync(migratedRoot)
-            );
-
-            resourceCollection.Resources.Clear();
-
-            if (root.Resources != null)
-                resourceCollection.Resources.AddRange(root.Resources);
-
-            resourceCollection.Connections.Clear();
-
-            if (root.Connections != null)
-                resourceCollection.Connections.AddRange(root.Connections);
+            await LoadUnderLockAsync();
         }
         finally {
             resourceCollection.FileLock.Release();
         }
+    }
+
+    private async Task LoadUnderLockAsync() {
+        var yaml = await fileStore.ReadAllTextAsync(filePath);
+
+        YamlRoot root = await migrationService.DeserializeAsync(
+            yaml,
+            async originalYaml => await BackupOriginalAsync(originalYaml),
+            async migratedRoot => await SaveRootAsync(migratedRoot)
+        );
+
+        resourceCollection.Resources.Clear();
+
+        if (root.Resources != null)
+            resourceCollection.Resources.AddRange(root.Resources);
+
+        resourceCollection.Connections.Clear();
+
+        if (root.Connections != null)
+            resourceCollection.Connections.AddRange(root.Connections);
+
+        resourceCollection.Loaded = true;
+    }
+
+    /// <summary>
+    ///     Called at the top of every write path, under the lock. Normally a no-op:
+    ///     both the CLI and the web host load at startup. When that startup load failed
+    ///     (unreadable or malformed file, tolerated so the process can boot), this
+    ///     retries — and if the store still cannot be read, the write fails HERE, before
+    ///     the empty in-memory collection can be persisted over the user's config.
+    /// </summary>
+    private async Task EnsureLoadedAsync() {
+        if (!resourceCollection.Loaded)
+            await LoadUnderLockAsync();
     }
 
     public Task AddAsync(Resource resource) {
@@ -353,6 +388,8 @@ public sealed class YamlResourceCollection(
     private async Task UpdateWithLockAsync(Action<List<Resource>> action) {
         await resourceCollection.FileLock.WaitAsync();
         try {
+            await EnsureLoadedAsync();
+
             action(resourceCollection.Resources);
 
             // Always write current schema version when app writes the file.
@@ -461,6 +498,8 @@ public sealed class YamlResourceCollection(
     private async Task UpdateConnectionsWithLockAsync(Action<List<Connection>> action) {
         await resourceCollection.FileLock.WaitAsync();
         try {
+            await EnsureLoadedAsync();
+
             action(resourceCollection.Connections);
 
             var root = new YamlRoot {

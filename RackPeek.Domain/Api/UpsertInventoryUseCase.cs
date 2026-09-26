@@ -2,6 +2,7 @@ using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using RackPeek.Domain.Discovery;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources;
@@ -61,6 +62,10 @@ public class UpsertInventoryUseCase(
         // 2️Compute Diff
         List<Resource>? incomingResources = incomingRoot.Resources;
         IReadOnlyList<Resource> currentResources = await repo.GetAllOfTypeAsync<Resource>();
+
+        // Line discovered resources up with what they already map to before anything
+        // else looks at names, so the diff below reports against the right resources.
+        DiscoveryIdResolver.ResolveNames(currentResources, incomingResources, incomingRoot.Connections);
 
         IGrouping<string, Resource>? duplicate = incomingResources
             .GroupBy(r => r.Name, StringComparer.OrdinalIgnoreCase)

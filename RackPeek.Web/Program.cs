@@ -94,6 +94,25 @@ public class Program {
 
         WebApplication app = builder.Build();
 
+        // Read the config into memory before anything can be served. Blazor reloads it
+        // on every circuit init, but the inventory API has no circuit — without this it
+        // would merge against an empty collection and persist that over the user's file,
+        // destroying the inventory on the first request after a restart.
+        await using (AsyncServiceScope scope = app.Services.CreateAsyncScope()) {
+            try {
+                await scope.ServiceProvider.GetRequiredService<IResourceCollection>().LoadAsync();
+            }
+            catch (Exception ex) {
+                // An unreadable config must not stop the server booting: the web UI is
+                // how someone fixes it, and a container that will not start is worse
+                // than one showing the error. Blazor surfaces it on the first page load,
+                // and every write path re-checks the load before persisting anything,
+                // so booting in this state cannot overwrite the file.
+                scope.ServiceProvider.GetRequiredService<ILogger<Program>>()
+                    .LogError(ex, "Could not read the config at {Path}. Fix it in the web UI.", yamlFilePath);
+            }
+        }
+
         if (!app.Environment.IsDevelopment()) {
             app.UseExceptionHandler("/Error");
             app.UseHsts();

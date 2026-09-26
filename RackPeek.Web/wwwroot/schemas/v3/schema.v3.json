@@ -103,6 +103,9 @@
           "$ref": "#/$defs/ups"
         },
         {
+          "$ref": "#/$defs/other"
+        },
+        {
           "$ref": "#/$defs/desktop"
         },
         {
@@ -582,6 +585,28 @@
       ],
       "unevaluatedProperties": false
     },
+    "other": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/resourceBase"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "Other"
+            },
+            "model": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
     "service": {
       "allOf": [
         {
@@ -639,7 +664,8 @@
               ]
             },
             "ip": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}$"
             },
             "os": {
               "type": "string"

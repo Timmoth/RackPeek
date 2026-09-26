@@ -1,0 +1,7 @@
+{"data":{
+  "cpuinfo":{"model":"AMD Ryzen 5 5600G with Radeon Graphics","cores":6,"cpus":12,"sockets":1,"mhz":"3900.000"},
+  "memory":{"total":67438305280,"used":34359738368,"free":33078566912},
+  "rootfs":{"total":100861014016,"used":20971520000},
+  "pveversion":"pve-manager/8.2.2/9355359cd7afbae4",
+  "kversion":"Linux 6.8.4-2-pve #1 SMP PREEMPT_DYNAMIC PMX 6.8.4-2"
+}}
