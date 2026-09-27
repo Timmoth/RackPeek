@@ -242,6 +242,7 @@
     - [system](docs/Commands.md#rpk-discover-system) - Inspect this machine and emit it as a System resource
     - [docker](docs/Commands.md#rpk-discover-docker) - Read the Docker API and emit each published container as a Service on this
     - [proxmox](docs/Commands.md#rpk-discover-proxmox) - Read a Proxmox cluster and emit its nodes and guests as Systems
+    - [network](docs/Commands.md#rpk-discover-network) - Sweep a subnet and emit every answering host as a System resource
   - [ansible](docs/Commands.md#rpk-ansible) - Generate and manage Ansible inventory
     - [inventory](docs/Commands.md#rpk-ansible-inventory) - Generate an Ansible inventory
   - [ssh](docs/Commands.md#rpk-ssh) - Generate SSH configuration from infrastructure

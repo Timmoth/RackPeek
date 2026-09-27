@@ -798,6 +798,12 @@ public static class CliBootstrap {
                     .WithDescription("Read a Proxmox cluster and emit its nodes and guests as Systems.")
                     .WithExample("discover", "proxmox", "--host", "https://pve.lan:8006", "--insecure")
                     .WithExample("discover", "proxmox", "--host", "pve.lan", "--push");
+
+                discover.AddCommand<DiscoverNetworkCommand>("network")
+                    .WithDescription("Sweep a subnet and emit every answering host as a System resource.")
+                    .WithExample("discover", "network")
+                    .WithExample("discover", "network", "--cidr", "192.168.1.0/24")
+                    .WithExample("discover", "network", "--cidr", "10.0.0.0/24", "--ports", "22,80,443", "--push");
             });
 
             config.AddBranch("ansible", ansible => {

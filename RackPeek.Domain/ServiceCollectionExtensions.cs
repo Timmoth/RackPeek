@@ -78,6 +78,7 @@ public static class ServiceCollectionExtensions {
         // so an unsupported host fails with a message rather than a missing registration.
         services.AddSingleton<ISystemProbe, LinuxSystemProbe>();
         services.AddSingleton<ISystemProbe, MacSystemProbe>();
+        services.AddSingleton<INetworkProbe, NetworkProbe>();
 
         services.AddScoped(typeof(IAddResourceUseCase<>), typeof(AddResourceUseCase<>));
         services.AddScoped(typeof(IAddLabelUseCase<>), typeof(AddLabelUseCase<>));

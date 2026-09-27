@@ -8,6 +8,7 @@ don't have to type in what the machine already knows about itself.
 | `rpk discover system` | the machine it runs on | one **System** resource |
 | `rpk discover docker` | the Docker Engine API | one **Service** per published container, plus the **System** they run on |
 | `rpk discover proxmox` | a Proxmox VE cluster | a **Server** and **System** per node, a **System** per guest, already wired together |
+| `rpk discover network` | a subnet, from outside | one **System** per host that answers ping or a well-known TCP port |
 
 Both print YAML to standard output by default and change nothing, so it is always safe
 to run one and look at the result first.
@@ -315,6 +316,68 @@ with no cluster uses its node name as the scope instead.
 > and `rpk discover system` *inside* the same guest produces two resources rather than
 > one. The second is reported as an addition with a suffixed name, so it is visible
 > rather than silent — but pick one collector per guest for now.
+
+---
+
+## `rpk discover network`
+
+The collector for machines nothing else can describe: no agent, no API — just an
+address that answers. It sweeps a subnet and emits one **System** per responding host,
+with its IP, its reverse-DNS name, and its MAC address as a label.
+
+```bash
+# Sweep this machine's own subnet and look at the result
+rpk discover network
+
+# Sweep a specific block, then merge it into the server
+rpk discover network --cidr 192.168.1.0/24 --push
+```
+
+### What "answering" means
+
+A host counts as alive when it replies to ping **or** accepts a TCP connection on any
+probed port — plenty of gear drops ICMP, so ping alone would miss half a homelab. The
+default port list is a curated homelab set (ssh, http/https, dns, smb, rdp, ipp,
+proxmox, and friends); `--ports 22,80,443` narrows or widens it. The ports are only a
+liveness check: the sweep records that the host exists, not what it serves — pair it
+with `rpk discover docker` or hand-written Service cards for that.
+
+Sweeps are capped at a /16 (65,534 addresses). `--timeout` and `--parallel` tune how
+patient and how aggressive the sweep is; the defaults finish a quiet /24 in seconds.
+
+A network of several VLANs is several sweeps — each merges into the same inventory,
+and the ids keep re-runs honest:
+
+```bash
+rpk discover network --cidr 10.0.20.0/24 --push   # the LAN
+rpk discover network --cidr 10.0.50.0/24 --push   # the server VLAN
+```
+
+### Identity
+
+A scanned host is identified by its **MAC address**, read from the ARP table the
+sweep itself populates — so a DHCP re-lease updates the same resource's address rather
+than inventing a new machine. Two caveats:
+
+- **Hosts beyond the local segment have no ARP entry** (a routed VLAN, a VPN subnet).
+  Their identity falls back to the IP address, and the command says so — a DHCP
+  re-lease will then look like a new machine. Scan from a machine on the same segment
+  when you can. On a statically-addressed subnet — a server VLAN, say — the IP
+  fallback is stable in practice and nothing more is needed.
+- **A scan sees an address, not an operating system.** Scanned cards deliberately carry
+  no type, OS, cores or RAM, so a re-scan can never overwrite the details you (or an
+  agent collector) filled in afterwards.
+
+The known limitation above applies here twice over: a host discovered by `rpk discover
+system` (machine-id identity) and by a network scan (MAC identity) becomes two
+resources, the second visibly suffixed. Keep whichever card you prefer and delete the
+other; the scan will keep updating the one that carries its id. The machine running
+the sweep also finds itself — same rule.
+
+### Being a good citizen
+
+The sweep is a burst of pings and TCP connection attempts — the polite end of network
+scanning, but scan networks you operate, not networks you merely use.
 
 ---
 

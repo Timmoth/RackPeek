@@ -15,6 +15,7 @@ public static class DiscoveryId {
     public const string Prefix = "rpk1";
     public const string SystemScheme = "sys";
     public const string DockerScheme = "docker";
+    public const string NetworkScheme = "net";
 
     public static string Create(string scheme, string seed) {
         if (string.IsNullOrWhiteSpace(scheme))
