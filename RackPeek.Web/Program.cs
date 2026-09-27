@@ -6,6 +6,8 @@ using RackPeek.Domain;
 using RackPeek.Domain.Git;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
+using ModelContextProtocol.AspNetCore;
+using RackPeek.Mcp;
 using RackPeek.Web.Api;
 using RackPeek.Web.Components;
 using Shared.Rcl;
@@ -88,6 +90,17 @@ public class Program {
         builder.Services.AddCommands();
         builder.Services.AddScoped<IConsoleEmulator, ConsoleEmulator>();
 
+        // MCP server, exposed over streamable HTTP at /mcp whenever the web server
+        // runs. Stateless: every call is a plain POST (no session affinity behind a
+        // reverse proxy) and tools resolve their services from the request scope,
+        // exactly like the inventory API does.
+        builder.Services.AddMcpServer(options => options.ServerInfo = new() {
+            Name = McpSetup.ServerName,
+            Version = RpkConstants.Version
+        })
+            .WithHttpTransport(options => options.SessionMode = HttpServerSessionMode.Stateless)
+            .WithRackPeekTools();
+
         // Razor Components
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
@@ -125,6 +138,12 @@ public class Program {
         app.UseAntiforgery();
 
         app.MapInventoryApi();
+
+        // Same key, same gate as /api/inventory: 503 until RPK_API_KEY is configured,
+        // so MCP is off by default and never exposes the inventory unauthenticated.
+        RouteGroupBuilder mcp = app.MapGroup("/mcp");
+        mcp.AddEndpointFilter<ApiKeyEndpointFilter>();
+        mcp.MapMcp();
 
         app.MapStaticAssets();
 
