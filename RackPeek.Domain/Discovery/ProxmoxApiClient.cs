@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Net.Security;
 
 namespace RackPeek.Domain.Discovery;
@@ -140,6 +141,35 @@ public sealed class ProxmoxApiClient : IProxmoxClient, IDisposable {
         }
         catch (HttpRequestException) {
             return new ProxmoxGuestConfig(null, null, [], []);
+        }
+    }
+
+    public async Task<IReadOnlyList<ProxmoxGuestAddress>> GetGuestAddressesAsync(
+        string node,
+        string endpoint,
+        int vmId,
+        CancellationToken cancellationToken = default) {
+        // Every failure here means the same thing: the guest cannot say where it is.
+        // No agent installed, agent not running, container stopped, guest deleted since
+        // it was listed, or a token without VM.Monitor — all leave the address unknown,
+        // which is what the guest config already told us.
+        try {
+            var path = endpoint == LxcEndpoint
+                ? $"nodes/{Uri.EscapeDataString(node)}/{endpoint}/{vmId}/interfaces"
+                : $"nodes/{Uri.EscapeDataString(node)}/{endpoint}/{vmId}/agent/network-get-interfaces";
+
+            var json = await GetAsync(path, cancellationToken);
+
+            return endpoint == LxcEndpoint
+                ? ProxmoxResponseParser.ParseContainerInterfaces(json)
+                : ProxmoxResponseParser.ParseAgentInterfaces(json);
+        }
+        catch (HttpRequestException) {
+            return [];
+        }
+        catch (JsonException) {
+            // A node that answers the agent call with an error body rather than a status.
+            return [];
         }
     }
 

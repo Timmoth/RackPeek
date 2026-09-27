@@ -41,6 +41,7 @@ public static class DiscoveryIdResolver {
             .ToDictionary(r => r.DiscoveryId!, r => r, StringComparer.OrdinalIgnoreCase);
 
         Dictionary<string, Resource> existingByMac = BuildMacMap(existing);
+        Dictionary<string, Resource> existingByIp = BuildIpMap(existing);
 
         // Tolerant of a hand-edited file that managed to get two resources of the
         // same name: the first wins, rather than crashing the import.
@@ -52,7 +53,7 @@ public static class DiscoveryIdResolver {
         var renames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (Resource resource in incomingWithId) {
-            var resolved = ResolveName(resource, existingById, existingByName, existingByMac);
+            var resolved = ResolveName(resource, existingById, existingByName, existingByMac, existingByIp);
 
             if (resolved.Equals(resource.Name, StringComparison.OrdinalIgnoreCase))
                 continue;
@@ -102,18 +103,9 @@ public static class DiscoveryIdResolver {
 
         // Both sides count: the host may have arrived in this very payload (discover
         // docker emits it alongside its services) or be sitting in the inventory already.
-        var systemsByIp = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (SystemResource system in existing.OfType<SystemResource>().Concat(incoming.OfType<SystemResource>())) {
-            if (string.IsNullOrWhiteSpace(system.Ip))
-                continue;
-
-            if (!systemsByIp.TryGetValue(system.Ip, out List<string>? names))
-                systemsByIp[system.Ip] = names = [];
-
-            if (!names.Contains(system.Name, StringComparer.OrdinalIgnoreCase))
-                names.Add(system.Name);
-        }
+        // Stored systems are gathered separately because they win — see below.
+        Dictionary<string, List<string>> storedByIp = IndexByIp(existing);
+        Dictionary<string, List<string>> arrivingByIp = IndexByIp(incoming);
 
         foreach (Service service in services) {
             var ip = service.Network?.Ip;
@@ -127,11 +119,37 @@ public static class DiscoveryIdResolver {
             if (anchored)
                 continue;
 
-            if (!systemsByIp.TryGetValue(ip, out List<string>? candidates) || candidates.Count != 1)
+            // A stored system beats one arriving in this payload when both claim the
+            // address. They are usually the same machine seen twice — a hypervisor knows
+            // its guest by name and specification, a sweep only found something
+            // answering — and the stored card is the one a person recognises.
+            List<string>? candidates =
+                storedByIp.TryGetValue(ip, out List<string>? stored) ? stored
+                : arrivingByIp.TryGetValue(ip, out List<string>? arriving) ? arriving
+                : null;
+
+            if (candidates is not [var host])
                 continue;
 
-            service.RunsOn = [candidates[0]];
+            service.RunsOn = [host];
         }
+    }
+
+    private static Dictionary<string, List<string>> IndexByIp(IReadOnlyList<Resource> resources) {
+        var byIp = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (SystemResource system in resources.OfType<SystemResource>()) {
+            if (string.IsNullOrWhiteSpace(system.Ip))
+                continue;
+
+            if (!byIp.TryGetValue(system.Ip, out List<string>? names))
+                byIp[system.Ip] = names = [];
+
+            if (!names.Contains(system.Name, StringComparer.OrdinalIgnoreCase))
+                names.Add(system.Name);
+        }
+
+        return byIp;
     }
 
     /// <summary>
@@ -170,7 +188,8 @@ public static class DiscoveryIdResolver {
         Resource resource,
         Dictionary<string, Resource> existingById,
         Dictionary<string, Resource> existingByName,
-        Dictionary<string, Resource> existingByMac) {
+        Dictionary<string, Resource> existingByMac,
+        Dictionary<string, Resource> existingByIp) {
         // Known id: the stored resource wins on name, whatever the user has renamed it to.
         if (existingById.TryGetValue(resource.DiscoveryId!, out Resource? matched))
             return matched.Name;
@@ -178,6 +197,9 @@ public static class DiscoveryIdResolver {
         // Unknown id, but a MAC in common with exactly one stored card: the same
         // physical machine seen by two collectors, unified onto the stored card.
         if (TryUnifyByMac(resource, existingByMac, out var unifiedName))
+            return unifiedName;
+
+        if (TryUnifyByIp(resource, existingByIp, out unifiedName))
             return unifiedName;
 
         // Unknown id and the name is free: nothing to reconcile.
@@ -256,6 +278,76 @@ public static class DiscoveryIdResolver {
         }
 
         return false;
+    }
+
+    /// <summary>
+    ///     The bridge for machines a sweep cannot identify by MAC at all: ARP is
+    ///     link-local, so a host on any subnet but the scanner's own yields no MAC and
+    ///     its identity falls back to its address. Once a hypervisor reports its guests'
+    ///     addresses, that same address is the only thing tying the sweep's find to the
+    ///     guest the inventory already describes in full.
+    ///     <para>
+    ///         Narrow on purpose. It applies only to a scan-grade card that produced no
+    ///         MAC of its own — one that has a MAC was either already unified above or
+    ///         genuinely disagrees, and a MAC is better evidence than an address. The
+    ///         stored card must be agent-grade and of the same kind, and must be the only
+    ///         one claiming that address: two cards on one address is a conflict or an
+    ///         overlapping subnet, neither of which is evidence of anything.
+    ///     </para>
+    /// </summary>
+    private static bool TryUnifyByIp(
+        Resource resource,
+        Dictionary<string, Resource> existingByIp,
+        out string unifiedName) {
+        unifiedName = string.Empty;
+
+        if (DiscoveryId.Scheme(resource.DiscoveryId) != DiscoveryId.NetworkScheme)
+            return false;
+
+        // A scan that saw a MAC has better evidence than an address, and the MAC rule
+        // above has already had its say.
+        if (MacsOf(resource).Any())
+            return false;
+
+        if (resource is not SystemResource { Ip: { } ip } || string.IsNullOrWhiteSpace(ip))
+            return false;
+
+        if (!existingByIp.TryGetValue(ip, out Resource? stored)
+            || stored.GetType() != resource.GetType())
+            return false;
+
+        // Another scan card at the same address says nothing: both are stand-ins.
+        if (DiscoveryId.Scheme(stored.DiscoveryId) == DiscoveryId.NetworkScheme)
+            return false;
+
+        // Same as the MAC bridge: the scan's weaker identity is dropped so the merge
+        // cannot downgrade the stored one.
+        resource.DiscoveryId = null;
+        unifiedName = stored.Name;
+
+        return true;
+    }
+
+    /// <summary>
+    ///     Systems by address, excluding any address more than one of them claims — an
+    ///     ambiguous address is not evidence.
+    /// </summary>
+    private static Dictionary<string, Resource> BuildIpMap(IReadOnlyList<Resource> existing) {
+        var byIp = new Dictionary<string, Resource>(StringComparer.OrdinalIgnoreCase);
+        var ambiguous = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (SystemResource system in existing.OfType<SystemResource>()) {
+            if (string.IsNullOrWhiteSpace(system.Ip))
+                continue;
+
+            if (!byIp.TryAdd(system.Ip, system))
+                ambiguous.Add(system.Ip);
+        }
+
+        foreach (var ip in ambiguous)
+            byIp.Remove(ip);
+
+        return byIp;
     }
 
     /// <summary>The MACs a resource claims, from its "mac" and "macs" labels, normalised.</summary>

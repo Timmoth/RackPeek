@@ -80,6 +80,22 @@ public class RunsOnByIpTests {
     }
 
     [Fact]
+    public void A_stored_host_beats_a_scanned_stand_in_at_the_same_address() {
+        // Once a hypervisor reports its guests' addresses, a sweep of that subnet finds
+        // the same machines again and contributes a sparse card per address. The service
+        // belongs on the guest the hypervisor described, not on the sweep's stand-in.
+        List<Resource> existing = [System("app-vm", "192.0.2.50")];
+        List<Resource> incoming = [
+            System("host-1a2b3c4d", "192.0.2.50", "rpk1:net:c"),
+            Service("immich", "192.0.2.50", "SOMEWHERE.lan")
+        ];
+
+        DiscoveryIdResolver.ResolveNames(existing, incoming);
+
+        Assert.Equal(["app-vm"], incoming.OfType<Service>().Single().RunsOn);
+    }
+
+    [Fact]
     public void An_address_two_systems_claim_anchors_nothing() {
         // Overlapping subnets across sites, or a stale card nobody cleaned up. An
         // ambiguous address is no evidence, and a wrong parent is worse than none.
@@ -124,5 +140,88 @@ public class RunsOnByIpTests {
         DiscoveryIdResolver.ResolveNames(existing, incoming);
 
         Assert.Empty(incoming.OfType<SystemResource>().Single().RunsOn);
+    }
+
+    // ---------------------------------------------------------------
+    // Unifying a sweep's find with the guest a hypervisor already described
+    // ---------------------------------------------------------------
+
+    private static SystemResource Scanned(string name, string ip, string? mac = null) {
+        var card = new SystemResource {
+            Kind = SystemResource.KindLabel,
+            Name = name,
+            Ip = ip,
+            DiscoveryId = DiscoveryId.Create(DiscoveryId.NetworkScheme, mac ?? $"ip:{ip}")
+        };
+
+        if (mac != null)
+            card.Labels["mac"] = mac;
+
+        return card;
+    }
+
+    private static SystemResource Guest(string name, string ip, string id = "abc123") =>
+        new() {
+            Kind = SystemResource.KindLabel,
+            Name = name,
+            Ip = ip,
+            DiscoveryId = $"rpk1:pve:{id}"
+        };
+
+    [Fact]
+    public void A_sweep_find_becomes_the_guest_the_hypervisor_already_described() {
+        // ARP is link-local, so a guest on another subnet gives the sweep no MAC and its
+        // identity falls back to the address. Now that the hypervisor reports that same
+        // address, it is the only thing tying the two records together.
+        List<Resource> existing = [Guest("app-vm", "192.0.2.105")];
+        List<Resource> incoming = [Scanned("host-1a2b3c4d", "192.0.2.105")];
+
+        DiscoveryIdResolver.ResolveNames(existing, incoming);
+
+        SystemResource card = incoming.OfType<SystemResource>().Single();
+        Assert.Equal("app-vm", card.Name);
+        // The sweep's weaker identity is dropped so the merge cannot downgrade the
+        // hypervisor's.
+        Assert.Null(card.DiscoveryId);
+    }
+
+    [Fact]
+    public void A_sweep_find_that_saw_a_mac_is_left_to_the_mac_rule() {
+        // A MAC is better evidence than an address. If it did not unify above, the two
+        // records disagree, and an address must not override that.
+        List<Resource> existing = [Guest("app-vm", "192.0.2.105")];
+        List<Resource> incoming = [Scanned("host-1a2b3c4d", "192.0.2.105", "bc:24:11:00:1a:01")];
+
+        DiscoveryIdResolver.ResolveNames(existing, incoming);
+
+        Assert.Equal("host-1a2b3c4d", incoming.OfType<SystemResource>().Single().Name);
+    }
+
+    [Fact]
+    public void Two_stored_systems_at_one_address_unify_nothing() {
+        // Overlapping subnets across sites, or a stale card. Ambiguity is not evidence.
+        List<Resource> existing = [
+            Guest("site-a-vm", "192.0.2.105", "aaa111"),
+            Guest("site-b-vm", "192.0.2.105", "bbb222")
+        ];
+        List<Resource> incoming = [Scanned("host-1a2b3c4d", "192.0.2.105")];
+
+        DiscoveryIdResolver.ResolveNames(existing, incoming);
+
+        Assert.Equal("host-1a2b3c4d", incoming.OfType<SystemResource>().Single().Name);
+    }
+
+    [Fact]
+    public void One_sweep_find_never_unifies_with_another() {
+        // A card the sweep itself produced is a stand-in for something nobody has
+        // described. Two stand-ins at one address say nothing about each other, so the
+        // address rule stays out of it — here the stored one was identified by MAC on
+        // its own segment, and the incoming one only by address.
+        List<Resource> existing = [Scanned("host-99999999", "192.0.2.105", "bc:24:11:00:1a:09")];
+        List<Resource> incoming = [Scanned("host-1a2b3c4d", "192.0.2.105")];
+
+        DiscoveryIdResolver.ResolveNames(existing, incoming);
+
+        Assert.Equal("host-1a2b3c4d", incoming.OfType<SystemResource>().Single().Name);
     }
 }

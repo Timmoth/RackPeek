@@ -319,6 +319,33 @@ with no cluster uses its node name as the scope instead.
 
 ---
 
+### Where a guest's address comes from
+
+Proxmox only records an address in a guest's config when someone set one statically, so
+on a DHCP estate the config knows nothing. The guest itself does, and will say so: a VM
+through its **qemu-guest-agent**, a container through its running interfaces. Discovery
+asks every *running* guest, which is one extra call per guest and nothing at all for one
+that is switched off.
+
+A guest that runs containers has several interfaces — Docker's `docker0` and its
+per-network bridges, Home Assistant's `hassio`, any VPN tunnel — and recording
+`172.17.0.1` as the machine's address would be worse than recording nothing, because
+every container host on the estate reports the same one. So the NIC MACs Proxmox assigned
+are used as the discriminator: an interface carrying one is a NIC the hypervisor gave the
+guest, anything else is something the guest invented. Where the MACs cannot be read,
+nothing is claimed.
+
+No agent, a stopped guest, or a token without `VM.Monitor` all mean the same thing —
+the address stays unknown, exactly as before.
+
+**Why it matters beyond the address itself.** A guest's address is what lets
+`rpk discover network` recognise it. ARP is link-local, so a sweep of any subnet but its
+own gets no MAC and can only identify a host by address; once the hypervisor has reported
+that same address, the sweep's find is matched to the guest the hypervisor already
+described in full rather than becoming a second, emptier card beside it.
+
+---
+
 ## `rpk discover network`
 
 The collector for machines nothing else can describe: no agent, no API — just an

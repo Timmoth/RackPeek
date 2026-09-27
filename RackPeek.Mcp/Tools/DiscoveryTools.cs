@@ -125,7 +125,7 @@ public sealed class DiscoveryTools(IServiceProvider services) {
 
             List<Resource> resources;
             try {
-                resources = await ReadProxmoxAsync(client, cancellationToken);
+                resources = await ProxmoxDiscovery.ReadAsync(client, cancellationToken);
             }
             catch (HttpRequestException ex) {
                 var hint = !insecure && ex.InnerException is System.Security.Authentication.AuthenticationException
@@ -154,40 +154,6 @@ public sealed class DiscoveryTools(IServiceProvider services) {
                    Hostname = Environment.MachineName,
                    Cores = Environment.ProcessorCount
                });
-    }
-
-    /// <summary>Same read orchestration as `rpk discover proxmox`.</summary>
-    private static async Task<List<Resource>> ReadProxmoxAsync(
-        IProxmoxClient client,
-        CancellationToken cancellationToken) {
-        var scope = await client.GetIdentityScopeAsync(cancellationToken);
-        IReadOnlyList<ProxmoxNode> listed = await client.GetNodesAsync(cancellationToken);
-
-        var nodes = new List<ProxmoxNode>();
-        var guests = new List<ProxmoxGuest>();
-
-        foreach (ProxmoxNode listedNode in listed) {
-            ProxmoxNode node = await client.EnrichAsync(listedNode, cancellationToken);
-            nodes.Add(node);
-
-            foreach (var endpoint in new[] { ProxmoxApiClient.QemuEndpoint, ProxmoxApiClient.LxcEndpoint }) {
-                IReadOnlyList<ProxmoxGuest> listedGuests =
-                    await client.GetGuestsAsync(node.Name, endpoint, cancellationToken);
-
-                ProxmoxGuestConfig[] configs = await Task.WhenAll(listedGuests.Select(g =>
-                    client.GetGuestConfigAsync(node.Name, endpoint, g.VmId, cancellationToken)));
-
-                for (var i = 0; i < listedGuests.Count; i++)
-                    guests.Add(listedGuests[i] with {
-                        Os = configs[i].Os,
-                        Ip = configs[i].Ip,
-                        Disks = configs[i].DiskBytes,
-                        PassthroughAddresses = configs[i].PassthroughAddresses
-                    });
-            }
-        }
-
-        return ProxmoxResourceMapper.ToResources(scope, nodes, guests);
     }
 
     private async Task<DiscoveryResult> EmitAsync(List<Resource> resources, int skipped, bool apply) {

@@ -62,6 +62,12 @@ public sealed record ProxmoxGuest {
 
     public IReadOnlyList<string> Tags { get; init; } = [];
 
+    /// <summary>
+    ///     <c>running</c>, <c>stopped</c> and friends, from the guest list. Only a running
+    ///     guest can be asked where it is, and a stopped one has no address to report.
+    /// </summary>
+    public string? Status { get; init; }
+
     /// <summary>Filled in from the guest's config, which is the only place it is known.</summary>
     public string? Os { get; init; }
 
@@ -424,6 +430,7 @@ public static class ProxmoxResponseParser {
             Cores = GetInt(element, "cpus") ?? 0,
             MemoryBytes = GetLong(element, "maxmem") ?? 0,
             DiskBytes = GetLong(element, "maxdisk") ?? 0,
+            Status = GetString(element, "status"),
             Tags = ParseTags(GetString(element, "tags"))
         };
     }
@@ -464,9 +471,105 @@ public static class ProxmoxResponseParser {
         element.TryGetProperty(name, out JsonElement value) && value.TryGetInt64(out var result)
             ? result
             : null;
+
+    /// <summary>
+    ///     Addresses a QEMU guest reports through its guest agent
+    ///     (<c>agent/network-get-interfaces</c>). The agent sees every interface inside
+    ///     the guest, including the bridges Docker and Home Assistant create, so the
+    ///     caller filters by the NIC MACs Proxmox actually assigned — see
+    ///     <see cref="ProxmoxDiscovery.SelectGuestIp" />.
+    /// </summary>
+    public static List<ProxmoxGuestAddress> ParseAgentInterfaces(string json) {
+        var addresses = new List<ProxmoxGuestAddress>();
+
+        using var document = JsonDocument.Parse(json);
+
+        if (!document.RootElement.TryGetProperty("data", out JsonElement data)
+            || data.ValueKind != JsonValueKind.Object
+            || !data.TryGetProperty("result", out JsonElement result)
+            || result.ValueKind != JsonValueKind.Array)
+            return addresses;
+
+        foreach (JsonElement iface in result.EnumerateArray()) {
+            if (iface.ValueKind != JsonValueKind.Object)
+                continue;
+
+            var name = GetString(iface, "name");
+            var mac = GetString(iface, "hardware-address");
+
+            if (!iface.TryGetProperty("ip-addresses", out JsonElement ips)
+                || ips.ValueKind != JsonValueKind.Array)
+                continue;
+
+            foreach (JsonElement entry in ips.EnumerateArray()) {
+                if (entry.ValueKind != JsonValueKind.Object)
+                    continue;
+
+                if (!string.Equals(GetString(entry, "ip-address-type"), "ipv4", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var ip = GetString(entry, "ip-address");
+
+                if (IsUsableAddress(ip))
+                    addresses.Add(new ProxmoxGuestAddress(name, mac, ip!));
+            }
+        }
+
+        return addresses;
+    }
+
+    /// <summary>
+    ///     Addresses a container reports through <c>lxc/{vmid}/interfaces</c>, which is a
+    ///     flat list rather than the agent's nested shape and spells the address with its
+    ///     prefix (<c>10.0.0.5/24</c>).
+    /// </summary>
+    public static List<ProxmoxGuestAddress> ParseContainerInterfaces(string json) {
+        var addresses = new List<ProxmoxGuestAddress>();
+
+        using var document = JsonDocument.Parse(json);
+
+        if (!document.RootElement.TryGetProperty("data", out JsonElement data)
+            || data.ValueKind != JsonValueKind.Array)
+            return addresses;
+
+        foreach (JsonElement iface in data.EnumerateArray()) {
+            if (iface.ValueKind != JsonValueKind.Object)
+                continue;
+
+            var ip = GetString(iface, "inet");
+
+            // "10.0.0.5/24" — the prefix belongs to the interface, not to the address
+            // the inventory records.
+            var slash = ip?.IndexOf('/') ?? -1;
+
+            if (slash > 0)
+                ip = ip![..slash];
+
+            if (IsUsableAddress(ip))
+                addresses.Add(new ProxmoxGuestAddress(
+                    GetString(iface, "name"),
+                    GetString(iface, "hwaddr"),
+                    ip!));
+        }
+
+        return addresses;
+    }
+
+    /// <summary>
+    ///     Whether an address is worth recording: a real IPv4 that is neither loopback
+    ///     nor the 169.254 a guest assigns itself when DHCP fails.
+    /// </summary>
+    private static bool IsUsableAddress(string? ip) =>
+        !string.IsNullOrWhiteSpace(ip)
+        && !ip.StartsWith("127.", StringComparison.Ordinal)
+        && !ip.StartsWith("169.254.", StringComparison.Ordinal)
+        && ip.Count(c => c == '.') == 3;
 }
 
 /// <summary>The parts of a guest's config worth recording. Everything is optional.</summary>
+/// <summary>One address a guest reports for one of its own interfaces.</summary>
+public sealed record ProxmoxGuestAddress(string? Interface, string? Mac, string Ip);
+
 public sealed record ProxmoxGuestConfig(
     string? Os,
     string? Ip,
