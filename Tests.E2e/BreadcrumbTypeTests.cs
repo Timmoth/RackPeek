@@ -7,9 +7,9 @@ namespace Tests.E2e;
 
 /// <summary>
 ///     The breadcrumb used to label every System with its storage kind, so a guest on a
-///     hypervisor on a server read "nebula (server) / nebula-pve (system) / immich
-///     (system)" — the chain existed to show the nesting and then hid what each layer
-///     actually was. A System now reports its own type instead.
+///     hypervisor on a server read "host (server) / host-pve (system) / guest (system)" —
+///     the chain existed to show the nesting and then hid what each layer actually was.
+///     A System now reports its own type instead.
 /// </summary>
 public class BreadcrumbTypeTests(
     PlaywrightFixture fixture,
