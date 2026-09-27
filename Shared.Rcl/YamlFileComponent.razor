@@ -168,7 +168,18 @@
 
         await FileStore.WriteAllTextAsync(Path, _editText);
 
-        await Resources.LoadAsync();
+        try
+        {
+            await Resources.LoadAsync();
+        }
+        catch (RackPeek.Domain.Helpers.ConfigLoadException ex)
+        {
+            // The edit was saved but the app still cannot read it. Report it here
+            // rather than tearing down the circuit — this editor is the repair tool.
+            _error = new YamlEditError(ex.Message, null, null, null);
+            _currentText = _editText;
+            return;
+        }
 
         _currentText = _editText;
         _isEditing = false;

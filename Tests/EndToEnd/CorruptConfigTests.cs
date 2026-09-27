@@ -3,16 +3,18 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd;
 
-// Reproduces the load-side half of
-// https://github.com/Timmoth/RackPeek/issues/337: saves rewrite config.yaml in
-// place (File.WriteAllTextAsync truncates before writing, and never flushes),
-// so an interrupted save leaves a truncated file behind — and a truncated file
-// is then accepted without complaint on the next load.
+// Load-side half of https://github.com/Timmoth/RackPeek/issues/337.
 //
-// The writer-side half (make PhysicalTextFileStore write atomically and
-// durably: temp file + flush + rename) is not observable from a black-box
-// test; these tests pin the user-facing contract that a damaged file must not
-// be served silently or crash with a raw stack trace.
+// Before the fix a damaged config was accepted without complaint: an unparseable
+// file loaded as an EMPTY inventory with exit 0, and the next write persisted that
+// emptiness over a recoverable file. These tests pin the contract that a config
+// which exists but cannot be understood fails loudly on every read, and — the part
+// that actually loses data — is never overwritten.
+//
+// Note on what is NOT testable here: a save interrupted at a clean resource boundary
+// leaves valid YAML that is indistinguishable from a smaller inventory. Nothing at
+// load time can detect it, which is precisely why the writer-side fix (atomic,
+// durable saves — see PhysicalTextFileStoreTests) is the primary remedy.
 [Collection("Yaml CLI tests")]
 public class CorruptConfigTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
@@ -43,48 +45,84 @@ public class CorruptConfigTests(TempYamlCliFixture fs, ITestOutputHelper outputH
         return output;
     }
 
-    [Fact]
-    public async Task a_config_truncated_at_a_resource_boundary_is_not_served_silently() {
-        // Simulate an interrupted in-place save: the file ends mid-way through
-        // the resources list. This still parses — as a plausible, smaller
-        // inventory missing srv-c and the connections section.
-        var truncated = _fullConfig[.._fullConfig.IndexOf("- kind: Server\n  name: srv-c", StringComparison.Ordinal)];
-        await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), truncated);
-
-        var output = await ExecuteAsync("summary");
-
-        // Serving a structurally incomplete file (a resources document with no
-        // connections section — something RackPeek's own serializer never
-        // writes) with no diagnostic at all is how a truncation becomes silent
-        // data loss: the next save persists the smaller inventory as if it
-        // were intentional.
-        var hasDiagnostic =
-            output.Contains("error", StringComparison.OrdinalIgnoreCase)
-            || output.Contains("warn", StringComparison.OrdinalIgnoreCase)
-            || output.Contains("corrupt", StringComparison.OrdinalIgnoreCase)
-            || output.Contains("incomplete", StringComparison.OrdinalIgnoreCase)
-            || output.Contains("truncated", StringComparison.OrdinalIgnoreCase);
-
-        Assert.True(hasDiagnostic,
-            $"A truncated config was served with no diagnostic. Output:\n{output}");
-    }
+    private string ConfigPath => Path.Combine(fs.Root, "config.yaml");
 
     [Fact]
     public async Task a_config_cut_mid_token_fails_with_a_friendly_error() {
-        // Simulate a save that died mid-write inside a YAML token.
+        // A save that died mid-write inside a YAML token.
         var truncated = _fullConfig[.._fullConfig.IndexOf("nd: Server\n  name: srv-c", StringComparison.Ordinal)];
-        await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), truncated);
+        await File.WriteAllTextAsync(ConfigPath, truncated);
 
         var output = await ExecuteAsync("summary");
 
-        // Observed on staging: the unparseable file is swallowed entirely and
-        // `rpk summary` reports an EMPTY inventory (Hardware (0)) with exit 0 —
-        // no error, no mention of the file. That is the worst outcome for
-        // #337: a later write would persist the empty inventory over the
-        // damaged-but-recoverable file. The user should instead get an
-        // actionable message naming the config file, and no stack dump.
+        // An actionable message naming the config file — not a stack dump, and above
+        // all not a cheerful "Hardware (0)".
+        Assert.Contains("config.yaml", output);
         Assert.DoesNotContain("at RackPeek.", output);
         Assert.DoesNotContain("YamlDotNet.Core", output);
+        Assert.DoesNotContain("Hardware (0)", output);
+    }
+
+    [Fact]
+    public async Task a_file_that_is_not_a_rackpeek_config_is_rejected() {
+        // Parses as YAML, carries no schema version: not our document.
+        await File.WriteAllTextAsync(ConfigPath, "hello: world\n");
+
+        var output = await ExecuteAsync("summary");
+
         Assert.Contains("config.yaml", output);
+        Assert.DoesNotContain("Hardware (0)", output);
+    }
+
+    [Fact]
+    public async Task a_damaged_config_is_never_overwritten_by_a_later_write() {
+        // The data-loss path: read the damaged file, then try to write. The write
+        // must refuse rather than persist the empty in-memory collection over it.
+        var truncated = _fullConfig[.._fullConfig.IndexOf("nd: Server\n  name: srv-c", StringComparison.Ordinal)];
+        await File.WriteAllTextAsync(ConfigPath, truncated);
+
+        var output = await ExecuteAsync("servers", "add", "srv-d");
+
+        Assert.DoesNotContain("added", output, StringComparison.OrdinalIgnoreCase);
+
+        var onDisk = await File.ReadAllTextAsync(ConfigPath);
+        Assert.Equal(truncated, onDisk);
+    }
+
+    [Fact]
+    public async Task an_empty_config_is_still_a_valid_empty_inventory() {
+        // The file the CLI itself creates on first run. Must not be mistaken for damage.
+        await File.WriteAllTextAsync(ConfigPath, "");
+
+        var output = await ExecuteAsync("servers", "add", "srv-a");
+
+        Assert.Contains("added", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("name: srv-a", await File.ReadAllTextAsync(ConfigPath));
+    }
+
+    [Fact]
+    public async Task a_legacy_config_without_a_version_key_still_migrates() {
+        // Pre-v1 files carry no version key at all. The migration chain stamps one,
+        // so they must not trip the "missing schema version" guard.
+        await File.WriteAllTextAsync(
+            ConfigPath,
+            "resources:\n  - kind: Server\n    name: legacy-srv\n");
+
+        var output = await ExecuteAsync("summary");
+
+        Assert.Contains("Server: 1", output);
+        Assert.Contains("version: 4", await File.ReadAllTextAsync(ConfigPath));
+    }
+
+    [Fact]
+    public async Task a_healthy_config_still_loads_and_writes() {
+        await File.WriteAllTextAsync(ConfigPath, _fullConfig);
+
+        var output = await ExecuteAsync("summary");
+        Assert.Contains("Server: 3", output);
+
+        output = await ExecuteAsync("servers", "add", "srv-d");
+        Assert.Contains("added", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("name: srv-d", await File.ReadAllTextAsync(ConfigPath));
     }
 }

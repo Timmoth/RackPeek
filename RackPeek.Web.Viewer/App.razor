@@ -1,4 +1,5 @@
-﻿@using RackPeek.Domain.Persistence
+﻿@using RackPeek.Domain.Helpers
+@using RackPeek.Domain.Persistence
 @using RackPeek.Web.Viewer.Pages
 @using Shared.Rcl.Servers
 @inject IResourceCollection Resources
@@ -23,7 +24,17 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await Resources.LoadAsync();
+        try
+        {
+            await Resources.LoadAsync();
+        }
+        catch (ConfigLoadException)
+        {
+            // Same contract as the server host: a config that cannot be read must not
+            // leave the app stuck on "Loading…" — the YAML editor is how it is fixed.
+            // Here the store is browser storage, so this is a bad import rather than
+            // an interrupted write (#337).
+        }
 
         _ready = true;
     }

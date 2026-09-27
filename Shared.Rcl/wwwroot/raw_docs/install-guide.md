@@ -8,6 +8,12 @@ RackPeek can run in two ways:
 RackPeek stores everything in a writable `config/` directory as YAML (including automatic backups).
 Wherever you run it, that directory must be writable.
 
+Saves are atomic: the config is written to a temporary file, flushed to disk, then renamed
+over `config.yaml`. An interrupted save therefore leaves the previous config intact rather
+than a half-written one. If the config ever does become unreadable — a damaged disk, a bad
+hand edit, a sync conflict — RackPeek refuses to read or write it rather than reporting an
+empty inventory, and the Web UI's YAML editor (`/yaml`) still loads so you can repair it.
+
 ---
 
 # Docker (Recommended)

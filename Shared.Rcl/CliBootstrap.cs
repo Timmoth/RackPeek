@@ -138,6 +138,13 @@ public static class CliBootstrap {
             // matter and is still allowed to fail loudly — the user has one to fix.
             await System.Console.Error.WriteLineAsync($"Warning: could not read {fullYamlPath} ({ex.Message}).");
         }
+        catch (ConfigLoadException) {
+            // A damaged config must not stop the process starting — `rpk discover` and
+            // `--help` do not need the inventory, and the web UI is how someone fixes
+            // the file. The failure is recorded on the collection, so every command
+            // that does touch the inventory fails with it instead of reporting an
+            // empty one (#337).
+        }
         services.AddSingleton<IResourceCollection>(collection);
 
         // Infrastructure
@@ -878,6 +885,10 @@ public static class CliBootstrap {
             case NotFoundException ne:
                 AnsiConsole.MarkupLine($"[red]Not found:[/] {ne.Message}");
                 return 4;
+
+            case ConfigLoadException cle:
+                AnsiConsole.MarkupLine($"[red]Config error:[/] {Markup.Escape(cle.Message)}");
+                return 5;
 
             case CommandParseException pe:
                 if (_showingHelp) return 1; // suppress errors during help lookup

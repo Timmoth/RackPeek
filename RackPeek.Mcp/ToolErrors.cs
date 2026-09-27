@@ -21,6 +21,11 @@ internal static class ToolErrors {
         catch (NotFoundException ex) {
             throw new McpException(ex.Message);
         }
+        catch (ConfigLoadException ex) {
+            // The config exists but cannot be read. Say so plainly rather than letting
+            // the agent see a generic failure and conclude the inventory is empty.
+            throw new McpException(ex.Message);
+        }
         catch (ConflictException ex) {
             throw new McpException(ex.Message);
         }
