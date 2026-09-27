@@ -2022,6 +2022,7 @@ COMMANDS:
     set <name>                  Update properties of a UPS unit           
     del <name>                  Delete a UPS unit                         
     rename <name> <new-name>    Rename a UPS unit to a new name           
+    port                        Manage ports on a UPS unit                
     label                       Manage labels on a UPS unit               
     tag                         Manage tags on a UPS unit                 
 ```
@@ -2143,6 +2144,76 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
+## `rpk ups port`
+```
+DESCRIPTION:
+Manage ports on a UPS unit
+
+USAGE:
+    rpk ups port [OPTIONS] <COMMAND>
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    add <name>    Add a port to a UPS unit     
+    set <name>    Update a UPS unit port       
+    del <name>    Remove a port from a UPS unit
+```
+
+## `rpk ups port add`
+```
+DESCRIPTION:
+Add a port to a UPS unit
+
+USAGE:
+    rpk ups port add <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help     Prints help information        
+        --type     The port type (e.g., rj45, usb)
+        --speed    The port speed (e.g., 0.1, 1)  
+        --count    Number of ports of this type   
+```
+
+## `rpk ups port set`
+```
+DESCRIPTION:
+Update a UPS unit port
+
+USAGE:
+    rpk ups port set <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information        
+        --index <INDEX>    The index of the port to update
+        --type             The port type (e.g., rj45, usb)
+        --speed            The port speed (e.g., 0.1, 1)  
+        --count            Number of ports of this type   
+```
+
+## `rpk ups port del`
+```
+DESCRIPTION:
+Remove a port from a UPS unit
+
+USAGE:
+    rpk ups port del <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information        
+        --index <INDEX>    The index of the port to remove
+```
+
 ## `rpk ups label`
 ```
 DESCRIPTION:
@@ -2260,6 +2331,7 @@ COMMANDS:
     set <name>                  Update properties of other hardware           
     del <name>                  Delete other hardware                         
     rename <name> <new-name>    Rename other hardware to a new name           
+    port                        Manage ports on other hardware                
     label                       Manage labels on other hardware               
     tag                         Manage tags on other hardware                 
 ```
@@ -2379,6 +2451,76 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help    Prints help information
+```
+
+## `rpk other port`
+```
+DESCRIPTION:
+Manage ports on other hardware
+
+USAGE:
+    rpk other port [OPTIONS] <COMMAND>
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    add <name>    Add a port to other hardware     
+    set <name>    Update an other hardware port    
+    del <name>    Remove a port from other hardware
+```
+
+## `rpk other port add`
+```
+DESCRIPTION:
+Add a port to other hardware
+
+USAGE:
+    rpk other port add <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help     Prints help information          
+        --type     The port type (e.g., rj45, sfp+) 
+        --speed    The port speed (e.g., 1, 2.5, 10)
+        --count    Number of ports of this type     
+```
+
+## `rpk other port set`
+```
+DESCRIPTION:
+Update an other hardware port
+
+USAGE:
+    rpk other port set <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information          
+        --index <INDEX>    The index of the port to update  
+        --type             The port type (e.g., rj45, sfp+) 
+        --speed            The port speed (e.g., 1, 2.5, 10)
+        --count            Number of ports of this type     
+```
+
+## `rpk other port del`
+```
+DESCRIPTION:
+Remove a port from other hardware
+
+USAGE:
+    rpk other port del <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information        
+        --index <INDEX>    The index of the port to remove
 ```
 
 ## `rpk other label`
@@ -3038,6 +3180,8 @@ COMMANDS:
     cpu                         Manage CPUs attached to Laptops                 
     drive                       Manage storage drives attached to Laptops       
     gpu                         Manage GPUs attached to Laptops                 
+    nic                         Manage network interface cards (NICs) for       
+                                Laptops                                         
     label                       Manage labels on a laptop                       
     tag                         Manage tags on a laptop                         
 ```
@@ -3374,6 +3518,76 @@ USAGE:
 ARGUMENTS:
     <Laptop>    The Laptop name               
     <index>     The index of the Gpu to remove
+
+OPTIONS:
+    -h, --help    Prints help information
+```
+
+## `rpk laptops nic`
+```
+DESCRIPTION:
+Manage network interface cards (NICs) for Laptops
+
+USAGE:
+    rpk laptops nic [OPTIONS] <COMMAND>
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    add <Laptop>            Add a NIC to a Laptop     
+    set <Laptop> <index>    Update a Laptop NIC       
+    del <Laptop> <index>    Remove a NIC from a Laptop
+```
+
+## `rpk laptops nic add`
+```
+DESCRIPTION:
+Add a NIC to a Laptop
+
+USAGE:
+    rpk laptops nic add <Laptop> [OPTIONS]
+
+ARGUMENTS:
+    <Laptop>    The name of the Laptop
+
+OPTIONS:
+    -h, --help     Prints help information          
+        --type     The nic port type e.g rj45 / sfp+
+        --speed    The port speed                   
+        --ports    The number of ports              
+```
+
+## `rpk laptops nic set`
+```
+DESCRIPTION:
+Update a Laptop NIC
+
+USAGE:
+    rpk laptops nic set <Laptop> <index> [OPTIONS]
+
+ARGUMENTS:
+    <Laptop>    The Laptop name               
+    <index>     The index of the nic to update
+
+OPTIONS:
+    -h, --help     Prints help information          
+        --type     The nic port type e.g rj45 / sfp+
+        --speed    The port speed                   
+        --ports    The number of ports              
+```
+
+## `rpk laptops nic del`
+```
+DESCRIPTION:
+Remove a NIC from a Laptop
+
+USAGE:
+    rpk laptops nic del <Laptop> <index> [OPTIONS]
+
+ARGUMENTS:
+    <Laptop>    The Laptop name               
+    <index>     The index of the nic to remove
 
 OPTIONS:
     -h, --help    Prints help information

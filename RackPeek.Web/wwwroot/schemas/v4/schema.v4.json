@@ -275,7 +275,8 @@
             "osfp",
             "xfp",
             "cx4",
-            "mgmt"
+            "mgmt",
+            "usb"
           ]
         },
         "speed": {
@@ -433,6 +434,12 @@
               "items": {
                 "$ref": "#/$defs/drive"
               }
+            },
+            "ports": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/port"
+              }
             }
           }
         }
@@ -587,6 +594,12 @@
             "va": {
               "type": "integer",
               "minimum": 1
+            },
+            "ports": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/port"
+              }
             }
           }
         }
@@ -609,6 +622,12 @@
             },
             "description": {
               "type": "string"
+            },
+            "ports": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/port"
+              }
             }
           }
         }

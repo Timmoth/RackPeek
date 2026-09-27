@@ -48,14 +48,20 @@ network switches, Wi-Fi access points, UPS units, and workstations.
 
 Some hardware types support sub-resources that describe their internal components.
 
-| Sub-Resource | Server | Desktop | Laptop | Switch | Router | Firewall |
-|--------------|:------:|:-------:|:------:|:------:|:------:|:--------:|
-| CPU          |  Yes   |   Yes   |  Yes   |        |        |          |
-| Drive        |  Yes   |   Yes   |  Yes   |        |        |          |
-| GPU          |  Yes   |   Yes   |  Yes   |        |        |          |
-| NIC          |  Yes   |   Yes   |        |        |        |          |
-| Port         |        |         |        |  Yes   |  Yes   |   Yes    |
-| RAM          |  Yes   |   Yes   |  Yes   |        |        |          |
+| Sub-Resource | Server | Desktop | Laptop | Switch | Router | Firewall | Access Point | UPS | Other |
+|--------------|:------:|:-------:|:------:|:------:|:------:|:--------:|:------------:|:---:|:-----:|
+| CPU          |  Yes   |   Yes   |  Yes   |        |        |          |              |     |       |
+| Drive        |  Yes   |   Yes   |  Yes   |        |        |          |              |     |       |
+| GPU          |  Yes   |   Yes   |  Yes   |        |        |          |              |     |       |
+| NIC          |  Yes   |   Yes   |  Yes   |        |        |          |              |     |       |
+| Port         |        |         |        |  Yes   |  Yes   |   Yes    |     Yes*     | Yes |  Yes  |
+| RAM          |  Yes   |   Yes   |  Yes   |        |        |          |              |     |       |
+
+\* Access Point ports are editable in the web UI and in YAML, but have no `rpk accesspoints port` CLI branch yet.
+
+NIC and Port are the same underlying sub-resource — they only differ in the CLI branch used to manage them. Compute
+kinds expose it as `rpk <kind> nic`, network and appliance kinds as `rpk <kind> port`. Either way the resource can be
+wired up with `rpk connections add` and shows up in `rpk graph topology`.
 
 Hardware is the foundation. Nothing runs "on" hardware in the RackPeek sense — hardware just exists. Systems and
 services cannot be hardware; they live on top of it.

@@ -326,4 +326,48 @@ public class LaptopCardTests(
             await context.CloseAsync();
         }
     }
+
+    // =============================================================
+    // NICs (ports)
+    // =============================================================
+
+    [Fact]
+    public async Task User_Can_Add_Nics_To_A_Laptop() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
+
+        var name = $"e2e-lap-{Guid.NewGuid():N}"[..16];
+
+        try {
+            var list = new LaptopListPom(page);
+            await list.GotoAsync(_fixture.BaseUrl);
+            await list.AssertLoadedAsync();
+
+            await list.AddLaptopAsync(name);
+            await page.WaitForURLAsync($"**/resources/hardware/{name}");
+
+            var card = new LaptopCardPom(page);
+            await Assertions.Expect(card.LaptopItem(name)).ToBeVisibleAsync();
+
+            await Assertions.Expect(card.PortGroupSection).ToBeVisibleAsync();
+
+            // Built-in wired NIC plus a USB-attached dock.
+            await card.AddPortGroupAsync("rj45", "1", 1);
+            await card.AssertPortGroupVisibleAsync(0);
+
+            await card.AddPortGroupAsync("usb", "10", 2);
+            await card.AssertPortGroupVisibleAsync(1);
+
+            await page.ReloadAsync();
+            await Assertions.Expect(card.LaptopItem(name)).ToBeVisibleAsync();
+
+            await card.AssertPortVisibleAsync(0, 0);
+            await card.AssertPortVisibleAsync(1, 0);
+            await card.AssertPortVisibleAsync(1, 1);
+
+            await card.DeleteLaptopAsync(name);
+        }
+        finally {
+            await context.CloseAsync();
+        }
+    }
 }

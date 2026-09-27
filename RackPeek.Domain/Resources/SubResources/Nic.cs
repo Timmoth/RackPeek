@@ -25,7 +25,10 @@ public class Nic {
         "xfp", "cx4",
 
         // Management / special-purpose
-        "mgmt" // Dedicated management NIC (IPMI/BMC)
+        "mgmt", // Dedicated management NIC (IPMI/BMC)
+
+        // Peripheral bus
+        "usb" // USB-attached hardware (dongles, external drives, accelerators)
     };
 
     public string? Type { get; set; }

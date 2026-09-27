@@ -49,6 +49,13 @@ public class LaptopCommandTests(TempYamlCliFixture fs, ITestOutputHelper outputH
 
         // GPU help
         Assert.Contains("Manage GPUs", (await ExecuteAsync("laptops", "gpu", "--help")).Item1);
+
+        // NIC help
+        Assert.Contains("Manage network interface cards", (await ExecuteAsync("laptops", "nic", "--help")).Item1);
+        Assert.Contains("Add a NIC to a Laptop", (await ExecuteAsync("laptops", "nic", "add", "--help")).Item1);
+        Assert.Contains("Update a Laptop NIC", (await ExecuteAsync("laptops", "nic", "set", "--help")).Item1);
+        Assert.Contains("Remove a NIC from a Laptop", (await ExecuteAsync("laptops", "nic", "del", "--help")).Item1);
+
         Assert.Contains("Rename a Laptop", (await ExecuteAsync("laptops", "rename", "--help")).Item1);
     }
 

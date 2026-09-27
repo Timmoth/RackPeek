@@ -1,4 +1,5 @@
 @using RackPeek.Domain.Resources.UpsUnits
+@using Shared.Rcl.Hardware
 @inject UpdateUpsUseCase UpdateUseCase
 @inject IGetResourceByNameUseCase<Ups> GetByNameUseCase
 @inject IDeleteResourceUseCase<Ups> DeleteUseCase
@@ -110,6 +111,12 @@
                 </div>
             }
         </div>
+
+        <!-- Ports -->
+        <PortGroupEditor T="Ups"
+                         Resource="Ups"
+                         OnResourceChanged="r => Ups = r"
+                         TestIdPrefix="ups-ports"/>
 
         <ResourceTagEditor Resource="Ups"
                            TestIdPrefix="ups"/>

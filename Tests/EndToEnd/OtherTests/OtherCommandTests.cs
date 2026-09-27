@@ -55,6 +55,19 @@ public class OtherCommandTests(TempYamlCliFixture fs, ITestOutputHelper outputHe
         Assert.Contains("Delete other hardware", delHelp);
         (var renameHelp, var _) = await ExecuteAsync("other", "rename", "--help");
         Assert.Contains("Rename other hardware", renameHelp);
+
+        // Port help
+        (var portHelp, var _) = await ExecuteAsync("other", "port", "--help");
+        Assert.Contains("Manage ports on other hardware", portHelp);
+
+        (var portAddHelp, var _) = await ExecuteAsync("other", "port", "add", "--help");
+        Assert.Contains("Add a port to other hardware", portAddHelp);
+
+        (var portSetHelp, var _) = await ExecuteAsync("other", "port", "set", "--help");
+        Assert.Contains("Update an other hardware port", portSetHelp);
+
+        (var portDelHelp, var _) = await ExecuteAsync("other", "port", "del", "--help");
+        Assert.Contains("Remove a port from other hardware", portDelHelp);
     }
 
     [Fact]

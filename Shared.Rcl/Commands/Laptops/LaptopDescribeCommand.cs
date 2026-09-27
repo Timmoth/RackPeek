@@ -23,6 +23,7 @@ public class LaptopDescribeCommand(IServiceProvider provider)
         grid.AddRow("RAM:", result.RamSummary ?? "None");
         grid.AddRow("Drives:", result.DriveCount.ToString());
         grid.AddRow("GPUs:", result.GpuCount.ToString());
+        grid.AddRow("NICs:", result.NicCount.ToString());
 
         if (result.Labels.Count > 0)
             grid.AddRow("Labels:", string.Join(", ", result.Labels.Select(kvp => $"{kvp.Key}: {kvp.Value}")));

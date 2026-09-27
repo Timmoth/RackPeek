@@ -7,6 +7,7 @@ public record OtherDescription(
     string Name,
     string? Model,
     string? Description,
+    string PortSummary,
     Dictionary<string, string> Labels
 );
 
@@ -23,6 +24,7 @@ public class DescribeOtherUseCase(IResourceCollection repository) : IUseCase {
             other.Name,
             other.Model,
             other.Description,
+            PortSummaries.Describe(other.Ports),
             other.Labels
         );
     }
