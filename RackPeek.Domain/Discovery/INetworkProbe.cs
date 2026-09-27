@@ -9,6 +9,13 @@ namespace RackPeek.Domain.Discovery;
 ///     lives in <see cref="NetworkScanner" /> and the pure parsers.
 /// </summary>
 public interface INetworkProbe {
+    /// <summary>
+    ///     True when this platform can sweep at all. The browser (WASM viewer) cannot —
+    ///     its sockets are sandboxed — and without this guard a scan there would report
+    ///     an empty network instead of the truth. Mirrors <see cref="ISystemProbe.IsSupported" />.
+    /// </summary>
+    bool IsSupported { get; }
+
     /// <summary>True when the host answers an ICMP echo within the timeout.</summary>
     Task<bool> PingAsync(string ip, TimeSpan timeout, CancellationToken cancellationToken = default);
 
@@ -23,7 +30,7 @@ public interface INetworkProbe {
     Task<string?> ReadArpAsync(CancellationToken cancellationToken = default);
 
     /// <summary>The host's reverse-DNS name, or null when it has none worth keeping.</summary>
-    Task<string?> ReverseDnsAsync(string ip, CancellationToken cancellationToken = default);
+    Task<string?> ReverseDnsAsync(string ip, TimeSpan timeout, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     The subnet of the first up, non-loopback IPv4 interface with a gateway — what

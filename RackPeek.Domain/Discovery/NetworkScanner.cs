@@ -10,6 +10,13 @@ namespace RackPeek.Domain.Discovery;
 /// </summary>
 public static class NetworkScanner {
     /// <summary>
+    ///     The widest block a sweep accepts, wherever the block came from — typed by the
+    ///     user or auto-detected off a NIC. Wider than this is 65k+ hosts: a typo or a
+    ///     CGNAT/VPN prefix, not a homelab.
+    /// </summary>
+    public const int MinPrefix = 16;
+
+    /// <summary>
     ///     Every address worth probing in the block: hosts only, so the network and
     ///     broadcast addresses are skipped — except in /31 (RFC 3021 point-to-point)
     ///     and /32, where every address is a host.
@@ -32,6 +39,13 @@ public static class NetworkScanner {
         INetworkProbe probe,
         NetworkScanOptions options,
         CancellationToken cancellationToken = default) {
+        // Enforced here rather than only at a front end, so every caller — CLI flag,
+        // auto-detected subnet, future MCP tool — hits the same wall.
+        if (options.Cidr.Prefix < MinPrefix)
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                $"/{options.Cidr.Prefix} is more than 65,534 hosts. Narrow the sweep to /{MinPrefix} or smaller.");
+
         var targets = EnumerateTargets(options.Cidr).ToList();
 
         using var gate = new SemaphoreSlim(options.Concurrency);
@@ -46,15 +60,25 @@ public static class NetworkScanner {
         IReadOnlyDictionary<string, string> macByIp =
             ArpTableParser.Parse(await probe.ReadArpAsync(cancellationToken));
 
+        // Names resolve in parallel too — a resolver that drops PTR queries burns the
+        // full timeout per lookup, and paying that once beats paying it per host.
+        var names = await Task.WhenAll(alive.Select(async h => {
+            await gate.WaitAsync(cancellationToken);
+
+            try {
+                return await probe.ReverseDnsAsync(h.Ip, options.DnsTimeout, cancellationToken);
+            }
+            finally {
+                gate.Release();
+            }
+        }));
+
         var facts = new List<NetworkHostFact>(alive.Count);
 
-        foreach ((var ip, var ping, List<int> open) in alive)
-            facts.Add(new NetworkHostFact(
-                ip,
-                macByIp.GetValueOrDefault(ip),
-                await probe.ReverseDnsAsync(ip, cancellationToken),
-                ping,
-                open));
+        for (var i = 0; i < alive.Count; i++) {
+            (var ip, var ping, List<int> open) = alive[i];
+            facts.Add(new NetworkHostFact(ip, macByIp.GetValueOrDefault(ip), names[i], ping, open));
+        }
 
         return facts
             .OrderBy(f => IpHelper.ToUInt32(f.Ip))

@@ -357,7 +357,10 @@ rpk discover network --cidr 10.0.50.0/24 --push   # the server VLAN
 
 A scanned host is identified by its **MAC address**, read from the ARP table the
 sweep itself populates — so a DHCP re-lease updates the same resource's address rather
-than inventing a new machine. Two caveats:
+than inventing a new machine. One MAC answering on several addresses (a gateway's
+VIPs and aliases) is still one machine and becomes **one card**: the lowest address as
+its `ip`, every address in an `ips` label — so a VIP failing over never moves the
+machine's identity. Two caveats:
 
 - **Hosts beyond the local segment have no ARP entry** (a routed VLAN, a VPN subnet).
   Their identity falls back to the IP address, and the command says so — a DHCP

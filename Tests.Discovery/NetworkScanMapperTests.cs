@@ -78,21 +78,34 @@ public class NetworkScanMapperTests {
     }
 
     [Fact]
-    public void One_mac_answering_on_several_addresses_yields_distinct_stable_identities() {
-        // Gateways answer on VIPs and aliases all the time: one MAC, many addresses.
-        // The shared MAC alone cannot identify the cards — the import rejects duplicate
-        // ids — so each address folds into the seed, deterministically.
-        NetworkHostFact[] swept = [
+    public void One_mac_answering_on_several_addresses_is_one_machine_with_one_card() {
+        // Gateways answer on VIPs and aliases all the time: one MAC, many addresses —
+        // still one box. Collapsing keeps the import happy (duplicate ids are rejected)
+        // AND keeps identity independent of how many addresses answered this scan.
+        List<Resource> resources = NetworkScanMapper.ToResources([
+            Host(ip: "192.168.1.2", hostname: null), // the VIP, deliberately first
+            Host(ip: "192.168.1.1", hostname: "gw.lan")
+        ]);
+
+        SystemResource card = Assert.IsType<SystemResource>(Assert.Single(resources));
+        Assert.Equal("192.168.1.1", card.Ip); // the lowest address, deterministically
+        Assert.Equal("gw", card.Name); // the one name anywhere in the group
+        Assert.Equal("192.168.1.1,192.168.1.2", card.Labels["ips"]);
+    }
+
+    [Fact]
+    public void A_vip_appearing_or_disappearing_never_moves_the_machines_identity() {
+        // The regression that motivated the collapse: an id seeded on scan-local
+        // address counts flips when a keepalived VIP fails over. MAC alone, always.
+        List<Resource> alone = NetworkScanMapper.ToResources([
+            Host(ip: "192.168.1.1", hostname: "gw.lan")
+        ]);
+        List<Resource> withVip = NetworkScanMapper.ToResources([
             Host(ip: "192.168.1.1", hostname: "gw.lan"),
             Host(ip: "192.168.1.2", hostname: null)
-        ];
+        ]);
 
-        List<Resource> resources = NetworkScanMapper.ToResources(swept);
-
-        Assert.Equal(2, resources.Select(r => r.DiscoveryId).Distinct().Count());
-        Assert.Equal(
-            resources.Select(r => r.DiscoveryId),
-            NetworkScanMapper.ToResources(swept).Select(r => r.DiscoveryId));
+        Assert.Equal(alone[0].DiscoveryId, Assert.Single(withVip).DiscoveryId);
     }
 
     [Fact]

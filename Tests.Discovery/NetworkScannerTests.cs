@@ -98,6 +98,14 @@ public class NetworkScannerTests {
             $"{probe.MaxInFlight} hosts were probed at once; the cap was 4.");
     }
 
+    [Fact]
+    public async Task A_block_wider_than_the_cap_is_refused_wherever_it_came_from() {
+        // The floor lives in the scanner, not a front end: an auto-detected VPN /10
+        // must hit the same wall a typed --cidr does.
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            NetworkScanner.ScanAsync(new ScriptedProbe(), Options("10.0.0.0/8")));
+    }
+
     /// <summary>Scripted IO: answers what it is told to, records what was asked of it.</summary>
     private sealed class ScriptedProbe : INetworkProbe {
         private readonly Lock _lock = new();
@@ -112,6 +120,7 @@ public class NetworkScannerTests {
 
         public List<(string Ip, int Port)> PortProbes { get; } = [];
         public List<string> DnsLookups { get; } = [];
+        public bool IsSupported => true;
         public int MaxInFlight { get; private set; }
         public bool ArpReadAfterSweep { get; private set; }
 
@@ -155,7 +164,10 @@ public class NetworkScannerTests {
             return Task.FromResult(Arp);
         }
 
-        public Task<string?> ReverseDnsAsync(string ip, CancellationToken cancellationToken = default) {
+        public Task<string?> ReverseDnsAsync(
+            string ip,
+            TimeSpan timeout,
+            CancellationToken cancellationToken = default) {
             lock (_lock) {
                 if (!_sweepDone)
                     throw new InvalidOperationException("Reverse DNS ran before the sweep finished.");

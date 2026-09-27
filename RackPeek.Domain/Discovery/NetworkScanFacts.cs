@@ -25,6 +25,10 @@ public sealed record NetworkScanOptions {
 
     public TimeSpan PortTimeout { get; init; } = TimeSpan.FromMilliseconds(500);
 
+    /// <summary>Cap on each alive host's reverse-DNS lookup — resolvers that silently
+    /// drop PTR queries would otherwise stall the whole result on the OS default.</summary>
+    public TimeSpan DnsTimeout { get; init; } = TimeSpan.FromSeconds(2);
+
     /// <summary>How many hosts are probed at once.</summary>
     public int Concurrency { get; init; } = 128;
 }

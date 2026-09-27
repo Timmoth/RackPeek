@@ -9,8 +9,7 @@ using NetworkCidr = RackPeek.Domain.Resources.Services.Networking.Cidr;
 namespace Shared.Rcl.Commands.Discovery;
 
 public sealed class DiscoverNetworkSettings : DiscoverSettings {
-    /// <summary>Sweeping wider than a /16 is 65k+ hosts — a typo, not a homelab.</summary>
-    public const int MinPrefix = 16;
+    private IReadOnlyList<int>? _resolvedPorts;
 
     [CommandOption("--cidr <CIDR>")]
     [Description("Subnet to sweep, e.g. 192.168.1.0/24. Defaults to this machine's own subnet.")]
@@ -29,24 +28,24 @@ public sealed class DiscoverNetworkSettings : DiscoverSettings {
     [Description("How many hosts to probe at once.")]
     public int Parallel { get; init; } = 128;
 
+    /// <summary>The parsed --cidr, or null when it was omitted or does not parse.</summary>
+    public NetworkCidr? ParsedCidr =>
+        NetworkCidr.TryParse(Cidr, out NetworkCidr parsed) ? parsed : null;
+
     public IReadOnlyList<int> ResolvedPorts =>
-        string.IsNullOrWhiteSpace(Ports) ? WellKnownPorts.Defaults : ParsePorts(Ports)!;
+        _resolvedPorts ??= string.IsNullOrWhiteSpace(Ports)
+            ? WellKnownPorts.Defaults
+            : ParsePorts(Ports) ?? WellKnownPorts.Defaults;
 
     public override ValidationResult Validate() {
         if (Cidr != null) {
-            NetworkCidr parsed;
-
-            try {
-                parsed = NetworkCidr.Parse(Cidr);
-            }
-            catch {
+            if (ParsedCidr is not { } parsed)
                 return ValidationResult.Error(
                     $"'{Cidr}' is not a usable CIDR block. Use e.g. --cidr 192.168.1.0/24");
-            }
 
-            if (parsed.Prefix < MinPrefix)
+            if (parsed.Prefix < NetworkScanner.MinPrefix)
                 return ValidationResult.Error(
-                    $"/{parsed.Prefix} is more than 65,534 hosts. Narrow the sweep to /{MinPrefix} or smaller.");
+                    $"/{parsed.Prefix} is more than 65,534 hosts. Narrow the sweep to /{NetworkScanner.MinPrefix} or smaller.");
         }
 
         if (Ports != null && ParsePorts(Ports) == null)
@@ -87,10 +86,20 @@ public sealed class DiscoverNetworkCommand(INetworkProbe probe)
         CommandContext context,
         DiscoverNetworkSettings settings,
         CancellationToken cancellationToken) {
+        if (!probe.IsSupported) {
+            // Without this, the browser console's sandboxed sockets would swallow every
+            // probe and the command would report an empty network as if it were true.
+            AnsiConsole.MarkupLine(
+                "[red]Network scanning is not supported on this platform.[/] " +
+                "Run rpk on a machine attached to the network instead.");
+
+            return 1;
+        }
+
         Cidr cidr;
 
-        if (settings.Cidr != null) {
-            cidr = Cidr.Parse(settings.Cidr); // Validate() vouched for it
+        if (settings.ParsedCidr is { } requested) {
+            cidr = requested;
         }
         else {
             Cidr? detected = probe.LocalSubnet();
@@ -98,6 +107,16 @@ public sealed class DiscoverNetworkCommand(INetworkProbe probe)
             if (detected == null) {
                 AnsiConsole.MarkupLine(
                     "[red]Could not detect this machine's subnet.[/] Pass --cidr, e.g. --cidr 192.168.1.0/24");
+
+                return 1;
+            }
+
+            // The same cap --cidr gets: a VPN or CGNAT interface can carry a /10, and
+            // auto-detection must never be the way around the sweep limit.
+            if (detected.Value.Prefix < NetworkScanner.MinPrefix) {
+                AnsiConsole.MarkupLine(
+                    $"[red]This machine's subnet is {Markup.Escape(detected.Value.ToString())} — more than " +
+                    $"65,534 hosts.[/] Pass --cidr with a narrower block, e.g. --cidr 192.168.1.0/24");
 
                 return 1;
             }
