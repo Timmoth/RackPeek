@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Connections;
+using RackPeek.Domain.Resources.Services;
+using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.Discovery;
 
@@ -65,6 +67,71 @@ public static class DiscoveryIdResolver {
         }
 
         PreserveStoredRunsOn(incomingWithId, incoming, existingById, existingByName);
+        AnchorRunsOnByIp(existing, incoming, existingByName);
+    }
+
+    /// <summary>
+    ///     Gives a service whose <c>runsOn</c> names nothing the host it is plainly
+    ///     running on: the system at its own address.
+    ///     <para>
+    ///         A collector that cannot see the machine it is talking to has to guess the
+    ///         host's name — docker over TCP sends whatever the engine calls itself, which
+    ///         need not match any resource — and the link then dangles. The address is
+    ///         evidence the guess is not: a service answering on 192.0.2.57 is running on
+    ///         whatever owns 192.0.2.57.
+    ///     </para>
+    ///     <para>
+    ///         Deliberately conservative. It only fills a link that resolves to nothing,
+    ///         only when exactly one system claims that address, and never across a
+    ///         resource that already has a working parent — an ambiguous address is no
+    ///         evidence at all, and a wrong parent is worse than a missing one.
+    ///     </para>
+    /// </summary>
+    private static void AnchorRunsOnByIp(
+        IReadOnlyList<Resource> existing,
+        IReadOnlyList<Resource> incoming,
+        Dictionary<string, Resource> existingByName) {
+        var services = incoming.OfType<Service>().ToList();
+
+        if (services.Count == 0)
+            return;
+
+        var incomingNames = new HashSet<string>(
+            incoming.Select(r => r.Name),
+            StringComparer.OrdinalIgnoreCase);
+
+        // Both sides count: the host may have arrived in this very payload (discover
+        // docker emits it alongside its services) or be sitting in the inventory already.
+        var systemsByIp = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (SystemResource system in existing.OfType<SystemResource>().Concat(incoming.OfType<SystemResource>())) {
+            if (string.IsNullOrWhiteSpace(system.Ip))
+                continue;
+
+            if (!systemsByIp.TryGetValue(system.Ip, out List<string>? names))
+                systemsByIp[system.Ip] = names = [];
+
+            if (!names.Contains(system.Name, StringComparer.OrdinalIgnoreCase))
+                names.Add(system.Name);
+        }
+
+        foreach (Service service in services) {
+            var ip = service.Network?.Ip;
+
+            if (string.IsNullOrWhiteSpace(ip))
+                continue;
+
+            var anchored = service.RunsOn.Any(name =>
+                existingByName.ContainsKey(name) || incomingNames.Contains(name));
+
+            if (anchored)
+                continue;
+
+            if (!systemsByIp.TryGetValue(ip, out List<string>? candidates) || candidates.Count != 1)
+                continue;
+
+            service.RunsOn = [candidates[0]];
+        }
     }
 
     /// <summary>

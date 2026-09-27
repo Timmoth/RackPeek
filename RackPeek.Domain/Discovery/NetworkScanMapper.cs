@@ -1,4 +1,5 @@
 using RackPeek.Domain.Resources;
+using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.Services.Networking;
 using RackPeek.Domain.Resources.SystemResources;
 
@@ -18,11 +19,18 @@ public static class NetworkScanMapper {
                 DiscoveryId.NetworkScheme,
                 host.Mac ?? $"ip:{host.Ip}");
 
+            // A PTR record is the network's own answer and wins. Failing that, whatever a
+            // service volunteered beats a hash of the MAC — "pve-node-01" over "host-1a2b3c4d".
+            var label = DiscoveryNaming.HostLabel(host.Hostname);
+
+            if (string.IsNullOrEmpty(label) && NamesAHost(host.Identity))
+                label = DiscoveryNaming.HostLabel(host.Identity!.Name);
+
             var system = new SystemResource {
                 Kind = SystemResource.KindLabel,
                 Name = DiscoveryNaming.Unique(
                     DiscoveryNaming.Suggest(
-                        DiscoveryNaming.HostLabel(host.Hostname),
+                        label,
                         "host",
                         discoveryId),
                     discoveryId,
@@ -37,14 +45,86 @@ public static class NetworkScanMapper {
             if (host.Mac != null)
                 system.Labels["mac"] = host.Mac;
 
+            if (host.Vendor != null)
+                system.Labels["vendor"] = host.Vendor;
+
+            // The ports are observations, not conclusions: "554 is open" is a fact, while
+            // "this is a camera" is an inference the reader is far better placed to make
+            // than the scanner. Recording them keeps the evidence without inventing a
+            // service that may not be what the port number conventionally implies.
+            if (host.OpenPorts.Count > 0)
+                system.Labels["open-ports"] = string.Join(",", host.OpenPorts);
+
+            // Kept even when the name came from somewhere else: it records what the host
+            // actually said, which is how someone judges whether the name is trustworthy.
+            if (host.Identity != null)
+                system.Labels["identified-by"] =
+                    $"{Describe(host.Identity.Source)}:{host.Identity.Port} {host.Identity.Name}";
+
             if (allIps.Count > 1)
                 system.Labels["ips"] = string.Join(",", allIps);
 
             resources.Add(system);
+
+            // An application that named itself over HTTP is a fact about what the host
+            // runs, not about what the host is, so it becomes a Service hanging off the
+            // card rather than renaming it.
+            foreach (ServiceIdentity found in host.Services) {
+                // An appliance's own management UI is not a service running on it: a
+                // firewall whose page says "OPNsense" on a card already called opnsense
+                // would otherwise get a second card named opnsense-<hash>, which says
+                // nothing the first one did not.
+                if (DiscoveryNaming.Slug(DiscoveryNaming.HostLabel(found.Name))
+                    .Equals(system.Name, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var serviceId = DiscoveryId.Create(
+                    DiscoveryId.NetworkScheme,
+                    $"{host.Mac ?? $"ip:{host.Ip}"}:{found.Port}");
+
+                resources.Add(new Service {
+                    Kind = Service.KindLabel,
+                    Name = DiscoveryNaming.Unique(
+                        DiscoveryNaming.Suggest(
+                            DiscoveryNaming.HostLabel(found.Name),
+                            "service",
+                            serviceId),
+                        serviceId,
+                        taken),
+                    DiscoveryId = serviceId,
+                    Network = new Network {
+                        Ip = host.Ip,
+                        Port = found.Port,
+                        Protocol = "TCP"
+                    },
+                    RunsOn = [system.Name]
+                });
+            }
         }
 
         return resources;
     }
+
+    /// <summary>
+    ///     Whether an identity is a claim about the machine rather than about something
+    ///     running on it. Only a certificate is: an X.509 common name is a host name by
+    ///     construction, which is why a Proxmox node's certificate says "pve-node-01".
+    ///     <para>
+    ///         A page title names an application — and a host may run several, so naming
+    ///         the machine after whichever answered first is arbitrary. Those become
+    ///         Services instead. An SSH greeting names only the daemon; naming from it
+    ///         produced five cards called "openssh" on a real sweep.
+    ///     </para>
+    /// </summary>
+    private static bool NamesAHost(ServiceIdentity? identity) =>
+        identity is { Source: IdentitySource.TlsCertificate };
+
+    private static string Describe(IdentitySource source) => source switch {
+        IdentitySource.TlsCertificate => "tls",
+        IdentitySource.SshBanner => "ssh",
+        IdentitySource.Http => "http",
+        _ => "dns"
+    };
 
     /// <summary>
     ///     One MAC answering on several addresses — a gateway's VIPs and aliases — is

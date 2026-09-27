@@ -8,7 +8,7 @@ don't have to type in what the machine already knows about itself.
 | `rpk discover system` | the machine it runs on | one **System** resource |
 | `rpk discover docker` | the Docker Engine API | one **Service** per published container, plus the **System** they run on |
 | `rpk discover proxmox` | a Proxmox VE cluster | a **Server** and **System** per node, a **System** per guest, already wired together |
-| `rpk discover network` | a subnet, from outside | one **System** per host that answers ping or a well-known TCP port |
+| `rpk discover network` | a subnet, from outside | one **System** per host that answers, plus a **Service** for each web application it recognises |
 
 Both print YAML to standard output by default and change nothing, so it is always safe
 to run one and look at the result first.
@@ -227,10 +227,10 @@ and most installations keep it.
 
 **A node becomes two resources**, because it is two things:
 
-* a **Server** named after the node (`kepler`) — the machine, carrying its processor
+* a **Server** named after the node (`pve-node-01`) — the machine, carrying its processor
   (model, cores and threads per socket), memory, physical disks with Proxmox's own
   nvme/ssd/hdd classification, and its GPUs;
-* a **System** of type `hypervisor` (`kepler-pve`) — the Proxmox install running on that
+* a **System** of type `hypervisor` (`pve-node-01-pve`) — the Proxmox install running on that
   machine, carrying the PVE version.
 
 Guests then run on the hypervisor, giving the full Hardware → System → System tree that
@@ -238,7 +238,7 @@ the graph views are built around.
 
 ```yaml
 - kind: Server
-  name: kepler
+  name: pve-node-01
   cpus:
   - model: AMD Ryzen 5 5600G
     cores: 6
@@ -252,14 +252,14 @@ the graph views are built around.
   - model: GeForce RTX 3090
   - model: GeForce RTX 3090
 - kind: System
-  name: kepler-pve
+  name: pve-node-01-pve
   type: hypervisor
   os: Proxmox VE 8.2.2
-  runsOn: [kepler]
+  runsOn: [pve-node-01]
 - kind: System
   name: docker-01
   type: vm
-  runsOn: [kepler-pve]
+  runsOn: [pve-node-01-pve]
 ```
 
 Each QEMU guest becomes a `vm` and each LXC guest a `container`, with its allocated
@@ -291,7 +291,7 @@ visible from either end:
   type: vm
   labels:
     gpu: GeForce RTX 3090, GeForce RTX 3090
-  runsOn: [kepler-pve]
+  runsOn: [pve-node-01-pve]
 ```
 
 A label rather than a field, because RackPeek has no first-class way to say "this device
@@ -322,8 +322,9 @@ with no cluster uses its node name as the scope instead.
 ## `rpk discover network`
 
 The collector for machines nothing else can describe: no agent, no API — just an
-address that answers. It sweeps a subnet and emits one **System** per responding host,
-with its IP, its reverse-DNS name, and its MAC address as a label.
+address that answers. It sweeps a subnet and emits one **System** per responding host —
+with its IP, a name, its MAC address, and the vendor that MAC belongs to — plus a
+**Service** for each web application that names itself.
 
 ```bash
 # Sweep this machine's own subnet and look at the result
@@ -342,6 +343,95 @@ proxmox, and friends); `--ports 22,80,443` narrows or widens it. The ports are o
 liveness check: the sweep records that the host exists, not what it serves — pair it
 with `rpk discover docker` or hand-written Service cards for that.
 
+### Where a scanned host's name comes from
+
+A homelab rarely has PTR records for everything, and a page of `host-1a2b3c4d` cards is
+not documentation. So once a host is known to be alive, the sweep asks it what it is,
+taking the first answer from:
+
+1. **A reverse-DNS (PTR) record** — the network's own answer, so it always wins.
+2. **A TLS certificate's Common Name**, read from 443, 8006 or 8443. The strongest
+   remaining evidence, because appliances ship a certificate naming themselves: a
+   Proxmox node presents `CN=pve-node-01.example.com`, OPNsense presents its hostname.
+   The certificate is read, never trusted — self-signed is the norm here.
+3. **An SSH greeting** on 22, reduced to the software (`SSH-2.0-dropbear` → `dropbear`).
+   That names what the host runs rather than the host, which still separates an
+   embedded appliance from a general-purpose box.
+4. **An HTTP page title or `Server` header**, on the usual web ports and on anything else
+   found open — how a Home Assistant or a Forgejo announces itself. Titles are trimmed to
+   the phrase before their first separator, so "Forgejo: Beyond coding. We Forge." names a
+   machine `forgejo`, and the titles of error pages are ignored entirely.
+
+Whatever answered is recorded in an `identified-by` label (`tls:8006 pve-node-01.example.com`)
+so you can see where a name came from and judge it. Nothing is sent to the host beyond a
+bare `GET /`, and a host that stays silent simply keeps its generated name.
+
+Identification costs a handful of short connections per *living* host — never per
+address — and `--no-identify` turns it off for a pure liveness sweep.
+
+### Open ports
+
+The liveness sweep stops at the first answer, because it only needs to know the host
+exists. Once a host has answered, it is checked against a wider list — cameras (554),
+MQTT brokers (1883), Home Assistant (8123), Portainer (9000), Plex, Postgres and so on —
+and whatever is open lands in an `open-ports` label.
+
+These are recorded as observations, not conclusions. "554 is open" is a fact; "this is a
+camera" is an inference, and the person reading the card is far better placed to draw it
+than the scanner is. A port number is a convention rather than a guarantee, so RackPeek
+will not name a service from one — but a port **is** the best possible target for the
+banner probes above, which is how `9000` became "Portainer" and `8123` became
+"Home Assistant".
+
+The list is what answered out of the ports probed, not a full port scan. `--ports`
+widens the liveness set if you want more.
+
+### Applications become Services
+
+When a port answers HTTP with something that names itself, that is a fact about what the
+host **runs**, not about what the host **is** — so it becomes a Service hanging off the
+host's card rather than renaming it:
+
+```yaml
+- kind: System
+  ip: 192.0.2.204
+  name: host-1a2b3c4d
+  labels:
+    open-ports: 1883,8123
+    identified-by: http:8123 Home Assistant
+- kind: Service
+  name: home-assistant
+  network: { ip: 192.0.2.204, port: 8123, protocol: TCP }
+  runsOn: [host-1a2b3c4d]
+```
+
+A host may run several, so each identified port gets its own Service with its own stable
+id — a rescan updates them rather than duplicating them. This is why a page title does
+not name the machine: picking whichever application answered first would be arbitrary,
+and a certificate is the only answer that is a claim about the machine itself.
+
+An appliance's own management page is not a service running on it, so a title matching
+the host's own name is skipped — a firewall already called `opnsense` does not also need
+a service called `opnsense`.
+
+### Vendor from the MAC
+
+Where the sweep has a MAC, the card also gets a `vendor` label naming the organisation
+that OUI belongs to — `Espressif`, `Ubiquiti`, `Raspberry Pi`, `Proxmox`. For a silent
+device with no PTR record and no web UI, this is often the only thing that distinguishes
+it from an address.
+
+Two details worth knowing. A hypervisor's own prefix wins over the
+locally-administered bit, so a KVM guest reads as `QEMU/KVM` rather than anonymous. And
+an address a device made up for itself — modern phones and laptops randomise per network
+for privacy — is reported as `Randomised (locally administered)`, because the OUI half of
+such an address names nobody and a lookup would otherwise attribute it to whichever
+company happens to own the matching block.
+
+The table is a curated subset of the IEEE registry covering the gear that turns up on a
+homelab, not all 40,000 assignments; an unknown prefix yields no label rather than a
+guess. Run `./generate-oui-table.py` against the registry to extend it.
+
 Sweeps are capped at a /16 (65,534 addresses). `--timeout` and `--parallel` tune how
 patient and how aggressive the sweep is; the defaults finish a quiet /24 in seconds.
 
@@ -349,8 +439,8 @@ A network of several VLANs is several sweeps — each merges into the same inven
 and the ids keep re-runs honest:
 
 ```bash
-rpk discover network --cidr 10.0.20.0/24 --push   # the LAN
-rpk discover network --cidr 10.0.50.0/24 --push   # the server VLAN
+rpk discover network --cidr 192.168.10.0/24 --push   # the LAN
+rpk discover network --cidr 192.168.50.0/24 --push   # the server VLAN
 ```
 
 ### Identity

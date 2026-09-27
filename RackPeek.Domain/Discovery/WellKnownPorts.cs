@@ -20,4 +20,31 @@ public static class WellKnownPorts {
         8443, // alt https
         9100 // node-exporter / jetdirect
     ];
+
+    /// <summary>
+    ///     The wider list a host is checked against once it has already proven it is
+    ///     alive. Liveness is paid per address, so <see cref="Defaults" /> stays short;
+    ///     this runs only on hosts that answered, where a dozen more connections cost
+    ///     nothing and buy two things — a service on one of these ports is a strong
+    ///     statement about what the machine is, and it is a target for the banner probes
+    ///     that actually name it.
+    /// </summary>
+    public static readonly IReadOnlyList<int> Identity = [
+        .. Defaults,
+        554, // rtsp — cameras
+        1883, // mqtt — home automation brokers
+        3000, // grafana / forgejo / many node apps
+        3306, // mysql
+        5432, // postgres
+        5900, // vnc
+        6379, // redis
+        7860, // gradio / stable-diffusion
+        8000, // alt http
+        8096, // jellyfin
+        8123, // home assistant
+        9000, // portainer / minio
+        9090, // prometheus / cockpit
+        11434, // ollama
+        32400 // plex
+    ];
 }

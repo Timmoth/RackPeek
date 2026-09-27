@@ -4090,6 +4090,8 @@ OPTIONS:
                            e.g. 22,80,443. Defaults to a curated homelab list   
         --timeout <MS>     Milliseconds to wait on each port probe              
         --parallel <N>     How many hosts to probe at once                      
+        --no-identify      Skip asking living hosts what they are — sweep for   
+                           liveness only                                        
 ```
 
 ## `rpk ansible`
