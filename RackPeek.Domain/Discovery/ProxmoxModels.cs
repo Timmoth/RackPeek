@@ -66,6 +66,12 @@ public sealed record ProxmoxGuest {
     public string? Os { get; init; }
 
     public string? Ip { get; init; }
+
+    /// <summary>
+    ///     The guest's NIC MACs, from its config's netN lines — the bridge that lets a
+    ///     network scan and this collector agree they are looking at the same guest.
+    /// </summary>
+    public IReadOnlyList<string> Macs { get; init; } = [];
 }
 
 /// <summary>
@@ -218,14 +224,55 @@ public static class ProxmoxResponseParser {
         using var document = JsonDocument.Parse(json);
 
         if (!document.RootElement.TryGetProperty("data", out JsonElement data))
-            return new ProxmoxGuestConfig(null, null, [], []);
+            return new ProxmoxGuestConfig(null, null, [], [], []);
 
         return new ProxmoxGuestConfig(
             DescribeOs(GetString(data, "ostype")),
             ParseStaticIp(GetString(data, "net0")),
             ParseDiskSizes(data),
-            ParsePassthrough(data));
+            ParsePassthrough(data),
+            ParseMacs(data));
     }
+
+    /// <summary>
+    ///     The MACs in a guest's netN lines. QEMU spells them as the NIC model's value
+    ///     (<c>virtio=BC:24:11:…</c>), containers as <c>hwaddr=BC:24:11:…</c> — so any
+    ///     part whose value normalises to a MAC counts, and nothing else can (bridge
+    ///     names, ip=, tags never survive normalisation). Normalised by the same code
+    ///     that reads ARP tables, so a scan and this collector always agree.
+    /// </summary>
+    public static List<string> ParseMacs(JsonElement config) {
+        var macs = new List<string>();
+
+        foreach (JsonProperty property in config.EnumerateObject()) {
+            if (!IsNetSlot(property.Name))
+                continue;
+
+            var value = property.Value.ValueKind == JsonValueKind.String ? property.Value.GetString() : null;
+
+            if (value == null)
+                continue;
+
+            foreach (var part in value.Split(',', StringSplitOptions.TrimEntries)) {
+                var separator = part.IndexOf('=');
+
+                if (separator <= 0)
+                    continue;
+
+                var mac = ArpTableParser.NormaliseMac(part[(separator + 1)..]);
+
+                if (mac != null)
+                    macs.Add(mac);
+            }
+        }
+
+        return macs.Distinct().ToList();
+    }
+
+    private static bool IsNetSlot(string key) =>
+        key.StartsWith("net", StringComparison.OrdinalIgnoreCase)
+        && key.Length > 3
+        && key[3..].All(char.IsAsciiDigit);
 
     /// <summary>
     ///     Every disk attached to a guest. The guest list only carries <c>maxdisk</c>,
@@ -424,4 +471,5 @@ public sealed record ProxmoxGuestConfig(
     string? Os,
     string? Ip,
     IReadOnlyList<long> DiskBytes,
-    IReadOnlyList<string> PassthroughAddresses);
+    IReadOnlyList<string> PassthroughAddresses,
+    IReadOnlyList<string>? Macs = null);

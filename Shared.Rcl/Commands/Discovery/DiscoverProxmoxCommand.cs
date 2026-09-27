@@ -131,7 +131,8 @@ public sealed class DiscoverProxmoxCommand : AsyncCommand<DiscoverProxmoxSetting
                         Os = configs[i].Os,
                         Ip = configs[i].Ip,
                         Disks = configs[i].DiskBytes,
-                        PassthroughAddresses = configs[i].PassthroughAddresses
+                        PassthroughAddresses = configs[i].PassthroughAddresses,
+                        Macs = configs[i].Macs ?? []
                     });
             }
         }

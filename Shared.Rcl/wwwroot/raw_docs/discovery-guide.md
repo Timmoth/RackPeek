@@ -390,8 +390,12 @@ cards — and agent-grade identities never unify with each other on a MAC alone 
 VMs can share one; that is what machine-ids are for). The machine running the sweep
 finds itself, and unifies with its own `rpk discover system` card the same way.
 
-Proxmox remains the exception: its API view carries no host MACs, so the known
-limitation above still applies between `discover proxmox` and the other collectors.
+`rpk discover proxmox` joins the bridge for **guests**: a guest's config names the
+NIC MACs Proxmox assigned it, so a VM or container found by a sweep and the same guest
+reported by the Proxmox collector become one card too. Nodes stay outside the bridge
+(the API exposes no host MACs we read), and a guest documented both by Proxmox and by
+`rpk discover system` *inside* it remains two cards — vmid and machine-id are both
+agent-grade identities, and MACs alone never unify those.
 
 ### Being a good citizen
 
