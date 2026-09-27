@@ -92,16 +92,16 @@ If you see:
 Access to the path '/app/config/config.yaml' is denied.
 ```
 
-Fix ownership:
+Fix ownership — RackPeek runs as UID/GID **1654:1654** inside the container:
 
 ```bash
-sudo chown -R 1000:1000 /path/on/host/rackpeek
+sudo chown -R 1654:1654 /path/on/host/rackpeek
 ```
 
-Or explicitly set the container user:
+You can verify the container user with:
 
-```yaml
-user: "1000:1000"
+```bash
+docker exec rackpeek id
 ```
 
 RackPeek must be able to:
