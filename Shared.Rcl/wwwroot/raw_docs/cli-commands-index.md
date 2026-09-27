@@ -129,6 +129,10 @@
     - [set](docs/Commands.md#rpk-ups-set) - Update properties of a UPS unit
     - [del](docs/Commands.md#rpk-ups-del) - Delete a UPS unit
     - [rename](docs/Commands.md#rpk-ups-rename) - Rename a UPS unit to a new name
+    - [port](docs/Commands.md#rpk-ups-port) - Manage ports on a UPS unit
+      - [add](docs/Commands.md#rpk-ups-port-add) - Add a port to a UPS unit
+      - [set](docs/Commands.md#rpk-ups-port-set) - Update a UPS unit port
+      - [del](docs/Commands.md#rpk-ups-port-del) - Remove a port from a UPS unit
     - [label](docs/Commands.md#rpk-ups-label) - Manage labels on a UPS unit
       - [add](docs/Commands.md#rpk-ups-label-add) - Add a label to a UPS unit
       - [remove](docs/Commands.md#rpk-ups-label-remove) - Remove a label from a UPS unit
@@ -144,6 +148,10 @@
     - [set](docs/Commands.md#rpk-other-set) - Update properties of other hardware
     - [del](docs/Commands.md#rpk-other-del) - Delete other hardware
     - [rename](docs/Commands.md#rpk-other-rename) - Rename other hardware to a new name
+    - [port](docs/Commands.md#rpk-other-port) - Manage ports on other hardware
+      - [add](docs/Commands.md#rpk-other-port-add) - Add a port to other hardware
+      - [set](docs/Commands.md#rpk-other-port-set) - Update an other hardware port
+      - [del](docs/Commands.md#rpk-other-port-del) - Remove a port from other hardware
     - [label](docs/Commands.md#rpk-other-label) - Manage labels on other hardware
       - [add](docs/Commands.md#rpk-other-label-add) - Add a label to other hardware
       - [remove](docs/Commands.md#rpk-other-label-remove) - Remove a label from other hardware
@@ -204,6 +212,10 @@
       - [add](docs/Commands.md#rpk-laptops-gpu-add) - Add a GPU to a Laptop
       - [set](docs/Commands.md#rpk-laptops-gpu-set) - Update a Laptop GPU
       - [del](docs/Commands.md#rpk-laptops-gpu-del) - Remove a GPU from a Laptop
+    - [nic](docs/Commands.md#rpk-laptops-nic) - Manage network interface cards (NICs) for Laptops
+      - [add](docs/Commands.md#rpk-laptops-nic-add) - Add a NIC to a Laptop
+      - [set](docs/Commands.md#rpk-laptops-nic-set) - Update a Laptop NIC
+      - [del](docs/Commands.md#rpk-laptops-nic-del) - Remove a NIC from a Laptop
     - [label](docs/Commands.md#rpk-laptops-label) - Manage labels on a laptop
       - [add](docs/Commands.md#rpk-laptops-label-add) - Add a label to a laptop
       - [remove](docs/Commands.md#rpk-laptops-label-remove) - Remove a label from a laptop

@@ -87,4 +87,53 @@ public class LaptopErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
 
         Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
+
+
+    // NIC errors
+    [Fact]
+    public async Task nic_add_missing_laptop_returns_error() {
+        (var output, var _) = await ExecuteAsync(
+            "laptops", "nic", "add", "ghost",
+            "--type", "rj45",
+            "--speed", "1",
+            "--ports", "1"
+        );
+
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task nic_add_invalid_type_returns_error() {
+        await ExecuteAsync("laptops", "add", "lap01");
+
+        (var output, var _) = await ExecuteAsync(
+            "laptops", "nic", "add", "lap01",
+            "--type", "not-a-port-type",
+            "--speed", "1",
+            "--ports", "1"
+        );
+
+        Assert.Contains("not valid", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task nic_set_invalid_index_returns_error() {
+        await ExecuteAsync("laptops", "add", "lap01");
+
+        (var output, var _) = await ExecuteAsync(
+            "laptops", "nic", "set", "lap01", "4",
+            "--type", "rj45"
+        );
+
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task nic_del_invalid_index_returns_error() {
+        await ExecuteAsync("laptops", "add", "lap01");
+
+        (var output, var _) = await ExecuteAsync("laptops", "nic", "del", "lap01", "2");
+
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
+    }
 }

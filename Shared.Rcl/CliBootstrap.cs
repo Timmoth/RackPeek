@@ -38,6 +38,7 @@ using Shared.Rcl.Commands.Laptops.Cpus;
 using Shared.Rcl.Commands.Laptops.Drive;
 using Shared.Rcl.Commands.Laptops.Gpus;
 using Shared.Rcl.Commands.Laptops.Labels;
+using Shared.Rcl.Commands.Laptops.Nics;
 using Shared.Rcl.Commands.Laptops.Rename;
 using Shared.Rcl.Commands.Routers;
 using Shared.Rcl.Commands.Routers.Labels;
@@ -62,10 +63,12 @@ using Shared.Rcl.Commands.Systems.Labels;
 using Shared.Rcl.Commands.Systems.Rename;
 using Shared.Rcl.Commands.OtherHardware;
 using Shared.Rcl.Commands.OtherHardware.Labels;
+using Shared.Rcl.Commands.OtherHardware.Ports;
 using Shared.Rcl.Commands.OtherHardware.Rename;
 using Shared.Rcl.Commands.Tags;
 using Shared.Rcl.Commands.Ups;
 using Shared.Rcl.Commands.Ups.Labels;
+using Shared.Rcl.Commands.Ups.Ports;
 using Shared.Rcl.Commands.Ups.Rename;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -512,6 +515,16 @@ public static class CliBootstrap {
                 ups.AddCommand<UpsRenameCommand>("rename")
                     .WithDescription("Rename a UPS unit to a new name.");
 
+                ups.AddBranch("port", port => {
+                    port.SetDescription("Manage ports on a UPS unit.");
+
+                    port.AddCommand<UpsPortAddCommand>("add").WithDescription("Add a port to a UPS unit.");
+
+                    port.AddCommand<UpsPortUpdateCommand>("set").WithDescription("Update a UPS unit port.");
+
+                    port.AddCommand<UpsPortRemoveCommand>("del").WithDescription("Remove a port from a UPS unit.");
+                });
+
                 ups.AddBranch("label", label => {
                     label.SetDescription("Manage labels on a UPS unit.");
                     label.AddCommand<UpsLabelAddCommand>("add").WithDescription("Add a label to a UPS unit.");
@@ -552,6 +565,17 @@ public static class CliBootstrap {
 
                 other.AddCommand<OtherRenameCommand>("rename")
                     .WithDescription("Rename other hardware to a new name.");
+
+                other.AddBranch("port", port => {
+                    port.SetDescription("Manage ports on other hardware.");
+
+                    port.AddCommand<OtherPortAddCommand>("add").WithDescription("Add a port to other hardware.");
+
+                    port.AddCommand<OtherPortUpdateCommand>("set").WithDescription("Update an other hardware port.");
+
+                    port.AddCommand<OtherPortRemoveCommand>("del")
+                        .WithDescription("Remove a port from other hardware.");
+                });
 
                 other.AddBranch("label", label => {
                     label.SetDescription("Manage labels on other hardware.");
@@ -686,6 +710,14 @@ public static class CliBootstrap {
                     gpu.AddCommand<LaptopGpuAddCommand>("add").WithDescription("Add a GPU to a Laptop.");
                     gpu.AddCommand<LaptopGpuSetCommand>("set").WithDescription("Update a Laptop GPU.");
                     gpu.AddCommand<LaptopGpuRemoveCommand>("del").WithDescription("Remove a GPU from a Laptop.");
+                });
+
+                // NICs
+                laptops.AddBranch("nic", nic => {
+                    nic.SetDescription("Manage network interface cards (NICs) for Laptops.");
+                    nic.AddCommand<LaptopNicAddCommand>("add").WithDescription("Add a NIC to a Laptop.");
+                    nic.AddCommand<LaptopNicSetCommand>("set").WithDescription("Update a Laptop NIC.");
+                    nic.AddCommand<LaptopNicRemoveCommand>("del").WithDescription("Remove a NIC from a Laptop.");
                 });
 
                 laptops.AddBranch("label", label => {

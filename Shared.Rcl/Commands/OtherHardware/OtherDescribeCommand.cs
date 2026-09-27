@@ -23,6 +23,7 @@ public class OtherDescribeCommand(IServiceProvider provider)
         grid.AddRow("Name:", other.Name.EscapeMarkup());
         grid.AddRow("Model:", (other.Model ?? "Unknown").EscapeMarkup());
         grid.AddRow("Description:", (other.Description ?? "Unknown").EscapeMarkup());
+        grid.AddRow("Ports:", other.PortSummary.EscapeMarkup());
 
         if (other.Labels.Count > 0)
             grid.AddRow("Labels:", string.Join(", ", other.Labels.Select(kvp => $"{kvp.Key.EscapeMarkup()}: {kvp.Value.EscapeMarkup()}")));

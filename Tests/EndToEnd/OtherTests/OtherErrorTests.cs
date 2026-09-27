@@ -57,4 +57,57 @@ public class OtherErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelp
 
         Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
     }
+
+
+    // Port errors
+    [Fact]
+    public async Task port_add_missing_other_returns_error() {
+        (var output, var _) = await ExecuteAsync(
+            "other", "port", "add", "ghost",
+            "--type", "rj45",
+            "--speed", "1",
+            "--count", "1"
+        );
+
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task port_add_invalid_type_returns_error() {
+        await ExecuteAsync("other", "add", "radio01");
+
+        (var output, var _) = await ExecuteAsync(
+            "other", "port", "add", "radio01",
+            "--type", "not-a-port-type",
+            "--speed", "1",
+            "--count", "1"
+        );
+
+        Assert.Contains("not valid", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task port_set_invalid_index_returns_error() {
+        await ExecuteAsync("other", "add", "radio01");
+
+        (var output, var _) = await ExecuteAsync(
+            "other", "port", "set", "radio01",
+            "--index", "5",
+            "--type", "rj45"
+        );
+
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task port_del_invalid_index_returns_error() {
+        await ExecuteAsync("other", "add", "radio01");
+
+        (var output, var _) = await ExecuteAsync(
+            "other", "port", "del", "radio01",
+            "--index", "3"
+        );
+
+        Assert.Contains("not found", output, StringComparison.OrdinalIgnoreCase);
+    }
 }
