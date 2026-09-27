@@ -30,6 +30,17 @@ public class ArpTableParserTests {
     }
 
     [Fact]
+    public void The_windows_arp_output_parses_to_the_same_macs_as_linux() {
+        IReadOnlyDictionary<string, string> linux = ArpTableParser.Parse(Fixture.Read("linux-arp-table"));
+        IReadOnlyDictionary<string, string> windows = ArpTableParser.Parse(Fixture.Read("windows-arp-output"));
+
+        // Windows prints dashes and uppercase; the interface/header lines parse to nothing.
+        Assert.Equal(linux["192.168.1.1"], windows["192.168.1.1"]);
+        Assert.Equal(linux["192.168.1.20"], windows["192.168.1.20"]);
+        Assert.False(windows.ContainsKey("Interface:"));
+    }
+
+    [Fact]
     public void Unresolved_neighbours_contribute_nothing() {
         IReadOnlyDictionary<string, string> linux = ArpTableParser.Parse(Fixture.Read("linux-arp-table"));
         IReadOnlyDictionary<string, string> macos = ArpTableParser.Parse(Fixture.Read("macos-arp-output"));
@@ -53,6 +64,7 @@ public class ArpTableParserTests {
     [InlineData("A4:91:B1:4E:3C:20", "a4:91:b1:4e:3c:20")]
     [InlineData("1:0:5e:0:0:fb", "01:00:5e:00:00:fb")]
     [InlineData("dc:a6:32:f:11:22", "dc:a6:32:0f:11:22")]
+    [InlineData("A4-91-B1-4E-3C-20", "a4:91:b1:4e:3c:20")] // Windows separators
     public void Macs_normalise_to_lowercase_padded_octets(string raw, string expected) =>
         Assert.Equal(expected, ArpTableParser.NormaliseMac(raw));
 

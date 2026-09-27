@@ -9,13 +9,25 @@ public static class NetworkScanMapper {
         var taken = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var resources = new List<Resource>(hosts.Count);
 
+        // One MAC answering on several addresses is one box with aliases or VIPs —
+        // gateways do this all the time. Each address still gets its own card, but the
+        // shared MAC alone cannot identify them: the import rejects duplicate ids.
+        var macCounts = hosts
+            .Where(h => h.Mac != null)
+            .GroupBy(h => h.Mac!)
+            .ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
+
         foreach (NetworkHostFact host in hosts) {
             // The MAC is the only identity a scan can see that survives a DHCP re-lease;
             // when ARP could not provide one (a routed subnet, say) the IP has to do,
             // and the id changes if the address does — documented in the guide.
-            var discoveryId = DiscoveryId.Create(
-                DiscoveryId.NetworkScheme,
-                host.Mac ?? $"ip:{host.Ip}");
+            var seed = host.Mac == null
+                ? $"ip:{host.Ip}"
+                : macCounts[host.Mac] > 1
+                    ? $"{host.Mac}/{host.Ip}"
+                    : host.Mac;
+
+            var discoveryId = DiscoveryId.Create(DiscoveryId.NetworkScheme, seed);
 
             var system = new SystemResource {
                 Kind = SystemResource.KindLabel,

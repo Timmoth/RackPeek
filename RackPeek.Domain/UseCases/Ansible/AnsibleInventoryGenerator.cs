@@ -1,5 +1,6 @@
 using System.Text;
 using RackPeek.Domain.Resources;
+using RackPeek.Domain.Resources.SystemResources;
 
 namespace RackPeek.Domain.UseCases.Ansible;
 
@@ -179,6 +180,12 @@ public static class AnsibleInventoryGenerator {
 
         if (r.Labels.TryGetValue("hostname", out var hn) && !string.IsNullOrWhiteSpace(hn))
             return hn;
+
+        // A System's own address, the way the ssh and hosts exporters already read it —
+        // this is what makes discovered hosts addressable without hand-adding a label.
+        // Labels stay first: an explicit ansible_host must always win.
+        if (r is SystemResource { Ip: not null } system && !string.IsNullOrWhiteSpace(system.Ip))
+            return system.Ip;
 
         return null;
     }

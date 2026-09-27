@@ -49,27 +49,38 @@ public static class ArpTableParser {
             return mac == null ? null : (ip, mac);
         }
 
-        // Linux /proc/net/arp: "192.168.1.1  0x1  0x2  a4:91:b1:4e:3c:20  *  eth0"
         var columns = line.Split(' ', '\t', StringSplitOptions.RemoveEmptyEntries);
 
-        if (columns.Length < 4 || !IsIpv4(columns[0]))
+        if (columns.Length < 2 || !IsIpv4(columns[0]))
             return null;
 
-        // Flags 0x0 marks an entry the kernel gave up resolving.
-        if (columns[2] == "0x0")
-            return null;
+        // Linux /proc/net/arp: "192.168.1.1  0x1  0x2  a4:91:b1:4e:3c:20  *  eth0"
+        if (columns.Length >= 4 && columns[1].StartsWith("0x", StringComparison.Ordinal)) {
+            // Flags 0x0 marks an entry the kernel gave up resolving.
+            if (columns[2] == "0x0")
+                return null;
 
-        var linuxMac = NormaliseMac(columns[3]);
+            var linuxMac = NormaliseMac(columns[3]);
 
-        return linuxMac == null ? null : (columns[0], linuxMac);
+            return linuxMac == null ? null : (columns[0], linuxMac);
+        }
+
+        // Windows arp -a: "192.168.1.1           a4-91-b1-4e-3c-20     dynamic"
+        var windowsMac = NormaliseMac(columns[1]);
+
+        return windowsMac == null ? null : (columns[0], windowsMac);
     }
 
-    /// <summary>Lowercase, zero-padded, or null for anything that is not a usable MAC.</summary>
+    /// <summary>
+    ///     Lowercase, colon-separated, zero-padded — or null for anything that is not a
+    ///     usable MAC. Accepts Windows' dash separators so the same machine hashes the
+    ///     same from every platform's ARP output.
+    /// </summary>
     public static string? NormaliseMac(string? raw) {
         if (string.IsNullOrWhiteSpace(raw))
             return null;
 
-        var parts = raw.Trim().Split(':');
+        var parts = raw.Trim().Split(':', '-');
 
         if (parts.Length != 6)
             return null;

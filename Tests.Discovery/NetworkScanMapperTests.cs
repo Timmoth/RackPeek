@@ -78,6 +78,24 @@ public class NetworkScanMapperTests {
     }
 
     [Fact]
+    public void One_mac_answering_on_several_addresses_yields_distinct_stable_identities() {
+        // Gateways answer on VIPs and aliases all the time: one MAC, many addresses.
+        // The shared MAC alone cannot identify the cards — the import rejects duplicate
+        // ids — so each address folds into the seed, deterministically.
+        NetworkHostFact[] swept = [
+            Host(ip: "192.168.1.1", hostname: "gw.lan"),
+            Host(ip: "192.168.1.2", hostname: null)
+        ];
+
+        List<Resource> resources = NetworkScanMapper.ToResources(swept);
+
+        Assert.Equal(2, resources.Select(r => r.DiscoveryId).Distinct().Count());
+        Assert.Equal(
+            resources.Select(r => r.DiscoveryId),
+            NetworkScanMapper.ToResources(swept).Select(r => r.DiscoveryId));
+    }
+
+    [Fact]
     public void The_emitted_document_conforms_to_the_published_schema() {
         List<Resource> resources = NetworkScanMapper.ToResources([
             Host(),

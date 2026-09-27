@@ -41,8 +41,11 @@ public sealed class NetworkProbe : INetworkProbe {
     }
 
     public async Task<string?> ReadArpAsync(CancellationToken cancellationToken = default) {
+        // Linux reads the kernel's file; BSD/macOS answer `arp -an`; Windows' arp.exe
+        // only knows `-a`. Each failed attempt is null, so the chain just walks on.
         return await SystemProbeCommon.TryReadFileAsync("/proc/net/arp", cancellationToken)
-               ?? await SystemProbeCommon.TryRunAsync("arp", "-an", cancellationToken);
+               ?? await SystemProbeCommon.TryRunAsync("arp", "-an", cancellationToken)
+               ?? await SystemProbeCommon.TryRunAsync("arp", "-a", cancellationToken);
     }
 
     public async Task<string?> ReverseDnsAsync(string ip, CancellationToken cancellationToken = default) {
