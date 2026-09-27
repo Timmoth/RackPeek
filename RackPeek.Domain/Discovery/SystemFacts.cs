@@ -15,7 +15,13 @@ public static class DiscoveryUnits {
 public sealed record BlockDeviceFact(string Name, long SizeBytes, bool Rotational);
 
 /// <summary>A network interface, reduced to the parts that pick a primary address.</summary>
-public sealed record NicFact(string Name, bool IsUp, bool IsLoopback, bool HasGateway, string? Ipv4);
+public sealed record NicFact(
+    string Name,
+    bool IsUp,
+    bool IsLoopback,
+    bool HasGateway,
+    string? Ipv4,
+    string? Mac = null);
 
 /// <summary>
 ///     Everything a probe managed to read off the host, still in its raw form.
@@ -64,6 +70,12 @@ public sealed record SystemFacts {
 
     public string? Ip { get; init; }
     public IReadOnlyList<DriveFact> Drives { get; init; } = [];
+
+    /// <summary>
+    ///     The machine's physical-NIC MACs, normalised. What lets an agent-discovered
+    ///     card and a network-scanned card of the same box find each other.
+    /// </summary>
+    public IReadOnlyList<string> Macs { get; init; } = [];
 }
 
 public sealed record DriveFact(string Type, int SizeGb);

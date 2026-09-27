@@ -38,6 +38,8 @@ public static class DiscoveryIdResolver {
             .Where(r => !string.IsNullOrWhiteSpace(r.DiscoveryId))
             .ToDictionary(r => r.DiscoveryId!, r => r, StringComparer.OrdinalIgnoreCase);
 
+        Dictionary<string, Resource> existingByMac = BuildMacMap(existing);
+
         // Tolerant of a hand-edited file that managed to get two resources of the
         // same name: the first wins, rather than crashing the import.
         var existingByName = new Dictionary<string, Resource>(StringComparer.OrdinalIgnoreCase);
@@ -48,7 +50,7 @@ public static class DiscoveryIdResolver {
         var renames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (Resource resource in incomingWithId) {
-            var resolved = ResolveName(resource, existingById, existingByName);
+            var resolved = ResolveName(resource, existingById, existingByName, existingByMac);
 
             if (resolved.Equals(resource.Name, StringComparison.OrdinalIgnoreCase))
                 continue;
@@ -81,8 +83,11 @@ public static class DiscoveryIdResolver {
         var incomingNames = new HashSet<string>(incoming.Select(r => r.Name), StringComparer.OrdinalIgnoreCase);
 
         foreach (Resource resource in incomingWithId) {
+            // MAC unification may have nulled a scan card's id so the merge cannot
+            // downgrade the stored identity — such a card has nothing to look up here.
             if (resource.RunsOn.Count == 0
-                || !existingById.TryGetValue(resource.DiscoveryId!, out Resource? stored)
+                || string.IsNullOrWhiteSpace(resource.DiscoveryId)
+                || !existingById.TryGetValue(resource.DiscoveryId, out Resource? stored)
                 || stored.RunsOn.Count == 0)
                 continue;
 
@@ -97,10 +102,16 @@ public static class DiscoveryIdResolver {
     private static string ResolveName(
         Resource resource,
         Dictionary<string, Resource> existingById,
-        Dictionary<string, Resource> existingByName) {
+        Dictionary<string, Resource> existingByName,
+        Dictionary<string, Resource> existingByMac) {
         // Known id: the stored resource wins on name, whatever the user has renamed it to.
         if (existingById.TryGetValue(resource.DiscoveryId!, out Resource? matched))
             return matched.Name;
+
+        // Unknown id, but a MAC in common with exactly one stored card: the same
+        // physical machine seen by two collectors, unified onto the stored card.
+        if (TryUnifyByMac(resource, existingByMac, out var unifiedName))
+            return unifiedName;
 
         // Unknown id and the name is free: nothing to reconcile.
         if (!existingByName.TryGetValue(resource.Name, out Resource? sameName))
@@ -126,6 +137,92 @@ public static class DiscoveryIdResolver {
         // Same kind, no competing id: this is the adoption case, where the merge stamps
         // the id onto the resource the user already wrote and keeps everything in it.
         return resource.Name;
+    }
+
+    /// <summary>
+    ///     The bridge between collectors that cannot derive each other's ids: the agent
+    ///     records the machine's MACs (a "macs" label), the scan identifies it by one (a
+    ///     "mac" label). A shared MAC on a stored card of the same kind means the same
+    ///     box — the incoming card adopts the stored card's name so the merge lands on
+    ///     it, and the stronger identity wins: an agent id replaces a scan id, a scan id
+    ///     never replaces anything (it is nulled here so the merge cannot downgrade).
+    ///     Ids from two agent-grade collectors sharing a MAC (cloned VMs, or Proxmox's
+    ///     view of a guest) are never unified — that is what machine-ids are for.
+    /// </summary>
+    private static bool TryUnifyByMac(
+        Resource resource,
+        Dictionary<string, Resource> existingByMac,
+        out string unifiedName) {
+        unifiedName = string.Empty;
+
+        foreach (var mac in MacsOf(resource)) {
+            if (!existingByMac.TryGetValue(mac, out Resource? stored))
+                continue;
+
+            // The box the user documented as a Server and the OS a scan saw on it are
+            // different cards on purpose; unification is for same-kind cards only.
+            if (stored.GetType() != resource.GetType())
+                continue;
+
+            var incomingIsNet = DiscoveryId.Scheme(resource.DiscoveryId) == DiscoveryId.NetworkScheme;
+
+            // A stored card with a MAC but no id yet: adoption, same as the name-based
+            // adoption case — the incoming id gets stamped onto it by the merge.
+            if (string.IsNullOrWhiteSpace(stored.DiscoveryId)) {
+                unifiedName = stored.Name;
+
+                return true;
+            }
+
+            var storedIsNet = DiscoveryId.Scheme(stored.DiscoveryId) == DiscoveryId.NetworkScheme;
+
+            // Both scan-grade or both agent-grade: not safe to unify on a MAC alone.
+            if (incomingIsNet == storedIsNet)
+                continue;
+
+            if (incomingIsNet)
+                resource.DiscoveryId = null;
+
+            unifiedName = stored.Name;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>The MACs a resource claims, from its "mac" and "macs" labels, normalised.</summary>
+    private static IEnumerable<string> MacsOf(Resource resource) {
+        IEnumerable<string?> raw = [
+            resource.Labels.GetValueOrDefault("mac"),
+            .. (resource.Labels.GetValueOrDefault("macs") ?? string.Empty).Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        ];
+
+        return raw
+            .Select(ArpTableParser.NormaliseMac)
+            .Where(mac => mac != null)
+            .Select(mac => mac!)
+            .Distinct();
+    }
+
+    /// <summary>
+    ///     mac → the one stored resource claiming it. A MAC claimed by two stored
+    ///     resources identifies nothing and is dropped: ambiguity never unifies.
+    /// </summary>
+    private static Dictionary<string, Resource> BuildMacMap(IReadOnlyList<Resource> existing) {
+        var map = new Dictionary<string, Resource>(StringComparer.OrdinalIgnoreCase);
+        var ambiguous = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (Resource resource in existing)
+            foreach (var mac in MacsOf(resource))
+                if (!ambiguous.Contains(mac) && !map.TryAdd(mac, resource) && !ReferenceEquals(map[mac], resource)) {
+                    map.Remove(mac);
+                    ambiguous.Add(mac);
+                }
+
+        return map;
     }
 
     private static void RewriteRunsOn(IReadOnlyList<Resource> incoming, Dictionary<string, string> renames) {

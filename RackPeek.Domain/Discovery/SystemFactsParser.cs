@@ -28,6 +28,7 @@ public static class SystemFactsParser {
             RamGb = ParseRamGb(raw),
             Type = type,
             Ip = SelectPrimaryIp(raw.Nics),
+            Macs = SelectMacs(raw.Nics),
 
             // A container sees the host's block devices through /sys/block. They belong
             // to the machine underneath it, so reporting them here would attribute
@@ -103,6 +104,22 @@ public static class SystemFactsParser {
         return usable.FirstOrDefault(n => n.HasGateway)?.Ipv4
                ?? usable.FirstOrDefault(n => !IsVirtual(n.Name))?.Ipv4
                ?? usable.FirstOrDefault()?.Ipv4;
+    }
+
+    /// <summary>
+    ///     The MACs a network scan could see this machine by: real interfaces only — a
+    ///     docker bridge's MAC never crosses the wire, so recording it could only cause
+    ///     a false unification. Normalised by the same code that reads ARP tables, so
+    ///     both sides of the bridge always agree on the spelling.
+    /// </summary>
+    internal static List<string> SelectMacs(IReadOnlyList<NicFact> nics) {
+        return nics
+            .Where(n => n is { IsUp: true, IsLoopback: false } && !IsVirtual(n.Name))
+            .Select(n => ArpTableParser.NormaliseMac(n.Mac))
+            .Where(mac => mac != null)
+            .Select(mac => mac!)
+            .Distinct()
+            .ToList();
     }
 
     internal static bool IsVirtual(string name) {

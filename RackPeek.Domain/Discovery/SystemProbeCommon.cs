@@ -48,7 +48,22 @@ internal static class SystemProbeCommon {
             nic.OperationalStatus == OperationalStatus.Up,
             nic.NetworkInterfaceType == NetworkInterfaceType.Loopback,
             hasGateway,
-            ipv4);
+            ipv4,
+            FormatMac(nic));
+    }
+
+    /// <summary>Lowercase colon-separated, matching what ARP tables report — or null.</summary>
+    private static string? FormatMac(NetworkInterface nic) {
+        try {
+            var bytes = nic.GetPhysicalAddress().GetAddressBytes();
+
+            return bytes.Length == 6
+                ? string.Join(':', bytes.Select(b => b.ToString("x2")))
+                : null;
+        }
+        catch {
+            return null;
+        }
     }
 
     /// <summary>Reads a file, returning null for anything unreadable rather than throwing.</summary>

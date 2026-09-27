@@ -29,6 +29,16 @@ public static class DiscoveryId {
         return $"{Prefix}:{scheme}:{Convert.ToHexString(hash, 0, 8).ToLowerInvariant()}";
     }
 
+    /// <summary>The scheme segment of an id — "sys" for rpk1:sys:… — or null for anything malformed.</summary>
+    public static string? Scheme(string? discoveryId) {
+        if (string.IsNullOrWhiteSpace(discoveryId))
+            return null;
+
+        var parts = discoveryId.Split(':');
+
+        return parts.Length == 3 ? parts[1] : null;
+    }
+
     /// <summary>Short, stable fragment used to disambiguate generated names.</summary>
     public static string ShortSuffix(string discoveryId) {
         var lastColon = discoveryId.LastIndexOf(':');

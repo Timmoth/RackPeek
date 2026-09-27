@@ -371,11 +371,27 @@ machine's identity. Two caveats:
   no type, OS, cores or RAM, so a re-scan can never overwrite the details you (or an
   agent collector) filled in afterwards.
 
-The known limitation above applies here twice over: a host discovered by `rpk discover
-system` (machine-id identity) and by a network scan (MAC identity) becomes two
-resources, the second visibly suffixed. Keep whichever card you prefer and delete the
-other; the scan will keep updating the one that carries its id. The machine running
-the sweep also finds itself — same rule.
+### One machine, one card — across collectors
+
+`rpk discover system` records the machine's physical MAC addresses (a `macs` label),
+and a scan identifies machines by exactly those MACs — so **the two collectors land on
+the same card**, whichever ran first:
+
+- Scan first: the sweep creates the card; when the agent later runs on that box, it
+  claims the card, fills in the OS/cores/RAM, and upgrades its identity to the
+  machine-id. Every rescan afterwards keeps updating that same card via the MAC.
+- Agent first: a later sweep recognises the box and just refreshes its address —
+  never touching the identity or anything you or the agent wrote.
+
+The card keeps whatever name it already had (names are always user-owned), so a
+scan-first card keeps its generated `host-…` name until you rename it once. A MAC that
+two stored cards both claim unifies nothing — ambiguity always falls back to separate
+cards — and agent-grade identities never unify with each other on a MAC alone (cloned
+VMs can share one; that is what machine-ids are for). The machine running the sweep
+finds itself, and unifies with its own `rpk discover system` card the same way.
+
+Proxmox remains the exception: its API view carries no host MACs, so the known
+limitation above still applies between `discover proxmox` and the other collectors.
 
 ### Being a good citizen
 
