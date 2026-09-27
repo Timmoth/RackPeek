@@ -11,5 +11,6 @@
   "ssh-config-export.md",
   "hosts-file-export.md",
   "inventory-api.md",
+  "mcp-guide.md",
   "versioning.md"
 ]

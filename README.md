@@ -89,6 +89,9 @@ volumes:
   [**Auto Discovery Guide**](https://timmoth.github.io/RackPeek/docs/discovery-guide)
 
 * 
+  [**MCP Server Guide**](https://timmoth.github.io/RackPeek/docs/mcp-guide) — let AI assistants query, manage and build your stack over the built-in `/mcp` endpoint
+
+* 
   [**CLI Commands Reference**](https://timmoth.github.io/RackPeek/docs/cli-commands)
 
 * 
