@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Json.Schema;
 using YamlDotNet.RepresentationModel;
 
@@ -59,6 +60,32 @@ public class SchemaConformanceTests {
         }
 
         return "null";
+    }
+
+    /// <summary>
+    ///     The schema is published three times: the repo root copy tests validate
+    ///     against, and the copies the web app and the viewer serve at
+    ///     /schemas/v{n}/schema.v{n}.json. They are hand-synced, and #310/#311 were
+    ///     what happens when a sync is missed — this pins them together for good.
+    /// </summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    public void The_served_schema_copies_never_drift_from_the_published_one(int version) {
+        var published = JsonNode.Parse(
+            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "schemas", $"schema.v{version}.json")));
+
+        foreach (var host in new[] { "web", "viewer" }) {
+            var served = JsonNode.Parse(File.ReadAllText(
+                Path.Combine(AppContext.BaseDirectory, "wwwroot-schemas", host, $"schema.v{version}.json")));
+
+            Assert.True(
+                JsonNode.DeepEquals(published, served),
+                $"The {host} wwwroot copy of schema.v{version}.json differs from schemas/ — " +
+                "update both together, or documents RackPeek writes will fail the schema it serves.");
+        }
     }
 
     [Theory]

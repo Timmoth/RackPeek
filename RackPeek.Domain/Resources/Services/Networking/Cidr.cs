@@ -28,4 +28,21 @@ public readonly struct Cidr {
 
         return new Cidr(network, mask, prefix);
     }
+
+    /// <summary>The one definition of "is this a usable CIDR" for validation paths.</summary>
+    public static bool TryParse(string? value, out Cidr cidr) {
+        cidr = default;
+
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+
+        try {
+            cidr = Parse(value);
+
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
 }

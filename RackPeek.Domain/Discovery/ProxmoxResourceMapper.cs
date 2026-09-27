@@ -146,6 +146,13 @@ public static class ProxmoxResourceMapper {
         // between nodes, which is exactly what an identity needs to do.
         var discoveryId = DiscoveryId.Create(Scheme, $"{scope}/{guest.VmId}");
 
+        Dictionary<string, string> labels = PassthroughLabels(guest, gpusByNode);
+
+        // The bridge to network discovery: a scan identifies this guest by one of
+        // these, so carrying them lets the resolver land both collectors on one card.
+        if (guest.Macs.Count > 0)
+            labels["macs"] = string.Join(",", guest.Macs);
+
         return new SystemResource {
             Kind = SystemResource.KindLabel,
             Name = DiscoveryNaming.Unique(
@@ -160,7 +167,7 @@ public static class ProxmoxResourceMapper {
             Ip = guest.Ip,
             Drives = ToGuestDrives(guest),
             Tags = guest.Tags.ToArray(),
-            Labels = PassthroughLabels(guest, gpusByNode),
+            Labels = labels,
             RunsOn = hypervisorNames.TryGetValue(guest.Node, out var hypervisor) ? [hypervisor] : []
         };
     }

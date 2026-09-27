@@ -15,7 +15,7 @@ public static class SystemResourceMapper {
             DiscoveryId.SystemScheme,
             facts.MachineId ?? facts.Hostname);
 
-        return new SystemResource {
+        var resource = new SystemResource {
             Kind = SystemResource.KindLabel,
             Name = DiscoveryNaming.Suggest(
                 nameOverride ?? DiscoveryNaming.HostLabel(facts.Hostname),
@@ -31,5 +31,12 @@ public static class SystemResourceMapper {
                 ? null
                 : facts.Drives.Select(d => new Drive { Type = d.Type, Size = d.SizeGb }).ToList()
         };
+
+        // The bridge to network discovery: a scan identifies this machine by one of
+        // these, so carrying them lets the resolver land both collectors on one card.
+        if (facts.Macs.Count > 0)
+            resource.Labels["macs"] = string.Join(",", facts.Macs);
+
+        return resource;
     }
 }

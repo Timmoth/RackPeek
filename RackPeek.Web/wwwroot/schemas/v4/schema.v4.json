@@ -663,12 +663,6 @@
         },
         {
           "type": "object",
-          "required": [
-            "type",
-            "os",
-            "cores",
-            "ram"
-          ],
           "properties": {
             "kind": {
               "const": "System"

@@ -3970,6 +3970,7 @@ COMMANDS:
     docker     Read the Docker API and emit each published container as a       
                Service on this host's System                                    
     proxmox    Read a Proxmox cluster and emit its nodes and guests as Systems  
+    network    Sweep a subnet and emit every answering host as a System resource
 ```
 
 ## `rpk discover system`
@@ -4058,6 +4059,37 @@ OPTIONS:
                                    RPK_PVE_TOKEN_SECRET                         
         --insecure                 Accept a self-signed certificate, which      
                                    Proxmox ships with by default                
+```
+
+## `rpk discover network`
+```
+DESCRIPTION:
+Sweep a subnet and emit every answering host as a System resource
+
+USAGE:
+    rpk discover network [OPTIONS]
+
+EXAMPLES:
+    rpk discover network
+    rpk discover network --cidr 192.168.1.0/24
+    rpk discover network --cidr 10.0.0.0/24 --ports 22,80,443 --push
+
+OPTIONS:
+    -h, --help             Prints help information                              
+        --push             Upload the result to a RackPeek server instead of    
+                           printing it                                          
+        --server <URL>     RackPeek server to upload to. Defaults to the        
+                           RPK_SERVER environment variable                      
+        --api-key <KEY>    API key for the server. Defaults to the RPK_API_KEY  
+                           environment variable                                 
+        --dry-run          Ask the server what would change, without changing   
+                           anything. Implies --push                             
+        --cidr <CIDR>      Subnet to sweep, e.g. 192.168.1.0/24. Defaults to    
+                           this machine's own subnet                            
+        --ports <LIST>     TCP ports probed to catch hosts that ignore ping,    
+                           e.g. 22,80,443. Defaults to a curated homelab list   
+        --timeout <MS>     Milliseconds to wait on each port probe              
+        --parallel <N>     How many hosts to probe at once                      
 ```
 
 ## `rpk ansible`
