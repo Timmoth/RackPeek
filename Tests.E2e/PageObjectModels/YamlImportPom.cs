@@ -48,6 +48,12 @@ public class YamlImportPom(IPage page) {
     public async Task GotoAsync(string baseUrl) {
         await page.GotoAsync($"{baseUrl}/yaml/import");
         await Assertions.Expect(Input).ToBeVisibleAsync();
+
+        // Never type into the prerendered page: input events are lost before the
+        // circuit attaches, so the oninput diff never runs and Apply stays disabled.
+        // Same race the Add form hit (b8f6d23) — wait for the live circuit first.
+        await Assertions.Expect(page.GetByTestId("circuit-probe"))
+            .ToHaveAttributeAsync("data-circuit-ready", "true");
     }
 
     public async Task PasteAsync(string yaml)

@@ -152,6 +152,46 @@ public class YamlImportTests(
         }
     }
 
+    // =============================================================
+    // The prerender race (regression guard for the CI flake on #339)
+    // =============================================================
+
+    /// <summary>
+    ///     The import page has the same prerender race the add form had (b8f6d23):
+    ///     text filled before the circuit attaches never fires the oninput diff, so the
+    ///     Apply button stays disabled forever. CI lost this race intermittently; the
+    ///     injected latency loses it every time, proving GotoAsync's circuit wait fixes it.
+    /// </summary>
+    [Fact]
+    public async Task Importing_Works_Before_The_Circuit_Has_Warmed_Up() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
+        await BlazorLatency.AddAsync(page, TimeSpan.FromMilliseconds(300));
+
+        var switchA = $"e2e-ra-{Guid.NewGuid():N}"[..14];
+        var switchB = $"e2e-rb-{Guid.NewGuid():N}"[..14];
+
+        try {
+            var import = new YamlImportPom(page);
+            await import.GotoAsync(_fixture.BaseUrl);
+
+            await import.PasteAsync(TwoSwitchesWithConnection(switchA, switchB));
+
+            // The regression: without GotoAsync waiting for the circuit, the fill above
+            // is lost to the prerendered page, the diff never runs, and Apply stays
+            // disabled. Asserting it becomes enabled is the whole point — persistence is
+            // already covered by the non-latency test, and a post-apply navigation would
+            // only reintroduce flakiness under the injected latency.
+            await Assertions.Expect(import.ApplyButton).ToBeEnabledAsync();
+        }
+        catch (Exception) {
+            await DumpAsync(page);
+            throw;
+        }
+        finally {
+            await context.CloseAsync();
+        }
+    }
+
     private async Task DumpAsync(IPage page) {
         _output.WriteLine("TEST FAILED — Capturing diagnostics");
         _output.WriteLine($"Current URL: {page.Url}");
