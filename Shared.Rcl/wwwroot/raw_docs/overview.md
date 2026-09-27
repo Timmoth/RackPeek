@@ -19,6 +19,8 @@ RackPeek helps you:
 - Keep infrastructure knowledge versionable and portable
 - Treat your lab “as code” using simple YAML
 - Turn documentation into automation (e.g. Ansible inventory)
+- Auto-discover what is already running (`rpk discover system / docker / proxmox / network`)
+- Connect AI assistants to your inventory through the built-in MCP server
 
 It is intentionally focused on homelabs and self-hosted environments, not enterprise CMDBs.
 
@@ -52,17 +54,16 @@ Optimized for real-world home lab use — not corporate documentation workflows.
 
 ## Project Status
 
-RackPeek is actively developed and currently in beta.
+RackPeek is stable and actively developed.
 
 The focus is on:
 
 - Stability
-- Core feature completeness
 - Clean UX
-- Strong automation integrations
-- Community feedback before v1.0.0
+- Strong automation integrations (Ansible, discovery, MCP)
+- Community feedback shaping the roadmap
 
-Post-1.0, expansion areas include deeper automation support, diagramming, and infrastructure integrations.
+Expansion areas include deeper automation support, diagramming, and infrastructure integrations.
 
 ---
 

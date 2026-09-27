@@ -35,6 +35,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add Shared.Rcl/wwwroot/raw_docs/CommandIndex.md Shared.Rcl/wwwroot/raw_docs/Commands.md
+          git add Shared.Rcl/wwwroot/raw_docs/cli-commands-index.md Shared.Rcl/wwwroot/raw_docs/cli-commands.md
           git commit -m "Update CLI docs" || echo "No changes to commit"
           git push
