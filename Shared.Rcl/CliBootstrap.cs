@@ -806,6 +806,11 @@ public static class CliBootstrap {
                     .WithExample("discover", "proxmox", "--host", "https://pve.lan:8006", "--insecure")
                     .WithExample("discover", "proxmox", "--host", "pve.lan", "--push");
 
+                discover.AddCommand<DiscoverOpnsenseCommand>("opnsense")
+                    .WithDescription("Read an OPNsense firewall's neighbour table and emit every machine on it.")
+                    .WithExample("discover", "opnsense", "--host", "https://firewall.lan", "--insecure")
+                    .WithExample("discover", "opnsense", "--host", "firewall.lan", "--push");
+
                 discover.AddCommand<DiscoverNetworkCommand>("network")
                     .WithDescription("Sweep a subnet and emit every answering host as a System resource.")
                     .WithExample("discover", "network")

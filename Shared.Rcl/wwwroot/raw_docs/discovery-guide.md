@@ -8,6 +8,7 @@ don't have to type in what the machine already knows about itself.
 | `rpk discover system` | the machine it runs on | one **System** resource |
 | `rpk discover docker` | the Docker Engine API | one **Service** per published container, plus the **System** they run on |
 | `rpk discover proxmox` | a Proxmox VE cluster | a **Server** and **System** per node, a **System** per guest, already wired together |
+| `rpk discover opnsense` | an OPNsense firewall's neighbour table | one **System** per machine it has seen, on every subnet it routes |
 | `rpk discover network` | a subnet, from outside | one **System** per host that answers, plus a **Service** for each web application it recognises |
 
 Both print YAML to standard output by default and change nothing, so it is always safe
@@ -343,6 +344,74 @@ the address stays unknown, exactly as before.
 own gets no MAC and can only identify a host by address; once the hypervisor has reported
 that same address, the sweep's find is matched to the guest the hypervisor already
 described in full rather than becoming a second, emptier card beside it.
+
+---
+
+## `rpk discover opnsense`
+
+The collector for everything a sweep can see but not identify.
+
+ARP is link-local. Sweeping from one machine gets you a MAC for that machine's own
+segment and nothing but an address for every other subnet — and an address alone cannot
+survive a DHCP re-lease or be matched against anything else you have documented. The
+firewall routes every subnet, so its neighbour table has the MAC for all of them, plus
+the name it handed out and which leg it was seen on.
+
+```bash
+# Look at what the firewall knows
+rpk discover opnsense --host https://firewall.lan --insecure
+
+# Merge it into your server
+rpk discover opnsense --host firewall.lan --push
+```
+
+| Option | Meaning |
+|---|---|
+| `--host <URL>` | The firewall. A bare name gets `https`. |
+| `--key <KEY>` | API key. Defaults to `RPK_OPN_KEY`. |
+| `--secret <SECRET>` | API secret. Defaults to `RPK_OPN_SECRET`. |
+| `--insecure` | Accept the self-signed certificate OPNsense ships with. |
+| `--include-public` | Also record neighbours on public addresses (see below). |
+
+Plus the same `--push` / `--server` / `--api-key` / `--dry-run` options as every other
+collector.
+
+Create the credentials in the firewall under **System → Access → Users**, on a user that
+holds the **Diagnostics: ARP Table** privilege. Read-only is enough; nothing here writes.
+
+### What it records, and what it leaves out
+
+One **System** per machine, carrying its address, its MAC, the vendor that MAC belongs
+to, and a `segment` label naming the firewall leg it answered on — which is the closest
+thing to "which VLAN is this on" that the firewall can tell you.
+
+Left out on purpose:
+
+* **The firewall's own addresses.** Every routed subnet contributes one and they are all
+  the same box — which is a Firewall, not the handful of Systems this would invent.
+* **Entries that have aged out.** They say where something used to be.
+* **Broadcast and multicast addresses**, which no machine owns.
+* **Neighbours on public addresses**, such as the ISP equipment on the WAN leg. They are
+  not your infrastructure, and recording one would put a public address into a file you
+  may well commit. Pass `--include-public` if you are documenting a fleet that lives on
+  them.
+
+A machine answering on two of the firewall's legs is one card, not two: its identity is
+its MAC.
+
+### Why it lines up with everything else
+
+A card from the firewall is seeded exactly as `rpk discover network` seeds its own —
+keyed on the MAC — because both describe the same thing by the same evidence: a machine
+observed on the network rather than asked about itself. So a host the firewall knows and
+a host a sweep found are **one card**, whichever collector ran first, with no special
+case anywhere to say so. Run both and the firewall fills in the identity a sweep of a
+routed subnet could never get.
+
+One wrinkle worth knowing: names are yours, so discovery never renames a resource that
+already exists — including one a sweep named `host-<hash>` before the firewall could
+offer something better. Running the firewall collector first, or on a fresh inventory,
+gets you the good names.
 
 ---
 

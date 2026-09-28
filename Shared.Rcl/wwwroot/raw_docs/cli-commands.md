@@ -3966,11 +3966,14 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    system     Inspect this machine and emit it as a System resource            
-    docker     Read the Docker API and emit each published container as a       
-               Service on this host's System                                    
-    proxmox    Read a Proxmox cluster and emit its nodes and guests as Systems  
-    network    Sweep a subnet and emit every answering host as a System resource
+    system      Inspect this machine and emit it as a System resource           
+    docker      Read the Docker API and emit each published container as a      
+                Service on this host's System                                   
+    proxmox     Read a Proxmox cluster and emit its nodes and guests as Systems 
+    opnsense    Read an OPNsense firewall's neighbour table and emit every      
+                machine on it                                                   
+    network     Sweep a subnet and emit every answering host as a System        
+                resource                                                        
 ```
 
 ## `rpk discover system`
@@ -4059,6 +4062,38 @@ OPTIONS:
                                    RPK_PVE_TOKEN_SECRET                         
         --insecure                 Accept a self-signed certificate, which      
                                    Proxmox ships with by default                
+```
+
+## `rpk discover opnsense`
+```
+DESCRIPTION:
+Read an OPNsense firewall's neighbour table and emit every machine on it
+
+USAGE:
+    rpk discover opnsense [OPTIONS]
+
+EXAMPLES:
+    rpk discover opnsense --host https://firewall.lan --insecure
+    rpk discover opnsense --host firewall.lan --push
+
+OPTIONS:
+    -h, --help               Prints help information                            
+        --push               Upload the result to a RackPeek server instead of  
+                             printing it                                        
+        --server <URL>       RackPeek server to upload to. Defaults to the      
+                             RPK_SERVER environment variable                    
+        --api-key <KEY>      API key for the server. Defaults to the RPK_API_KEY
+                             environment variable                               
+        --dry-run            Ask the server what would change, without changing 
+                             anything. Implies --push                           
+        --host <URL>         OPNsense host, e.g. https://firewall.lan. A bare   
+                             host name gets https                               
+        --key <KEY>          API key. Defaults to RPK_OPN_KEY                   
+        --secret <SECRET>    API secret. Defaults to RPK_OPN_SECRET             
+        --insecure           Accept a self-signed certificate, which OPNsense   
+                             ships with by default                              
+        --include-public     Also record neighbours on public addresses, such as
+                             the ISP equipment on the WAN leg                   
 ```
 
 ## `rpk discover network`
