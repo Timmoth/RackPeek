@@ -18,13 +18,19 @@ public class RenameResourceUseCase<T>(IResourceCollection repo) : IRenameResourc
         newName = Normalize.HardwareName(newName);
         ThrowIfInvalid.ResourceName(newName);
 
-        Resource? existingResource = await repo.GetByNameAsync(newName);
+        Resource? original = await repo.GetByNameAsync(originalName);
+
+        IReadOnlyList<Resource> resources = await repo.GetAllOfTypeAsync<Resource>();
+        Resource? existingResource = resources.FirstOrDefault(r =>
+            !ReferenceEquals(r, original) && r.Name.Equals(newName, StringComparison.OrdinalIgnoreCase));
         if (existingResource != null)
             throw new ConflictException($"{existingResource.Kind} resource '{newName}' already exists.");
 
-        Resource? original = await repo.GetByNameAsync(originalName);
         if (original == null)
             throw new NotFoundException($"Resource '{originalName}' not found.");
+
+        if (original.Name == newName)
+            return;
 
         original.Name = newName;
         await repo.UpdateAsync(original);
