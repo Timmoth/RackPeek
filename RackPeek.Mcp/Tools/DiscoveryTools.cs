@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -79,9 +80,17 @@ public sealed class DiscoveryTools(IServiceProvider services) {
                 ? host.MachineId ?? host.Hostname
                 : engine?.Id ?? client.Endpoint;
 
+            // No fallback to this machine's address: it is not the remote engine's, and
+            // stamping it on would give every service a confidently wrong one.
             var serviceIp = client.IsLocal
                 ? host.Ip
-                : await DockerApiClient.ResolveIpv4Async(client.RemoteHost!, cancellationToken) ?? host.Ip;
+                : await DockerApiClient.ResolveIpv4Async(client.RemoteHost!, cancellationToken);
+
+            if (string.IsNullOrWhiteSpace(serviceIp))
+                throw new ValidationException(
+                    $"Could not determine an IPv4 address for {client.Endpoint}. Services are "
+                    + "recorded at their host's address and the inventory holds IPv4 only; "
+                    + "dial the engine by address instead, e.g. tcp://192.0.2.10:2375.");
 
             List<Service> found = DockerServiceMapper.ToResources(containers, seed, effectiveHost, serviceIp);
 

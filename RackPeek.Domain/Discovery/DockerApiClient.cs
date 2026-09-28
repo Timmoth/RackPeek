@@ -98,11 +98,30 @@ public sealed class DockerApiClient : IDockerClient, IDisposable {
             return (UnixSocketClient(path), dockerHost);
         }
 
+        // Anything else is rejected here rather than at send time. HttpClient accepts an
+        // ssh:// or npipe:// URI happily and only throws NotSupportedException on the
+        // first request — which is not in the caller's catch list, so a DOCKER_HOST that
+        // `docker context` set up quite normally crashed with a stack trace instead of
+        // saying what was wrong.
+        if (!StartsWithScheme(dockerHost, "tcp://")
+            && !StartsWithScheme(dockerHost, "http://")
+            && !StartsWithScheme(dockerHost, "https://"))
+            // A UriFormatException on purpose: both front ends already turn that into
+            // "not a usable Docker endpoint", so there is one phrasing for a bad endpoint
+            // rather than two.
+            throw new UriFormatException(
+                "Use a unix socket (unix:///var/run/docker.sock) or a TCP endpoint "
+                + "(tcp://host:2375). For an ssh:// context, forward the socket first — "
+                + "ssh -L 2375:/var/run/docker.sock user@host — and point --docker-host at that.");
+
         // tcp:// is the scheme people have in DOCKER_HOST, but it is plain HTTP on the wire.
         var uri = new Uri(dockerHost.Replace("tcp://", "http://", StringComparison.OrdinalIgnoreCase));
 
         return (new HttpClient { BaseAddress = uri }, dockerHost);
     }
+
+    private static bool StartsWithScheme(string value, string scheme) =>
+        value.StartsWith(scheme, StringComparison.OrdinalIgnoreCase);
 
     private static HttpClient UnixSocketClient(string socketPath) {
         var handler = new SocketsHttpHandler {

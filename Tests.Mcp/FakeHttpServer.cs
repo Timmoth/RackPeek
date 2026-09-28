@@ -21,10 +21,13 @@ internal sealed class FakeHttpServer : IAsyncDisposable {
 
     public string Host => new Uri(BaseUrl).Authority;
 
-    public static async Task<FakeHttpServer> StartAsync(Action<WebApplication> map) {
+    public static async Task<FakeHttpServer> StartAsync(Action<WebApplication> map, bool ipv6 = false) {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Logging.ClearProviders();
-        builder.WebHost.UseUrls("http://127.0.0.1:0");
+
+        // An IPv6-only endpoint is the one case where an engine answers but has no IPv4
+        // address to record its services at.
+        builder.WebHost.UseUrls(ipv6 ? "http://[::1]:0" : "http://127.0.0.1:0");
 
         WebApplication app = builder.Build();
         map(app);
@@ -34,13 +37,13 @@ internal sealed class FakeHttpServer : IAsyncDisposable {
     }
 
     /// <summary>A fake Docker Engine API with the shared captured fixtures.</summary>
-    public static Task<FakeHttpServer> StartDockerEngineAsync() =>
+    public static Task<FakeHttpServer> StartDockerEngineAsync(bool ipv6 = false) =>
         StartAsync(app => {
             app.MapGet("/containers/json", () => Results.Content(
                 TestData.Fixture("docker-containers.json"), "application/json"));
             app.MapGet("/info", () => Results.Content(
                 TestData.Fixture("docker-info.json"), "application/json"));
-        });
+        }, ipv6);
 
     /// <summary>
     ///     A fake Proxmox VE API. Both fixture nodes answer with the same guest lists,

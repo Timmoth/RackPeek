@@ -462,15 +462,39 @@ public static class ProxmoxResponseParser {
             ? value.GetString()
             : null;
 
-    private static int? GetInt(JsonElement element, string name) =>
-        element.TryGetProperty(name, out JsonElement value) && value.TryGetInt32(out var result)
-            ? result
-            : null;
+    /// <summary>
+    ///     A number Proxmox may have written as a string.
+    ///     <para>
+    ///         Its perl backend quotes numeric fields inconsistently — <c>"vmid":"100"</c>
+    ///         and <c>"maxdisk":"512110190592"</c> both turn up across versions. The
+    ///         <c>TryGetInt32</c> family does not return false for a string, it throws, so
+    ///         reading one unguarded took the whole run down with a stack trace. The kind
+    ///         is checked first and a quoted number parsed, which is what the caller meant
+    ///         either way.
+    ///     </para>
+    /// </summary>
+    private static int? GetInt(JsonElement element, string name) {
+        if (!element.TryGetProperty(name, out JsonElement value))
+            return null;
 
-    private static long? GetLong(JsonElement element, string name) =>
-        element.TryGetProperty(name, out JsonElement value) && value.TryGetInt64(out var result)
-            ? result
-            : null;
+        return value.ValueKind switch {
+            JsonValueKind.Number when value.TryGetInt32(out var number) => number,
+            JsonValueKind.String when int.TryParse(value.GetString(), out var parsed) => parsed,
+            _ => null
+        };
+    }
+
+    /// <inheritdoc cref="GetInt" />
+    private static long? GetLong(JsonElement element, string name) {
+        if (!element.TryGetProperty(name, out JsonElement value))
+            return null;
+
+        return value.ValueKind switch {
+            JsonValueKind.Number when value.TryGetInt64(out var number) => number,
+            JsonValueKind.String when long.TryParse(value.GetString(), out var parsed) => parsed,
+            _ => null
+        };
+    }
 
     /// <summary>
     ///     Addresses a QEMU guest reports through its guest agent
