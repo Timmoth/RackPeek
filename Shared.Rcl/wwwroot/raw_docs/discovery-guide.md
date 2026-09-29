@@ -61,12 +61,40 @@ stored locally, from any machine you run the command on.
 What that buys you:
 
 * **Renaming is safe.** Call it `storage-01` in the web UI and the next discovery run
-  updates `storage-01`. It will never rename a resource you named.
+  updates `storage-01`. It will never rename a resource you named — see
+  [Names get better until you choose one](#names-get-better-until-you-choose-one).
 * **Existing resources are adopted.** If you already documented `nas01` by hand, the
   first discovery run attaches to it — keeping your notes and gaining an id — rather
   than creating a duplicate.
 * **Two machines cannot collide.** A second machine that happens to share a hostname is
   given a suffixed name instead of overwriting the first.
+
+### Names get better until you choose one
+
+A collector names a card from whatever it could see, and when it could see nothing the
+name falls back to a slug of the card's own id — `host-1a2b3c4d` says only that something
+is there. A later run, or a collector that can see more, often *does* know the machine's
+name: a firewall knows what it handed out over DHCP, a hypervisor knows what its guest is
+called. So a placeholder gets replaced by a real name when one turns up, and the
+inventory improves as you point more collectors at it.
+
+The moment you rename a resource yourself, that stops. The rename records a `userNamed`
+flag, and nothing in discovery touches the name again:
+
+```yaml
+- kind: System
+  name: the-blue-one
+  userNamed: true
+  discoveryId: rpk1:net:9f2c1a7e40b3d582
+```
+
+Two rules keep this from turning into churn. The upgrade only ever goes from a
+placeholder to a real name, never the other way: a sweep that runs after the firewall
+knows *less*, and must not undo it. And one real name never replaces another — two
+collectors that each knew a different name for one box would otherwise rename it back and
+forth on every run, so the first real name wins and stays. A resource with no
+`discoveryId` at all is user-named whatever the flag says; nothing but a person could
+have written it.
 
 > **Cloned VM templates share `/etc/machine-id`.** If you clone a Proxmox or VMware
 > template without resetting it, every clone reports the same identity. RackPeek rejects
@@ -381,9 +409,13 @@ holds the **Diagnostics: ARP Table** privilege. Read-only is enough; nothing her
 
 ### What it records, and what it leaves out
 
-One **System** per machine, carrying its address, its MAC, the vendor that MAC belongs
-to, and a `segment` label naming the firewall leg it answered on — which is the closest
-thing to "which VLAN is this on" that the firewall can tell you.
+One **System** per machine, carrying its address, its MAC, and the vendor that MAC
+belongs to.
+
+What it does *not* record is which of the firewall's legs the machine answered on. That
+describes the firewall's wiring rather than the machine, and it changes the moment
+anything is re-cabled or a VLAN is renamed — where the address and the MAC are facts
+about the machine itself.
 
 Left out on purpose:
 
@@ -408,10 +440,10 @@ a host a sweep found are **one card**, whichever collector ran first, with no sp
 case anywhere to say so. Run both and the firewall fills in the identity a sweep of a
 routed subnet could never get.
 
-One wrinkle worth knowing: names are yours, so discovery never renames a resource that
-already exists — including one a sweep named `host-<hash>` before the firewall could
-offer something better. Running the firewall collector first, or on a fresh inventory,
-gets you the good names.
+Order does not matter for names either. A card a sweep could only call `host-<hash>`
+takes the name the firewall handed out over DHCP as soon as you run this collector — see
+[Names get better until you choose one](#names-get-better-until-you-choose-one). A name
+you chose yourself is never touched.
 
 ---
 
@@ -469,55 +501,65 @@ address — and `--no-identify` turns it off for a pure liveness sweep.
 
 The liveness sweep stops at the first answer, because it only needs to know the host
 exists. Once a host has answered, it is checked against a wider list — cameras (554),
-MQTT brokers (1883), Home Assistant (8123), Portainer (9000), Plex, Postgres and so on —
-and whatever is open lands in an `open-ports` label.
+MQTT brokers (1883), Home Assistant (8123), Portainer (9000), Plex, Postgres and so on.
 
-These are recorded as observations, not conclusions. "554 is open" is a fact; "this is a
-camera" is an inference, and the person reading the card is far better placed to draw it
-than the scanner is. A port number is a convention rather than a guarantee, so RackPeek
-will not name a service from one — but a port **is** the best possible target for the
-banner probes above, which is how `9000` became "Portainer" and `8123` became
-"Home Assistant".
+### Every open port becomes a Service
 
-The list is what answered out of the ports probed, not a full port scan. `--ports`
-widens the liveness set if you want more.
-
-### Applications become Services
-
-When a port answers HTTP with something that names itself, that is a fact about what the
-host **runs**, not about what the host **is** — so it becomes a Service hanging off the
-host's card rather than renaming it:
+Something listening on a port is a service, and a service is a resource in its own right
+rather than a note on the host. Each open port therefore gets its own **Service** card,
+named for the host and what that port serves:
 
 ```yaml
 - kind: System
   ip: 192.0.2.204
-  name: host-1a2b3c4d
+  name: nebula
   labels:
-    open-ports: 1883,8123
     identified-by: http:8123 Home Assistant
+- kind: Service
+  name: nebula-ssh
+  network: { ip: 192.0.2.204, port: 22, protocol: TCP }
+  runsOn: [nebula]
 - kind: Service
   name: home-assistant
   network: { ip: 192.0.2.204, port: 8123, protocol: TCP }
-  runsOn: [host-1a2b3c4d]
+  runsOn: [nebula]
 ```
 
-A host may run several, so each identified port gets its own Service with its own stable
-id — a rescan updates them rather than duplicating them. This is why a page title does
-not name the machine: picking whichever application answered first would be arbitrary,
-and a certificate is the only answer that is a claim about the machine itself.
+This replaces the old `open-ports` label, which was a comma-separated string nothing
+could link to, filter on, or hang a note from.
 
-An appliance's own management page is not a service running on it, so a title matching
-the host's own name is skipped — a firewall already called `opnsense` does not also need
-a service called `opnsense`.
+What the service said about itself wins over what its port number implies, because a
+port is a convention and an answer is evidence: `8123` is Home Assistant by convention,
+but a page that says "Forgejo" is the machine telling you. Where nothing answered, the
+name falls back to the host plus the port's usual service — `nebula-ssh`, `nebula-https`,
+`nebula-smb` — and an unrecognised port keeps its number as `nebula-tcp-9987`, which is
+an honest record rather than a guess.
 
-### Vendor from the MAC
+One case is deliberately special: an appliance whose management page just says its own
+name back. A firewall already called `opnsense` gains an `opnsense-https`, not a second
+card called `opnsense`.
 
-Where the sweep has a MAC, the card also gets a `vendor` label naming the organisation
+Each port keeps its own stable id, so a rescan updates these cards rather than
+duplicating them. A port is also the best possible target for the banner probes above,
+which is how `9000` became "Portainer". Note that this is what answered out of the ports
+probed, not a full port scan; `--ports` widens the set.
+
+This is also why a page title does not name the *machine*: picking whichever application
+answered first would be arbitrary, and a certificate is the only answer that is a claim
+about the machine itself.
+
+### NIC vendor from the MAC
+
+Where the sweep has a MAC, the card also gets a `nic-vendor` label naming the organisation
 that OUI belongs to — `Espressif`, `Ubiquiti`, `Raspberry Pi`, `Proxmox`. For a silent
 device with no PTR record and no web UI, this is often the only thing that distinguishes
 it from an address.
 
-Two details worth knowing. A hypervisor's own prefix wins over the
+It is named for what it actually is. The OUI identifies whoever owns the network
+interface, which is not the same claim as who made the machine: a Proxmox guest's virtual
+NIC reads `Proxmox` while the box underneath it is a Dell.
+
+Two further details worth knowing. A hypervisor's own prefix wins over the
 locally-administered bit, so a KVM guest reads as `QEMU/KVM` rather than anonymous. And
 an address a device made up for itself — modern phones and laptops randomise per network
 for privacy — is reported as `Randomised (locally administered)`, because the OUI half of
@@ -569,8 +611,9 @@ the same card**, whichever ran first:
 - Agent first: a later sweep recognises the box and just refreshes its address —
   never touching the identity or anything you or the agent wrote.
 
-The card keeps whatever name it already had (names are always user-owned), so a
-scan-first card keeps its generated `host-…` name until you rename it once. A MAC that
+The card keeps whatever name it already had, except that a generated `host-…` name gives
+way to a real one when a collector turns up knowing it, and a name you chose never does.
+A MAC that
 two stored cards both claim unifies nothing — ambiguity always falls back to separate
 cards — and agent-grade identities never unify with each other on a MAC alone (cloned
 VMs can share one; that is what machine-ids are for). The machine running the sweep
