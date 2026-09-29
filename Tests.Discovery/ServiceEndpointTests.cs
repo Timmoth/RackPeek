@@ -93,4 +93,23 @@ public class ServiceEndpointTests {
     [Fact]
     public void A_service_with_no_port_is_not_guessed_at() =>
         Assert.Null(Svc(Net(null)).BrowsableUrl());
+
+    [Theory]
+    [InlineData("host name with spaces")]
+    [InlineData("...")]
+    [InlineData("a/b")]
+    [InlineData("under_score.local")]
+    [InlineData("fe80::1")]
+    [InlineData("[::1]")]
+    public void An_address_no_url_can_be_built_from_yields_no_link_rather_than_throwing(string ip) {
+        // The address field holds whatever a person typed or a device reported, and
+        // neither is obliged to produce something a URL can be built from. This is
+        // rendered inside the hardware and system trees, so an exception here would
+        // blank the whole page rather than spoil one link.
+        Service service = Svc(Net(8080, ip: ip));
+
+        Exception? thrown = Record.Exception(() => service.BrowsableUrl());
+
+        Assert.Null(thrown);
+    }
 }

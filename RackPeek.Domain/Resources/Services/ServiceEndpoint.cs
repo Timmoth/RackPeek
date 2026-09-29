@@ -61,7 +61,16 @@ public static class ServiceEndpoint {
         if (scheme == null)
             return null;
 
-        return new UriBuilder(scheme, ip) { Port = port }.Uri.ToString();
+        try {
+            return new UriBuilder(scheme, ip) { Port = port }.Uri.ToString();
+        }
+        catch (UriFormatException) {
+            // Whatever is in the address field, a person put it there by hand or a
+            // collector read it off a device, and neither is obliged to produce something
+            // a URL can be built from. A missing link costs a click; letting this escape
+            // would take down every page that renders the resource.
+            return null;
+        }
     }
 
     private static string? SchemeFor(int port, string? protocol) {
