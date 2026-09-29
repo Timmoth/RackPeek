@@ -15,7 +15,7 @@ namespace Tests.EndToEnd;
 // leaves valid YAML that is indistinguishable from a smaller inventory. Nothing at
 // load time can detect it, which is precisely why the writer-side fix (atomic,
 // durable saves — see PhysicalTextFileStoreTests) is the primary remedy.
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class CorruptConfigTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
     // Exactly what the serializer writes for three bare servers.

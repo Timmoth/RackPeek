@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd.ExporterTests;
 
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class HostsExportWorkflowTests(
     TempYamlCliFixture fs,
     ITestOutputHelper outputHelper)

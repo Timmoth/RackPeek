@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd.Graph;
 
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class GraphTopologyCliTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
     private async Task<string> ExecuteAsync(params string[] args) {
