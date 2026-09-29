@@ -161,7 +161,9 @@ public sealed class YamlResourceCollection(
             DiscoveryIdResolver.ResolveNames(
                 resourceCollection.Resources,
                 incomingResources,
-                incomingRoot.Connections);
+                incomingRoot.Connections,
+                resourceCollection.Connections,
+                true);
 
             List<Resource> merged = ResourceCollectionMerger.Merge(
                 resourceCollection.Resources,

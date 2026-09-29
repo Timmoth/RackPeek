@@ -212,13 +212,60 @@ public class RunsOnByIpTests {
     }
 
     [Fact]
-    public void One_sweep_find_never_unifies_with_another() {
-        // A card the sweep itself produced is a stand-in for something nobody has
-        // described. Two stand-ins at one address say nothing about each other, so the
-        // address rule stays out of it — here the stored one was identified by MAC on
-        // its own segment, and the incoming one only by address.
+    public void Two_sweep_finds_with_nothing_between_them_are_the_same_card_already() {
+        // Neither card is more than "something replied at this address", and an address
+        // is exactly what seeds their identity when no MAC was seen — so they carry the
+        // same id and the address rule never gets a say. The stored name wins, as it
+        // does for any re-run.
+        List<Resource> existing = [Scanned("host-99999999", "192.0.2.105")];
+        List<Resource> incoming = [Scanned("host-1a2b3c4d", "192.0.2.105")];
+
+        Assert.Equal(existing[0].DiscoveryId, incoming[0].DiscoveryId);
+
+        DiscoveryIdResolver.ResolveNames(existing, incoming);
+
+        Assert.Equal("host-99999999", incoming.OfType<SystemResource>().Single().Name);
+    }
+
+    [Fact]
+    public void A_sweep_find_folds_into_one_that_saw_the_mac() {
+        // Not two stand-ins: the stored card names the NIC answering at that address —
+        // a firewall's neighbour table does this for every subnet it routes — where the
+        // incoming one only knows something replied. The MAC is the better identity, so
+        // the address-only card folds into it rather than becoming a second machine.
         List<Resource> existing = [Scanned("host-99999999", "192.0.2.105", "bc:24:11:00:1a:09")];
         List<Resource> incoming = [Scanned("host-1a2b3c4d", "192.0.2.105")];
+
+        DiscoveryIdResolver.ResolveNames(existing, incoming);
+
+        SystemResource card = incoming.OfType<SystemResource>().Single();
+        Assert.Equal("host-99999999", card.Name);
+
+        // The weaker address-seeded identity is dropped so the merge cannot downgrade
+        // the MAC-seeded one it is landing on.
+        Assert.Null(card.DiscoveryId);
+    }
+
+    [Fact]
+    public void The_mac_wins_arriving_second_too() {
+        // Sweep the routed subnet first, ask the firewall after: same two facts, same
+        // one card. Here the MAC-seeded identity is the one that survives.
+        List<Resource> existing = [Scanned("host-1a2b3c4d", "192.0.2.105")];
+        List<Resource> incoming = [Scanned("host-99999999", "192.0.2.105", "bc:24:11:00:1a:09")];
+
+        DiscoveryIdResolver.ResolveNames(existing, incoming);
+
+        SystemResource card = incoming.OfType<SystemResource>().Single();
+        Assert.Equal("host-1a2b3c4d", card.Name);
+        Assert.NotNull(card.DiscoveryId);
+    }
+
+    [Fact]
+    public void Two_sweep_finds_that_each_saw_a_mac_never_unify() {
+        // Both name a NIC, and they name different ones. The MAC bridge has already had
+        // its say; sharing an address now is a conflict or an overlapping subnet.
+        List<Resource> existing = [Scanned("host-99999999", "192.0.2.105", "bc:24:11:00:1a:09")];
+        List<Resource> incoming = [Scanned("host-1a2b3c4d", "192.0.2.105", "bc:24:11:00:1a:0a")];
 
         DiscoveryIdResolver.ResolveNames(existing, incoming);
 

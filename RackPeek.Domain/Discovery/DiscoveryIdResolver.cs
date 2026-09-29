@@ -21,11 +21,21 @@ public static class DiscoveryIdResolver {
     ///     the stored resources the ids point at. Also rewrites <c>runsOn</c> references
     ///     between incoming resources — and the payload's <paramref name="connections" />,
     ///     which name resources the same way — so a rename does not break the tree.
+    ///     <para>
+    ///         The one exception is <paramref name="improveStoredNames" />, which lets a
+    ///         stored placeholder nobody chose be replaced by a real name this payload
+    ///         knows — see <see cref="CanImproveName" />. That rewrites the stored side, so
+    ///         only a caller that is about to persist should ask for it, and it must hand
+    ///         over <paramref name="storedConnections" /> for the same reason the incoming
+    ///         side hands over its own.
+    ///     </para>
     /// </summary>
     public static void ResolveNames(
         IReadOnlyList<Resource> existing,
         IReadOnlyList<Resource> incoming,
-        IReadOnlyList<Connection>? connections = null) {
+        IReadOnlyList<Connection>? connections = null,
+        IReadOnlyList<Connection>? storedConnections = null,
+        bool improveStoredNames = false) {
         var incomingWithId = incoming
             .Where(r => !string.IsNullOrWhiteSpace(r.DiscoveryId))
             .ToList();
@@ -52,13 +62,37 @@ public static class DiscoveryIdResolver {
 
         var renames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        var storedRenames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
         foreach (Resource resource in incomingWithId) {
+            // Captured before resolution, which may null the id as part of unifying.
+            var offeredName = resource.Name;
+            var offeredId = resource.DiscoveryId;
+
             var resolved = ResolveName(resource, existingById, existingByName, existingByMac, existingByIp);
 
-            if (resolved.Equals(resource.Name, StringComparison.OrdinalIgnoreCase))
+            if (resolved.Equals(offeredName, StringComparison.OrdinalIgnoreCase))
                 continue;
 
-            renames[resource.Name] = resolved;
+            // The stored card is about to lend its name to this one. If that name is a
+            // placeholder nobody chose and this collector has a real one, the better name
+            // should win instead — so the card improves as more is learned about it.
+            if (improveStoredNames
+                && existingByName.TryGetValue(resolved, out Resource? stored)
+                && !existingByName.ContainsKey(offeredName)
+                && CanImproveName(stored, offeredName, offeredId)) {
+                storedRenames[stored.Name] = offeredName;
+
+                // The name index has to follow, or a later card in this same payload would
+                // resolve onto a name that no longer exists.
+                existingByName.Remove(stored.Name);
+                stored.Name = offeredName;
+                existingByName[offeredName] = stored;
+
+                continue;
+            }
+
+            renames[offeredName] = resolved;
             resource.Name = resolved;
         }
 
@@ -67,9 +101,110 @@ public static class DiscoveryIdResolver {
             RewriteConnections(connections, renames);
         }
 
+        // The stored side has its own references to fix up, and its own connections. The
+        // incoming side gets the same treatment because a payload may well be a re-push of
+        // previously exported YAML, which still names the resource the way it was stored.
+        if (storedRenames.Count > 0) {
+            RewriteRunsOn(existing, storedRenames);
+
+            // Now that the hosts answer to their new names, the services named after the
+            // old ones follow. Done here so the renames below travel together.
+            foreach ((var from, var to) in RenameServicesAfterTheirHost(existing, storedRenames, existingByName))
+                storedRenames[from] = to;
+
+            RewriteConnections(storedConnections, storedRenames);
+            RewriteRunsOn(incoming, storedRenames);
+            RewriteConnections(connections, storedRenames);
+        }
+
         PreserveStoredRunsOn(incomingWithId, incoming, existingById, existingByName);
         AnchorRunsOnByIp(existing, incoming, existingByName);
     }
+
+    /// <summary>
+    ///     Carries a service's name along when the host it runs on stops being a
+    ///     placeholder.
+    ///     <para>
+    ///         A sweep names what it finds on a port after the host it found it on, so a
+    ///         machine it could only call <c>host-1a2b3c4d</c> gets a <c>host-1a2b3c4d-ssh</c>
+    ///         beside it. When the firewall or the hypervisor later supplies the real name
+    ///         the host becomes <c>forgejo</c> and the service is left announcing a machine
+    ///         that no longer exists — the link still resolves, but the name reads as a
+    ///         leftover, which is exactly what it is.
+    ///     </para>
+    ///     <para>
+    ///         Only names this collector's own convention produced are touched: the
+    ///         service must be named for the old host and must actually run on it, must
+    ///         not be a name a person chose, and the name it would take must be free.
+    ///     </para>
+    /// </summary>
+    private static Dictionary<string, string> RenameServicesAfterTheirHost(
+        IReadOnlyList<Resource> existing,
+        Dictionary<string, string> hostRenames,
+        Dictionary<string, Resource> existingByName) {
+        var renamed = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (Service service in existing.OfType<Service>()) {
+            if (service.IsUserNamed())
+                continue;
+
+            foreach ((var oldHost, var newHost) in hostRenames) {
+                if (!service.Name.StartsWith($"{oldHost}-", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                // runsOn has already been rewritten, so this is the new name by now. A
+                // service merely named like the host without running on it is a
+                // coincidence, and coincidences are not renamed.
+                if (!service.RunsOn.Contains(newHost, StringComparer.OrdinalIgnoreCase))
+                    continue;
+
+                var candidate = $"{newHost}{service.Name[oldHost.Length..]}";
+
+                if (existingByName.ContainsKey(candidate))
+                    break;
+
+                renamed[service.Name] = candidate;
+                existingByName.Remove(service.Name);
+                service.Name = candidate;
+                existingByName[candidate] = service;
+
+                break;
+            }
+        }
+
+        return renamed;
+    }
+
+    /// <summary>
+    ///     Whether a stored card's name is a placeholder that this collector can improve
+    ///     on.
+    ///     <para>
+    ///         A discovered card is named from whatever the collector could see, and when
+    ///         that was nothing it falls back to a slug of its own id — <c>host-1a2b3c4d</c>
+    ///         says only that something is there. A later run, or a collector that can see
+    ///         more, often does know the machine's name: a firewall knows what it handed
+    ///         out over DHCP, a hypervisor knows what its guest is called. Keeping the
+    ///         placeholder in that case would mean the inventory never improved.
+    ///     </para>
+    ///     <para>
+    ///         Only ever placeholder to real name, and never over a name a person chose.
+    ///         Real to real is left alone on purpose: two collectors that each know a
+    ///         different name for a machine would otherwise rename it back and forth on
+    ///         every run.
+    ///     </para>
+    /// </summary>
+    private static bool CanImproveName(Resource stored, string offeredName, string? offeredId) =>
+        !stored.IsUserNamed()
+        && IsGeneratedName(stored.Name, stored.DiscoveryId)
+        && !IsGeneratedName(offeredName, offeredId);
+
+    /// <summary>
+    ///     Whether a name is the slug-of-its-own-id form <see cref="DiscoveryNaming.Suggest" />
+    ///     falls back to when the collector had nothing better to offer.
+    /// </summary>
+    private static bool IsGeneratedName(string name, string? discoveryId) =>
+        !string.IsNullOrWhiteSpace(discoveryId)
+        && name.EndsWith($"-{DiscoveryId.ShortSuffix(discoveryId)}", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     ///     Gives a service whose <c>runsOn</c> names nothing the host it is plainly
@@ -285,14 +420,33 @@ public static class DiscoveryIdResolver {
     ///     link-local, so a host on any subnet but the scanner's own yields no MAC and
     ///     its identity falls back to its address. Once a hypervisor reports its guests'
     ///     addresses, that same address is the only thing tying the sweep's find to the
-    ///     guest the inventory already describes in full.
+    ///     guest the inventory describes in full.
     ///     <para>
-    ///         Narrow on purpose. It applies only to a scan-grade card that produced no
-    ///         MAC of its own — one that has a MAC was either already unified above or
-    ///         genuinely disagrees, and a MAC is better evidence than an address. The
-    ///         stored card must be agent-grade and of the same kind, and must be the only
-    ///         one claiming that address: two cards on one address is a conflict or an
-    ///         overlapping subnet, neither of which is evidence of anything.
+    ///         Which of the two arrived first must not matter, so this reads the same in
+    ///         both directions: one scan-grade card that produced no MAC, one agent-grade
+    ///         card, one address, same kind. The agent-grade identity always wins — it is
+    ///         dropped from the incoming card when the incoming card is the scan (so the
+    ///         merge cannot downgrade the stored one) and kept when the incoming card is
+    ///         the agent (so the merge upgrades the stored one).
+    ///     </para>
+    ///     <para>
+    ///         Two scan cards can bridge as well, but only when exactly one of them saw a
+    ///         MAC. A firewall's neighbour table gives an address <em>and</em> the NIC
+    ///         answering at it; a sweep of a subnet it does not sit on gives an address
+    ///         and nothing else. Those are not two stand-ins — one is a direct observation
+    ///         of a specific interface and the other is "something replied" — so the
+    ///         MAC-bearing card wins the identity and the address-only card folds into it.
+    ///     </para>
+    ///     <para>
+    ///         Narrow on purpose. Against an agent-grade card the scan side must have no
+    ///         MAC at all: one that has a MAC either unified through the MAC bridge
+    ///         already or genuinely disagrees, and disagreement is not evidence. Two cards
+    ///         of equal standing never bridge — both agent-grade, both scan-grade with a
+    ///         MAC, or both scan-grade without one — because an address adds nothing when
+    ///         neither side can better it. And the address must be claimed by exactly one
+    ///         stored card, which <see cref="BuildIpMap" /> guarantees: two cards on one
+    ///         address is a conflict or an overlapping subnet, neither of which is
+    ///         evidence of anything.
     ///     </para>
     /// </summary>
     private static bool TryUnifyByIp(
@@ -301,14 +455,6 @@ public static class DiscoveryIdResolver {
         out string unifiedName) {
         unifiedName = string.Empty;
 
-        if (DiscoveryId.Scheme(resource.DiscoveryId) != DiscoveryId.NetworkScheme)
-            return false;
-
-        // A scan that saw a MAC has better evidence than an address, and the MAC rule
-        // above has already had its say.
-        if (MacsOf(resource).Any())
-            return false;
-
         if (resource is not SystemResource { Ip: { } ip } || string.IsNullOrWhiteSpace(ip))
             return false;
 
@@ -316,13 +462,36 @@ public static class DiscoveryIdResolver {
             || stored.GetType() != resource.GetType())
             return false;
 
-        // Another scan card at the same address says nothing: both are stand-ins.
-        if (DiscoveryId.Scheme(stored.DiscoveryId) == DiscoveryId.NetworkScheme)
+        var incomingIsNet = DiscoveryId.Scheme(resource.DiscoveryId) == DiscoveryId.NetworkScheme;
+        var storedIsNet = DiscoveryId.Scheme(stored.DiscoveryId) == DiscoveryId.NetworkScheme;
+
+        var incomingHasMac = MacsOf(resource).Any();
+        var storedHasMac = MacsOf(stored).Any();
+
+        // Which side holds the weaker identity, and so folds into the other. Null means
+        // the two are of equal standing and the address settles nothing.
+        bool? incomingIsWeaker =
+            incomingIsNet != storedIsNet
+                // Agent grade against scan grade. The scan is the weaker one, but only
+                // when it saw no MAC of its own — one that did either unified through the
+                // MAC bridge already or disagrees with the card it would be folded into.
+                ? (incomingIsNet ? incomingHasMac : storedHasMac) ? null : incomingIsNet
+            : !incomingIsNet
+                // Two agent-grade identities. A guest and the machine-id of the OS inside
+                // it are two cards on purpose; sharing an address does not change that.
+                ? null
+                // Two scan-grade cards: a MAC beats an address, and nothing beats nothing.
+                : incomingHasMac == storedHasMac ? null : !incomingHasMac;
+
+        if (incomingIsWeaker is not { } weaker)
             return false;
 
-        // Same as the MAC bridge: the scan's weaker identity is dropped so the merge
-        // cannot downgrade the stored one.
-        resource.DiscoveryId = null;
+        // Same as the MAC bridge: the weaker identity is dropped so the merge cannot
+        // downgrade the stronger one. Where the stronger card is the one arriving, its id
+        // survives and the merge stamps it onto the stored card instead.
+        if (weaker)
+            resource.DiscoveryId = null;
+
         unifiedName = stored.Name;
 
         return true;
