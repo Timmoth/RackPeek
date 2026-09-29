@@ -461,27 +461,10 @@
         Nav.NavigateTo($"resources/services/{Uri.EscapeDataString(newName)}");
     }
 
-    private string? GetBrowsableHref()
-    {
-        var ip = Service.Network?.Ip ?? EffectiveIp;
-        var port = Service.Network?.Port;
-
-        if (string.IsNullOrWhiteSpace(ip) || port is null)
-            return null;
-
-        var proto = Service.Network?.Protocol?.Trim().ToLowerInvariant();
-
-        var scheme = proto switch
-        {
-            "https" => "https",
-            "http" => "http",
-            _ => "http"
-        };
-
-        // Build a correct absolute URL
-        var ub = new UriBuilder(scheme, ip) { Port = port.Value };
-        return ub.Uri.ToString();
-    }
+    // A port is a convention, not a promise: ssh on 22 is not browsable and an http://
+    // link to it only wastes a click. The domain owns that judgement so this page, the
+    // dependency trees and anything else agree on it.
+    private string? GetBrowsableHref() => Service.BrowsableUrl(EffectiveIp);
 }
 
 @code
