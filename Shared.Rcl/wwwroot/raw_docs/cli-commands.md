@@ -5,6 +5,13 @@
 USAGE:
     rpk [OPTIONS] <COMMAND>
 
+EXAMPLES:
+    rpk discover system
+    rpk discover system --name nas01 --push
+    rpk discover docker
+    rpk discover docker --push
+    rpk discover proxmox --host https://pve.lan:8006 --insecure
+
 OPTIONS:
     -h, --help       Prints help information   
     -v, --version    Prints version information
@@ -22,6 +29,7 @@ COMMANDS:
     desktops        Manage desktop computers and their components              
     laptops         Manage Laptop computers and their components               
     services        Manage services and their configurations                   
+    discover        Read infrastructure and emit it as RackPeek YAML           
     ansible         Generate and manage Ansible inventory                      
     ssh             Generate SSH configuration from infrastructure             
     hosts           Generate a hosts file from infrastructure                  
@@ -2014,6 +2022,7 @@ COMMANDS:
     set <name>                  Update properties of a UPS unit           
     del <name>                  Delete a UPS unit                         
     rename <name> <new-name>    Rename a UPS unit to a new name           
+    port                        Manage ports on a UPS unit                
     label                       Manage labels on a UPS unit               
     tag                         Manage tags on a UPS unit                 
 ```
@@ -2135,6 +2144,76 @@ OPTIONS:
     -h, --help    Prints help information
 ```
 
+## `rpk ups port`
+```
+DESCRIPTION:
+Manage ports on a UPS unit
+
+USAGE:
+    rpk ups port [OPTIONS] <COMMAND>
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    add <name>    Add a port to a UPS unit     
+    set <name>    Update a UPS unit port       
+    del <name>    Remove a port from a UPS unit
+```
+
+## `rpk ups port add`
+```
+DESCRIPTION:
+Add a port to a UPS unit
+
+USAGE:
+    rpk ups port add <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help     Prints help information        
+        --type     The port type (e.g., rj45, usb)
+        --speed    The port speed (e.g., 0.1, 1)  
+        --count    Number of ports of this type   
+```
+
+## `rpk ups port set`
+```
+DESCRIPTION:
+Update a UPS unit port
+
+USAGE:
+    rpk ups port set <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information        
+        --index <INDEX>    The index of the port to update
+        --type             The port type (e.g., rj45, usb)
+        --speed            The port speed (e.g., 0.1, 1)  
+        --count            Number of ports of this type   
+```
+
+## `rpk ups port del`
+```
+DESCRIPTION:
+Remove a port from a UPS unit
+
+USAGE:
+    rpk ups port del <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information        
+        --index <INDEX>    The index of the port to remove
+```
+
 ## `rpk ups label`
 ```
 DESCRIPTION:
@@ -2252,6 +2331,7 @@ COMMANDS:
     set <name>                  Update properties of other hardware           
     del <name>                  Delete other hardware                         
     rename <name> <new-name>    Rename other hardware to a new name           
+    port                        Manage ports on other hardware                
     label                       Manage labels on other hardware               
     tag                         Manage tags on other hardware                 
 ```
@@ -2371,6 +2451,76 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help    Prints help information
+```
+
+## `rpk other port`
+```
+DESCRIPTION:
+Manage ports on other hardware
+
+USAGE:
+    rpk other port [OPTIONS] <COMMAND>
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    add <name>    Add a port to other hardware     
+    set <name>    Update an other hardware port    
+    del <name>    Remove a port from other hardware
+```
+
+## `rpk other port add`
+```
+DESCRIPTION:
+Add a port to other hardware
+
+USAGE:
+    rpk other port add <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help     Prints help information          
+        --type     The port type (e.g., rj45, sfp+) 
+        --speed    The port speed (e.g., 1, 2.5, 10)
+        --count    Number of ports of this type     
+```
+
+## `rpk other port set`
+```
+DESCRIPTION:
+Update an other hardware port
+
+USAGE:
+    rpk other port set <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information          
+        --index <INDEX>    The index of the port to update  
+        --type             The port type (e.g., rj45, sfp+) 
+        --speed            The port speed (e.g., 1, 2.5, 10)
+        --count            Number of ports of this type     
+```
+
+## `rpk other port del`
+```
+DESCRIPTION:
+Remove a port from other hardware
+
+USAGE:
+    rpk other port del <name> [OPTIONS]
+
+ARGUMENTS:
+    <name>     
+
+OPTIONS:
+    -h, --help             Prints help information        
+        --index <INDEX>    The index of the port to remove
 ```
 
 ## `rpk other label`
@@ -3030,6 +3180,8 @@ COMMANDS:
     cpu                         Manage CPUs attached to Laptops                 
     drive                       Manage storage drives attached to Laptops       
     gpu                         Manage GPUs attached to Laptops                 
+    nic                         Manage network interface cards (NICs) for       
+                                Laptops                                         
     label                       Manage labels on a laptop                       
     tag                         Manage tags on a laptop                         
 ```
@@ -3366,6 +3518,76 @@ USAGE:
 ARGUMENTS:
     <Laptop>    The Laptop name               
     <index>     The index of the Gpu to remove
+
+OPTIONS:
+    -h, --help    Prints help information
+```
+
+## `rpk laptops nic`
+```
+DESCRIPTION:
+Manage network interface cards (NICs) for Laptops
+
+USAGE:
+    rpk laptops nic [OPTIONS] <COMMAND>
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    add <Laptop>            Add a NIC to a Laptop     
+    set <Laptop> <index>    Update a Laptop NIC       
+    del <Laptop> <index>    Remove a NIC from a Laptop
+```
+
+## `rpk laptops nic add`
+```
+DESCRIPTION:
+Add a NIC to a Laptop
+
+USAGE:
+    rpk laptops nic add <Laptop> [OPTIONS]
+
+ARGUMENTS:
+    <Laptop>    The name of the Laptop
+
+OPTIONS:
+    -h, --help     Prints help information          
+        --type     The nic port type e.g rj45 / sfp+
+        --speed    The port speed                   
+        --ports    The number of ports              
+```
+
+## `rpk laptops nic set`
+```
+DESCRIPTION:
+Update a Laptop NIC
+
+USAGE:
+    rpk laptops nic set <Laptop> <index> [OPTIONS]
+
+ARGUMENTS:
+    <Laptop>    The Laptop name               
+    <index>     The index of the nic to update
+
+OPTIONS:
+    -h, --help     Prints help information          
+        --type     The nic port type e.g rj45 / sfp+
+        --speed    The port speed                   
+        --ports    The number of ports              
+```
+
+## `rpk laptops nic del`
+```
+DESCRIPTION:
+Remove a NIC from a Laptop
+
+USAGE:
+    rpk laptops nic del <Laptop> <index> [OPTIONS]
+
+ARGUMENTS:
+    <Laptop>    The Laptop name               
+    <index>     The index of the nic to remove
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3723,6 +3945,188 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help    Prints help information
+```
+
+## `rpk discover`
+```
+DESCRIPTION:
+Read infrastructure and emit it as RackPeek YAML
+
+USAGE:
+    rpk discover [OPTIONS] <COMMAND>
+
+EXAMPLES:
+    rpk discover system
+    rpk discover system --name nas01 --push
+    rpk discover docker
+    rpk discover docker --push
+    rpk discover proxmox --host https://pve.lan:8006 --insecure
+
+OPTIONS:
+    -h, --help    Prints help information
+
+COMMANDS:
+    system      Inspect this machine and emit it as a System resource           
+    docker      Read the Docker API and emit each published container as a      
+                Service on this host's System                                   
+    proxmox     Read a Proxmox cluster and emit its nodes and guests as Systems 
+    opnsense    Read an OPNsense firewall's neighbour table and emit every      
+                machine on it                                                   
+    network     Sweep a subnet and emit every answering host as a System        
+                resource                                                        
+```
+
+## `rpk discover system`
+```
+DESCRIPTION:
+Inspect this machine and emit it as a System resource
+
+USAGE:
+    rpk discover system [OPTIONS]
+
+EXAMPLES:
+    rpk discover system
+    rpk discover system --name nas01 --push
+
+OPTIONS:
+    -h, --help             Prints help information                              
+        --push             Upload the result to a RackPeek server instead of    
+                           printing it                                          
+        --server <URL>     RackPeek server to upload to. Defaults to the        
+                           RPK_SERVER environment variable                      
+        --api-key <KEY>    API key for the server. Defaults to the RPK_API_KEY  
+                           environment variable                                 
+        --dry-run          Ask the server what would change, without changing   
+                           anything. Implies --push                             
+    -n, --name <NAME>      Name for this machine. Defaults to its hostname.     
+                           Recommended when running from a timer                
+```
+
+## `rpk discover docker`
+```
+DESCRIPTION:
+Read the Docker API and emit each published container as a Service on this 
+host's System
+
+USAGE:
+    rpk discover docker [OPTIONS]
+
+EXAMPLES:
+    rpk discover docker
+    rpk discover docker --push
+
+OPTIONS:
+    -h, --help                 Prints help information                          
+        --push                 Upload the result to a RackPeek server instead of
+                               printing it                                      
+        --server <URL>         RackPeek server to upload to. Defaults to the    
+                               RPK_SERVER environment variable                  
+        --api-key <KEY>        API key for the server. Defaults to the          
+                               RPK_API_KEY environment variable                 
+        --dry-run              Ask the server what would change, without        
+                               changing anything. Implies --push                
+        --docker-host <URI>    Docker endpoint, e.g. unix:///var/run/docker.sock
+                               or tcp://host:2375. Defaults to DOCKER_HOST, then
+                               the local socket                                 
+        --host <NAME>          Name of the machine these containers run on.     
+                               Defaults to its hostname                         
+```
+
+## `rpk discover proxmox`
+```
+DESCRIPTION:
+Read a Proxmox cluster and emit its nodes and guests as Systems
+
+USAGE:
+    rpk discover proxmox [OPTIONS]
+
+EXAMPLES:
+    rpk discover proxmox --host https://pve.lan:8006 --insecure
+    rpk discover proxmox --host pve.lan --push
+
+OPTIONS:
+    -h, --help                     Prints help information                      
+        --push                     Upload the result to a RackPeek server       
+                                   instead of printing it                       
+        --server <URL>             RackPeek server to upload to. Defaults to the
+                                   RPK_SERVER environment variable              
+        --api-key <KEY>            API key for the server. Defaults to the      
+                                   RPK_API_KEY environment variable             
+        --dry-run                  Ask the server what would change, without    
+                                   changing anything. Implies --push            
+        --host <URL>               Proxmox host, e.g. https://pve.lan:8006. A   
+                                   bare host name gets https and :8006          
+        --token-id <ID>            API token id, e.g. root@pam!rackpeek.        
+                                   Defaults to RPK_PVE_TOKEN_ID                 
+        --token-secret <SECRET>    API token secret. Defaults to                
+                                   RPK_PVE_TOKEN_SECRET                         
+        --insecure                 Accept a self-signed certificate, which      
+                                   Proxmox ships with by default                
+```
+
+## `rpk discover opnsense`
+```
+DESCRIPTION:
+Read an OPNsense firewall's neighbour table and emit every machine on it
+
+USAGE:
+    rpk discover opnsense [OPTIONS]
+
+EXAMPLES:
+    rpk discover opnsense --host https://firewall.lan --insecure
+    rpk discover opnsense --host firewall.lan --push
+
+OPTIONS:
+    -h, --help               Prints help information                            
+        --push               Upload the result to a RackPeek server instead of  
+                             printing it                                        
+        --server <URL>       RackPeek server to upload to. Defaults to the      
+                             RPK_SERVER environment variable                    
+        --api-key <KEY>      API key for the server. Defaults to the RPK_API_KEY
+                             environment variable                               
+        --dry-run            Ask the server what would change, without changing 
+                             anything. Implies --push                           
+        --host <URL>         OPNsense host, e.g. https://firewall.lan. A bare   
+                             host name gets https                               
+        --key <KEY>          API key. Defaults to RPK_OPN_KEY                   
+        --secret <SECRET>    API secret. Defaults to RPK_OPN_SECRET             
+        --insecure           Accept a self-signed certificate, which OPNsense   
+                             ships with by default                              
+        --include-public     Also record neighbours on public addresses, such as
+                             the ISP equipment on the WAN leg                   
+```
+
+## `rpk discover network`
+```
+DESCRIPTION:
+Sweep a subnet and emit every answering host as a System resource
+
+USAGE:
+    rpk discover network [OPTIONS]
+
+EXAMPLES:
+    rpk discover network
+    rpk discover network --cidr 192.168.1.0/24
+    rpk discover network --cidr 10.0.0.0/24 --ports 22,80,443 --push
+
+OPTIONS:
+    -h, --help             Prints help information                              
+        --push             Upload the result to a RackPeek server instead of    
+                           printing it                                          
+        --server <URL>     RackPeek server to upload to. Defaults to the        
+                           RPK_SERVER environment variable                      
+        --api-key <KEY>    API key for the server. Defaults to the RPK_API_KEY  
+                           environment variable                                 
+        --dry-run          Ask the server what would change, without changing   
+                           anything. Implies --push                             
+        --cidr <CIDR>      Subnet to sweep, e.g. 192.168.1.0/24. Defaults to    
+                           this machine's own subnet                            
+        --ports <LIST>     TCP ports probed to catch hosts that ignore ping,    
+                           e.g. 22,80,443. Defaults to a curated homelab list   
+        --timeout <MS>     Milliseconds to wait on each port probe              
+        --parallel <N>     How many hosts to probe at once                      
+        --no-identify      Skip asking living hosts what they are — sweep for   
+                           liveness only                                        
 ```
 
 ## `rpk ansible`

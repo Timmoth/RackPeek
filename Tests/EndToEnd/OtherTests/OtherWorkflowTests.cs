@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd.OtherTests;
 
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class OtherWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
     private async Task<(string, string)> ExecuteAsync(params string[] args) {
@@ -37,7 +37,7 @@ public class OtherWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputH
         Assert.Equal("Other hardware 'radio01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: Other
                        model: Building-Bridge-XG
@@ -59,7 +59,7 @@ public class OtherWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputH
         Assert.Equal("Other hardware 'bridge01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: Other
                        model: Building-Bridge-XG

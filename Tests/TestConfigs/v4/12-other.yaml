@@ -1,0 +1,8 @@
+version: 4
+resources:
+  - kind: Other
+    name: unifi-radio-01
+    tags:
+      - radio
+    model: Building Bridge XG
+    description: Microwave radio bridge for site-to-site connectivity

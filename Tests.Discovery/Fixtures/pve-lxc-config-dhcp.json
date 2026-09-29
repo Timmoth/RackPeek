@@ -1,0 +1,5 @@
+{"data":{
+  "ostype":"alpine",
+  "hostname":"tiny",
+  "net0":"name=eth0,bridge=vmbr0,hwaddr=BC:24:11:DD:EE:FF,ip=dhcp,type=veth"
+}}

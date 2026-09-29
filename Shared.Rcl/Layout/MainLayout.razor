@@ -6,6 +6,11 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
+<!-- Flips to true only after the first interactive render, which cannot happen on
+     the prerendered HTML. Tests wait on it before typing: input events sent before
+     the circuit attaches are silently lost and never reach the server-side model. -->
+<span hidden data-testid="circuit-probe" data-circuit-ready="@(_circuitReady ? "true" : "false")"></span>
+
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono"
      data-testid="app-root">
 
@@ -142,6 +147,7 @@
     private const string _outsideDismissId = "rpk-mobile-nav";
     private const string _containerSelector = "#rpk-mobile-nav";
 
+    private bool _circuitReady;
     private bool _dropdownOpen;
     private bool _listenerRegistered;
     private DotNetObjectReference<MainLayout>? _selfRef;
@@ -169,6 +175,14 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // OnAfterRender never runs during prerendering, so this re-render proves a
+        // live circuit to anything watching the probe above.
+        if (firstRender && !_circuitReady)
+        {
+            _circuitReady = true;
+            StateHasChanged();
+        }
+
         // Mirror the dropdown state into the JS dismiss-listener registration
         // so the listener only exists while it's needed.
         if (_dropdownOpen && !_listenerRegistered)

@@ -61,6 +61,16 @@ build-web:
 test-cli: _check-dotnet
     {{ _dotnet }} test Tests/Tests.csproj
 
+[doc("Run discovery tests (fast; no Docker required; matches the discovery-tests CI job)")]
+[group("test")]
+test-discovery: _check-dotnet
+    {{ _dotnet }} test Tests.Discovery
+
+[doc("Run MCP tests (fast; no Docker required; matches the mcp-tests CI job)")]
+[group("test")]
+test-mcp: _check-dotnet
+    {{ _dotnet }} test Tests.Mcp
+
 [doc("Install Playwright + browsers for E2E (first-time only)")]
 [group("test")]
 e2e-setup: _check-dotnet
@@ -73,9 +83,9 @@ e2e-setup: _check-dotnet
 test-e2e: _check-dotnet build-web
     cd Tests.E2e && {{ _dotnet }} test
 
-[doc("Run CLI + E2E tests (rebuilds Web image)")]
+[doc("Run CLI + discovery + MCP + E2E tests (rebuilds Web image)")]
 [group("test")]
-test-all: _check-dotnet build-web e2e-setup test-cli test-e2e
+test-all: _check-dotnet build-web e2e-setup test-cli test-discovery test-mcp test-e2e
 
 [doc("Run full test suite (alias for test-all; matches CI / pre-PR checklist)")]
 [group("test")]

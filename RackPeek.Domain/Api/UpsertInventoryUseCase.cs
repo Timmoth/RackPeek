@@ -2,6 +2,7 @@ using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using RackPeek.Domain.Discovery;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
 using RackPeek.Domain.Resources;
@@ -62,6 +63,19 @@ public class UpsertInventoryUseCase(
         List<Resource>? incomingResources = incomingRoot.Resources;
         IReadOnlyList<Resource> currentResources = await repo.GetAllOfTypeAsync<Resource>();
 
+        IReadOnlyList<Connection> currentConnections = await repo.GetConnectionsAsync();
+
+        // Line discovered resources up with what they already map to before anything
+        // else looks at names, so the diff below reports against the right resources.
+        // A dry run gets the same reconciliation but is not allowed to improve stored
+        // names, because that rewrites the inventory and a dry run must not.
+        DiscoveryIdResolver.ResolveNames(
+            currentResources,
+            incomingResources,
+            incomingRoot.Connections,
+            currentConnections,
+            !request.DryRun);
+
         IGrouping<string, Resource>? duplicate = incomingResources
             .GroupBy(r => r.Name, StringComparer.OrdinalIgnoreCase)
             .FirstOrDefault(g => g.Count() > 1);
@@ -118,7 +132,6 @@ public class UpsertInventoryUseCase(
             else if (oldYaml != newYaml) response.Updated.Add(incoming.Name);
         }
 
-        IReadOnlyList<Connection> currentConnections = await repo.GetConnectionsAsync();
         List<Connection>? mergedConnections = ConnectionMerger.Merge(
             currentConnections,
             incomingRoot.Connections,

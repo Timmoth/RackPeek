@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd.SwitchTests;
 
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class SwitchWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
     private async Task<(string, string)> ExecuteAsync(params string[] args) {
@@ -42,7 +42,7 @@ public class SwitchWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
         Assert.Equal("Switch 'sw01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: Switch
                        model: Netgear GS108
@@ -67,7 +67,7 @@ public class SwitchWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
         Assert.Equal("Switch 'sw02' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: Switch
                        model: Netgear GS108

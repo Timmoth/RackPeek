@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd.ServiceTests;
 
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
     private async Task<(string output, string yaml)> ExecuteAsync(params string[] args) {
@@ -46,7 +46,7 @@ public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
         outputHelper.WriteLine(yaml);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: System
                        name: sys01

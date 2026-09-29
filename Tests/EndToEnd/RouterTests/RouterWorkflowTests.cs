@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd.RouterTests;
 
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
     private async Task<(string, string)> ExecuteAsync(params string[] args) {
@@ -41,7 +41,7 @@ public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
         Assert.Equal("Router 'rt01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: Router
                        model: Ubiquiti EdgeRouter 4
@@ -65,7 +65,7 @@ public class RouterWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper output
         Assert.Equal("Router 'rt02' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: Router
                        model: Ubiquiti EdgeRouter 4

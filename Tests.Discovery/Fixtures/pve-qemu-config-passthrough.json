@@ -1,0 +1,18 @@
+{"data":{
+  "scsi0": "local-lvm:vm-100-disk-0,iothread=1,size=128G",
+  "hostpci0": "0000:01:00",
+  "hostpci1": "0000:02:00",
+  "ostype": "l26",
+  "cores": 8,
+  "net0": "virtio=BC:24:11:0E:8D:A2,bridge=vmbr0,firewall=1,tag=50",
+  "memory": "32768",
+  "name": "ai",
+  "smbios1": "uuid=282dd57c-be42-441d-bd0e-6976f734f7b5",
+  "sockets": 1,
+  "cpu": "x86-64-v2-AES",
+  "numa": 0,
+  "ide2": "none,media=cdrom",
+  "scsihw": "virtio-scsi-single",
+  "agent": "1",
+  "boot": "order=scsi0;ide2;net0"
+}}

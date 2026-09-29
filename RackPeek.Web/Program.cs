@@ -6,6 +6,8 @@ using RackPeek.Domain;
 using RackPeek.Domain.Git;
 using RackPeek.Domain.Persistence;
 using RackPeek.Domain.Persistence.Yaml;
+using ModelContextProtocol.AspNetCore;
+using RackPeek.Mcp;
 using RackPeek.Web.Api;
 using RackPeek.Web.Components;
 using Shared.Rcl;
@@ -88,11 +90,41 @@ public class Program {
         builder.Services.AddCommands();
         builder.Services.AddScoped<IConsoleEmulator, ConsoleEmulator>();
 
+        // MCP server, exposed over streamable HTTP at /mcp whenever the web server
+        // runs. Stateless: every call is a plain POST (no session affinity behind a
+        // reverse proxy) and tools resolve their services from the request scope,
+        // exactly like the inventory API does.
+        builder.Services.AddMcpServer(options => options.ServerInfo = new() {
+            Name = McpSetup.ServerName,
+            Version = RpkConstants.Version
+        })
+            .WithHttpTransport(options => options.SessionMode = HttpServerSessionMode.Stateless)
+            .WithRackPeekTools();
+
         // Razor Components
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
         WebApplication app = builder.Build();
+
+        // Read the config into memory before anything can be served. Blazor reloads it
+        // on every circuit init, but the inventory API has no circuit — without this it
+        // would merge against an empty collection and persist that over the user's file,
+        // destroying the inventory on the first request after a restart.
+        await using (AsyncServiceScope scope = app.Services.CreateAsyncScope()) {
+            try {
+                await scope.ServiceProvider.GetRequiredService<IResourceCollection>().LoadAsync();
+            }
+            catch (Exception ex) {
+                // An unreadable config must not stop the server booting: the web UI is
+                // how someone fixes it, and a container that will not start is worse
+                // than one showing the error. Blazor surfaces it on the first page load,
+                // and every write path re-checks the load before persisting anything,
+                // so booting in this state cannot overwrite the file.
+                scope.ServiceProvider.GetRequiredService<ILogger<Program>>()
+                    .LogError(ex, "Could not read the config at {Path}. Fix it in the web UI.", yamlFilePath);
+            }
+        }
 
         if (!app.Environment.IsDevelopment()) {
             app.UseExceptionHandler("/Error");
@@ -106,6 +138,12 @@ public class Program {
         app.UseAntiforgery();
 
         app.MapInventoryApi();
+
+        // Same key, same gate as /api/inventory: 503 until RPK_API_KEY is configured,
+        // so MCP is off by default and never exposes the inventory unauthenticated.
+        RouteGroupBuilder mcp = app.MapGroup("/mcp");
+        mcp.AddEndpointFilter<ApiKeyEndpointFilter>();
+        mcp.MapMcp();
 
         app.MapStaticAssets();
 

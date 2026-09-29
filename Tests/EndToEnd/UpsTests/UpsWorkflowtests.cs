@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd.UpsTests;
 
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class UpsWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
     private async Task<(string, string)> ExecuteAsync(params string[] args) {
@@ -37,7 +37,7 @@ public class UpsWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
         Assert.Equal("UPS 'ups01' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: Ups
                        model: APC-SmartUPS-1500
@@ -59,7 +59,7 @@ public class UpsWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHel
         Assert.Equal("UPS 'ups02' updated.\n", output);
 
         Assert.Equal("""
-                     version: 3
+                     version: 4
                      resources:
                      - kind: Ups
                        model: APC-SmartUPS-1500
