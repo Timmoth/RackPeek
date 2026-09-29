@@ -7,7 +7,7 @@ namespace Tests.EndToEnd;
 /// Comprehensive E2E test covering all CLI commands with varied input data.
 /// Tests happy paths for CRUD operations, components, labels, and exporters.
 /// </summary>
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class CliCommandsWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
     private async Task<(string, string)> ExecuteAsync(params string[] args) {

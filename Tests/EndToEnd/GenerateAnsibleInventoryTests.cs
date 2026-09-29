@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd;
 
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class GenerateAnsibleInventoryTests(
     TempYamlCliFixture fs,
     ITestOutputHelper outputHelper)

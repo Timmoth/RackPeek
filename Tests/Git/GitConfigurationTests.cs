@@ -6,7 +6,7 @@ using RackPeek.Domain.Git;
 
 namespace Tests.Git;
 
-[Collection("Git static state")]
+[Collection("Process-wide static state")]
 public sealed class GitConfigurationTests : IDisposable {
     private readonly string _tempDir;
 
