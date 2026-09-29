@@ -45,15 +45,11 @@ public static class NetworkScanMapper {
             if (host.Mac != null)
                 system.Labels["mac"] = host.Mac;
 
+            // Named for what it is: the organisation that owns the NIC's OUI, which is
+            // not the same claim as who made the machine — a Proxmox guest's NIC says
+            // Proxmox while the box underneath it is a Dell.
             if (host.Vendor != null)
-                system.Labels["vendor"] = host.Vendor;
-
-            // The ports are observations, not conclusions: "554 is open" is a fact, while
-            // "this is a camera" is an inference the reader is far better placed to make
-            // than the scanner. Recording them keeps the evidence without inventing a
-            // service that may not be what the port number conventionally implies.
-            if (host.OpenPorts.Count > 0)
-                system.Labels["open-ports"] = string.Join(",", host.OpenPorts);
+                system.Labels["nic-vendor"] = host.Vendor;
 
             // Kept even when the name came from somewhere else: it records what the host
             // actually said, which is how someone judges whether the name is trustworthy.
@@ -66,35 +62,48 @@ public static class NetworkScanMapper {
 
             resources.Add(system);
 
-            // An application that named itself over HTTP is a fact about what the host
-            // runs, not about what the host is, so it becomes a Service hanging off the
-            // card rather than renaming it.
-            foreach (ServiceIdentity found in host.Services) {
-                // An appliance's own management UI is not a service running on it: a
-                // firewall whose page says "OPNsense" on a card already called opnsense
-                // would otherwise get a second card named opnsense-<hash>, which says
-                // nothing the first one did not.
-                if (DiscoveryNaming.Slug(DiscoveryNaming.HostLabel(found.Name))
-                    .Equals(system.Name, StringComparison.OrdinalIgnoreCase))
-                    continue;
+            // Something listening on a port is a service, and a service is a resource in
+            // its own right rather than a note on the host. The host says where it is;
+            // each port says what it serves.
+            IReadOnlyDictionary<int, ServiceIdentity> identified =
+                host.Services.ToDictionary(s => s.Port);
 
+            // A port that answered a banner probe is open by definition, so the two lists
+            // agree in practice — but an identified service must not go missing if they
+            // ever disagree.
+            IEnumerable<int> ports = host.OpenPorts
+                .Concat(identified.Keys)
+                .Distinct();
+
+            foreach (var port in ports) {
                 var serviceId = DiscoveryId.Create(
                     DiscoveryId.NetworkScheme,
-                    $"{host.Mac ?? $"ip:{host.Ip}"}:{found.Port}");
+                    $"{host.Mac ?? $"ip:{host.Ip}"}:{port}");
+
+                // What the service said about itself beats what its port number implies,
+                // because a port is a convention and an answer is evidence. The exception
+                // is an appliance whose management page just says its own name back: a
+                // second card called opnsense tells no one anything, where an opnsense-https
+                // sitting on opnsense says exactly what it is.
+                var announced = identified.TryGetValue(port, out ServiceIdentity? found)
+                    ? DiscoveryNaming.HostLabel(found.Name)
+                    : string.Empty;
+
+                var serviceLabel = announced.Length > 0
+                                   && !announced.Equals(system.Name, StringComparison.OrdinalIgnoreCase)
+                    ? announced
+                    : $"{system.Name}-{WellKnownPorts.NameFor(port)}";
 
                 resources.Add(new Service {
                     Kind = Service.KindLabel,
                     Name = DiscoveryNaming.Unique(
-                        DiscoveryNaming.Suggest(
-                            DiscoveryNaming.HostLabel(found.Name),
-                            "service",
-                            serviceId),
+                        DiscoveryNaming.Suggest(serviceLabel, "service", serviceId),
                         serviceId,
                         taken),
                     DiscoveryId = serviceId,
                     Network = new Network {
                         Ip = host.Ip,
-                        Port = found.Port,
+                        Port = port,
                         Protocol = "TCP"
                     },
                     RunsOn = [system.Name]

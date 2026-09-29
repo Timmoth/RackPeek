@@ -124,9 +124,10 @@ public class NetworkIdentityTests {
     }
 
     [Fact]
-    public void An_appliances_own_management_page_is_not_a_service_on_itself() {
+    public void An_appliances_own_management_page_is_named_for_the_port_it_serves() {
         // A firewall whose page says "OPNsense" on a card already called opnsense would
-        // otherwise gain a second card named opnsense-<hash> saying nothing new.
+        // otherwise gain a second card named opnsense-<hash>, saying nothing new. The
+        // port is what distinguishes the service from the box it runs on.
         List<Resource> cards = NetworkScanMapper.ToResources([
             Host(
                 "192.0.2.101",
@@ -135,7 +136,7 @@ public class NetworkIdentityTests {
         ]);
 
         Assert.Equal("opnsense", Assert.Single(cards.OfType<SystemResource>()).Name);
-        Assert.Empty(cards.OfType<Service>());
+        Assert.Equal("opnsense-http", Assert.Single(cards.OfType<Service>()).Name);
     }
 
     [Fact]
@@ -159,7 +160,7 @@ public class NetworkIdentityTests {
     public void A_vendor_is_labelled_when_the_mac_is_known() {
         SystemResource card = Single(Host("192.0.2.64", "80:f3:da:00:1a:06", vendor: "Espressif"));
 
-        Assert.Equal("Espressif", card.Labels["vendor"]);
+        Assert.Equal("Espressif", card.Labels["nic-vendor"]);
         Assert.Equal("80:f3:da:00:1a:06", card.Labels["mac"]);
     }
 
@@ -167,7 +168,7 @@ public class NetworkIdentityTests {
     public void No_vendor_label_is_invented_when_none_is_known() {
         SystemResource card = Single(Host("192.0.2.111", "00:00:00:11:22:33"));
 
-        Assert.False(card.Labels.ContainsKey("vendor"));
+        Assert.False(card.Labels.ContainsKey("nic-vendor"));
     }
 
     [Fact]

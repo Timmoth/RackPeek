@@ -95,13 +95,21 @@ public class OpnsenseDiscoveryTests {
     }
 
     [Fact]
-    public void A_card_carries_the_mac_the_vendor_and_the_leg_it_was_seen_on() {
+    public void A_card_carries_the_mac_and_who_made_the_nic() {
         SystemResource card = Discover().OfType<SystemResource>().Single(s => s.Name == "forgejo");
 
         Assert.Equal("bc:24:11:00:1a:04", card.Labels["mac"]);
-        Assert.Equal("Proxmox", card.Labels["vendor"]);
-        Assert.Equal("HomeServices", card.Labels["segment"]);
+        Assert.Equal("Proxmox", card.Labels["nic-vendor"]);
         Assert.Equal("192.168.50.105", card.Ip);
+    }
+
+    [Fact]
+    public void Which_leg_of_the_firewall_it_answered_on_is_not_recorded() {
+        // It describes the firewall's wiring, not the machine, and it changes the moment
+        // anything is re-cabled or a VLAN is renamed.
+        SystemResource card = Discover().OfType<SystemResource>().Single(s => s.Name == "forgejo");
+
+        Assert.False(card.Labels.ContainsKey("segment"));
     }
 
     [Fact]
@@ -112,7 +120,7 @@ public class OpnsenseDiscoveryTests {
         List<Resource> cards = Discover(true);
 
         SystemResource wan = cards.OfType<SystemResource>().Single(s => s.Ip == "198.51.100.7");
-        Assert.Equal("Cisco Systems", wan.Labels["vendor"]);
+        Assert.Equal("Cisco Systems", wan.Labels["nic-vendor"]);
     }
 
     [Fact]

@@ -82,13 +82,10 @@ public static class OpnsenseDiscovery {
             // prefixes the curated table leaves out.
             var vendor = MacVendorLookup.Lookup(neighbour.Mac) ?? neighbour.Manufacturer;
 
+            // The organisation that owns the NIC's OUI — not a claim about who made the
+            // machine, which is a different thing entirely.
             if (vendor != null)
-                system.Labels["vendor"] = vendor;
-
-            // Which leg of the firewall saw it — the closest thing to a physical location
-            // the firewall can offer, and the thing that says which VLAN a host is on.
-            if (neighbour.Interface != null)
-                system.Labels["segment"] = neighbour.Interface;
+                system.Labels["nic-vendor"] = vendor;
 
             resources.Add(system);
         }
