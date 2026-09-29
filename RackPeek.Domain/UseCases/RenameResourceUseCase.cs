@@ -27,6 +27,10 @@ public class RenameResourceUseCase<T>(IResourceCollection repo) : IRenameResourc
             throw new NotFoundException($"Resource '{originalName}' not found.");
 
         original.Name = newName;
+
+        // A person has now chosen this name, so discovery must stop improving on it.
+        original.UserNamed = true;
+
         await repo.UpdateAsync(original);
 
         IReadOnlyList<Resource> allResources = await repo.GetAllOfTypeAsync<Resource>();

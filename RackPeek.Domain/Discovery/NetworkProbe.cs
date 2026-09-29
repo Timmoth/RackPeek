@@ -1,6 +1,9 @@
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using RackPeek.Domain.Resources.Services.Networking;
 
 namespace RackPeek.Domain.Discovery;
@@ -77,6 +80,135 @@ public sealed class NetworkProbe : INetworkProbe {
             return string.IsNullOrWhiteSpace(entry.HostName) || entry.HostName == ip
                 ? null
                 : entry.HostName;
+        }
+        catch {
+            return null;
+        }
+    }
+
+    public async Task<string?> ReadTlsSubjectAsync(
+        string ip,
+        int port,
+        TimeSpan timeout,
+        CancellationToken cancellationToken = default) {
+        try {
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(timeout);
+
+            using var client = new TcpClient();
+            await client.ConnectAsync(IPAddress.Parse(ip), port, cts.Token);
+
+            // Every certificate is accepted: homelab gear is self-signed by default and
+            // the certificate is being read for its name, never trusted for security.
+            // The callback goes in the options only — setting it in the constructor too
+            // makes AuthenticateAsClientAsync throw.
+            await using var ssl = new SslStream(client.GetStream(), false);
+
+            await ssl.AuthenticateAsClientAsync(
+                new SslClientAuthenticationOptions {
+                    TargetHost = ip,
+                    RemoteCertificateValidationCallback = (_, _, _, _) => true
+                },
+                cts.Token);
+
+            return ssl.RemoteCertificate is { } certificate
+                ? new X509Certificate2(certificate).Subject
+                : null;
+        }
+        catch {
+            // Closed, plaintext, or a handshake this runtime will not do — all "no name".
+            return null;
+        }
+    }
+
+    public async Task<string?> ReadTcpBannerAsync(
+        string ip,
+        int port,
+        TimeSpan timeout,
+        CancellationToken cancellationToken = default) {
+        try {
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(timeout);
+
+            using var client = new TcpClient();
+            await client.ConnectAsync(IPAddress.Parse(ip), port, cts.Token);
+
+            await using NetworkStream stream = client.GetStream();
+
+            var buffer = new byte[256];
+            var read = await stream.ReadAsync(buffer, cts.Token);
+
+            return read > 0
+                ? Encoding.ASCII.GetString(buffer, 0, read).Trim()
+                : null;
+        }
+        catch {
+            return null;
+        }
+    }
+
+    public async Task<string?> ReadHttpHeadAsync(
+        string ip,
+        int port,
+        bool tls,
+        TimeSpan timeout,
+        CancellationToken cancellationToken = default) {
+        try {
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(timeout);
+
+            using var client = new TcpClient();
+            await client.ConnectAsync(IPAddress.Parse(ip), port, cts.Token);
+
+            Stream stream = client.GetStream();
+            SslStream? ssl = null;
+
+            if (tls) {
+                ssl = new SslStream(stream, false);
+
+                await ssl.AuthenticateAsClientAsync(
+                    new SslClientAuthenticationOptions {
+                        TargetHost = ip,
+                        RemoteCertificateValidationCallback = (_, _, _, _) => true
+                    },
+                    cts.Token);
+
+                stream = ssl;
+            }
+
+            try {
+                // HTTP/1.0 so the server closes the connection itself rather than leaving
+                // the read waiting on a keep-alive timeout.
+                var request = Encoding.ASCII.GetBytes(
+                    $"GET / HTTP/1.0\r\nHost: {ip}\r\nUser-Agent: rackpeek-discover\r\nAccept: */*\r\nConnection: close\r\n\r\n");
+
+                await stream.WriteAsync(request, cts.Token);
+                await stream.FlushAsync(cts.Token);
+
+                // Enough for the headers and a <title> near the top of the body. Capped so
+                // a host streaming megabytes cannot hold the sweep open.
+                var buffer = new byte[8192];
+                var total = 0;
+
+                while (total < buffer.Length) {
+                    var read = await stream.ReadAsync(buffer.AsMemory(total), cts.Token);
+
+                    if (read == 0)
+                        break;
+
+                    total += read;
+                }
+
+                return total > 0
+                    ? Encoding.UTF8.GetString(buffer, 0, total)
+                    : null;
+            }
+            finally {
+                if (ssl != null)
+                    await ssl.DisposeAsync();
+                else
+                    await stream.DisposeAsync();
+            }
         }
         catch {
             return null;

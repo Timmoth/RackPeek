@@ -1,0 +1,36 @@
+{
+  "data": {
+    "result": [
+      {
+        "name": "lo",
+        "hardware-address": "00:00:00:00:00:00",
+        "ip-addresses": [
+          { "ip-address": "127.0.0.1", "ip-address-type": "ipv4", "prefix": 8 },
+          { "ip-address": "::1", "ip-address-type": "ipv6", "prefix": 128 }
+        ]
+      },
+      {
+        "name": "ens18",
+        "hardware-address": "bc:24:11:00:1a:01",
+        "ip-addresses": [
+          { "ip-address": "192.0.2.105", "ip-address-type": "ipv4", "prefix": 24 },
+          { "ip-address": "fe80::be24:11ff:fe00:1a01", "ip-address-type": "ipv6", "prefix": 64 }
+        ]
+      },
+      {
+        "name": "docker0",
+        "hardware-address": "02:42:9a:11:22:33",
+        "ip-addresses": [
+          { "ip-address": "172.17.0.1", "ip-address-type": "ipv4", "prefix": 16 }
+        ]
+      },
+      {
+        "name": "br-0d764d475870",
+        "hardware-address": "02:42:7e:44:55:66",
+        "ip-addresses": [
+          { "ip-address": "172.18.0.1", "ip-address-type": "ipv4", "prefix": 16 }
+        ]
+      }
+    ]
+  }
+}

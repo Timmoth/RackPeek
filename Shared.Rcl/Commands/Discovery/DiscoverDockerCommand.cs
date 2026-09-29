@@ -86,10 +86,22 @@ public sealed class DiscoverDockerCommand(IEnumerable<ISystemProbe> probes)
             : engine?.Id ?? client.Endpoint;
 
         // Published ports live on the engine host, so a remote service's address is the
-        // endpoint the user dialled — the local probe's address is only the last resort.
+        // endpoint the user dialled. There is deliberately no fallback: this machine's
+        // own address is not the remote engine's, and stamping it on would put a
+        // confidently wrong address on every service — one that then flows into the
+        // ansible, ssh and hosts exports.
         var serviceIp = client.IsLocal
             ? host.Ip
-            : await DockerApiClient.ResolveIpv4Async(client.RemoteHost!, cancellationToken) ?? host.Ip;
+            : await DockerApiClient.ResolveIpv4Async(client.RemoteHost!, cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(serviceIp)) {
+            AnsiConsole.MarkupLine(
+                $"[red]Could not determine an IPv4 address for {Markup.Escape(client.Endpoint)}.[/] "
+                + "Services are recorded at their host's address, and the inventory holds IPv4 only. "
+                + "Dial the engine by address instead, e.g. --docker-host tcp://192.0.2.10:2375");
+
+            return 1;
+        }
 
         List<Service> services = DockerServiceMapper.ToResources(containers, seed, hostName, serviceIp);
 

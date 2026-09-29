@@ -68,6 +68,10 @@
           "description": "Stable machine-generated identity set by 'rpk discover'. Absent on hand-written resources. The leading rpk<n> is the format version, so the way the id is derived can change without old ids being mistaken for new ones.",
           "pattern": "^rpk[0-9]+:[a-z0-9]+:[0-9a-f]{16}$"
         },
+        "userNamed": {
+          "type": "boolean",
+          "description": "True when a person chose this resource's name, which discovery then never changes."
+        },
         "tags": {
           "type": "array",
           "items": {

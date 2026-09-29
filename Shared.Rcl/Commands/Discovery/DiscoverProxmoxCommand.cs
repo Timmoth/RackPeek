@@ -73,7 +73,7 @@ public sealed class DiscoverProxmoxCommand : AsyncCommand<DiscoverProxmoxSetting
         List<Resource> resources;
 
         try {
-            resources = await ReadAsync(client, cancellationToken);
+            resources = await ProxmoxDiscovery.ReadAsync(client, cancellationToken);
         }
         catch (HttpRequestException ex) {
             AnsiConsole.MarkupLine(
@@ -97,46 +97,5 @@ public sealed class DiscoverProxmoxCommand : AsyncCommand<DiscoverProxmoxSetting
         }
 
         return await DiscoveryOutput.EmitAsync(resources, settings, cancellationToken);
-    }
-
-    private static async Task<List<Resource>> ReadAsync(
-        IProxmoxClient client,
-        CancellationToken cancellationToken) {
-        var scope = await client.GetIdentityScopeAsync(cancellationToken);
-        IReadOnlyList<ProxmoxNode> listed = await client.GetNodesAsync(cancellationToken);
-
-        var nodes = new List<ProxmoxNode>();
-        var guests = new List<ProxmoxGuest>();
-
-        foreach (ProxmoxNode listedNode in listed) {
-            // Node detail needs a broader permission than listing guests does, so it is
-            // enrichment rather than a requirement — a read-only token still gets a tree.
-            ProxmoxNode node = await client.EnrichAsync(listedNode, cancellationToken);
-            nodes.Add(node);
-
-            var nodeName = node.Name;
-
-            foreach (var endpoint in new[] { ProxmoxApiClient.QemuEndpoint, ProxmoxApiClient.LxcEndpoint }) {
-                IReadOnlyList<ProxmoxGuest> listedGuests =
-                    await client.GetGuestsAsync(nodeName, endpoint, cancellationToken);
-
-                // The list call knows nothing about the OS, and for a container it does
-                // not know the address either. Both live in the guest's own config — one
-                // call per guest, so they run concurrently rather than one at a time.
-                ProxmoxGuestConfig[] configs = await Task.WhenAll(listedGuests.Select(g =>
-                    client.GetGuestConfigAsync(nodeName, endpoint, g.VmId, cancellationToken)));
-
-                for (var i = 0; i < listedGuests.Count; i++)
-                    guests.Add(listedGuests[i] with {
-                        Os = configs[i].Os,
-                        Ip = configs[i].Ip,
-                        Disks = configs[i].DiskBytes,
-                        PassthroughAddresses = configs[i].PassthroughAddresses,
-                        Macs = configs[i].Macs ?? []
-                    });
-            }
-        }
-
-        return ProxmoxResourceMapper.ToResources(scope, nodes, guests);
     }
 }
