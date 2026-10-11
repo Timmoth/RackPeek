@@ -9,6 +9,7 @@ namespace Tests.Api;
 ///     <c>rpk discover --push</c> on a timer. It therefore has to work on a server that
 ///     nobody has opened a page on yet.
 /// </summary>
+[Collection("Process-wide static state")]
 public class InventoryEndpointStartupTests(ITestOutputHelper output) : ApiTestBase(output) {
     private const string _existingConfig = """
                                            version: 3

@@ -41,4 +41,16 @@ public interface IProxmoxClient {
         string endpoint,
         int vmId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Addresses the guest reports for its own interfaces — the only way to learn a
+    ///     DHCP guest's address, since the config only carries one when it was set
+    ///     statically. Needs the guest agent for a VM and a running container for LXC,
+    ///     so an empty list is the normal answer for anything that has neither.
+    /// </summary>
+    Task<IReadOnlyList<ProxmoxGuestAddress>> GetGuestAddressesAsync(
+        string node,
+        string endpoint,
+        int vmId,
+        CancellationToken cancellationToken = default);
 }

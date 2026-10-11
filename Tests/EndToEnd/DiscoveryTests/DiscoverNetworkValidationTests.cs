@@ -7,7 +7,7 @@ namespace Tests.EndToEnd.DiscoveryTests;
 ///     `rpk discover network` argument validation. Every case here fails before any
 ///     probing starts, so these tests never send a packet anywhere.
 /// </summary>
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class DiscoverNetworkValidationTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
     private async Task<string> ExecuteAsync(params string[] args) =>

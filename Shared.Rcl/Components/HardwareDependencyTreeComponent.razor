@@ -55,6 +55,7 @@ else
 
                                     case Service service:
                                         var endpoint = service.NetworkString();
+                                        var browsable = service.BrowsableUrl();
 
                                         <NavLink href="@($"resources/services/{Uri.EscapeDataString(service.Name)}")"
                                                  class="block">
@@ -69,13 +70,34 @@ else
                                                     @if (!string.IsNullOrWhiteSpace(endpoint))
                                                     {
                                                         <span> - </span>
-                                                        <a href="@endpoint"
-                                                           target="_blank"
-                                                           rel="noopener noreferrer"
-                                                           class="underline hover:text-emerald-400"
-                                                           @onclick:stopPropagation>
-                                                            @endpoint
-                                                        </a>
+
+                                                        @if (!string.IsNullOrWhiteSpace(browsable))
+
+                                                        {
+
+                                                            <a href="@browsable"
+
+                                                               target="_blank"
+
+                                                               rel="noopener noreferrer"
+
+                                                               class="underline hover:text-emerald-400"
+
+                                                               @onclick:stopPropagation>
+
+                                                                @endpoint
+
+                                                            </a>
+
+                                                        }
+
+                                                        else
+
+                                                        {
+
+                                                            <span>@endpoint</span>
+
+                                                        }
                                                     }
                                                 </div>
                                             </div>
@@ -107,10 +129,7 @@ else
     {
         var endpoint = service.NetworkString();
 
-        if (string.IsNullOrWhiteSpace(endpoint))
-            return null;
-
-        return endpoint;
+        return string.IsNullOrWhiteSpace(endpoint) ? null : endpoint;
     }
 
 }

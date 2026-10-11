@@ -33,6 +33,27 @@ public interface INetworkProbe {
     Task<string?> ReverseDnsAsync(string ip, TimeSpan timeout, CancellationToken cancellationToken = default);
 
     /// <summary>
+    ///     The subject line of the certificate a TLS port presents, raw, or null when the
+    ///     port is closed or speaks no TLS. Self-signed certificates are the norm on a
+    ///     homelab — Proxmox and OPNsense both ship one naming the host — so the
+    ///     certificate is read without being trusted, and nothing is ever sent over the
+    ///     connection.
+    /// </summary>
+    Task<string?> ReadTlsSubjectAsync(string ip, int port, TimeSpan timeout, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     The first line a port volunteers on connect, before anything is sent to it —
+    ///     what SSH greets with. Null when the port is closed or stays silent.
+    /// </summary>
+    Task<string?> ReadTcpBannerAsync(string ip, int port, TimeSpan timeout, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     The head of an HTTP response to <c>GET /</c>: status line, headers, and enough
+    ///     body to reach a &lt;title&gt;. Null when the port serves no HTTP.
+    /// </summary>
+    Task<string?> ReadHttpHeadAsync(string ip, int port, bool tls, TimeSpan timeout, CancellationToken cancellationToken = default);
+
+    /// <summary>
     ///     The subnet of the first up, non-loopback IPv4 interface with a gateway — what
     ///     `--cidr` defaults to. Null when the machine has no such interface.
     /// </summary>

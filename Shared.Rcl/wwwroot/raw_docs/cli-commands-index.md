@@ -242,6 +242,7 @@
     - [system](/docs/cli-commands#rpk-discover-system) - Inspect this machine and emit it as a System resource
     - [docker](/docs/cli-commands#rpk-discover-docker) - Read the Docker API and emit each published container as a Service on this
     - [proxmox](/docs/cli-commands#rpk-discover-proxmox) - Read a Proxmox cluster and emit its nodes and guests as Systems
+    - [opnsense](/docs/cli-commands#rpk-discover-opnsense) - Read an OPNsense firewall's neighbour table and emit every machine on it
     - [network](/docs/cli-commands#rpk-discover-network) - Sweep a subnet and emit every answering host as a System resource
   - [ansible](/docs/cli-commands#rpk-ansible) - Generate and manage Ansible inventory
     - [inventory](/docs/cli-commands#rpk-ansible-inventory) - Generate an Ansible inventory

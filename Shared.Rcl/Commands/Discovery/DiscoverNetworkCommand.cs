@@ -28,6 +28,10 @@ public sealed class DiscoverNetworkSettings : DiscoverSettings {
     [Description("How many hosts to probe at once.")]
     public int Parallel { get; init; } = 128;
 
+    [CommandOption("--no-identify")]
+    [Description("Skip asking living hosts what they are — sweep for liveness only.")]
+    public bool NoIdentify { get; init; }
+
     /// <summary>The parsed --cidr, or null when it was omitted or does not parse.</summary>
     public NetworkCidr? ParsedCidr =>
         NetworkCidr.TryParse(Cidr, out NetworkCidr parsed) ? parsed : null;
@@ -128,7 +132,8 @@ public sealed class DiscoverNetworkCommand(INetworkProbe probe)
             Cidr = cidr,
             Ports = settings.ResolvedPorts,
             PortTimeout = TimeSpan.FromMilliseconds(settings.Timeout),
-            Concurrency = settings.Parallel
+            Concurrency = settings.Parallel,
+            IdentifyServices = !settings.NoIdentify
         };
 
         var targets = NetworkScanner.EnumerateTargets(cidr).Count();

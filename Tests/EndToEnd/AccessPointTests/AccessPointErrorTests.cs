@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd.AccessPointTests;
 
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class AccessPointErrorTests(TempYamlCliFixture fs, ITestOutputHelper outputHelper)
     : IClassFixture<TempYamlCliFixture> {
     private async Task<(string, string)> ExecuteAsync(params string[] args) {

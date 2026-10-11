@@ -179,4 +179,33 @@ public class RemoteDockerDiscoveryTests {
 
         return host;
     }
+
+    // -- endpoints this cannot reach ---------------------------------------------------
+
+    [Theory]
+    // `docker context` sets this for a remote host, so it is a perfectly normal value to
+    // find in DOCKER_HOST.
+    [InlineData("ssh://user@nas")]
+    // The Windows default.
+    [InlineData("npipe:////./pipe/docker_engine")]
+    [InlineData("gibberish://nowhere")]
+    public void An_endpoint_scheme_that_cannot_be_dialled_is_refused_with_advice(string endpoint) {
+        // HttpClient accepts these URIs happily and only throws NotSupportedException on
+        // the first request — which the caller does not catch, so discovery used to die
+        // with a stack trace instead of saying what was wrong.
+        UriFormatException error = Assert.Throws<UriFormatException>(() => new DockerApiClient(endpoint));
+
+        Assert.Contains("ssh -L", error.Message);
+    }
+
+    [Theory]
+    [InlineData("tcp://192.0.2.10:2375")]
+    [InlineData("http://192.0.2.10:2375")]
+    [InlineData("unix:///var/run/docker.sock")]
+    [InlineData("unix:///run/user/1000/podman/podman.sock")]
+    public void The_endpoints_that_do_work_are_untouched(string endpoint) {
+        using var client = new DockerApiClient(endpoint);
+
+        Assert.Equal(endpoint, client.Endpoint);
+    }
 }

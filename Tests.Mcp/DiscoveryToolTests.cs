@@ -193,4 +193,28 @@ public class DiscoveryToolTests {
         Assert.Contains("Could not read", error);
         Assert.Contains("http://127.0.0.1:1", error);
     }
+
+    [Fact]
+    public async Task An_engine_with_no_ipv4_address_is_refused_rather_than_given_this_machines() {
+        // Services are recorded at their host's address. When the engine answers but has
+        // no IPv4 — the inventory holds IPv4 only — the address is genuinely unknown, and
+        // the code used to substitute the address of whatever machine ran the command.
+        // Every service then carried a confident, wrong address that flowed on into the
+        // ansible, ssh and hosts exports.
+        if (!System.Net.Sockets.Socket.OSSupportsIPv6)
+            return; // no loopback to bind; nothing to prove here on this host
+
+        await using FakeHttpServer engine = await FakeHttpServer.StartDockerEngineAsync(true);
+        using var api = new McpFixture();
+        await using McpClient client = await api.ConnectAsync();
+
+        Exception error = await Assert.ThrowsAnyAsync<Exception>(() =>
+            client.CallOkAsync<DiscoveryResult>("discover_docker", new Dictionary<string, object?> {
+                ["dockerHost"] = $"tcp://{engine.Host}"
+            }));
+
+        Assert.Contains("IPv4", error.Message);
+        // Nothing was recorded at a borrowed address.
+        Assert.DoesNotContain("jellyfin", api.StoredYaml);
+    }
 }
