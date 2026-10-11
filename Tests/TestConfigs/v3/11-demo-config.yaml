@@ -121,10 +121,6 @@ resources:
         speed: 1
         count: 2
     name: access-switch
-  - kind: AccessPoint
-    model: UniFi-U6-Pro
-    speed: 2.5
-    name: lounge-ap
   - kind: Ups
     model: APC-SmartUPS-2200
     va: 2200

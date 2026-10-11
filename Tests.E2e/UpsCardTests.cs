@@ -222,4 +222,52 @@ public class UpsCardTests(
             await context.CloseAsync();
         }
     }
+
+    // =============================================================
+    // Ports
+    // =============================================================
+
+    [Fact]
+    public async Task User_Can_Add_Usb_And_Rj45_Port_Groups_To_A_Ups() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
+
+        var name = $"e2e-ups-{Guid.NewGuid():N}"[..16];
+
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/ups/list");
+
+            var list = new UpsListPom(page);
+            await list.AddUpsAsync(name);
+
+            if (!page.Url.Contains($"/resources/hardware/{name}",
+                    StringComparison.OrdinalIgnoreCase))
+                await list.OpenUpsAsync(name);
+
+            var card = new UpsCardPom(page);
+            await card.AssertVisibleAsync(name);
+
+            await Assertions.Expect(card.PortGroupSection).ToBeVisibleAsync();
+
+            // The monitoring port: physically RJ45-shaped, enumerates as USB.
+            await card.AddPortGroupAsync("usb", "0.48", 1);
+            await card.AssertPortGroupVisibleAsync(0);
+
+            // The dataline surge pass-through pair.
+            await card.AddPortGroupAsync("rj45", "1", 2);
+            await card.AssertPortGroupVisibleAsync(1);
+
+            // Both groups must survive a round trip through the API.
+            await page.ReloadAsync();
+            await card.AssertVisibleAsync(name);
+
+            await card.AssertPortVisibleAsync(0, 0);
+            await card.AssertPortVisibleAsync(1, 0);
+            await card.AssertPortVisibleAsync(1, 1);
+
+            await card.DeleteAsync(name);
+        }
+        finally {
+            await context.CloseAsync();
+        }
+    }
 }

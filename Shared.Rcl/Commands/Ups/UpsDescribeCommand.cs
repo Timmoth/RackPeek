@@ -24,6 +24,7 @@ public class UpsDescribeCommand(IServiceProvider provider)
         grid.AddRow("Name:", ups.Name.EscapeMarkup());
         grid.AddRow("Model:", (ups.Model ?? "Unknown").EscapeMarkup());
         grid.AddRow("VA:", ups.Va?.ToString() ?? "Unknown");
+        grid.AddRow("Ports:", ups.PortSummary.EscapeMarkup());
 
         if (ups.Labels.Count > 0)
             grid.AddRow("Labels:", string.Join(", ", ups.Labels.Select(kvp => $"{kvp.Key.EscapeMarkup()}: {kvp.Value.EscapeMarkup()}")));

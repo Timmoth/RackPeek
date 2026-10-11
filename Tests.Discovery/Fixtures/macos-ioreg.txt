@@ -1,0 +1,8 @@
++-o J316sAP  <class IOPlatformExpertDevice, id 0x100000253, registered, matched, active, busy 0 (2 ms), retain 42>
+    {
+      "IOPlatformSystemSleepPolicy" = <mumble>
+      "IOPolledInterface" = "AppleARMWatchdogTimerHibernateHandler is not serializable"
+      "IOPlatformUUID" = "5C8E1F2A-3B4D-5E6F-7A8B-9C0D1E2F3A4B"
+      "model" = <"Mac14,6">
+      "serial-number" = <mumble>
+    }

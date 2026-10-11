@@ -1,30 +1,24 @@
-using System.Text;
-
 namespace RackPeek.Domain.Resources.Services;
 
 public class Service : Resource {
     public const string KindLabel = "Service";
     public Network? Network { get; set; }
 
-    public string NetworkString() {
-        if (Network == null) return string.Empty;
+    /// <summary>
+    ///     Where this service answers, for showing to a person. Display text, never a
+    ///     link — <see cref="BrowsableUrl" /> is the link.
+    /// </summary>
+    public string NetworkString() =>
+        !string.IsNullOrEmpty(Network?.Url)
+            ? Network.Url
+            : ServiceEndpoint.Describe(Network);
 
-        if (!string.IsNullOrEmpty(Network.Url)) return Network.Url;
-
-        var stringBuilder = new StringBuilder();
-        if (!string.IsNullOrEmpty(Network.Ip)) {
-            stringBuilder.Append("Ip: ");
-            stringBuilder.Append(Network.Ip);
-            if (Network.Port.HasValue) {
-                stringBuilder.Append(':');
-                stringBuilder.Append(Network.Port.Value);
-            }
-
-            stringBuilder.Append(' ');
-        }
-
-        return stringBuilder.ToString();
-    }
+    /// <summary>
+    ///     A link a browser can follow, or null when this port serves something a browser
+    ///     cannot open.
+    /// </summary>
+    public string? BrowsableUrl(string? fallbackIp = null) =>
+        ServiceEndpoint.BrowsableUrl(Network, fallbackIp);
 }
 
 public class Network {

@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using RackPeek.Domain.Discovery;
+using RackPeek.Domain.Helpers;
 using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.AccessPoints;
 using RackPeek.Domain.Resources.Connections;
@@ -24,6 +26,22 @@ public class ResourceCollection {
     public readonly SemaphoreSlim FileLock = new(1, 1);
     public List<Resource> Resources { get; } = new();
     public List<Connection> Connections { get; } = new();
+
+    /// <summary>
+    ///     Whether the store has ever been read successfully. Guarded by
+    ///     <see cref="FileLock" />. Write paths check it so a boot that survived an
+    ///     unreadable config cannot later persist the empty in-memory collection over
+    ///     the user's file.
+    /// </summary>
+    public bool Loaded { get; set; }
+
+    /// <summary>
+    ///     Set when the config exists but could not be understood — damaged, truncated,
+    ///     or not YAML. The process is still allowed to boot (the web UI is how someone
+    ///     fixes the file), but every read and write must fail loudly rather than serve
+    ///     or persist an empty inventory (#337).
+    /// </summary>
+    public ConfigLoadException? LoadFailure { get; set; }
 }
 
 public sealed class YamlResourceCollection(
@@ -36,16 +54,19 @@ public sealed class YamlResourceCollection(
     private static readonly int _currentSchemaVersion = RackPeekConfigMigrationDeserializer.ListOfMigrations.Count;
 
     public Task<bool> Exists(string name) {
+        ThrowIfLoadFailed();
         return Task.FromResult(resourceCollection.Resources.Exists(r =>
             r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
     }
 
     public Task<string?> GetKind(string? name) {
+        ThrowIfLoadFailed();
         return Task.FromResult(resourceCollection.Resources.FirstOrDefault(r =>
             r.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Kind);
     }
 
     public Task<IReadOnlyList<(Resource, string)>> GetByLabelAsync(string name) {
+        ThrowIfLoadFailed();
         ReadOnlyCollection<(Resource r, string)> result = resourceCollection.Resources
             .Where(r => r.Labels != null && r.Labels.TryGetValue(name, out _))
             .Select(r => (r, r.Labels![name]))
@@ -56,6 +77,7 @@ public sealed class YamlResourceCollection(
     }
 
     public Task<Dictionary<string, int>> GetLabelsAsync() {
+        ThrowIfLoadFailed();
         var result = resourceCollection.Resources
             .SelectMany(r => r.Labels ?? Enumerable.Empty<KeyValuePair<string, string>>())
             .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
@@ -66,6 +88,7 @@ public sealed class YamlResourceCollection(
     }
 
     public Task<IReadOnlyList<(Resource, string)>> GetResourceIpsAsync() {
+        ThrowIfLoadFailed();
         var result = new List<(Resource, string)>();
 
         List<Resource> allResources = resourceCollection.Resources;
@@ -99,6 +122,7 @@ public sealed class YamlResourceCollection(
     }
 
     public Task<Dictionary<string, int>> GetTagsAsync() {
+        ThrowIfLoadFailed();
         var result = resourceCollection.Resources
             .SelectMany(r => r.Tags) // flatten all tag arrays
             .Where(t => !string.IsNullOrWhiteSpace(t))
@@ -108,10 +132,13 @@ public sealed class YamlResourceCollection(
         return Task.FromResult(result);
     }
 
-    public Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>() =>
-        Task.FromResult<IReadOnlyList<T>>(resourceCollection.Resources.OfType<T>().ToList());
+    public Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>() {
+        ThrowIfLoadFailed();
+        return Task.FromResult<IReadOnlyList<T>>(resourceCollection.Resources.OfType<T>().ToList());
+    }
 
     public Task<IReadOnlyList<Resource>> GetDependantsAsync(string name) {
+        ThrowIfLoadFailed();
         var result = resourceCollection.Resources
             .Where(r => r.RunsOn.Any(p => p.Equals(name, StringComparison.OrdinalIgnoreCase)))
             .ToList();
@@ -125,9 +152,19 @@ public sealed class YamlResourceCollection(
 
         await resourceCollection.FileLock.WaitAsync();
         try {
+            await EnsureLoadedAsync();
+
             YamlRoot incomingRoot = await migrationService.DeserializeAsync(incomingYaml);
 
             List<Resource> incomingResources = incomingRoot.Resources ?? new List<Resource>();
+
+            DiscoveryIdResolver.ResolveNames(
+                resourceCollection.Resources,
+                incomingResources,
+                incomingRoot.Connections,
+                resourceCollection.Connections,
+                true);
+
             List<Resource> merged = ResourceCollectionMerger.Merge(
                 resourceCollection.Resources,
                 incomingResources,
@@ -160,6 +197,7 @@ public sealed class YamlResourceCollection(
     }
 
     public Task<IReadOnlyList<Resource>> GetByTagAsync(string name) {
+        ThrowIfLoadFailed();
         return Task.FromResult<IReadOnlyList<Resource>>(
             resourceCollection.Resources
                 .Where(r => r.Tags.Contains(name))
@@ -167,27 +205,42 @@ public sealed class YamlResourceCollection(
         );
     }
 
-    public IReadOnlyList<Hardware> HardwareResources =>
-        resourceCollection.Resources.OfType<Hardware>().ToList();
+    public IReadOnlyList<Hardware> HardwareResources {
+        get {
+            ThrowIfLoadFailed();
+            return resourceCollection.Resources.OfType<Hardware>().ToList();
+        }
+    }
 
-    public IReadOnlyList<SystemResource> SystemResources =>
-        resourceCollection.Resources.OfType<SystemResource>().ToList();
+    public IReadOnlyList<SystemResource> SystemResources {
+        get {
+            ThrowIfLoadFailed();
+            return resourceCollection.Resources.OfType<SystemResource>().ToList();
+        }
+    }
 
-    public IReadOnlyList<Service> ServiceResources =>
-        resourceCollection.Resources.OfType<Service>().ToList();
+    public IReadOnlyList<Service> ServiceResources {
+        get {
+            ThrowIfLoadFailed();
+            return resourceCollection.Resources.OfType<Service>().ToList();
+        }
+    }
 
     public Task<Resource?> GetByNameAsync(string name) {
+        ThrowIfLoadFailed();
         return Task.FromResult(resourceCollection.Resources.FirstOrDefault(r =>
             r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
     }
 
     public Task<T?> GetByNameAsync<T>(string name) where T : Resource {
+        ThrowIfLoadFailed();
         Resource? resource =
             resourceCollection.Resources.FirstOrDefault(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         return Task.FromResult(resource as T);
     }
 
     public Resource? GetByName(string name) {
+        ThrowIfLoadFailed();
         return resourceCollection.Resources.FirstOrDefault(r =>
             r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
@@ -200,27 +253,88 @@ public sealed class YamlResourceCollection(
         // "Index was outside the bounds of the array" out of List.Clear.
         await resourceCollection.FileLock.WaitAsync();
         try {
-            var yaml = await fileStore.ReadAllTextAsync(filePath);
-
-            YamlRoot root = await migrationService.DeserializeAsync(
-                yaml,
-                async originalYaml => await BackupOriginalAsync(originalYaml),
-                async migratedRoot => await SaveRootAsync(migratedRoot)
-            );
-
-            resourceCollection.Resources.Clear();
-
-            if (root.Resources != null)
-                resourceCollection.Resources.AddRange(root.Resources);
-
-            resourceCollection.Connections.Clear();
-
-            if (root.Connections != null)
-                resourceCollection.Connections.AddRange(root.Connections);
+            await LoadUnderLockAsync();
         }
         finally {
             resourceCollection.FileLock.Release();
         }
+    }
+
+    private async Task LoadUnderLockAsync() {
+        var yaml = await fileStore.ReadAllTextAsync(filePath);
+
+        YamlRoot root;
+
+        try {
+            root = await migrationService.DeserializeAsync(
+                yaml,
+                async originalYaml => await BackupOriginalAsync(originalYaml),
+                async migratedRoot => await SaveRootAsync(migratedRoot)
+            );
+        }
+        catch (Exception ex) when (ex is not ConfigLoadException
+                                       and not IOException
+                                       and not UnauthorizedAccessException) {
+            // A file that exists but cannot be understood. Record it so that every
+            // later read and write refuses, rather than quietly serving — and then
+            // persisting — an empty inventory over a recoverable file (#337).
+            resourceCollection.LoadFailure = new ConfigLoadException(
+                $"The config at {filePath} could not be read: {ex.Message} " +
+                "Fix or restore the file (recent schema migrations leave .bak copies " +
+                "beside it); nothing has been changed.",
+                ex);
+
+            throw resourceCollection.LoadFailure;
+        }
+
+        // A RackPeek document always carries a schema version. Its absence means the
+        // file was cut before the version line was written, or is not a RackPeek
+        // config at all — either way the parse "succeeding" with an empty document is
+        // not evidence of an empty inventory.
+        if (!string.IsNullOrWhiteSpace(yaml) && root.Version <= 0) {
+            resourceCollection.LoadFailure = new ConfigLoadException(
+                $"The config at {filePath} is missing its schema version, so it is " +
+                "incomplete or not a RackPeek config. Fix or restore the file; " +
+                "nothing has been changed.");
+
+            throw resourceCollection.LoadFailure;
+        }
+
+        resourceCollection.Resources.Clear();
+
+        if (root.Resources != null)
+            resourceCollection.Resources.AddRange(root.Resources);
+
+        resourceCollection.Connections.Clear();
+
+        if (root.Connections != null)
+            resourceCollection.Connections.AddRange(root.Connections);
+
+        resourceCollection.LoadFailure = null;
+        resourceCollection.Loaded = true;
+    }
+
+    /// <summary>
+    ///     Called at the top of every read path. When the config exists but could not be
+    ///     understood, the in-memory collection is empty for a reason that has nothing to
+    ///     do with the user's inventory — serving it would report "0 resources" for a
+    ///     recoverable file, and scripted consumers would treat that as the truth (#337).
+    /// </summary>
+    private void ThrowIfLoadFailed() {
+        if (resourceCollection.LoadFailure != null)
+            throw resourceCollection.LoadFailure;
+    }
+
+    /// <summary>
+    ///     Called at the top of every write path, under the lock. Normally a no-op:
+    ///     both the CLI and the web host load at startup. When that startup load failed
+    ///     (unreadable or malformed file, tolerated so the process can boot), this
+    ///     retries — and if the store still cannot be read, the write fails HERE, before
+    ///     the empty in-memory collection can be persisted over the user's config.
+    /// </summary>
+    private async Task EnsureLoadedAsync() {
+        if (!resourceCollection.Loaded)
+            await LoadUnderLockAsync();
     }
 
     public Task AddAsync(Resource resource) {
@@ -267,6 +381,7 @@ public sealed class YamlResourceCollection(
     }
 
     public Task<IReadOnlyList<Connection>> GetConnectionsAsync() {
+        ThrowIfLoadFailed();
         IReadOnlyList<Connection> result =
             resourceCollection.Connections
                 .ToList()
@@ -276,6 +391,7 @@ public sealed class YamlResourceCollection(
     }
 
     public Task<IReadOnlyList<Connection>> GetConnectionsForResourceAsync(string resource) {
+        ThrowIfLoadFailed();
         IReadOnlyList<Connection> result =
             resourceCollection.Connections
                 .Where(c =>
@@ -288,6 +404,7 @@ public sealed class YamlResourceCollection(
     }
 
     public Task<Connection?> GetConnectionForPortAsync(PortReference port) {
+        ThrowIfLoadFailed();
         Connection? connection =
             resourceCollection.Connections
                 .FirstOrDefault(c =>
@@ -353,6 +470,8 @@ public sealed class YamlResourceCollection(
     private async Task UpdateWithLockAsync(Action<List<Resource>> action) {
         await resourceCollection.FileLock.WaitAsync();
         try {
+            await EnsureLoadedAsync();
+
             action(resourceCollection.Resources);
 
             // Always write current schema version when app writes the file.
@@ -461,6 +580,8 @@ public sealed class YamlResourceCollection(
     private async Task UpdateConnectionsWithLockAsync(Action<List<Connection>> action) {
         await resourceCollection.FileLock.WaitAsync();
         try {
+            await EnsureLoadedAsync();
+
             action(resourceCollection.Connections);
 
             var root = new YamlRoot {

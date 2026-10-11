@@ -5,10 +5,13 @@ using RackPeek.Domain.Resources.SystemResources;
 namespace RackPeek.Domain.Helpers;
 
 public static class ThrowIfInvalid {
+    public const int MaxResourceNameLength = 50;
+    public const int MaxLabelValueLength = 200;
+
     public static void ResourceName(string name) {
         if (string.IsNullOrWhiteSpace(name)) throw new ValidationException("Name is required.");
 
-        if (name.Length > 50) throw new ValidationException("Name is too long.");
+        if (name.Length > MaxResourceNameLength) throw new ValidationException("Name is too long.");
     }
 
     public static void LabelKey(string key) {
@@ -18,7 +21,7 @@ public static class ThrowIfInvalid {
 
     public static void LabelValue(string value) {
         if (string.IsNullOrWhiteSpace(value)) throw new ValidationException("Label value is required.");
-        if (value.Length > 200) throw new ValidationException("Label value is too long.");
+        if (value.Length > MaxLabelValueLength) throw new ValidationException("Label value is too long.");
     }
 
     public static void AccessPointModelName(string name) {

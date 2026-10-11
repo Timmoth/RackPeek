@@ -6,6 +6,10 @@ public class LaptopCardPom(IPage page) {
     public TagsPom Tags => new(page);
     public LabelsPom Labels => new(page);
 
+    public PortsPom Ports => new(page);
+
+    private const string _portsPrefix = "laptop-ports";
+
     // -------------------------------------------------
     // Modals
     // -------------------------------------------------
@@ -184,4 +188,24 @@ public class LaptopCardPom(IPage page) {
 
     private static string Sanitize(string value)
         => value.Replace(" ", "-");
+
+    // -------------------------------------------------
+    // Ports
+    // -------------------------------------------------
+
+    public ILocator PortGroupSection => Ports.Root(_portsPrefix);
+
+    public ILocator PortGroup(int index) => Ports.PortGroup(_portsPrefix, index);
+
+    public ILocator Port(int groupIndex, int portIndex)
+        => Ports.Port(_portsPrefix, groupIndex, portIndex);
+
+    public async Task AddPortGroupAsync(string type, string speed, int count)
+        => await Ports.AddPortGroupAsync(_portsPrefix, type, speed, count);
+
+    public async Task AssertPortGroupVisibleAsync(int index)
+        => await Ports.AssertPortGroupVisibleAsync(_portsPrefix, index);
+
+    public async Task AssertPortVisibleAsync(int groupIndex, int portIndex)
+        => await Ports.AssertPortVisibleAsync(_portsPrefix, groupIndex, portIndex);
 }

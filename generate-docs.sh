@@ -136,7 +136,7 @@ fi
   local anchor_link=$(echo "$anchor_text" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
   # Format: - [label](link) - Description
-  local tree_entry="${indent}- [${tree_label}](docs/Commands.md#${anchor_link})"
+  local tree_entry="${indent}- [${tree_label}](/docs/cli-commands#${anchor_link})"
   if [[ -n "$description" ]]; then
     tree_entry="${tree_entry} - ${description}"
   fi
@@ -195,12 +195,12 @@ generate_help_recursive ""
 {
   echo ""
   cat "$TREE_TEMP"
-} > "Shared.Rcl/wwwroot/raw_docs/CommandIndex.md"
+} > "Shared.Rcl/wwwroot/raw_docs/cli-commands-index.md"
 
 {
   echo "# CLI Commands"
   echo ""
   cat "$BODY_TEMP"
-} > "Shared.Rcl/wwwroot/raw_docs/Commands.md"
+} > "Shared.Rcl/wwwroot/raw_docs/cli-commands.md"
 
 echo "Generated Successfully."

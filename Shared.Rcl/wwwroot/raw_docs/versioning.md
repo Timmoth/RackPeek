@@ -9,49 +9,6 @@ Example: 1.2.3
 
 ### MAJOR (X.0.0)
 
-* Sweeping changes to the CLI / WebUi
-* Large schema changes
-* Breaking Changes
-
-### MINOR (1.X.0)
-
-Backward-compatible features:
-
-* New CLI commands or flags
-* New WebUI features
-* New config options
-* Performance improvements
-
-### PATCH (1.0.X)
-
-Backward-compatible fixes:
-
-* Bug fixes
-* Security patches
-* Docs or minor UX improvements
-
-### CLI & Docker
-
-The CLI and Docker image share the **same version number**.
-
-Docker tags:
-
-* `latest` → newest stable
-* `v1.2.3` → Major Minor Patch
-
-For production, pin to a specific version instead of `latest`.
-
-## Versioning
-
-RackPeek follows **Semantic Versioning (SemVer)** for both the CLI and Docker images:
-
-```
-MAJOR.MINOR.PATCH
-Example: 1.2.3
-```
-
-### MAJOR (X.0.0)
-
 Breaking changes:
 
 * CLI command/flag changes
@@ -83,15 +40,15 @@ The CLI binary and Docker image share the **same version number**.
 Docker tags:
 
 * `latest` → newest stable release
-* `1` → latest major
-* `1.2` → latest patch in that minor line
-* `1.2.3` → exact immutable version (recommended for production)
+* `v1.2.3` → exact immutable version (recommended for production)
+
+For production, pin to a specific version instead of `latest`.
 
 ## Nightly Docker Builds
 
-In addition to stable releases, RackPeek publishes a **nightly Docker image** from the `main` branch.
+In addition to stable releases, RackPeek publishes a **nightly Docker image** from the `staging` branch.
 
-* Triggered on every push to `main`
+* Triggered on every push to `staging`
 * Built for `linux/amd64`
 * Tagged as:
 

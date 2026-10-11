@@ -5,6 +5,7 @@ using Xunit.Abstractions;
 
 namespace Tests.Api;
 
+[Collection("Process-wide static state")]
 public class InventoryEndpointTests(ITestOutputHelper output) : ApiTestBase(output) {
     [Fact]
     public async Task DryRun_Add_New_Resource_Does_Not_Persist() {

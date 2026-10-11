@@ -7,6 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <!-- Tests.Discovery walks the generated OUI table to prove its packed index
+             encoding maps every record to a real vendor; the table itself stays
+             internal so it is not part of the domain's surface. -->
+        <InternalsVisibleTo Include="Tests.Discovery" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="DocMigrator.Yaml" Version="10.0.3" />
         <PackageReference Include="LibGit2Sharp" Version="0.32.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.12" />

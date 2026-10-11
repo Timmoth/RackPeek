@@ -1,11 +1,11 @@
 [![RackPeek demo](./assets/rackpeek_banner_thin.png)](./assets/rackpeek_banner_thin.png)
 
-![Version](https://img.shields.io/badge/Version-2.1.0-2ea44f) ![Status](https://img.shields.io/badge/Status-Stable-success)
+![Version](https://img.shields.io/badge/Version-2.2.0-2ea44f) ![Status](https://img.shields.io/badge/Status-Stable-success)
 [![Join our Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/egXRPdesee) [![Live Demo](https://img.shields.io/badge/Live%20Demo-Try%20RackPeek%20Online-2ea44f?logo=githubpages&logoColor=white)](https://timmoth.github.io/RackPeek/) [![Docker Hub](https://img.shields.io/badge/Docker%20Hub-rackpeek-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/aptacode/rackpeek/)
 
 RackPeek is a webui & CLI tool for documenting and managing home lab and small-scale IT infrastructure.
 
-It helps you track hardware, services, networks, and their relationships in a clear, scriptable, and reusable way without enterprise bloat or proprietary lock-in or drowning in unnecessary metadata or process.
+It helps you track hardware, services, networks, and their relationships in a clear, scriptable, and reusable way without enterprise bloat or proprietary lock-in or drowning in unnecessary metadata or process. It can auto-discover what's already running (`rpk discover system / docker / proxmox / network`), and its built-in MCP server lets AI assistants query and manage your inventory.
 
 ### The roadmap for the next wave of features is actively being discussed, please make your voice heard! 
 
@@ -84,6 +84,12 @@ volumes:
 
 * 
   [**Ansible Inventory Generator Guide**](https://timmoth.github.io/RackPeek/docs/ansible-generator-guide)
+
+* 
+  [**Auto Discovery Guide**](https://timmoth.github.io/RackPeek/docs/discovery-guide)
+
+* 
+  [**MCP Server Guide**](https://timmoth.github.io/RackPeek/docs/mcp-guide) — let AI assistants query, manage and build your stack over the built-in `/mcp` endpoint
 
 * 
   [**CLI Commands Reference**](https://timmoth.github.io/RackPeek/docs/cli-commands)

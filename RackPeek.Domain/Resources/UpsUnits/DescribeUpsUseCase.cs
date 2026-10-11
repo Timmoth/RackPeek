@@ -7,6 +7,7 @@ public record UpsDescription(
     string Name,
     string? Model,
     int? Va,
+    string PortSummary,
     Dictionary<string, string> Labels
 );
 
@@ -23,6 +24,7 @@ public class DescribeUpsUseCase(IResourceCollection repository) : IUseCase {
             ups.Name,
             ups.Model,
             ups.Va,
+            PortSummaries.Describe(ups.Ports),
             ups.Labels
         );
     }

@@ -21,10 +21,15 @@ Without this, the resource will not appear in inventory.
 
 RackPeek will also accept these alternatives if `ansible_host` is not provided:
 
-| Label      | Used As      |
-| ---------- | ------------ |
-| `ip`       | ansible_host |
-| `hostname` | ansible_host |
+| Source              | Used As      |
+| ------------------- | ------------ |
+| `ip` label          | ansible_host |
+| `hostname` label    | ansible_host |
+| a System's own `ip` | ansible_host |
+
+So a System that carries an address — hand-written or found by
+[`rpk discover network`](/docs/discovery-guide) — is addressable without any labels;
+an explicit `ansible_host` label always wins when both are present.
 
 Example:
 

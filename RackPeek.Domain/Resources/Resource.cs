@@ -52,6 +52,41 @@ public abstract class Resource {
 
     public required string Name { get; set; }
 
+    /// <summary>
+    ///     Stable machine-generated identity, set by <c>rpk discover</c>. Optional, and
+    ///     absent on everything entered by hand. Lets a re-run find this resource again
+    ///     after the user has renamed it. See <c>RackPeek.Domain.Discovery.DiscoveryId</c>.
+    /// </summary>
+    public string? DiscoveryId { get; set; }
+
+    /// <summary>
+    ///     Whether a person chose this name. Set the moment anyone renames the resource,
+    ///     and never unset.
+    ///     <para>
+    ///         A discovered resource starts out named by whatever the collector could see,
+    ///         which is often a placeholder derived from its own id. Later runs — or a
+    ///         better collector — may learn the machine's real name, and should be able to
+    ///         improve on a placeholder. They must never touch a name a person typed.
+    ///     </para>
+    ///     <para>
+    ///         Absent means "not stated". A resource with no <see cref="DiscoveryId" /> was
+    ///         entered by hand and is therefore user-named whatever this says; see
+    ///         <see cref="IsUserNamed" />.
+    ///     </para>
+    /// </summary>
+    public bool? UserNamed { get; set; }
+
+    /// <summary>
+    ///     Whether this resource's name is a person's choice and so off limits to
+    ///     discovery. True when the flag says so, and true for anything with no
+    ///     discovery id at all — nothing but a person could have written it.
+    /// </summary>
+    /// <remarks>
+    ///     A method rather than a property because everything public on a resource is
+    ///     serialised, and this is derived from what is stored rather than part of it.
+    /// </remarks>
+    public bool IsUserNamed() => UserNamed ?? string.IsNullOrWhiteSpace(DiscoveryId);
+
     public string[] Tags { get; set; } = [];
     public Dictionary<string, string> Labels { get; set; } = new();
     public string? Notes { get; set; }

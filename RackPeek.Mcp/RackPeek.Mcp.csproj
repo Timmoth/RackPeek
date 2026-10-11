@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <!-- MCP tool implementations over the domain use cases. This project is
+         referenced only by RackPeek.Web: the CLI (RackPeek -> Shared.Rcl ->
+         RackPeek.Domain) must stay free of the MCP SDK dependency so the
+         self-contained single-file binaries do not grow for a feature that
+         only exists on the server. -->
+
+    <ItemGroup>
+        <PackageReference Include="ModelContextProtocol" Version="2.2.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\RackPeek.Domain\RackPeek.Domain.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- get_schema serves the schema for the CURRENT config version, resolved at
+             runtime from ListOfMigrations.Count. When a v5 migration lands, add its
+             schema here — the tool throws (and Tests.Mcp fails) until it is present. -->
+        <EmbeddedResource Include="..\schemas\v4\schema.v4.json" LogicalName="schema.v4.json"/>
+    </ItemGroup>
+
+</Project>

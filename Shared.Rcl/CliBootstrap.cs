@@ -26,6 +26,7 @@ using Shared.Rcl.Commands.Desktops.Gpus;
 using Shared.Rcl.Commands.Desktops.Labels;
 using Shared.Rcl.Commands.Desktops.Nics;
 using Shared.Rcl.Commands.Desktops.Rename;
+using Shared.Rcl.Commands.Discovery;
 using Shared.Rcl.Commands.Exporters;
 using Shared.Rcl.Commands.Firewalls;
 using Shared.Rcl.Commands.Firewalls.Labels;
@@ -37,6 +38,7 @@ using Shared.Rcl.Commands.Laptops.Cpus;
 using Shared.Rcl.Commands.Laptops.Drive;
 using Shared.Rcl.Commands.Laptops.Gpus;
 using Shared.Rcl.Commands.Laptops.Labels;
+using Shared.Rcl.Commands.Laptops.Nics;
 using Shared.Rcl.Commands.Laptops.Rename;
 using Shared.Rcl.Commands.Routers;
 using Shared.Rcl.Commands.Routers.Labels;
@@ -61,10 +63,12 @@ using Shared.Rcl.Commands.Systems.Labels;
 using Shared.Rcl.Commands.Systems.Rename;
 using Shared.Rcl.Commands.OtherHardware;
 using Shared.Rcl.Commands.OtherHardware.Labels;
+using Shared.Rcl.Commands.OtherHardware.Ports;
 using Shared.Rcl.Commands.OtherHardware.Rename;
 using Shared.Rcl.Commands.Tags;
 using Shared.Rcl.Commands.Ups;
 using Shared.Rcl.Commands.Ups.Labels;
+using Shared.Rcl.Commands.Ups.Ports;
 using Shared.Rcl.Commands.Ups.Rename;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -90,15 +94,28 @@ public static class CliBootstrap {
         services.AddSingleton(configuration);
         var appBasePath = AppContext.BaseDirectory;
 
+        // The store lives next to the binary, which is fine when rpk is run from its
+        // own directory but not when it is dropped somewhere read-only — a container,
+        // or /usr/local/bin as a non-root user. `rpk discover` is designed to run on
+        // machines that hold no inventory at all, so an unavailable store must not stop
+        // the process starting; commands that actually need one fail when they use it.
         var resolvedYamlDir = Path.IsPathRooted(yamlDir)
             ? yamlDir
             : Path.Combine(appBasePath, yamlDir);
 
-        Directory.CreateDirectory(resolvedYamlDir);
-
         var fullYamlPath = Path.Combine(resolvedYamlDir, yamlFile);
 
-        if (!File.Exists(fullYamlPath)) await File.WriteAllTextAsync(fullYamlPath, "");
+        try {
+            Directory.CreateDirectory(resolvedYamlDir);
+
+            if (!File.Exists(fullYamlPath)) await File.WriteAllTextAsync(fullYamlPath, "");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+            await System.Console.Error.WriteLineAsync(
+                $"Warning: cannot use the config at {fullYamlPath} ({ex.Message}). " +
+                "Continuing with an empty inventory — reads will show nothing, and " +
+                "writes are refused until the config can be read.");
+        }
 
         services.AddLogging();
         services.AddScoped<RackPeekConfigMigrationDeserializer>();
@@ -113,13 +130,27 @@ public static class CliBootstrap {
             b.GetRequiredService<IResourceYamlMigrationService>());
 
 
-        await collection.LoadAsync();
+        try {
+            await collection.LoadAsync();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+            // Unreadable store, warned about above. A malformed config is a different
+            // matter and is still allowed to fail loudly — the user has one to fix.
+            await System.Console.Error.WriteLineAsync($"Warning: could not read {fullYamlPath} ({ex.Message}).");
+        }
+        catch (ConfigLoadException) {
+            // A damaged config must not stop the process starting — `rpk discover` and
+            // `--help` do not need the inventory, and the web UI is how someone fixes
+            // the file. The failure is recorded on the collection, so every command
+            // that does touch the inventory fails with it instead of reporting an
+            // empty one (#337).
+        }
         services.AddSingleton<IResourceCollection>(collection);
 
         // Infrastructure
         services.AddYamlRepos();
 
-        // Application
+        // Application (also registers the discovery probes, for every host)
         services.AddUseCases();
         services.AddCommands();
     }
@@ -491,6 +522,16 @@ public static class CliBootstrap {
                 ups.AddCommand<UpsRenameCommand>("rename")
                     .WithDescription("Rename a UPS unit to a new name.");
 
+                ups.AddBranch("port", port => {
+                    port.SetDescription("Manage ports on a UPS unit.");
+
+                    port.AddCommand<UpsPortAddCommand>("add").WithDescription("Add a port to a UPS unit.");
+
+                    port.AddCommand<UpsPortUpdateCommand>("set").WithDescription("Update a UPS unit port.");
+
+                    port.AddCommand<UpsPortRemoveCommand>("del").WithDescription("Remove a port from a UPS unit.");
+                });
+
                 ups.AddBranch("label", label => {
                     label.SetDescription("Manage labels on a UPS unit.");
                     label.AddCommand<UpsLabelAddCommand>("add").WithDescription("Add a label to a UPS unit.");
@@ -531,6 +572,17 @@ public static class CliBootstrap {
 
                 other.AddCommand<OtherRenameCommand>("rename")
                     .WithDescription("Rename other hardware to a new name.");
+
+                other.AddBranch("port", port => {
+                    port.SetDescription("Manage ports on other hardware.");
+
+                    port.AddCommand<OtherPortAddCommand>("add").WithDescription("Add a port to other hardware.");
+
+                    port.AddCommand<OtherPortUpdateCommand>("set").WithDescription("Update an other hardware port.");
+
+                    port.AddCommand<OtherPortRemoveCommand>("del")
+                        .WithDescription("Remove a port from other hardware.");
+                });
 
                 other.AddBranch("label", label => {
                     label.SetDescription("Manage labels on other hardware.");
@@ -667,6 +719,14 @@ public static class CliBootstrap {
                     gpu.AddCommand<LaptopGpuRemoveCommand>("del").WithDescription("Remove a GPU from a Laptop.");
                 });
 
+                // NICs
+                laptops.AddBranch("nic", nic => {
+                    nic.SetDescription("Manage network interface cards (NICs) for Laptops.");
+                    nic.AddCommand<LaptopNicAddCommand>("add").WithDescription("Add a NIC to a Laptop.");
+                    nic.AddCommand<LaptopNicSetCommand>("set").WithDescription("Update a Laptop NIC.");
+                    nic.AddCommand<LaptopNicRemoveCommand>("del").WithDescription("Remove a NIC from a Laptop.");
+                });
+
                 laptops.AddBranch("label", label => {
                     label.SetDescription("Manage labels on a laptop.");
                     label.AddCommand<LaptopLabelAddCommand>("add").WithDescription("Add a label to a laptop.");
@@ -728,6 +788,36 @@ public static class CliBootstrap {
             // ----------------------------
             // Ansible
             // ----------------------------
+            config.AddBranch("discover", discover => {
+                discover.SetDescription("Read infrastructure and emit it as RackPeek YAML.");
+
+                discover.AddCommand<DiscoverSystemCommand>("system")
+                    .WithDescription("Inspect this machine and emit it as a System resource.")
+                    .WithExample("discover", "system")
+                    .WithExample("discover", "system", "--name", "nas01", "--push");
+
+                discover.AddCommand<DiscoverDockerCommand>("docker")
+                    .WithDescription("Read the Docker API and emit each published container as a Service on this host's System.")
+                    .WithExample("discover", "docker")
+                    .WithExample("discover", "docker", "--push");
+
+                discover.AddCommand<DiscoverProxmoxCommand>("proxmox")
+                    .WithDescription("Read a Proxmox cluster and emit its nodes and guests as Systems.")
+                    .WithExample("discover", "proxmox", "--host", "https://pve.lan:8006", "--insecure")
+                    .WithExample("discover", "proxmox", "--host", "pve.lan", "--push");
+
+                discover.AddCommand<DiscoverOpnsenseCommand>("opnsense")
+                    .WithDescription("Read an OPNsense firewall's neighbour table and emit every machine on it.")
+                    .WithExample("discover", "opnsense", "--host", "https://firewall.lan", "--insecure")
+                    .WithExample("discover", "opnsense", "--host", "firewall.lan", "--push");
+
+                discover.AddCommand<DiscoverNetworkCommand>("network")
+                    .WithDescription("Sweep a subnet and emit every answering host as a System resource.")
+                    .WithExample("discover", "network")
+                    .WithExample("discover", "network", "--cidr", "192.168.1.0/24")
+                    .WithExample("discover", "network", "--cidr", "10.0.0.0/24", "--ports", "22,80,443", "--push");
+            });
+
             config.AddBranch("ansible", ansible => {
                 ansible.SetDescription("Generate and manage Ansible inventory.");
 
@@ -800,6 +890,10 @@ public static class CliBootstrap {
             case NotFoundException ne:
                 AnsiConsole.MarkupLine($"[red]Not found:[/] {ne.Message}");
                 return 4;
+
+            case ConfigLoadException cle:
+                AnsiConsole.MarkupLine($"[red]Config error:[/] {Markup.Escape(cle.Message)}");
+                return 5;
 
             case CommandParseException pe:
                 if (_showingHelp) return 1; // suppress errors during help lookup

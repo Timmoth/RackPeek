@@ -2,7 +2,7 @@ using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Services;
 using RackPeek.Domain.Resources.SystemResources;
 
-namespace Shared.Rcl.Services;
+namespace RackPeek.Domain.Search;
 
 public record SearchResult(
     string Name,

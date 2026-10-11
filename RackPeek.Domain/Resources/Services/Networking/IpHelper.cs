@@ -6,11 +6,18 @@ public static class IpHelper {
         if (parts.Length != 4)
             throw new ArgumentException($"Invalid IPv4 address: {ip}");
 
-        return (uint)(
-            (int.Parse(parts[0]) << 24) |
-            (int.Parse(parts[1]) << 16) |
-            (int.Parse(parts[2]) << 8) |
-            int.Parse(parts[3]));
+        uint result = 0;
+
+        foreach (var part in parts) {
+            // Range-checked: unchecked shifts would fold 192.168.256.0 into
+            // 192.169.0.0 and quietly point a caller at the wrong network.
+            if (!int.TryParse(part, out var octet) || octet is < 0 or > 255)
+                throw new ArgumentException($"Invalid IPv4 address: {ip}");
+
+            result = (result << 8) | (uint)octet;
+        }
+
+        return result;
     }
 
     public static string ToIp(uint ip) {

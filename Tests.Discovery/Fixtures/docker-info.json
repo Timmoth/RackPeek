@@ -1,0 +1,20 @@
+{
+  "ID": "e7c3a2d0-5a8f-4b2e-9c1d-2f6e8a9b0c3d",
+  "Containers": 4,
+  "ContainersRunning": 4,
+  "ContainersPaused": 0,
+  "ContainersStopped": 0,
+  "Images": 12,
+  "Driver": "overlay2",
+  "MemoryLimit": true,
+  "SwapLimit": true,
+  "NCPU": 12,
+  "MemTotal": 67383418880,
+  "OperatingSystem": "Debian GNU/Linux 12 (bookworm)",
+  "OSType": "linux",
+  "Architecture": "x86_64",
+  "Name": "nas01",
+  "ServerVersion": "27.1.1",
+  "Labels": [],
+  "KernelVersion": "6.1.0-23-amd64"
+}

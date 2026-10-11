@@ -8,6 +8,12 @@ RackPeek can run in two ways:
 RackPeek stores everything in a writable `config/` directory as YAML (including automatic backups).
 Wherever you run it, that directory must be writable.
 
+Saves are atomic: the config is written to a temporary file, flushed to disk, then renamed
+over `config.yaml`. An interrupted save therefore leaves the previous config intact rather
+than a half-written one. If the config ever does become unreadable — a damaged disk, a bad
+hand edit, a sync conflict — RackPeek refuses to read or write it rather than reporting an
+empty inventory, and the Web UI's YAML editor (`/yaml`) still loads so you can repair it.
+
 ---
 
 # Docker (Recommended)
@@ -92,16 +98,16 @@ If you see:
 Access to the path '/app/config/config.yaml' is denied.
 ```
 
-Fix ownership:
+Fix ownership — RackPeek runs as UID/GID **1654:1654** inside the container:
 
 ```bash
-sudo chown -R 1000:1000 /path/on/host/rackpeek
+sudo chown -R 1654:1654 /path/on/host/rackpeek
 ```
 
-Or explicitly set the container user:
+You can verify the container user with:
 
-```yaml
-user: "1000:1000"
+```bash
+docker exec rackpeek id
 ```
 
 RackPeek must be able to:
@@ -132,13 +138,13 @@ If you prefer running RackPeek directly on Linux:
 ## Download
 
 ```bash
-wget https://github.com/Timmoth/RackPeek/releases/download/RackPeek-0.0.3/rackpeek_0_0_3_linux-x64 -O rackpeek
+wget https://github.com/Timmoth/RackPeek/releases/download/RackPeek-2.2.0/rackpeek_2_2_0_linux-x64 -O rackpeek
 ```
 
 Or:
 
 ```bash
-curl -L https://github.com/Timmoth/RackPeek/releases/download/RackPeek-0.0.3/rackpeek_0_0_3_linux-x64 -o rackpeek
+curl -L https://github.com/Timmoth/RackPeek/releases/download/RackPeek-2.2.0/rackpeek_2_2_0_linux-x64 -o rackpeek
 ```
 
 ---

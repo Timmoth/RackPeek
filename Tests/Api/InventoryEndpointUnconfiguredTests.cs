@@ -4,6 +4,7 @@ using Xunit.Abstractions;
 
 namespace Tests.Api;
 
+[Collection("Process-wide static state")]
 public class InventoryEndpointUnconfiguredTests(ITestOutputHelper output) : ApiTestBase(output) {
     protected override void ConfigureTestConfiguration(IDictionary<string, string?> config) =>
         config.Remove("RPK_API_KEY");

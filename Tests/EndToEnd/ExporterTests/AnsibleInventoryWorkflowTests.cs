@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tests.EndToEnd.ExporterTests;
 
-[Collection("Yaml CLI tests")]
+[Collection("Process-wide static state")]
 public class AnsibleInventoryWorkflowTests(
     TempYamlCliFixture fs,
     ITestOutputHelper outputHelper)
@@ -83,6 +83,35 @@ public class AnsibleInventoryWorkflowTests(
                      [staging]
                      vm-staging01 ansible_host=192.168.1.20 ansible_user=debian
                      """, output);
+    }
+
+    [Fact]
+    public async Task a_system_with_only_its_ip_field_is_still_addressable() {
+        // Discovered hosts carry an ip but no address labels; like the ssh and hosts
+        // exporters, the inventory reads the System's own address. An explicit
+        // ansible_host label still wins when both are present.
+        await File.WriteAllTextAsync(Path.Combine(fs.Root, "config.yaml"), """
+                                                                           version: 4
+                                                                           resources:
+                                                                           - kind: System
+                                                                             name: scanned-host
+                                                                             ip: 10.0.20.150
+                                                                             tags:
+                                                                             - lan
+                                                                           - kind: System
+                                                                             name: labelled-host
+                                                                             ip: 10.0.20.151
+                                                                             tags:
+                                                                             - lan
+                                                                             labels:
+                                                                               ansible_host: vpn.example.com
+
+                                                                           """);
+
+        (var output, var _) = await ExecuteAsync("ansible", "inventory", "--group-tags", "lan");
+
+        Assert.Contains("scanned-host ansible_host=10.0.20.150", output);
+        Assert.Contains("labelled-host ansible_host=vpn.example.com", output);
     }
 
     [Fact]

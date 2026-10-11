@@ -42,6 +42,10 @@
         <!-- Validate against the published schemas directly so the test and
              published copies can never drift apart again (#310, #311). -->
         <None Include="..\schemas\**\*.json" Link="schemas\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
+        <!-- The wwwroot copies the server and viewer actually serve, so a test can
+             prove they never drift from the published ones again (#310/#311). -->
+        <None Include="..\RackPeek.Web\wwwroot\schemas\**\*.json" Link="wwwroot-schemas\web\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
+        <None Include="..\RackPeek.Web.Viewer\wwwroot\schemas\**\*.json" Link="wwwroot-schemas\viewer\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
         <None Include="TestConfigs\**\*.yaml" CopyToOutputDirectory="PreserveNewest"/>
         <None Update="TestConfigs\v3\01-server.yaml">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

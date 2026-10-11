@@ -24,7 +24,8 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
         {
             EnsureSchemaVersionExists,
             ConvertScalarRunsOnToList,
-            ConvertNicsToPortsV3
+            ConvertNicsToPortsV3,
+            AllowDiscoveryIdsV4
         };
 
     public RackPeekConfigMigrationDeserializer(IServiceProvider serviceProvider,
@@ -163,6 +164,19 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
         }
 
         obj["version"] = 3;
+
+        return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    ///     v4 adds the optional <c>discoveryId</c> field for <c>rpk discover</c>. Purely
+    ///     additive, so a v3 document only needs its version stamped — but it still gets
+    ///     a version of its own so that a v3-era binary refuses a discovery-written file
+    ///     cleanly ("version 4 is newer than this application supports") instead of
+    ///     failing schema validation on a field it has never heard of.
+    /// </summary>
+    public static ValueTask AllowDiscoveryIdsV4(IServiceProvider serviceProvider, Dictionary<object, object> obj) {
+        obj["version"] = 4;
 
         return ValueTask.CompletedTask;
     }
