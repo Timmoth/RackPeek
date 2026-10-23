@@ -53,6 +53,13 @@ public class UpsertInventoryUseCase(
                                _jsonOptions)
                            ?? throw new ValidationException("Invalid JSON structure.");
 
+            // The JSON "kind" is consumed as the polymorphism discriminator, so the
+            // Kind property stays empty. Stamp it from the resolved type — the same
+            // label the discriminator carried — so diff snapshots and the re-serialized
+            // YAML match what a YAML upload would produce.
+            foreach (Resource resource in incomingRoot.Resources ?? [])
+                resource.Kind = InventoryDocumentJson.KindLabel(resource);
+
             yamlInput = YamlResourceCollection.SerializeRootAsync(incomingRoot);
         }
 

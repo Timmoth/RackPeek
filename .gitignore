@@ -428,3 +428,6 @@ FodyWeavers.xsd
 # macOS
 .DS_Store
 ISSUE_TRIAGE.md
+
+# Local working notes, credentials, and deployment configuration
+/temp/

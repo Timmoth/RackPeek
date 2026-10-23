@@ -142,6 +142,28 @@ resource type: `Server`, `Switch`, `Router`, `Firewall`, `AccessPoint`,
 | `401 Unauthorized` | `X-Api-Key` header missing or doesn't match `RPK_API_KEY`. |
 | `503 Service Unavailable` | `RPK_API_KEY` is not configured on the server. |
 
+### Read endpoints
+
+All read endpoints require the same `X-Api-Key` header and return
+`401`/`503` exactly as above.
+
+| Endpoint | Returns |
+|---|---|
+| `GET /api/inventory` | The full inventory as a JSON document: `{ "version", "resources", "connections" }`, same shape the `json` field above accepts. Fetch once, render lists/details/trees client-side. |
+| `GET /api/inventory/summary` | Counts: `hardware` (total + by kind), `systems` (total + by type + by OS), `services` (total + IP addresses), `tags`, `labels`. |
+| `GET /api/inventory/search?q=<text>&max=<n>` | Ranked matches over names, IPs, tags and labels: `{ "matches": [{ "name", "kind", "url", "matchedField", "matchedValue", "score" }] }`. `max` defaults to 8. |
+| `GET /api/inventory/tree` | The containment forest: `{ "hardware": [{ "hardwareName", "kind", "systems": [{ "systemName", "services" }] }] }`. |
+
+The document from `GET /api/inventory` round-trips: send it back to
+`POST /api/inventory` as the `json` field (optionally with `dryRun: true`)
+and the server reports no changes. Every resource carries the correct
+case-sensitive `kind` discriminator, so clients never have to know the
+`AccessPoint`/`Accesspoint` spelling difference.
+
+```bash
+curl -s -H "X-Api-Key: $RPK_API_KEY" http://localhost:8080/api/inventory | jq '.resources | length'
+```
+
 ## Examples
 
 ### Upsert from a YAML file with curl

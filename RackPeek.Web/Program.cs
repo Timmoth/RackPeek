@@ -138,6 +138,7 @@ public class Program {
         app.UseAntiforgery();
 
         app.MapInventoryApi();
+        app.MapInventoryReadApi();
 
         // Same key, same gate as /api/inventory: 503 until RPK_API_KEY is configured,
         // so MCP is off by default and never exposes the inventory unauthenticated.
