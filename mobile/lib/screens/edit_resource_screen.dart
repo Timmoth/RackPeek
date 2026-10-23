@@ -43,12 +43,19 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
   late List<String> _tags;
   late Map<String, String> _labels;
   late List<String> _runsOn;
+  late final Map<TextEditingController, String> _initialText;
 
   String? _error;
 
   static const _systemTypes = [
-    'baremetal', 'hypervisor', 'vm', 'container',
-    'embedded', 'cloud', 'cluster', 'other',
+    'baremetal',
+    'hypervisor',
+    'vm',
+    'container',
+    'embedded',
+    'cloud',
+    'cluster',
+    'other',
   ];
 
   @override
@@ -58,18 +65,21 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
     _model = TextEditingController(text: r.model ?? '');
     _description = TextEditingController(text: r.description ?? '');
     _ramSize = TextEditingController(
-        text: r.ram?.size != null ? r.ram!.size!.toStringAsFixed(0) : '');
+      text: r.ram?.size != null ? r.ram!.size!.toStringAsFixed(0) : '',
+    );
     _ramMts = TextEditingController(text: r.ram?.mts?.toString() ?? '');
     _os = TextEditingController(text: r.os ?? '');
     _cores = TextEditingController(text: r.cores?.toString() ?? '');
     _systemRam = TextEditingController(
-        text: r.ramGb != null ? r.ramGb!.toStringAsFixed(0) : '');
+      text: r.ramGb != null ? r.ramGb!.toStringAsFixed(0) : '',
+    );
     _ip = TextEditingController(text: r.ip ?? r.network?.ip ?? '');
     _port = TextEditingController(text: r.network?.port?.toString() ?? '');
     _protocol = TextEditingController(text: r.network?.protocol ?? '');
     _url = TextEditingController(text: r.network?.url ?? '');
     _speed = TextEditingController(
-        text: r.speed != null ? r.speed!.toStringAsFixed(0) : '');
+      text: r.speed != null ? r.speed!.toStringAsFixed(0) : '',
+    );
     _va = TextEditingController(text: r.va?.toString() ?? '');
     _notes = TextEditingController(text: r.notes ?? '');
     _newTag = TextEditingController();
@@ -81,14 +91,73 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
     _tags = List.of(r.tags);
     _labels = Map.of(r.labels);
     _runsOn = List.of(r.runsOn);
+
+    _initialText = {
+      for (final controller in _trackedControllers) controller: controller.text,
+    };
+    for (final controller in _trackedControllers) {
+      controller.addListener(_onTrackedFieldChanged);
+    }
+  }
+
+  List<TextEditingController> get _trackedControllers => [
+    _model,
+    _description,
+    _ramSize,
+    _ramMts,
+    _os,
+    _cores,
+    _systemRam,
+    _ip,
+    _port,
+    _protocol,
+    _url,
+    _speed,
+    _va,
+    _notes,
+  ];
+
+  void _onTrackedFieldChanged() {
+    if (mounted) setState(() {});
+  }
+
+  bool get _hasUnsavedChanges {
+    final r = widget.resource;
+    return _trackedControllers.any(
+          (controller) => controller.text != _initialText[controller],
+        ) ||
+        _ipmi != r.ipmi ||
+        _managed != r.managed ||
+        _poe != r.poe ||
+        _type != r.type ||
+        !_listEquals(_tags, r.tags) ||
+        !_mapsEqual(_labels, r.labels) ||
+        !_listEquals(_runsOn, r.runsOn);
   }
 
   @override
   void dispose() {
+    for (final controller in _trackedControllers) {
+      controller.removeListener(_onTrackedFieldChanged);
+    }
     for (final controller in [
-      _model, _description, _ramSize, _ramMts, _os, _cores, _systemRam,
-      _ip, _port, _protocol, _url, _speed, _va, _notes, _newTag,
-      _newLabelKey, _newLabelValue,
+      _model,
+      _description,
+      _ramSize,
+      _ramMts,
+      _os,
+      _cores,
+      _systemRam,
+      _ip,
+      _port,
+      _protocol,
+      _url,
+      _speed,
+      _va,
+      _notes,
+      _newTag,
+      _newLabelKey,
+      _newLabelValue,
     ]) {
       controller.dispose();
     }
@@ -99,7 +168,11 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
     final r = widget.resource;
     final fields = <String, Object?>{};
 
-    void maybeString(String key, TextEditingController controller, String? original) {
+    void maybeString(
+      String key,
+      TextEditingController controller,
+      String? original,
+    ) {
       final value = controller.text.trim();
       if (value.isEmpty) return;
       if (value != (original ?? '')) fields[key] = value;
@@ -111,7 +184,11 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
       fields[key] = value;
     }
 
-    void maybeDouble(String key, TextEditingController controller, double? original) {
+    void maybeDouble(
+      String key,
+      TextEditingController controller,
+      double? original,
+    ) {
       final value = double.tryParse(controller.text.trim());
       if (value == null || value == original) return;
       fields[key] = value;
@@ -129,7 +206,9 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
         if (portableRam != null) fields['ram'] = portableRam;
       case 'Switch' || 'Router' || 'Firewall':
         maybeString('model', _model, r.model);
-        if (_managed != r.managed && _managed != null) fields['managed'] = _managed;
+        if (_managed != r.managed && _managed != null) {
+          fields['managed'] = _managed;
+        }
         if (_poe != r.poe && _poe != null) fields['poe'] = _poe;
       case 'AccessPoint':
         maybeString('model', _model, r.model);
@@ -202,14 +281,16 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
     }
 
     try {
-      await widget.store.applyPatch(resourcePatch(
-        kind: widget.resource.kind,
-        name: widget.resource.name,
-        fields: fields,
-        tags: tagsChanged ? _tags : null,
-        labels: labelsChanged ? _labels : null,
-        notes: notesChanged ? _notes.text : null,
-      ));
+      await widget.store.applyPatch(
+        resourcePatch(
+          kind: widget.resource.kind,
+          name: widget.resource.name,
+          fields: fields,
+          tags: tagsChanged ? _tags : null,
+          labels: labelsChanged ? _labels : null,
+          notes: notesChanged ? _notes.text : null,
+        ),
+      );
       if (!mounted) return;
       Navigator.of(context).pop();
     } catch (e) {
@@ -234,7 +315,26 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
         backgroundColor: ScribeColors.canvas,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: Text('Edit ${r.name}'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Edit ${r.name}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (_hasUnsavedChanges) ...[
+              const SizedBox(height: 2),
+              Text(
+                'Not saved',
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: ScribeColors.danger),
+              ),
+            ],
+          ],
+        ),
       ),
       body: ScribeSheet(
         children: [
@@ -286,9 +386,18 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
   }
 
   bool get _hasScalars => const {
-        'Server', 'Desktop', 'Laptop', 'Switch', 'Router', 'Firewall',
-        'AccessPoint', 'Ups', 'Other', 'System', 'Service',
-      }.contains(widget.resource.kind);
+    'Server',
+    'Desktop',
+    'Laptop',
+    'Switch',
+    'Router',
+    'Firewall',
+    'AccessPoint',
+    'Ups',
+    'Other',
+    'System',
+    'Service',
+  }.contains(widget.resource.kind);
 
   List<Widget> _scalarInputs() {
     switch (widget.resource.kind) {
@@ -374,15 +483,13 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
   }
 
   Widget _runsOnPicker() {
-    final candidates = (widget.store.document?.resources ?? [])
-        .where((c) {
-          if (c.name == widget.resource.name) return false;
-          if (widget.resource.kind == 'System') {
-            return c.isHardware || c.kind == 'System';
-          }
-          return c.kind == 'System';
-        })
-        .toList();
+    final candidates = (widget.store.document?.resources ?? []).where((c) {
+      if (c.name == widget.resource.name) return false;
+      if (widget.resource.kind == 'System') {
+        return c.isHardware || c.kind == 'System';
+      }
+      return c.kind == 'System';
+    }).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -468,7 +575,12 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
           for (final entry in _labels.entries)
             Row(
               children: [
-                Expanded(child: Text('${entry.key}: ${entry.value}', style: ScribeType.body)),
+                Expanded(
+                  child: Text(
+                    '${entry.key}: ${entry.value}',
+                    style: ScribeType.body,
+                  ),
+                ),
                 IconButton(
                   tooltip: 'Remove label ${entry.key}',
                   icon: const Icon(Icons.close),
@@ -523,8 +635,11 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
     );
   }
 
-  Widget _field(TextEditingController controller, String label,
-      [TextInputType type = TextInputType.text]) {
+  Widget _field(
+    TextEditingController controller,
+    String label, [
+    TextInputType type = TextInputType.text,
+  ]) {
     return TextField(
       controller: controller,
       keyboardType: type,

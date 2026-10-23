@@ -30,6 +30,16 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   late final InventoryStore _store;
   int _index = 0;
+  ResourceFilter _resourceFilter = const ResourceFilter();
+  int _filterRevision = 0;
+
+  void _openResources(ResourceFilter filter) {
+    setState(() {
+      _resourceFilter = filter;
+      _filterRevision++;
+      _index = 1;
+    });
+  }
 
   @override
   void initState() {
@@ -137,8 +147,12 @@ class _HomeShellState extends State<HomeShell> {
           body: IndexedStack(
             index: _index,
             children: [
-              SummaryTab(store: _store),
-              ResourcesTab(store: _store),
+              SummaryTab(store: _store, onOpenResources: _openResources),
+              ResourcesTab(
+                store: _store,
+                filter: _resourceFilter,
+                filterRevision: _filterRevision,
+              ),
               TreeTab(store: _store),
             ],
           ),

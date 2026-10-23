@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8fc">
+  <meta name="description" content="RackPeek helps you document and manage your home lab infrastructure, from your own server or your phone.">
+  <title>RackPeek — your home lab, in view</title>
+  <link rel="icon" href="assets/rackpeek-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <style type="text/tailwindcss">@import "tailwindcss";</style>
+  <script src="assets/tailwind.js"></script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+  <header class="site-header">
+    <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5" aria-label="Main navigation">
+      <a class="brand flex items-center gap-3" href="index.html">
+        <img src="assets/rackpeek-logo.svg" width="36" height="36" alt="">
+        <span>RackPeek</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+      <div class="nav-links" id="nav-links">
+        <a href="#features">Features</a>
+        <a href="https://timmoth.github.io/RackPeek/docs/overview">Documentation</a>
+        <a href="support.html">Support</a>
+        <a class="nav-cta" href="https://github.com/Timmoth/RackPeek">View on GitHub <span aria-hidden="true">↗</span></a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:py-24">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="status-dot"></span> Made for the home lab</p>
+        <h1>Your whole<br><span>home lab,</span><br>in view.</h1>
+        <p class="hero-lede">Keep hardware, systems, services and networks documented in one clear, self-hosted inventory. Check in from the web, CLI or your phone.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="https://github.com/Timmoth/RackPeek#running-rackpeek-with-docker">Get started <span aria-hidden="true">→</span></a>
+          <a class="button button-secondary" href="https://github.com/Timmoth/RackPeek">Explore the project</a>
+        </div>
+        <p class="hero-note">Open source · Your data stays yours · No telemetry</p>
+      </div>
+      <div class="hero-visual" aria-label="RackPeek mobile app overview">
+        <div class="visual-glow"></div>
+        <div class="visual-label"><span class="live-dot"></span> Your infrastructure at a glance</div>
+        <img class="phone-shot" src="assets/app-overview.jpg" alt="RackPeek app showing a home lab overview with hardware, systems, services and tags">
+        <div class="floating-card floating-card-top"><span class="card-icon">⌘</span><span><strong>One inventory</strong><small>Hardware to services</small></span></div>
+        <div class="floating-card floating-card-bottom"><span class="card-icon green">↗</span><span><strong>Self-hosted</strong><small>On your infrastructure</small></span></div>
+      </div>
+    </section>
+
+    <section class="proof-band">
+      <div class="mx-auto grid max-w-6xl gap-5 px-6 py-7 sm:grid-cols-3">
+        <div><span class="proof-mark">01</span><span>Document what you run</span></div>
+        <div><span class="proof-mark">02</span><span>See how it connects</span></div>
+        <div><span class="proof-mark">03</span><span>Keep control of your data</span></div>
+      </div>
+    </section>
+
+    <section class="section mx-auto max-w-6xl px-6 py-20" id="features">
+      <div class="section-heading">
+        <p class="eyebrow">A clearer picture</p>
+        <h2>Know what’s in your rack.<br><span>And what runs on it.</span></h2>
+        <p>RackPeek brings your infrastructure notes and relationships together, without turning your home lab into an enterprise project.</p>
+      </div>
+      <div class="feature-grid mt-12 grid gap-5 md:grid-cols-3">
+        <article class="feature-card">
+          <div class="feature-icon violet">▦</div>
+          <h3>Inventory that makes sense</h3>
+          <p>Keep servers, switches, routers, firewalls, access points, UPS units and other hardware alongside the systems and services they host.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon blue">⌘</div>
+          <h3>See the relationships</h3>
+          <p>Follow the connections from physical hardware to virtual systems and services with useful trees, summaries and network views.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon amber">{ }</div>
+          <h3>Your inventory, your way</h3>
+          <p>Store your configuration as readable YAML. Use the web UI, a scriptable CLI, or the mobile app to keep things up to date.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="workflow-section">
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 md:grid-cols-2">
+        <div class="workflow-visual">
+          <div class="terminal-window">
+            <div class="terminal-bar"><i></i><i></i><i></i><span>rpk · terminal</span></div>
+            <div class="terminal-body"><p><b>$</b> rpk summary</p><p class="terminal-muted">Infrastructure overview</p><div class="terminal-rule"></div><p><span class="term-green">●</span> 7 hardware resources</p><p><span class="term-blue">●</span> 2 systems</p><p><span class="term-purple">●</span> 2 services</p><p class="terminal-muted">Config: ./config/config.yaml</p></div>
+          </div>
+          <div class="workflow-tag">Web UI <span>·</span> CLI <span>·</span> iOS</div>
+        </div>
+        <div class="workflow-copy">
+          <p class="eyebrow">Fits your workflow</p>
+          <h2>Start with what<br>you already know.</h2>
+          <p>Run RackPeek on your own server. Add and update resources in the web interface, automate with <code>rpk</code>, or use the iOS companion app when you’re away from your desk.</p>
+          <a class="text-link" href="https://timmoth.github.io/RackPeek/docs/install-guide">Read the installation guide <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section mx-auto max-w-6xl px-6 py-20">
+      <div class="cta-panel">
+        <div><p class="eyebrow">Your lab. Your notes. Your call.</p><h2>Make your setup<br>easier to understand.</h2></div>
+        <a class="button button-light" href="https://github.com/Timmoth/RackPeek#running-rackpeek-with-docker">Get started with RackPeek <span aria-hidden="true">→</span></a>
+        <div class="cta-orbit orbit-one"></div><div class="cta-orbit orbit-two"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
+      <a class="brand flex items-center gap-3" href="index.html"><img src="assets/rackpeek-logo.svg" width="28" height="28" alt=""><span>RackPeek</span></a>
+      <div class="footer-links"><a href="privacy.html">Privacy</a><a href="support.html">Support</a><a href="https://github.com/Timmoth/RackPeek">GitHub ↗</a></div>
+      <p class="copyright">© <span data-year>2026</span> RackPeek</p>
+    </div>
+  </footer>
+  <script src="assets/site.js"></script>
+</body>
+</html>

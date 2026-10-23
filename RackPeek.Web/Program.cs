@@ -137,6 +137,7 @@ public class Program {
         app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
         app.UseAntiforgery();
 
+        app.MapApiStatus();
         app.MapInventoryApi();
         app.MapInventoryReadApi();
 
