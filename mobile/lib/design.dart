@@ -202,9 +202,9 @@ class FilterPill extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(ScribeSpacing.minTarget / 2),
         child: Container(
-          height: ScribeSpacing.minTarget - 8,
+          height: ScribeSpacing.minTarget - 4,
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: selected ? ScribeColors.accent : ScribeColors.surface,
             borderRadius:
@@ -388,23 +388,26 @@ class ScribeSheet extends StatelessWidget {
     super.key,
     required this.children,
     this.scrollable = true,
+    this.horizontalPadding = ScribeSpacing.screenMargin,
+    this.sectionGap = ScribeSpacing.majorSectionGap,
   });
 
   final List<Widget> children;
   final bool scrollable;
+  final double horizontalPadding;
+  final double sectionGap;
 
   @override
   Widget build(BuildContext context) {
     final Column content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: _spaced(children),
+      children: _spaced(children, sectionGap),
     );
 
     if (!scrollable) {
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: ScribeSpacing.screenMargin),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
           child: content,
         ),
       );
@@ -412,22 +415,22 @@ class ScribeSheet extends StatelessWidget {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-            horizontal: ScribeSpacing.screenMargin, vertical: 12),
+        padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: _spaced(children),
+          children: _spaced(children, sectionGap),
         ),
       ),
     );
   }
 
-  static List<Widget> _spaced(List<Widget> children) {
+  static List<Widget> _spaced(List<Widget> children, double sectionGap) {
     final List<Widget> result = [];
     for (var i = 0; i < children.length; i++) {
       result.add(children[i]);
       if (i < children.length - 1) {
-        result.add(const SizedBox(height: ScribeSpacing.majorSectionGap));
+        result.add(SizedBox(height: sectionGap));
       }
     }
     return result;

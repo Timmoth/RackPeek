@@ -16,9 +16,9 @@
     <ItemGroup>
         <PackageReference Include="DocMigrator.Yaml" Version="10.0.3" />
         <PackageReference Include="LibGit2Sharp" Version="0.32.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.12" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.12" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.13" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.13" />
         <PackageReference Include="YamlDotNet" Version="18.1.0" />
     </ItemGroup>
 

@@ -38,6 +38,8 @@ class SummaryTab extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: store.refresh,
       child: ScribeSheet(
+        horizontalPadding: 14,
+        sectionGap: 12,
         children: [
           const Text('Infrastructure', style: ScribeType.hero),
           _countPanel(
@@ -93,6 +95,7 @@ class SummaryTab extends StatelessWidget {
     );
 
     return SurfacePanel(
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -146,6 +149,7 @@ class SummaryTab extends StatelessWidget {
   ) {
     if (counts.isEmpty) return const SizedBox.shrink();
     return SurfacePanel(
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -172,6 +176,7 @@ class SummaryTab extends StatelessWidget {
     final total = services['totalServices'] as int? ?? 0;
     final totalIpAddresses = services['totalIpAddresses'] as int? ?? 0;
     return SurfacePanel(
+      padding: const EdgeInsets.all(12),
       child: Row(
         children: [
           Expanded(
@@ -181,22 +186,16 @@ class SummaryTab extends StatelessWidget {
               const ResourceFilter(kind: 'Service'),
             ),
           ),
-          Expanded(
-            child: _serviceCount(
-              totalIpAddresses,
-              'IP addresses',
-              const ResourceFilter(kind: 'Service', hasIpAddress: true),
-            ),
-          ),
+          Expanded(child: _serviceCount(totalIpAddresses, 'IP addresses')),
         ],
       ),
     );
   }
 
-  Widget _serviceCount(int count, String label, ResourceFilter filter) {
+  Widget _serviceCount(int count, String label, [ResourceFilter? filter]) {
     return InkWell(
       borderRadius: BorderRadius.circular(ScribeSpacing.controlRadius),
-      onTap: () => onOpenResources(filter),
+      onTap: filter == null ? null : () => onOpenResources(filter),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
@@ -209,7 +208,7 @@ class SummaryTab extends StatelessWidget {
               ],
             ),
             const SizedBox(width: 4),
-            const Icon(Icons.chevron_right, size: 18),
+            if (filter != null) const Icon(Icons.chevron_right, size: 18),
           ],
         ),
       ),
@@ -223,6 +222,7 @@ class SummaryTab extends StatelessWidget {
   ) {
     if (counts.isEmpty) return const SizedBox.shrink();
     return SurfacePanel(
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

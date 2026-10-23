@@ -12,7 +12,6 @@ class ResourceFilter {
     this.hardwareOnly = false,
     this.systemType,
     this.systemOs,
-    this.hasIpAddress = false,
     this.tag,
     this.labelKey,
   });
@@ -21,7 +20,6 @@ class ResourceFilter {
   final bool hardwareOnly;
   final String? systemType;
   final String? systemOs;
-  final bool hasIpAddress;
   final String? tag;
   final String? labelKey;
 }
@@ -62,7 +60,6 @@ class _ResourcesTabState extends State<ResourcesTab> {
   bool _hardwareOnly = false;
   String? _systemType;
   String? _systemOs;
-  bool _hasIpAddress = false;
   String? _tag;
   String? _labelKey;
   late final TextEditingController _searchController;
@@ -95,7 +92,6 @@ class _ResourcesTabState extends State<ResourcesTab> {
     _hardwareOnly = filter.hardwareOnly;
     _systemType = filter.systemType;
     _systemOs = filter.systemOs;
-    _hasIpAddress = filter.hasIpAddress;
     _tag = filter.tag;
     _labelKey = filter.labelKey;
     _query = '';
@@ -107,7 +103,6 @@ class _ResourcesTabState extends State<ResourcesTab> {
       _hardwareOnly ||
       _systemType != null ||
       _systemOs != null ||
-      _hasIpAddress ||
       _tag != null ||
       _labelKey != null ||
       _query.isNotEmpty;
@@ -120,7 +115,6 @@ class _ResourcesTabState extends State<ResourcesTab> {
       if (_hardwareOnly && !r.isHardware) return false;
       if (_systemType != null && r.type != _systemType) return false;
       if (_systemOs != null && r.os != _systemOs) return false;
-      if (_hasIpAddress && !_hasResolvedIp(r, all)) return false;
       if (_tag != null && !r.tags.contains(_tag)) return false;
       if (_labelKey != null && !r.labels.containsKey(_labelKey)) return false;
       if (query.isEmpty) return true;
@@ -139,22 +133,6 @@ class _ResourcesTabState extends State<ResourcesTab> {
     });
   }
 
-  bool _hasResolvedIp(Resource resource, List<Resource> all) {
-    final directIp = resource.ip ?? resource.network?.ip;
-    if (directIp != null && directIp.trim().isNotEmpty) return true;
-    if (resource.kind != 'Service' || resource.runsOn.length != 1) return false;
-
-    Resource? parent;
-    for (final item in all) {
-      if (item.name == resource.runsOn.single) {
-        parent = item;
-        break;
-      }
-    }
-    if (parent == null || parent.kind != 'System') return false;
-    return _hasResolvedIp(parent, all);
-  }
-
   List<String> get _systemOperatingSystems {
     final values =
         (widget.store.document?.resources ?? [])
@@ -169,14 +147,15 @@ class _ResourcesTabState extends State<ResourcesTab> {
   }
 
   List<String> get _systemTypes {
-    final values = (widget.store.document?.resources ?? [])
-        .where((resource) => resource.kind == 'System')
-        .map((resource) => resource.type)
-        .whereType<String>()
-        .where((type) => type.trim().isNotEmpty)
-        .toSet()
-        .toList()
-      ..sort();
+    final values =
+        (widget.store.document?.resources ?? [])
+            .where((resource) => resource.kind == 'System')
+            .map((resource) => resource.type)
+            .whereType<String>()
+            .where((type) => type.trim().isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
     return values;
   }
 
@@ -210,12 +189,16 @@ class _ResourcesTabState extends State<ResourcesTab> {
       body: RefreshIndicator(
         onRefresh: widget.store.refresh,
         child: ScribeSheet(
+          horizontalPadding: 12,
+          sectionGap: 10,
           children: [
             TextField(
               controller: _searchController,
               decoration: const InputDecoration(
                 hintText: 'Search names, IPs, tags, labels',
                 prefixIcon: Icon(Icons.search),
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 10),
               ),
               onChanged: (value) => setState(() => _query = value),
             ),
@@ -289,30 +272,25 @@ class _ResourcesTabState extends State<ResourcesTab> {
               ),
             ],
             const SizedBox(height: ScribeSpacing.relatedGap),
-            Wrap(
-              spacing: 8,
-              children: [
-                FilterPill(
-                  label: 'Has IP',
-                  selected: _hasIpAddress,
-                  onTap: () => setState(() {
-                    _hasIpAddress = !_hasIpAddress;
-                  }),
-                ),
-                if (_tag != null)
-                  FilterPill(
-                    label: 'Tag: $_tag',
-                    selected: true,
-                    onTap: () => setState(() => _tag = null),
-                  ),
-                if (_labelKey != null)
-                  FilterPill(
-                    label: 'Label: $_labelKey',
-                    selected: true,
-                    onTap: () => setState(() => _labelKey = null),
-                  ),
-              ],
-            ),
+            if (_tag != null || _labelKey != null)
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                children: [
+                  if (_tag != null)
+                    FilterPill(
+                      label: 'Tag: $_tag',
+                      selected: true,
+                      onTap: () => setState(() => _tag = null),
+                    ),
+                  if (_labelKey != null)
+                    FilterPill(
+                      label: 'Label: $_labelKey',
+                      selected: true,
+                      onTap: () => setState(() => _labelKey = null),
+                    ),
+                ],
+              ),
             SurfacePanel(padding: EdgeInsets.zero, child: _list(context)),
           ],
         ),
