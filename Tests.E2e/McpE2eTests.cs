@@ -67,7 +67,8 @@ public class McpE2eTests : IAsyncLifetime {
     [Fact]
     public async Task A_full_session_builds_queries_wires_exports_and_deletes_a_stack() {
         // The server advertises itself and its whole tool surface over the wire.
-        Assert.Equal("rackpeek", _client.ServerInfo.Name);
+        Assert.NotNull(_client.ServerInfo);
+        Assert.Equal("rackpeek", _client.ServerInfo!.Name);
         IList<McpClientTool> tools = await _client.ListToolsAsync();
         Assert.Contains(tools, t => t.Name == "upsert_resources");
         Assert.Contains(tools, t => t.Name == "discover_docker");
