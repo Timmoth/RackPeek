@@ -13,7 +13,7 @@
         <!-- Microsoft.DotNet.HotReload.WebAssembly.Browser is provided by the
              .NET 10 BlazorWebAssembly SDK — adding an explicit PackageReference
              causes NU1504 "duplicate PackageReference" during restore. -->
-        <PackageReference Include="Spectre.Console.Cli" Version="0.57.2"/>
+        <PackageReference Include="Spectre.Console.Cli" Version="0.55.0"/>
         <PackageReference Include="Spectre.Console.Testing" Version="0.57.2" />
     </ItemGroup>
 

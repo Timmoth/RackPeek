@@ -26,8 +26,9 @@ public class ProtocolTests {
         using var api = new McpFixture();
         await using McpClient client = await api.ConnectAsync();
 
-        Assert.Equal("rackpeek", client.ServerInfo.Name);
-        Assert.False(string.IsNullOrWhiteSpace(client.ServerInfo.Version));
+        Assert.NotNull(client.ServerInfo);
+        Assert.Equal("rackpeek", client.ServerInfo!.Name);
+        Assert.False(string.IsNullOrWhiteSpace(client.ServerInfo!.Version));
     }
 
     [Fact]

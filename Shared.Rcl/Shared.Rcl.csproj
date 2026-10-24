@@ -16,7 +16,7 @@
     <ItemGroup>
         <PackageReference Include="Markdig" Version="1.4.2"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.13" />
-        <PackageReference Include="Spectre.Console.Cli" Version="0.57.2"/>
+        <PackageReference Include="Spectre.Console.Cli" Version="0.55.0"/>
         <PackageReference Include="Spectre.Console.Testing" Version="0.57.2" />
     </ItemGroup>
 
