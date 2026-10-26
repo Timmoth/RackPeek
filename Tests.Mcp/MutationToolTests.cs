@@ -1,5 +1,6 @@
 using ModelContextProtocol.Client;
 using RackPeek.Domain.Api;
+using RackPeek.Domain.Discovery;
 using RackPeek.Domain.Resources.Connections;
 using RackPeek.Mcp.Tools;
 
@@ -53,6 +54,74 @@ public class MutationToolTests {
         Assert.Equal(["new-server"], response.Added);
         Assert.Contains("new-server", Assert.Contains("new-server", response.NewYaml));
         Assert.Equal(before, api.StoredYaml);
+    }
+
+    [Fact]
+    public async Task Discovery_name_improvement_is_previewed_without_writing_then_persisted_by_upsert() {
+        var id = DiscoveryId.Create(DiscoveryId.NetworkScheme, "192.0.2.78");
+        var placeholder = $"host-{DiscoveryId.ShortSuffix(id)}";
+        var oldServiceName = $"{placeholder}-ssh";
+        var seed = $$"""
+            version: 4
+            resources:
+              - kind: System
+                name: {{placeholder}}
+                discoveryId: {{id}}
+                ip: 192.0.2.78
+              - kind: Service
+                name: {{oldServiceName}}
+                discoveryId: rpk1:docker:1359175a57049554
+                runsOn:
+                  - {{placeholder}}
+              - kind: Switch
+                name: core-switch
+                ports:
+                  - type: rj45
+                    speed: 1
+                    count: 2
+            connections:
+              - a:
+                  resource: {{placeholder}}
+                  portGroup: 0
+                  portIndex: 0
+                b:
+                  resource: core-switch
+                  portGroup: 0
+                  portIndex: 0
+            """;
+        using var api = new McpFixture(seed);
+        await using McpClient client = await api.ConnectAsync();
+        var before = api.StoredYaml;
+        var update = $$"""
+            resources:
+              - kind: System
+                name: forgejo
+                discoveryId: {{id}}
+            """;
+
+        ImportYamlResponse preview = await client.CallOkAsync<ImportYamlResponse>(
+            "upsert_resources", new Dictionary<string, object?> {
+                ["yaml"] = update,
+                ["dryRun"] = true
+            });
+
+        Assert.Equal("forgejo", preview.Renamed[placeholder]);
+        Assert.Equal("forgejo-ssh", preview.Renamed[oldServiceName]);
+        Assert.Contains(preview.ConnectionsAdded, description => description.Contains("forgejo"));
+        Assert.Contains(preview.ConnectionsRemoved, description => description.Contains(placeholder));
+        Assert.Equal(before, api.StoredYaml);
+
+        ImportYamlResponse applied = await client.CallOkAsync<ImportYamlResponse>(
+            "upsert_resources", new Dictionary<string, object?> { ["yaml"] = update });
+
+        Assert.Equal(preview.Renamed, applied.Renamed);
+        Assert.Equal(preview.Updated, applied.Updated);
+        Assert.Equal(preview.NewYaml, applied.NewYaml);
+        Assert.Contains("name: forgejo", api.StoredYaml);
+        Assert.Contains("name: forgejo-ssh", api.StoredYaml);
+        Assert.Contains("runsOn:", api.StoredYaml);
+        Assert.Contains("- forgejo", api.StoredYaml);
+        Assert.Contains("resource: forgejo", api.StoredYaml);
     }
 
     [Fact]

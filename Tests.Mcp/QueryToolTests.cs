@@ -257,12 +257,12 @@ public class QueryToolTests {
 
         SchemaInfo info = await client.CallOkAsync<SchemaInfo>("get_schema");
 
-        Assert.Equal(4, info.Version);
+        Assert.Equal(5, info.Version);
         Assert.False(string.IsNullOrWhiteSpace(info.Guidance));
 
         // Byte-for-byte the schema the repo publishes, so the tool cannot drift.
         var published = await File.ReadAllTextAsync(
-            Path.Combine(AppContext.BaseDirectory, "schemas", "schema.v4.json"));
+            Path.Combine(AppContext.BaseDirectory, "schemas", "schema.v5.json"));
         Assert.Equal(published, info.JsonSchema);
     }
 

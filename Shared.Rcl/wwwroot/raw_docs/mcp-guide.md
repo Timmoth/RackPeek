@@ -25,8 +25,9 @@ claude mcp add --transport http rackpeek http://rack.lan:8080/mcp \
   --header "X-Api-Key: your-shared-secret"
 ```
 
-Then just ask: *"what's running on my proxmox nodes?"*, *"add my new switch and cable it to
-the rack server"*, *"generate an ssh config for everything tagged prod"*.
+Then just ask: *"what services have I documented on my Proxmox nodes?"*,
+*"add my new switch and cable it to the rack server"*, or
+*"generate an ssh config for everything tagged prod"*.
 
 For clients that only speak stdio, put a stdio→HTTP proxy such as
 [`mcp-remote`](https://www.npmjs.com/package/mcp-remote) in front of the same URL.
@@ -74,21 +75,10 @@ web UI's git integration — start the server with `GIT_TOKEN` (and optionally
 
 ### Discovery
 
-| Tool | Reads |
-|---|---|
-| `discover_docker` | a Docker/Podman engine (`dockerHost`, e.g. `tcp://nas01:2375`) |
-| `discover_proxmox` | a Proxmox VE cluster (`host`, e.g. `https://pve.lan:8006`) |
-
-Both default to a **preview**: they return the discovered YAML for review and write
-nothing. Pass `apply: true` to merge the result into the inventory — discovery merging
-can add and update but never removes, and re-runs line resources up by
-[discovery id](/docs/discovery-guide) so your renames stick.
-
-Proxmox credentials come from the server's own `RPK_PVE_TOKEN_ID` /
-`RPK_PVE_TOKEN_SECRET` configuration, never from the conversation, so tokens stay out of
-AI context windows. There is no `discover system` tool on purpose: it probes the machine
-it runs on, which for the server is its own container — run `rpk discover system` on the
-machine being inventoried instead.
+MCP does not scan or inspect infrastructure. Run discovery with the CLI on the machine
+or service you want to inspect, review its YAML output, then use `upsert_resources` if
+you want to import that document through MCP. See the
+[discovery guide](/docs/discovery-guide).
 
 ---
 

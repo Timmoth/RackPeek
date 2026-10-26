@@ -64,8 +64,8 @@ public static class InventoryDocumentJson {
     }
 
     public static async Task<JsonObject> BuildDocumentAsync(IResourceCollection repo) {
-        IReadOnlyList<Resource> resources = await repo.GetAllOfTypeAsync<Resource>();
-        IReadOnlyList<Connection> connections = await repo.GetConnectionsAsync();
+        (IReadOnlyList<Resource> resources, IReadOnlyList<Connection> connections) =
+            await repo.GetInventorySnapshotAsync();
 
         return new JsonObject {
             ["version"] = RackPeekConfigMigrationDeserializer.ListOfMigrations.Count,

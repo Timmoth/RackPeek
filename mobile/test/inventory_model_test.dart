@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rackpeek_mobile/models/inventory.dart';
 
 const _document = {
-  'version': 4,
+  'version': 5,
   'resources': [
     {
       'kind': 'Server',
@@ -30,7 +30,11 @@ const _document = {
       'kind': 'Service',
       'name': 'jellyfin',
       'runsOn': ['pve01'],
-      'network': {'ip': '10.0.0.11', 'port': 8096, 'protocol': 'TCP'}
+      'network': {'ip': '10.0.0.11', 'port': 8096, 'protocol': 'TCP'},
+      'endpoints': [
+        {'ip': '10.0.0.11', 'port': 8096, 'protocol': 'TCP'},
+        {'ip': '10.0.0.12', 'port': 8920, 'protocol': 'TCP'}
+      ]
     },
   ],
   'connections': [
@@ -47,7 +51,7 @@ void main() {
     final doc = InventoryDocument.fromJson(_document);
 
     test('parses version, resources and connections', () {
-      expect(doc.version, 4);
+      expect(doc.version, 5);
       expect(doc.resources.length, 4);
       expect(doc.connections.length, 1);
     });
@@ -87,6 +91,10 @@ void main() {
     test('service subtitle shows address', () {
       final service = doc.byName('jellyfin')!;
       expect(service.subtitle, '10.0.0.11:8096');
+      expect(service.endpoints.map((e) => e.describe()), [
+        '10.0.0.11:8096',
+        '10.0.0.12:8920',
+      ]);
     });
 
     test('missing optional fields default safely', () {

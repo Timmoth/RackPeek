@@ -3,6 +3,7 @@ namespace RackPeek.Domain.Resources.Services;
 public class Service : Resource {
     public const string KindLabel = "Service";
     public Network? Network { get; set; }
+    public List<Network> Endpoints { get; set; } = [];
 
     /// <summary>
     ///     Where this service answers, for showing to a person. Display text, never a

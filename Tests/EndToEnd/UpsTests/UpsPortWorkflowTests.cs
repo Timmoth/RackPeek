@@ -47,7 +47,7 @@ public class UpsPortWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
         Assert.Equal("Port added to UPS 'ups01'.\n", output);
 
         Assert.Equal("""
-                     version: 4
+                     version: 5
                      resources:
                      - kind: Ups
                        model: APC-BGM2200
@@ -86,7 +86,7 @@ public class UpsPortWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
         Assert.Equal("Port #1 removed from UPS 'ups01'.\n", output);
 
         Assert.Equal("""
-                     version: 4
+                     version: 5
                      resources:
                      - kind: Ups
                        model: APC-BGM2200

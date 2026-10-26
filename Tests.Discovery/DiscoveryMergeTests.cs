@@ -47,7 +47,7 @@ public class DiscoveryMergeTests {
     }
 
     [Fact]
-    public async Task A_v3_config_still_imports_and_is_saved_as_v4() {
+    public async Task A_v3_config_still_imports_and_is_saved_as_v5() {
         using var api = new DiscoveryApiFixture();
 
         // discoveryId arrived with schema v4; a pre-discovery v3 file must keep working.
@@ -63,7 +63,7 @@ public class DiscoveryMergeTests {
                                                              """);
 
         Assert.Equal(["nas01"], response.Added);
-        Assert.StartsWith("version: 4", api.StoredYaml);
+        Assert.StartsWith("version: 5", api.StoredYaml);
     }
 
     [Fact]

@@ -43,16 +43,23 @@ class _StartupGateState extends State<_StartupGate> {
 
   Future<void> _startup() async {
     final saved = await _settings.load();
+    final localMode = await _settings.isLocalMode();
     if (!mounted) return;
     setState(() => _checking = false);
     if (saved != null) {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => HomeShell(
-          settings: _settings,
-          baseUrl: saved.baseUrl,
-          apiKey: saved.apiKey,
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => HomeShell(
+            settings: _settings,
+            baseUrl: saved.baseUrl,
+            apiKey: saved.apiKey,
+          ),
         ),
-      ));
+      );
+    } else if (localMode) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => HomeShell(settings: _settings)),
+      );
     }
   }
 

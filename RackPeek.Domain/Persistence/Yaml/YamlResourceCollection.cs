@@ -24,8 +24,25 @@ namespace RackPeek.Domain.Persistence.Yaml;
 
 public class ResourceCollection {
     public readonly SemaphoreSlim FileLock = new(1, 1);
-    public List<Resource> Resources { get; } = new();
-    public List<Connection> Connections { get; } = new();
+    private InventoryState _inventory = new(new List<Resource>(), new List<Connection>());
+
+    public List<Resource> Resources {
+        get => _inventory.Resources;
+        set => _inventory = _inventory with { Resources = value };
+    }
+
+    public List<Connection> Connections {
+        get => _inventory.Connections;
+        set => _inventory = _inventory with { Connections = value };
+    }
+
+    public (List<Resource> Resources, List<Connection> Connections) GetInventorySnapshot() {
+        InventoryState inventory = _inventory;
+        return (inventory.Resources, inventory.Connections);
+    }
+
+    public void ReplaceInventory(List<Resource> resources, List<Connection> connections) =>
+        _inventory = new InventoryState(resources, connections);
 
     /// <summary>
     ///     Whether the store has ever been read successfully. Guarded by
@@ -42,6 +59,8 @@ public class ResourceCollection {
     ///     or persist an empty inventory (#337).
     /// </summary>
     public ConfigLoadException? LoadFailure { get; set; }
+
+    private sealed record InventoryState(List<Resource> Resources, List<Connection> Connections);
 }
 
 public sealed class YamlResourceCollection(
@@ -137,6 +156,13 @@ public sealed class YamlResourceCollection(
         return Task.FromResult<IReadOnlyList<T>>(resourceCollection.Resources.OfType<T>().ToList());
     }
 
+    public Task<(IReadOnlyList<Resource> Resources, IReadOnlyList<Connection> Connections)>
+        GetInventorySnapshotAsync() {
+        ThrowIfLoadFailed();
+        (List<Resource> resources, List<Connection> connections) = resourceCollection.GetInventorySnapshot();
+        return Task.FromResult<(IReadOnlyList<Resource>, IReadOnlyList<Connection>)>((resources, connections));
+    }
+
     public Task<IReadOnlyList<Resource>> GetDependantsAsync(string name) {
         ThrowIfLoadFailed();
         var result = resourceCollection.Resources
@@ -157,31 +183,30 @@ public sealed class YamlResourceCollection(
             YamlRoot incomingRoot = await migrationService.DeserializeAsync(incomingYaml);
 
             List<Resource> incomingResources = incomingRoot.Resources ?? new List<Resource>();
+            List<Resource> existingResources = ResourceCollectionMerger.DeepCloneResources(
+                resourceCollection.Resources);
+            var existingConnections = resourceCollection.Connections
+                .Select(CloneConnection)
+                .ToList();
 
             DiscoveryIdResolver.ResolveNames(
-                resourceCollection.Resources,
+                existingResources,
                 incomingResources,
                 incomingRoot.Connections,
-                resourceCollection.Connections,
+                existingConnections,
                 true);
 
             List<Resource> merged = ResourceCollectionMerger.Merge(
-                resourceCollection.Resources,
+                existingResources,
                 incomingResources,
                 mode);
 
-            resourceCollection.Resources.Clear();
-            resourceCollection.Resources.AddRange(merged);
-
             List<Connection>? mergedConnections = ConnectionMerger.Merge(
-                resourceCollection.Connections,
+                existingConnections,
                 incomingRoot.Connections,
                 mode);
 
-            if (mergedConnections != null) {
-                resourceCollection.Connections.Clear();
-                resourceCollection.Connections.AddRange(mergedConnections);
-            }
+            resourceCollection.ReplaceInventory(merged, mergedConnections ?? existingConnections);
 
             var rootToSave = new YamlRoot {
                 Version = RackPeekConfigMigrationDeserializer.ListOfMigrations.Count,
@@ -195,6 +220,21 @@ public sealed class YamlResourceCollection(
             resourceCollection.FileLock.Release();
         }
     }
+
+    private static Connection CloneConnection(Connection connection) => new() {
+        A = new PortReference {
+            Resource = connection.A.Resource,
+            PortGroup = connection.A.PortGroup,
+            PortIndex = connection.A.PortIndex
+        },
+        B = new PortReference {
+            Resource = connection.B.Resource,
+            PortGroup = connection.B.PortGroup,
+            PortIndex = connection.B.PortIndex
+        },
+        Label = connection.Label,
+        Notes = connection.Notes
+    };
 
     public Task<IReadOnlyList<Resource>> GetByTagAsync(string name) {
         ThrowIfLoadFailed();
@@ -269,7 +309,10 @@ public sealed class YamlResourceCollection(
             root = await migrationService.DeserializeAsync(
                 yaml,
                 async originalYaml => await BackupOriginalAsync(originalYaml),
-                async migratedRoot => await SaveRootAsync(migratedRoot)
+                async migratedRoot => {
+                    if (migratedRoot.Version > 0)
+                        await SaveRootAsync(migratedRoot);
+                }
             );
         }
         catch (Exception ex) when (ex is not ConfigLoadException
@@ -300,15 +343,7 @@ public sealed class YamlResourceCollection(
             throw resourceCollection.LoadFailure;
         }
 
-        resourceCollection.Resources.Clear();
-
-        if (root.Resources != null)
-            resourceCollection.Resources.AddRange(root.Resources);
-
-        resourceCollection.Connections.Clear();
-
-        if (root.Connections != null)
-            resourceCollection.Connections.AddRange(root.Connections);
+        resourceCollection.ReplaceInventory(root.Resources ?? [], root.Connections ?? []);
 
         resourceCollection.LoadFailure = null;
         resourceCollection.Loaded = true;

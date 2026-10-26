@@ -1,4 +1,6 @@
 using RackPeek.Domain.Discovery;
+using RackPeek.Domain.Persistence;
+using RackPeek.Domain.Resources;
 using RackPeek.Domain.Resources.Services;
 
 namespace Tests.Discovery;
@@ -61,6 +63,46 @@ public class DockerDiscoveryTests {
     [Fact]
     public void Udp_bindings_keep_their_protocol() =>
         Assert.Equal("UDP", Discover().Single(s => s.Name == "wireguard").Network!.Protocol);
+
+    [Fact]
+    public void A_service_keeps_every_published_protocol_and_interface_address_in_order() {
+        const string json = """[{"Names":["/app"],"Image":"app:latest","Ports":[{"IP":"127.0.0.1","PublicPort":8080,"Type":"tcp"},{"IP":"::","PublicPort":443,"Type":"tcp"},{"IP":"0.0.0.0","PublicPort":443,"Type":"tcp"},{"IP":"192.168.1.21","PublicPort":8443,"Type":"tcp"},{"IP":"192.168.1.22","PublicPort":8443,"Type":"udp"},{"IP":"::1","PublicPort":9090,"Type":"tcp"}]}]""";
+
+        Service service = DockerServiceMapper.ToResources(
+            DockerContainerParser.Parse(json), _hostSeed, "nas01", "192.168.1.20").Single();
+
+        Assert.Equal(("192.168.1.20", 443, "TCP"),
+            (service.Network!.Ip, service.Network.Port, service.Network.Protocol));
+        Assert.Equal([
+            ("192.168.1.20", 443, "TCP"),
+            ("192.168.1.21", 8443, "TCP"),
+            ("192.168.1.22", 8443, "UDP")
+        ], service.Endpoints.Select(e => (e.Ip, e.Port, e.Protocol)));
+        DockerContainer container = DockerContainerParser.Parse(json).Single();
+        Service fromReverseOrder = DockerServiceMapper.ToResources(
+            [container with { PublishedPorts = container.PublishedPorts.Reverse().ToArray() }],
+            _hostSeed,
+            "nas01",
+            "192.168.1.20").Single();
+        Assert.Equal(service.Endpoints.Select(e => (e.Ip, e.Port, e.Protocol)),
+            fromReverseOrder.Endpoints.Select(e => (e.Ip, e.Port, e.Protocol)));
+        Fixture.AssertConformsToSchema(DiscoveryDocument.ToYaml([service]));
+    }
+
+    [Fact]
+    public void Rediscovery_replaces_the_endpoint_list_for_an_existing_service() {
+        Service original = Discover().Single(s => s.Name == "jellyfin");
+        Service incoming = new() {
+            Kind = Service.KindLabel,
+            Name = original.Name,
+            Endpoints = [new Network { Ip = "192.168.1.20", Port = 8181, Protocol = "TCP" }]
+        };
+
+        Service merged = Assert.IsType<Service>(
+            ResourceCollectionMerger.Merge([original], [incoming], MergeMode.Merge).Single());
+
+        Assert.Equal(8181, Assert.Single(merged.Endpoints).Port);
+    }
 
     [Fact]
     public void A_compose_project_becomes_a_tag_so_a_stack_stays_grouped() {

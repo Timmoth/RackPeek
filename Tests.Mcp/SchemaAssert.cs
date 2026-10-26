@@ -16,7 +16,7 @@ public static class SchemaAssert {
     // schema from two test classes at once races. Load each one exactly once.
     private static readonly ConcurrentDictionary<int, Lazy<JsonSchema>> _schemas = new();
 
-    public static void ConformsToSchema(string yaml, int version = 4) {
+    public static void ConformsToSchema(string yaml, int version = 5) {
         JsonSchema schema = _schemas.GetOrAdd(version, v => new Lazy<JsonSchema>(() =>
                 JsonSchema.FromText(
                     File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "schemas", $"schema.v{v}.json"))),

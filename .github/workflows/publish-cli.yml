@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "RackPeek version (e.g. 2.2.0)"
+        description: "RackPeek version (e.g. 2.3.0)"
         required: true
-        default: "2.2.0"
+        default: "2.3.0"
 
 permissions:
   contents: write

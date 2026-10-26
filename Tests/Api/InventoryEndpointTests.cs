@@ -1,12 +1,180 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using RackPeek.Domain.Api;
+using RackPeek.Domain.Discovery;
+using RackPeek.Domain.Persistence.Yaml;
+using RackPeek.Domain.Resources.Connections;
+using RackPeek.Domain.Resources.SystemResources;
 using Xunit.Abstractions;
 
 namespace Tests.Api;
 
 [Collection("Process-wide static state")]
 public class InventoryEndpointTests(ITestOutputHelper output) : ApiTestBase(output) {
+    private static (string Id, string Placeholder, string ServicePlaceholder) CreatePlaceholderNames() {
+        var id = DiscoveryId.Create(DiscoveryId.NetworkScheme, "192.0.2.55");
+        var placeholder = $"host-{DiscoveryId.ShortSuffix(id)}";
+        return (id, placeholder, $"{placeholder}-ssh");
+    }
+
+    private static string PlaceholderInventoryYaml(
+        string id,
+        string placeholder,
+        string servicePlaceholder) => $$"""
+        version: 4
+        resources:
+          - kind: System
+            name: {{placeholder}}
+            discoveryId: {{id}}
+            ip: 192.0.2.55
+          - kind: Service
+            name: {{servicePlaceholder}}
+            discoveryId: rpk1:docker:1359175a57049554
+            runsOn:
+              - {{placeholder}}
+          - kind: Switch
+            name: core-switch
+            ports:
+              - type: rj45
+                speed: 1
+                count: 2
+        connections:
+          - a:
+              resource: {{placeholder}}
+              portGroup: 0
+              portIndex: 0
+            b:
+              resource: core-switch
+              portGroup: 0
+              portIndex: 0
+        """;
+
+    [Fact]
+    public async Task Invalid_Import_Does_Not_Change_Stored_Discovery_Names_Or_References() {
+        HttpClient client = CreateClient(true);
+        (var id, var placeholder, var servicePlaceholder) = CreatePlaceholderNames();
+        var initial = PlaceholderInventoryYaml(id, placeholder, servicePlaceholder);
+        HttpResponseMessage seed = await client.PostAsJsonAsync("/api/inventory", new { yaml = initial });
+        Assert.Equal(HttpStatusCode.OK, seed.StatusCode);
+        var configPath = Path.Combine(TempDir, "config.yaml");
+        var persistedBefore = await File.ReadAllTextAsync(configPath);
+
+        var duplicateImport = $$"""
+            resources:
+              - kind: System
+                name: forgejo
+                discoveryId: {{id}}
+              - kind: Server
+                name: forgejo
+            """;
+
+        HttpResponseMessage response = await client.PostAsJsonAsync(
+            "/api/inventory", new { yaml = duplicateImport });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        using JsonDocument doc = await JsonDocument.ParseAsync(
+            await response.Content.ReadAsStreamAsync());
+        Assert.Contains("Duplicate resource name", doc.RootElement.GetProperty("error").GetString());
+
+        using JsonDocument inventory = await JsonDocument.ParseAsync(
+            await (await client.GetAsync("/api/inventory")).Content.ReadAsStreamAsync());
+        JsonElement resources = inventory.RootElement.GetProperty("resources");
+        Assert.Contains(resources.EnumerateArray(), resource =>
+            resource.GetProperty("name").GetString() == placeholder);
+        Assert.Contains(resources.EnumerateArray(), resource =>
+            resource.GetProperty("name").GetString() == servicePlaceholder
+            && resource.GetProperty("runsOn")[0].GetString() == placeholder);
+        Assert.Equal(placeholder,
+            inventory.RootElement.GetProperty("connections")[0].GetProperty("a")
+                .GetProperty("resource").GetString());
+        Assert.Equal(persistedBefore, await File.ReadAllTextAsync(configPath));
+    }
+
+    [Fact]
+    public async Task Dry_Run_And_Apply_Report_The_Same_Discovery_Rename_And_References() {
+        HttpClient client = CreateClient(true);
+        (var id, var placeholder, var servicePlaceholder) = CreatePlaceholderNames();
+        var initial = PlaceholderInventoryYaml(id, placeholder, servicePlaceholder);
+        HttpResponseMessage seed = await client.PostAsJsonAsync("/api/inventory", new { yaml = initial });
+        Assert.Equal(HttpStatusCode.OK, seed.StatusCode);
+
+        var update = $$"""
+            resources:
+              - kind: System
+                name: forgejo
+                discoveryId: {{id}}
+            """;
+
+        HttpResponseMessage previewResponse = await client.PostAsJsonAsync(
+            "/api/inventory", new { yaml = update, dryRun = true });
+        Assert.Equal(HttpStatusCode.OK, previewResponse.StatusCode);
+        ImportYamlResponse? preview = await previewResponse.Content.ReadFromJsonAsync<ImportYamlResponse>();
+
+        Assert.Equal("forgejo", preview!.Renamed[placeholder]);
+        Assert.Equal("forgejo-ssh", preview.Renamed[servicePlaceholder]);
+        Assert.Contains("forgejo-ssh", preview.Updated);
+        Assert.Contains("runsOn:\n- forgejo", preview.NewYaml["forgejo-ssh"]);
+        Assert.Contains(preview.ConnectionsRemoved, connection => connection.Contains(placeholder));
+        Assert.Contains(preview.ConnectionsAdded, connection => connection.Contains("forgejo"));
+
+        using (JsonDocument beforeApply = await JsonDocument.ParseAsync(
+                   await (await client.GetAsync("/api/inventory")).Content.ReadAsStreamAsync())) {
+            Assert.Contains(beforeApply.RootElement.GetProperty("resources").EnumerateArray(), resource =>
+                resource.GetProperty("name").GetString() == placeholder);
+        }
+
+        HttpResponseMessage applyResponse = await client.PostAsJsonAsync(
+            "/api/inventory", new { yaml = update });
+        Assert.Equal(HttpStatusCode.OK, applyResponse.StatusCode);
+        ImportYamlResponse? applied = await applyResponse.Content.ReadFromJsonAsync<ImportYamlResponse>();
+
+        Assert.Equal(preview.Renamed, applied!.Renamed);
+        Assert.Equal(preview.Updated, applied.Updated);
+        Assert.Equal(preview.OldYaml, applied.OldYaml);
+        Assert.Equal(preview.NewYaml, applied.NewYaml);
+        Assert.Equal(preview.ConnectionsAdded, applied.ConnectionsAdded);
+        Assert.Equal(preview.ConnectionsRemoved, applied.ConnectionsRemoved);
+
+        using JsonDocument afterApply = await JsonDocument.ParseAsync(
+            await (await client.GetAsync("/api/inventory")).Content.ReadAsStreamAsync());
+        JsonElement finalResources = afterApply.RootElement.GetProperty("resources");
+        Assert.Contains(finalResources.EnumerateArray(), resource =>
+            resource.GetProperty("name").GetString() == "forgejo");
+        Assert.Contains(finalResources.EnumerateArray(), resource =>
+            resource.GetProperty("name").GetString() == "forgejo-ssh"
+            && resource.GetProperty("runsOn")[0].GetString() == "forgejo");
+        Assert.Equal("forgejo", afterApply.RootElement.GetProperty("connections")[0]
+            .GetProperty("a").GetProperty("resource").GetString());
+    }
+
+    [Fact]
+    public void Replacing_Inventory_publishes_resources_and_connections_as_one_snapshot() {
+        var collection = new ResourceCollection();
+        collection.ReplaceInventory(
+            [new SystemResource { Name = "old-host" }],
+            [new Connection {
+                A = new PortReference { Resource = "old-host" },
+                B = new PortReference { Resource = "switch" }
+            }]);
+        (List<RackPeek.Domain.Resources.Resource> resources, List<Connection> connections) =
+            collection.GetInventorySnapshot();
+
+        collection.ReplaceInventory(
+            [new SystemResource { Name = "new-host" }],
+            [new Connection {
+                A = new PortReference { Resource = "new-host" },
+                B = new PortReference { Resource = "switch" }
+            }]);
+        (List<RackPeek.Domain.Resources.Resource> currentResources, List<Connection> currentConnections) =
+            collection.GetInventorySnapshot();
+
+        Assert.Equal("old-host", resources.Single().Name);
+        Assert.Equal("old-host", connections.Single().A.Resource);
+        Assert.Equal("new-host", currentResources.Single().Name);
+        Assert.Equal("new-host", currentConnections.Single().A.Resource);
+    }
+
     [Fact]
     public async Task DryRun_Add_New_Resource_Does_Not_Persist() {
         HttpClient client = CreateClient(true);
@@ -1019,5 +1187,69 @@ public class InventoryEndpointTests(ITestOutputHelper output) : ApiTestBase(outp
         var newYaml = result2.NewYaml["radio-merge"];
         Assert.Contains("model: Building Bridge XG", newYaml);
         Assert.Contains("description: Site-to-site connectivity", newYaml);
+    }
+
+    [Fact]
+    public async Task Inventory_api_round_trips_all_service_endpoints() {
+        HttpClient client = CreateClient(true);
+        var yaml = """
+            version: 5
+            resources:
+              - kind: Service
+                name: multi-endpoint
+                network:
+                  ip: 192.168.1.10
+                  port: 8080
+                  protocol: TCP
+                endpoints:
+                  - ip: 192.168.1.10
+                    port: 8080
+                    protocol: TCP
+                  - ip: 192.168.1.11
+                    port: 8443
+                    protocol: UDP
+            """;
+
+        HttpResponseMessage upsert = await client.PostAsJsonAsync("/api/inventory", new { yaml });
+        Assert.Equal(HttpStatusCode.OK, upsert.StatusCode);
+
+        using JsonDocument response = await JsonDocument.ParseAsync(
+            await (await client.GetAsync("/api/inventory")).Content.ReadAsStreamAsync());
+        JsonElement endpoints = response.RootElement.GetProperty("resources")
+            .EnumerateArray()
+            .Single(resource => resource.GetProperty("name").GetString() == "multi-endpoint")
+            .GetProperty("endpoints");
+
+        Assert.Equal(2, endpoints.GetArrayLength());
+        Assert.Equal(8443, endpoints[1].GetProperty("port").GetInt32());
+        Assert.Equal("UDP", endpoints[1].GetProperty("protocol").GetString());
+    }
+
+    [Fact]
+    public async Task Inventory_api_migrates_a_legacy_service_network_to_one_endpoint() {
+        HttpClient client = CreateClient(true);
+        var yaml = """
+            version: 4
+            resources:
+              - kind: Service
+                name: legacy-service
+                network:
+                  ip: 192.168.1.20
+                  port: 8096
+                  protocol: TCP
+            """;
+
+        HttpResponseMessage upsert = await client.PostAsJsonAsync("/api/inventory", new { yaml });
+        Assert.Equal(HttpStatusCode.OK, upsert.StatusCode);
+
+        using JsonDocument response = await JsonDocument.ParseAsync(
+            await (await client.GetAsync("/api/inventory")).Content.ReadAsStreamAsync());
+        JsonElement service = response.RootElement.GetProperty("resources")
+            .EnumerateArray()
+            .Single(resource => resource.GetProperty("name").GetString() == "legacy-service");
+
+        Assert.Equal(8096, service.GetProperty("network").GetProperty("port").GetInt32());
+        JsonElement endpoint = Assert.Single(service.GetProperty("endpoints").EnumerateArray());
+        Assert.Equal(8096, endpoint.GetProperty("port").GetInt32());
     }
 }

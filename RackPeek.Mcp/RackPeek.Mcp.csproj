@@ -24,7 +24,7 @@
         <!-- get_schema serves the schema for the CURRENT config version, resolved at
              runtime from ListOfMigrations.Count. When a v5 migration lands, add its
              schema here — the tool throws (and Tests.Mcp fails) until it is present. -->
-        <EmbeddedResource Include="..\schemas\v4\schema.v4.json" LogicalName="schema.v4.json"/>
+        <EmbeddedResource Include="..\schemas\v5\schema.v5.json" LogicalName="schema.v5.json"/>
     </ItemGroup>
 
 </Project>

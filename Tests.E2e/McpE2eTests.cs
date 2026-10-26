@@ -71,11 +71,11 @@ public class McpE2eTests : IAsyncLifetime {
         Assert.Equal("rackpeek", _client.ServerInfo!.Name);
         IList<McpClientTool> tools = await _client.ListToolsAsync();
         Assert.Contains(tools, t => t.Name == "upsert_resources");
-        Assert.Contains(tools, t => t.Name == "discover_docker");
+        Assert.DoesNotContain(tools, t => t.Name.StartsWith("discover_", StringComparison.Ordinal));
 
         // 1. Learn the format.
         JsonElement schema = await CallAsync("get_schema");
-        Assert.Equal(4, schema.GetProperty("version").GetInt32());
+        Assert.Equal(5, schema.GetProperty("version").GetInt32());
 
         // 2. Preview, then apply, a small stack.
         const string stack =

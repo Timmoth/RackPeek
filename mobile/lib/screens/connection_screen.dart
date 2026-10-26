@@ -10,9 +10,10 @@ import 'home_shell.dart';
 import 'privacy_policy_screen.dart';
 
 class ConnectionScreen extends StatefulWidget {
-  const ConnectionScreen({super.key, required this.settings});
+  const ConnectionScreen({super.key, required this.settings, this.httpClient});
 
   final SettingsStore settings;
+  final http.Client? httpClient;
 
   @override
   State<ConnectionScreen> createState() => _ConnectionScreenState();
@@ -21,7 +22,7 @@ class ConnectionScreen extends StatefulWidget {
 class _ConnectionScreenState extends State<ConnectionScreen> {
   final _baseUrl = TextEditingController();
   final _apiKey = TextEditingController();
-  final http.Client _probeClient = http.Client();
+  late final http.Client _client = widget.httpClient ?? http.Client();
   Timer? _probeTimer;
   int _probeToken = 0;
   bool _busy = false;
@@ -37,7 +38,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     _probeTimer?.cancel();
     _baseUrl.dispose();
     _apiKey.dispose();
-    _probeClient.close();
+    if (widget.httpClient == null) _client.close();
     super.dispose();
   }
 
@@ -73,7 +74,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
         final status = await RackPeekApi(
           baseUrl: candidate,
           apiKey: '',
-          client: _probeClient,
+          client: _client,
         ).getStatus();
         return (baseUrl: candidate, status: status);
       } on ApiException catch (e) {
@@ -140,17 +141,26 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
         _probing = false;
       });
 
-      await RackPeekApi(baseUrl: result.baseUrl, apiKey: apiKey).getSummary();
+      final api = RackPeekApi(
+        baseUrl: result.baseUrl,
+        apiKey: apiKey,
+        client: _client,
+      );
+      await api.getSummary();
+      final shouldContinue = await _resolveLocalChanges(api, result.baseUrl);
+      if (shouldContinue != true) return;
       await widget.settings.save(result.baseUrl, apiKey);
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => HomeShell(
             settings: widget.settings,
             baseUrl: result.baseUrl,
             apiKey: apiKey,
+            httpClient: widget.httpClient,
           ),
         ),
+        (route) => false,
       );
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -161,6 +171,63 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Future<bool?> _resolveLocalChanges(RackPeekApi api, String baseUrl) async {
+    final state = await widget.settings.loadOfflineState();
+    final pending = state?['pendingChanges'];
+    final hasPending = pending is List && pending.isNotEmpty;
+    var upload = false;
+
+    if (hasPending) {
+      if (!mounted) return false;
+      final choice = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Local changes found'),
+          content: Text(
+            '${pending.length} change(s) are saved on this phone. '
+            'Upload them to $baseUrl, or discard them and use the server inventory?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, null),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Discard local changes'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Upload to server'),
+            ),
+          ],
+        ),
+      );
+      if (choice == null) return null;
+      upload = choice;
+      if (upload) {
+        final rawDocument = state?['document'];
+        final version = rawDocument is Map
+            ? rawDocument['version'] as int? ?? 5
+            : 5;
+        for (final change in pending.whereType<Map>()) {
+          await api.upsert({
+            'version': version,
+            'resources': [Map<String, dynamic>.from(change)],
+          });
+        }
+      }
+    }
+
+    final serverDocument = await api.getDocument();
+    await widget.settings.saveOfflineState({
+      'document': serverDocument.toJson(),
+      'pendingChanges': <Map<String, dynamic>>[],
+    });
+    return true;
   }
 
   Widget _reachabilityIndicator() {
@@ -233,7 +300,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
           const Center(child: Wordmark()),
           const Text(
             'Your infrastructure, in your pocket. Connect to a RackPeek server '
-            'to browse and edit your inventory.',
+            'or skip to build and manage a local inventory.',
             textAlign: TextAlign.center,
             style: ScribeType.body,
           ),
@@ -285,6 +352,13 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
                   busy: _busy,
                   onPressed: _connect,
                 ),
+                const SizedBox(height: ScribeSpacing.relatedGap),
+                ScribeAction(
+                  label: 'Skip and use offline',
+                  secondary: true,
+                  busy: _busy,
+                  onPressed: _useOffline,
+                ),
               ],
             ),
           ),
@@ -299,6 +373,14 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _useOffline() async {
+    await widget.settings.useLocalMode();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => HomeShell(settings: widget.settings)),
     );
   }
 }

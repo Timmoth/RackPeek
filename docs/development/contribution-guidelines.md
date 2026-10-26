@@ -1,56 +1,17 @@
 # Contribution Guidelines
 
-- Keep changes small.
-- Keep behaviour tested.
-- Discuss before building.
+## Before you code
 
-## Checklist
+1. Search the [issue tracker](https://github.com/Timmoth/RackPeek/issues) for existing work.
+2. For a new feature or behavior change, open an issue and agree on the approach before implementation.
+3. Keep pull requests focused. Open them as drafts until the work and its tests are ready.
 
-* [ ] Linked GitHub issue
-* [ ] Approach validated
-* [ ] Small, focused PR
-* [ ] All tests passing locally
-* [ ] Behaviour covered by tests
-* [ ] YAML migration defined (if needed)
-  
-## Before You Start
+## Before marking a PR ready
 
-* Search existing **GitHub Issues**
-* If none exists → create one (and seek feedback) before coding
-* Clearly state what you want to work on
-* Validate your approach with core maintainers
-* Prefer GitHub Issues over Discord for design discussion
+- Run `dotnet format RackPeek.sln --verify-no-changes`.
+- Run the relevant CLI, Discovery, MCP, and E2E tests. Use `just ci` for the full suite.
+- Add regression coverage for changed behavior.
+- For YAML changes, include a forward migration, schema update, and migration tests.
+- Remove temporary diagnostics and verify Playwright runs headless.
 
-## Keep PRs Small
-
-* Small, focused PRs only
-* One concern per PR
-
-Large PRs slow review and increase load on the team
-
-## Open as Draft
-
-* Mark PR as **Draft** initially
-* Move to Ready only when:
-
-  * Tests pass locally
-  * Scope is complete
-  * No debug code remains
-
-
-## Testing Requirements
-
-Before removing Draft:
-
-* CLI tests pass
-* Web UI E2E tests pass
-* Behaviour is covered by tests
-
-## YAML Schema Changes
-
-If you modify persisted YAML:
-
-* Define a schema migration
-* Ensure backward compatibility (or clearly document breaking changes)
-* Add migration tests
-
+Target feature work at `staging`; releases go from `staging` to `main`. See the [release guide](release-guide.md) for publishing.

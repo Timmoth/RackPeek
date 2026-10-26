@@ -9,6 +9,7 @@ public class MainLayoutPom(IPage page) {
 
     public ILocator BrandLink => page.GetByTestId("brand-link");
     public ILocator BrandText => page.GetByTestId("brand-text");
+    public ILocator MobileEarlyAccess => page.GetByTestId("mobile-early-access");
 
     public ILocator NavHome => page.GetByTestId("nav-home");
     public ILocator NavCli => page.GetByTestId("nav-cli");

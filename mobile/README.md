@@ -1,24 +1,27 @@
-# Mobile app
+# RackPeek Mobile
 
-The Flutter app connects to a RackPeek server and lets people view, search,
-create, and edit infrastructure inventory from a mobile device.
+RackPeek Mobile is the iOS and Android app for viewing and editing a RackPeek inventory. It works with a local inventory when you are offline or have not connected a server. When you connect, you can upload your local changes or discard them in favor of the server inventory.
 
-## Local development
+## Run locally
 
-Install Flutter and Xcode, then run:
+Install Flutter and the platform tools for your device, then from this directory run:
 
 ```sh
 flutter pub get
 flutter run
 ```
 
-## Privacy
+Run tests and static analysis with:
 
-The app's privacy policy is in [`privacy-policy.md`](privacy-policy.md). Review
-it against the behavior of each release before publishing.
+```sh
+flutter test
+flutter analyze
+```
 
-## Store assets
+## Release builds
 
-App icons, screenshots, and product-page creative are in
-[`store-assets/`](store-assets/). The folder README describes the included
-assets.
+Set the app version and build number in `pubspec.yaml`. Increment the build number for every store upload. Build an Android App Bundle with `flutter build appbundle --release`; build an iOS archive with Xcode or `flutter build ipa`.
+
+## Privacy and store assets
+
+The [privacy policy](privacy-policy.md) explains local storage and server sync. Store icons, screenshots, and listing graphics are in [`store-assets/`](store-assets/).

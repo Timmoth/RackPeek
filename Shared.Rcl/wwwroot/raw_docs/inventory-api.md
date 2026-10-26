@@ -51,6 +51,14 @@ key still loses to brute force — treat it like a password.
 
 ## Endpoints
 
+### `GET /api/status`
+
+Connection check for clients. No authentication is required. Returns the API and app versions:
+
+```json
+{"apiVersion":"1","appVersion":"v2.3.0"}
+```
+
 ### `GET /health`
 
 Liveness check. No authentication. Returns `200 OK` with body `rackpeek` as
@@ -99,6 +107,11 @@ with `version`, `resources`, and optional `connections`. The canonical
 schemas live in [`schemas/`](https://github.com/Timmoth/RackPeek/tree/main/schemas)
 in the repository.
 
+In schema version 5, a Service may include an `endpoints` array for multiple published
+addresses. The existing `network` object remains the primary endpoint for compatibility.
+When a version 4 file is loaded, its `network` value is retained and copied into a
+single-item `endpoints` list.
+
 ```json
 {
   "version": 3,
@@ -129,10 +142,14 @@ resource type: `Server`, `Switch`, `Router`, `Firewall`, `AccessPoint`,
 | `added` | Names of resources that were newly created. |
 | `updated` | Names of existing resources whose fields changed under `Merge` mode. |
 | `replaced` | Names of resources fully overwritten (either `Replace` mode, or a kind mismatch). |
+| `renamed` | Automatic stored-name improvements, keyed by old name with the new name as the value. |
 | `oldYaml` | YAML snapshot of each updated/replaced resource **before** the change, keyed by name. |
 | `newYaml` | YAML snapshot of each incoming resource **after** the change, keyed by name. |
+| `connectionsAdded` / `connectionsRemoved` | Connection descriptions added or removed by the import, including endpoint changes caused by automatic renames. |
 
 `oldYaml` is omitted for newly-added resources (nothing existed to snapshot).
+Dry runs return the same rename, resource, and connection diff as applying the
+same request, without changing the inventory.
 
 #### Error responses
 

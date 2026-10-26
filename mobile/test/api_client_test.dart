@@ -34,7 +34,7 @@ void main() {
         expect(request.url.path, '/api/status');
         expect(request.headers.containsKey('X-Api-Key'), isFalse);
         return http.Response(
-          jsonEncode({'apiVersion': '1', 'appVersion': 'v2.2.0'}),
+          jsonEncode({'apiVersion': '1', 'appVersion': 'v2.3.0'}),
           200,
         );
       });
@@ -46,7 +46,7 @@ void main() {
       ).getStatus();
 
       expect(status.apiVersion, '1');
-      expect(status.appVersion, 'v2.2.0');
+      expect(status.appVersion, 'v2.3.0');
     },
   );
 }

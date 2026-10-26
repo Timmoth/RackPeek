@@ -167,7 +167,7 @@ rpk discover docker
 | Option | Meaning |
 |---|---|
 | `--docker-host <URI>` | Docker endpoint. Defaults to `DOCKER_HOST`, then `/var/run/docker.sock`. |
-| `--host <NAME>` | Name of the machine the containers run on. Defaults to its hostname. |
+| `--host <NAME>` | Name of the machine the containers run on. Required for a remote daemon if `/info` has no hostname. |
 
 Plus the same `--push` / `--server` / `--api-key` / `--dry-run` options as above.
 
@@ -177,6 +177,11 @@ only the host itself can reach. A binding pinned to one interface
 (`-p 192.168.1.21:8443:8443`) is recorded at that address rather than the host's. Stopped
 containers are never listed for the same reason — the daemon does not create host port
 bindings until a container runs, so there is no address to record.
+
+Every reachable published binding is saved under `endpoints`, including TCP and UDP
+bindings and bindings pinned to different host interfaces. The compatibility `network`
+field continues to contain the primary endpoint. Wildcard IPv4 and IPv6 entries for the
+same port are folded together, and loopback bindings are excluded.
 
 A container's compose project becomes a tag, so a stack stays grouped. `runsOn` points at
 the same name `rpk discover system` produces on that machine, so running both gives you a
@@ -210,11 +215,10 @@ If you rename that host in RackPeek, re-discovery keeps your link: an update who
 `runsOn` points at nothing that exists leaves the stored link alone. A `runsOn` that
 does name a real resource is recorded — that is a genuine move.
 
-A proxy restricted to `CONTAINERS=1` blocks `/info`, and discovery says so and degrades:
-the endpoint itself becomes the identity seed (so keep addressing the engine the same
-way — switching between an IP and a hostname would re-mint every id), and `--host` is
-how to name the machine the containers run on. Allowing `INFO=1` on the proxy removes
-both caveats.
+A proxy restricted to `CONTAINERS=1` blocks `/info`. Pass `--host <NAME>` to identify the
+remote machine; without a hostname from `/info` or an explicit `--host`, discovery stops
+without emitting resources. Allowing `INFO=1` lets discovery use the daemon hostname
+automatically.
 
 ---
 

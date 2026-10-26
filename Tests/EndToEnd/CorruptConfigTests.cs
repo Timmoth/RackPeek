@@ -111,7 +111,7 @@ public class CorruptConfigTests(TempYamlCliFixture fs, ITestOutputHelper outputH
         var output = await ExecuteAsync("summary");
 
         Assert.Contains("Server: 1", output);
-        Assert.Contains("version: 4", await File.ReadAllTextAsync(ConfigPath));
+        Assert.Contains("version: 5", await File.ReadAllTextAsync(ConfigPath));
     }
 
     [Fact]
@@ -124,5 +124,39 @@ public class CorruptConfigTests(TempYamlCliFixture fs, ITestOutputHelper outputH
         output = await ExecuteAsync("servers", "add", "srv-d");
         Assert.Contains("added", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("name: srv-d", await File.ReadAllTextAsync(ConfigPath));
+    }
+
+    [Fact]
+    public async Task a_v4_migration_keeps_the_original_backup_and_preserves_service_network_data() {
+        const string original = """
+                                    version: 4
+                                    resources:
+                                      - kind: Server
+                                        name: node
+                                        notes: Original server notes
+                                      - kind: Service
+                                        name: media
+                                        network:
+                                          ip: 192.168.1.20
+                                          port: 8096
+                                          protocol: TCP
+                                    connections: []
+
+                                    """;
+        await File.WriteAllTextAsync(ConfigPath, original);
+
+        var output = await ExecuteAsync("summary");
+
+        Assert.Contains("Server: 1", output);
+        var migrated = await File.ReadAllTextAsync(ConfigPath);
+        Assert.Contains("version: 5", migrated);
+        Assert.Contains("Original server notes", migrated);
+        Assert.Contains("network:", migrated);
+        Assert.Contains("endpoints:", migrated);
+        Assert.Contains("ip: 192.168.1.20", migrated);
+
+        var backups = Directory.GetFiles(fs.Root, "config.yaml.bak.*");
+        var backupContents = await Task.WhenAll(backups.Select(path => File.ReadAllTextAsync(path)));
+        Assert.Contains(original, backupContents);
     }
 }

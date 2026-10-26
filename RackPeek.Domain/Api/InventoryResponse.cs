@@ -5,6 +5,9 @@ public class ImportYamlResponse {
     public List<string> Updated { get; set; } = new();
     public List<string> Replaced { get; set; } = new();
 
+    public Dictionary<string, string> Renamed { get; set; }
+        = new(StringComparer.OrdinalIgnoreCase);
+
     public Dictionary<string, string> OldYaml { get; set; }
         = new(StringComparer.OrdinalIgnoreCase);
 

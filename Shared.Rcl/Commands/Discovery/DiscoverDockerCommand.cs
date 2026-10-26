@@ -15,7 +15,7 @@ public sealed class DiscoverDockerSettings : DiscoverSettings {
     public string? DockerHost { get; init; }
 
     [CommandOption("--host <NAME>")]
-    [Description("Name of the machine these containers run on. Defaults to its hostname.")]
+    [Description("Name of the machine these containers run on. Required for remote daemons without a reported hostname.")]
     public string? HostName { get; init; }
 }
 
@@ -67,11 +67,15 @@ public sealed class DiscoverDockerCommand(IEnumerable<ISystemProbe> probes)
         // workstation), and its hostname is what runsOn should point at.
         DockerEngineInfo? engine = client.IsLocal ? null : await client.GetInfoAsync(cancellationToken);
 
-        if (!client.IsLocal && engine == null)
+        if (!client.IsLocal && string.IsNullOrWhiteSpace(settings.HostName)
+            && string.IsNullOrWhiteSpace(engine?.Hostname)) {
             AnsiConsole.MarkupLine(
-                "[grey]The engine does not expose /info (a restricted socket proxy blocks it by " +
-                "default), so the endpoint itself is the identity seed — keep addressing this " +
-                "engine the same way, and pass --host to name the machine it runs on.[/]");
+                "[red]Could not determine the remote Docker host name.[/] " +
+                "The engine did not provide a hostname; pass --host <NAME> to identify the machine. " +
+                "No resources were emitted.");
+
+            return 1;
+        }
 
         // Named through the same mapper the system collector uses, so runsOn always
         // points at exactly the resource 'rpk discover system' produces on that machine.
@@ -79,7 +83,7 @@ public sealed class DiscoverDockerCommand(IEnumerable<ISystemProbe> probes)
 
         var hostName = client.IsLocal
             ? hostResource.Name
-            : settings.HostName ?? engine?.Hostname ?? hostResource.Name;
+            : settings.HostName ?? engine!.Hostname!;
 
         var seed = client.IsLocal
             ? host.MachineId ?? host.Hostname

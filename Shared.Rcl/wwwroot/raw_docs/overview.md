@@ -1,96 +1,20 @@
-# RackPeek Documentation
+# RackPeek Overview
 
-Welcome to the RackPeek knowledge base.
+RackPeek is a self-hosted CLI and web app for documenting home labs and small IT environments. It keeps inventory in a portable YAML file, with no database or telemetry.
 
-RackPeek is a lightweight, opinionated CLI tool and Web UI for documenting and managing home lab and small-scale IT
-infrastructure.
+## What you can do
 
-It exists to help you understand your infrastructure clearly — without enterprise bloat, proprietary lock-in, or
-unnecessary process.
+- Record hardware, systems, services, and physical connections.
+- Edit the same inventory from the CLI or web app.
+- Discover systems, Docker, Proxmox, OPNsense, and network services with the CLI, then review and import the results.
+- Export inventory for Ansible, SSH, hosts files, and topology diagrams.
+- Connect an MCP client to query and update inventory through the authenticated `/mcp` endpoint.
+- Use the mobile app to edit a local inventory offline and sync it to a server later.
 
----
+## How inventory works
 
-## What RackPeek Is
+RackPeek stores the inventory in `config.yaml`. Each resource has a kind and name; systems and services can be connected with `runsOn`, and hardware ports can be linked with physical connections. The YAML format is human-readable and remains yours to inspect, version, or reuse.
 
-RackPeek helps you:
+Start with the [installation guide](/docs/install-guide), then see [resource levels](/docs/resource-levels) for modeling guidance. The [CLI reference](/docs/cli-commands) and guides for [discovery](/docs/discovery-guide), the [Inventory API](/docs/inventory-api), [MCP](/docs/mcp-guide), and [exports](/docs/ansible-generator-guide) cover specific workflows.
 
-- Document hardware, systems, and services
-- Model relationships between components
-- Keep infrastructure knowledge versionable and portable
-- Treat your lab “as code” using simple YAML
-- Turn documentation into automation (e.g. Ansible inventory)
-- Auto-discover what is already running (`rpk discover system / docker / proxmox / network`)
-- Connect AI assistants to your inventory through the built-in MCP server
-
-It is intentionally focused on homelabs and self-hosted environments, not enterprise CMDBs.
-
----
-
-## Design Philosophy
-
-RackPeek is built around a few core principles:
-
-### Simplicity
-
-Clear models. Minimal abstraction. No unnecessary metadata.
-
-### Openness
-
-Your data is stored in plain YAML. No hidden databases. No lock-in.
-
-### Ease of Deployment
-
-Runs in Docker or as a single binary. Fast to install. Easy to maintain.
-
-### Privacy
-
-No telemetry. No tracking. No ads. What runs on your infrastructure stays on your infrastructure.
-
-### Opinionated
-
-Optimized for real-world home lab use — not corporate documentation workflows.
-
----
-
-## Project Status
-
-RackPeek is stable and actively developed.
-
-The focus is on:
-
-- Stability
-- Clean UX
-- Strong automation integrations (Ansible, discovery, MCP)
-- Community feedback shaping the roadmap
-
-Expansion areas include deeper automation support, diagramming, and infrastructure integrations.
-
----
-
-## Community
-
-RackPeek is open source and community-driven.
-
-If you:
-
-- Run a homelab
-- Self-host services
-- Experiment with infrastructure
-- Care about documenting what you build
-
-You belong here.
-
-Feedback, bug reports, ideas, and contributions are always welcome.
-
----
-
-## Where to Go Next
-
-Use this documentation section to explore:
-
-- Concepts and modeling guidance
-- CLI reference
-- Automation and Ansible integration
-- Development and contribution guides
-
-RackPeek is designed to grow with your lab — and stay out of your way.
+The mobile app is in early access. Join the [RackPeek Discord](https://discord.gg/egXRPdesee) for updates and testing information.

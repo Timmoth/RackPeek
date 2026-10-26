@@ -63,6 +63,8 @@ public class PlaywrightFixture : IAsyncLifetime {
         return Encoding.UTF8.GetString(bytes);
     }
 
+    public async Task<(string Stdout, string Stderr)> ReadLogsAsync() => await _container.GetLogsAsync();
+
     public async Task DisposeAsync() {
         if (Browser != null)
             await Browser.DisposeAsync();

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Net;
 
 namespace RackPeek.Domain.Discovery;
 
@@ -8,11 +9,18 @@ public sealed record DockerPortBinding(int HostPort, string Protocol, string Hos
     ///     Bound to a loopback address, so only the host itself can reach it. Docker
     ///     writes the address as given (<c>127.0.0.1</c> mostly, but any 127.x works).
     /// </summary>
-    public bool IsLoopback =>
-        HostIp.StartsWith("127.", StringComparison.Ordinal) || HostIp == "::1";
+    public bool IsLoopback => IPAddress.TryParse(HostIp, out IPAddress? address) && IPAddress.IsLoopback(address);
 
     /// <summary>Bound to every interface rather than one address.</summary>
-    public bool IsWildcard => HostIp is "" or "0.0.0.0" or "::";
+    public bool IsWildcard {
+        get {
+            if (string.IsNullOrWhiteSpace(HostIp))
+                return true;
+
+            return IPAddress.TryParse(HostIp, out IPAddress? address)
+                   && (address.Equals(IPAddress.Any) || address.Equals(IPAddress.IPv6Any));
+        }
+    }
 }
 
 /// <summary>

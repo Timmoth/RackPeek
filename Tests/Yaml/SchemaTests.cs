@@ -73,6 +73,7 @@ public class SchemaConformanceTests {
     [InlineData(2)]
     [InlineData(3)]
     [InlineData(4)]
+    [InlineData(5)]
     public void The_served_schema_copies_never_drift_from_the_published_one(int version) {
         var published = JsonNode.Parse(
             File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "schemas", $"schema.v{version}.json")));
@@ -93,6 +94,7 @@ public class SchemaConformanceTests {
     [InlineData(2)]
     [InlineData(3)]
     [InlineData(4)]
+    [InlineData(5)]
     public void All_yaml_files_conform_to_schema(int version) {
         // Arrange
         JsonSchema schema = LoadSchema(version);

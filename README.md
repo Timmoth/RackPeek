@@ -1,136 +1,41 @@
-[![RackPeek demo](./assets/rackpeek_banner_thin.png)](./assets/rackpeek_banner_thin.png)
+[![RackPeek](./assets/rackpeek_banner_thin.png)](https://timmoth.github.io/RackPeek/)
 
-![Version](https://img.shields.io/badge/Version-2.2.0-2ea44f) ![Status](https://img.shields.io/badge/Status-Stable-success)
-[![Join our Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/egXRPdesee) [![Live Demo](https://img.shields.io/badge/Live%20Demo-Try%20RackPeek%20Online-2ea44f?logo=githubpages&logoColor=white)](https://timmoth.github.io/RackPeek/) [![Docker Hub](https://img.shields.io/badge/Docker%20Hub-rackpeek-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/aptacode/rackpeek/)
+![Version](https://img.shields.io/badge/Version-2.3.0-2ea44f) ![Status](https://img.shields.io/badge/Status-Stable-success)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/egXRPdesee)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Try%20RackPeek%20Online-2ea44f?logo=githubpages&logoColor=white)](https://timmoth.github.io/RackPeek/)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-rackpeek-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/aptacode/rackpeek/)
 
-RackPeek is a webui & CLI tool for documenting and managing home lab and small-scale IT infrastructure.
+RackPeek is a self-hosted CLI and web app for documenting home labs and small IT environments. Track hardware, systems, services, and connections in a portable YAML inventory. Use the CLI or web app to manage it, discover existing infrastructure, and export data for tools such as Ansible.
 
-It helps you track hardware, services, networks, and their relationships in a clear, scriptable, and reusable way without enterprise bloat or proprietary lock-in or drowning in unnecessary metadata or process. It can auto-discover what's already running (`rpk discover system / docker / proxmox / network`), and its built-in MCP server lets AI assistants query and manage your inventory.
+## Quick start
 
-### The roadmap for the next wave of features is actively being discussed, please make your voice heard! 
+Run RackPeek with a persistent Docker volume:
 
-[![DB Tech — Finally Document Your Home Lab the Easy Way (Docker Install)](https://img.shields.io/badge/DB%20Tech%20[video]-Finally%20Document%20Your%20Home%20Lab%20the%20Easy%20Way-blue?style=for-the-badge)](https://www.youtube.com/watch?v=RJtMO8kIsqU)
-[![Brandon Lee — I’m Documenting My Entire Home Lab as Code \[video\]](https://img.shields.io/badge/Brandon%20Lee%20\[video\]-I%E2%80%99m%20Documenting%20My%20Entire%20Home%20Lab%20as%20Code-blue?style=for-the-badge)](https://www.youtube.com/watch?v=wY1DgT3GD6U)
-[![Brandon Lee — I’m Documenting My Entire Home Lab](https://img.shields.io/badge/Brandon%20Lee%20[article]-I%E2%80%99m%20Documenting%20My%20Entire%20Home%20Lab%20as%20Code-blue?style=for-the-badge)](https://www.virtualizationhowto.com/2026/02/im-documenting-my-entire-home-lab-as-code-with-rackpeek/)
-[![Jared Heinrichs — How to Document Your Entire Homelab](https://img.shields.io/badge/Jared%20Heinrichs%20[article]-How%20to%20Document%20Your%20Entire%20Homelab-blue?style=for-the-badge)](https://jaredheinrichs.substack.com/p/how-to-document-your-entire-homelab)
-
-
-[![RackPeek demo](./vhs/rpk-demo.gif)](./rpk-demo.gif)
-[![RackPeek demo](./vhs/webui_screenshots/output.gif)](./rpk-webui-demo.gif)
-
-## Running RackPeek with Docker
-```text
-# Named volume
+```sh
 docker volume create rackpeek-config
 docker run -d \
   --name rackpeek \
   -p 8080:8080 \
   -v rackpeek-config:/app/config \
   aptacode/rackpeek:latest
-
-# Bind mount
-mkdir -p config
-sudo chown 1654:1654 config
-docker run -d \
-  --name rackpeek \
-  -p 8080:8080 \
-  -v $(pwd)/config:/app/config:Z \
-  aptacode/rackpeek:latest
-
-# RackPeek runs as UID/GID 1654:1654 inside the container, so a bind-mounted
-# host directory must be writable by that user. The :Z suffix is needed on
-# SELinux-enabled systems such as Fedora, RHEL, and CentOS; it can be omitted
-# on systems without SELinux.
-
-# To verify the container user:
-docker exec rackpeek id
-
-# Note - RackPeek stores its state in YAML
-config/
-└── config.yaml
-```
-Or Docker compose
-```yaml
-version: "3.9"
-
-services:
-  rackpeek:
-    image: aptacode/rackpeek:latest
-    container_name: rackpeek
-    ports:
-      - "8080:8080"
-    volumes:
-      - rackpeek-config:/app/config
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 5s
-      start_period: 15s
-      retries: 3
-
-volumes:
-  rackpeek-config:
-
 ```
 
-## Docs
+Open [http://localhost:8080](http://localhost:8080). RackPeek stores its inventory in `config.yaml` inside the volume. For bind mounts, the host directory must be writable by container user `1654`; add `:Z` on SELinux systems.
 
-* 
-  [**Overview**](https://timmoth.github.io/RackPeek/docs/overview)
+## Mobile app
 
-* 
-  [**Installation Guide**](https://timmoth.github.io/RackPeek/docs/install-guide)
+The iOS and Android app supports local inventory editing and syncs with a RackPeek server when connected. The app is in early access; [join the Discord](https://discord.gg/egXRPdesee) for updates and testing information.
 
-* 
-  [**Ansible Inventory Generator Guide**](https://timmoth.github.io/RackPeek/docs/ansible-generator-guide)
+## Documentation
 
-* 
-  [**Auto Discovery Guide**](https://timmoth.github.io/RackPeek/docs/discovery-guide)
+- [Overview](https://timmoth.github.io/RackPeek/docs/overview)
+- [Installation](https://timmoth.github.io/RackPeek/docs/install-guide)
+- [CLI reference](https://timmoth.github.io/RackPeek/docs/cli-commands)
+- [Discovery](https://timmoth.github.io/RackPeek/docs/discovery-guide)
+- [Inventory API](https://timmoth.github.io/RackPeek/docs/inventory-api)
+- [MCP server](https://timmoth.github.io/RackPeek/docs/mcp-guide)
+- [Ansible inventory](https://timmoth.github.io/RackPeek/docs/ansible-generator-guide)
 
-* 
-  [**MCP Server Guide**](https://timmoth.github.io/RackPeek/docs/mcp-guide) — let AI assistants query, manage and build your stack over the built-in `/mcp` endpoint
+## Development
 
-* 
-  [**CLI Commands Reference**](https://timmoth.github.io/RackPeek/docs/cli-commands)
-
-* 
-  [**Versioning**](https://timmoth.github.io/RackPeek/docs/versioning)
-
-
-## Questionnaire
-
-We’re gathering feedback from homelabbers to validate direction and prioritize features.  
-Answer whichever questions stand out to you, your input directly shapes the project.
-
-[![User Questionnaire](https://img.shields.io/badge/Questionnaire-Share%20Feedback-orange?logo=googleforms&logoColor=white)](https://forms.gle/KKA4bqfGAeRYvGxT6)
-
-## Core Values
-
-**Simplicity**  
-RackPeek focuses on clarity and usefulness. Its scope is intentionally kept narrow to avoid unnecessary abstraction and feature creep.
-
-**Ease of Deployment**  
-The tool exists to reduce operational complexity. Installation, upgrades, and day-to-day usage should be straightforward and low-friction.
-
-**Openness**  
-RackPeek uses open, non-proprietary data formats. You fully own your data and should be free to easily inspect, migrate, or reuse it however you choose.
-
-**Community**  
-Contributors of all experience levels are welcome. Knowledge sharing, mentorship, and collaboration are core to the project’s culture.
-
-**Privacy & Security**  
-No telemetry, no ads, no tracking, and no artificial restrictions. What runs on your infrastructure stays on your infrastructure.
-
-**Dogfooding**  
-RackPeek is built to solve real problems we actively have. If a feature isn’t useful in practice, it doesn’t belong.
-
-**Opinionated**  
-The project is optimized for home labs and self-hosted environments, not enterprise CMDBs or corporate documentation workflows.
-
-
-## Development Docs
-
-* [`contribution-guidelines.md`](docs/development/contribution-guidelines.md) – How to propose changes and submit PRs
-* [`dev-cheat-sheet.md`](docs/development/dev-cheat-sheet.md) – Build, release, Docker, and testing commands
-* [`testing-guidelines.md`](docs/development/testing-guidelines.md) – Testing principles and standards
+See the [developer setup](docs/development/dev-setup.md), [testing guide](docs/development/testing-guidelines.md), and [contribution guide](docs/development/contribution-guidelines.md). The release process is in [release-guide.md](docs/development/release-guide.md).

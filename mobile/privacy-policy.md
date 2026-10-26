@@ -2,21 +2,21 @@
 
 **Effective date: 22 October 2026**
 
-RackPeek for iOS is a companion app for a RackPeek server that you choose and
-operate. This policy describes the app's current data handling.
+RackPeek is a mobile app for documenting infrastructure. This policy describes
+the app's current data handling on iOS and Android.
 
 ## Information the app uses
 
-To connect, you enter a RackPeek server address and API key. The app stores
-these values in iOS secure storage on your device so it can reconnect. The app
-sends the API key with requests to the server address you entered. Inventory
-information is received from that server and displayed in the app. Changes you
-make are sent back to that server.
+Inventory data is stored on your device so you can view and edit it offline.
+When you connect to a RackPeek server, the app also stores the server address
+and API key in the device's secure storage. The app sends the key with requests
+to that address, downloads the server inventory, and can upload your local
+changes when you choose to sync.
 
-The RackPeek app publisher does not receive this connection information or
-inventory through an app-operated service. Your RackPeek server may keep its own
-logs or inventory data under the configuration and policies set by its
-operator. Contact that operator with questions about their server.
+The app publisher does not receive your connection information or inventory
+through an app-operated service. Your RackPeek server may keep its own logs and
+inventory under the configuration and policies set by its operator. Contact
+that operator with questions about their server.
 
 ## Network security
 
@@ -32,9 +32,10 @@ data-handling features are added.
 
 ## Your choices
 
-You can disconnect from the server in the app's settings. Disconnecting removes
-the saved server address and API key from this device. It does not delete data
-from your RackPeek server; manage server data with the server's own tools.
+You can disconnect from the server in the app. Disconnecting removes the saved
+server address and API key from this device. It does not delete the local
+inventory or data from your RackPeek server. Manage server data with the
+server's own tools.
 
 ## Children's privacy
 

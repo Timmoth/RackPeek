@@ -49,7 +49,7 @@ public class OtherPortWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper out
         Assert.Equal("Port added to other hardware 'decoder01'.\n", output);
 
         Assert.Equal("""
-                     version: 4
+                     version: 5
                      resources:
                      - kind: Other
                        model: TVIP-v605
@@ -85,7 +85,7 @@ public class OtherPortWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper out
         Assert.Equal("Port #0 removed from other hardware 'decoder01'.\n", output);
 
         Assert.Equal("""
-                     version: 4
+                     version: 5
                      resources:
                      - kind: Other
                        model: TVIP-v605

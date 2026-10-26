@@ -138,13 +138,13 @@ If you prefer running RackPeek directly on Linux:
 ## Download
 
 ```bash
-wget https://github.com/Timmoth/RackPeek/releases/download/RackPeek-2.2.0/rackpeek_2_2_0_linux-x64 -O rackpeek
+wget https://github.com/Timmoth/RackPeek/releases/download/RackPeek-2.3.0/rackpeek_2_3_0_linux-x64 -O rackpeek
 ```
 
 Or:
 
 ```bash
-curl -L https://github.com/Timmoth/RackPeek/releases/download/RackPeek-2.2.0/rackpeek_2_2_0_linux-x64 -o rackpeek
+curl -L https://github.com/Timmoth/RackPeek/releases/download/RackPeek-2.3.0/rackpeek_2_3_0_linux-x64 -o rackpeek
 ```
 
 ---

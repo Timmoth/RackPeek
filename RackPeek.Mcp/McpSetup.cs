@@ -20,7 +20,6 @@ public static class McpSetup {
             .WithTools<QueryTools>(json)
             .WithTools<MutationTools>(json)
             .WithTools<ExportTools>(json)
-            .WithTools<GitTools>(json)
-            .WithTools<DiscoveryTools>(json);
+            .WithTools<GitTools>(json);
     }
 }

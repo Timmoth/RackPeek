@@ -13,29 +13,29 @@ EXAMPLES:
     rpk discover proxmox --host https://pve.lan:8006 --insecure
 
 OPTIONS:
-    -h, --help       Prints help information   
+    -h, --help       Prints help information
     -v, --version    Prints version information
 
 COMMANDS:
-    summary         Show a summarized report of all resources in the system    
-    servers         Manage servers and their components                        
-    switches        Manage network switches                                    
-    routers         Manage network routers                                     
-    firewalls       Manage firewalls                                           
-    systems         Manage systems and their dependencies                      
-    accesspoints    Manage access points                                       
-    ups             Manage UPS units                                           
+    summary         Show a summarized report of all resources in the system
+    servers         Manage servers and their components
+    switches        Manage network switches
+    routers         Manage network routers
+    firewalls       Manage firewalls
+    systems         Manage systems and their dependencies
+    accesspoints    Manage access points
+    ups             Manage UPS units
     other           Manage other hardware that doesn't fit an existing category
-    desktops        Manage desktop computers and their components              
-    laptops         Manage Laptop computers and their components               
-    services        Manage services and their configurations                   
-    discover        Read infrastructure and emit it as RackPeek YAML           
-    ansible         Generate and manage Ansible inventory                      
-    ssh             Generate SSH configuration from infrastructure             
-    hosts           Generate a hosts file from infrastructure                  
-    graph           Render inventory as graph diagrams                         
-    tags            Discover tags across resources                             
-    connections     Manage physical or logical port connections                
+    desktops        Manage desktop computers and their components
+    laptops         Manage Laptop computers and their components
+    services        Manage services and their configurations
+    discover        Read infrastructure and emit it as RackPeek YAML
+    ansible         Generate and manage Ansible inventory
+    ssh             Generate SSH configuration from infrastructure
+    hosts           Generate a hosts file from infrastructure
+    graph           Render inventory as graph diagrams
+    tags            Discover tags across resources
+    connections     Manage physical or logical port connections
 ```
 
 ## `rpk summary`
@@ -62,24 +62,24 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary                     Show a summarized hardware report for all       
-                                servers                                         
-    add <name>                  Add a new server to the inventory               
-    get <name>                  List all servers or retrieve a specific server  
-                                by name                                         
-    describe <name>             Display detailed information about a specific   
-                                server                                          
-    set <name>                  Update properties of an existing server         
-    del <name>                  Delete a server from the inventory              
-    rename <name> <new-name>    Rename a server to a new name                   
-    tree <name>                 Display the dependency tree of a server         
-    cpu                         Manage CPUs attached to a server                
-    drive                       Manage drives attached to a server              
-    gpu                         Manage GPUs attached to a server                
-    nic                         Manage network interface cards (NICs) for a     
-                                server                                          
-    label                       Manage labels on a server                       
-    tag                         Manage tags on a server                         
+    summary                     Show a summarized hardware report for all
+                                servers
+    add <name>                  Add a new server to the inventory
+    get <name>                  List all servers or retrieve a specific server
+                                by name
+    describe <name>             Display detailed information about a specific
+                                server
+    set <name>                  Update properties of an existing server
+    del <name>                  Delete a server from the inventory
+    rename <name> <new-name>    Rename a server to a new name
+    tree <name>                 Display the dependency tree of a server
+    cpu                         Manage CPUs attached to a server
+    drive                       Manage drives attached to a server
+    gpu                         Manage GPUs attached to a server
+    nic                         Manage network interface cards (NICs) for a
+                                server
+    label                       Manage labels on a server
+    tag                         Manage tags on a server
 ```
 
 ## `rpk servers summary`
@@ -103,7 +103,7 @@ USAGE:
     rpk servers add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -118,7 +118,7 @@ USAGE:
     rpk servers get <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -133,7 +133,7 @@ USAGE:
     rpk servers describe <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -148,13 +148,13 @@ USAGE:
     rpk servers set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --ram <GB>                                
-        --ram_mts <MTS>                           
-        --ipmi                                    
+        --ram <GB>
+        --ram_mts <MTS>
+        --ipmi
 ```
 
 ## `rpk servers del`
@@ -166,7 +166,7 @@ USAGE:
     rpk servers del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -181,8 +181,8 @@ USAGE:
     rpk servers rename <name> <new-name> [OPTIONS]
 
 ARGUMENTS:
-    <name>         
-    <new-name>     
+    <name>
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -197,7 +197,7 @@ USAGE:
     rpk servers tree <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -215,9 +215,9 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>    Add a CPU to a specific server      
+    add <name>    Add a CPU to a specific server
     set <name>    Update configuration of a server CPU
-    del <name>    Remove a CPU from a server          
+    del <name>    Remove a CPU from a server
 ```
 
 ## `rpk servers cpu add`
@@ -229,13 +229,13 @@ USAGE:
     rpk servers cpu add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help                 Prints help information
-        --model <MODEL>                               
-        --cores <CORES>                               
-        --threads <THREADS>                           
+        --model <MODEL>
+        --cores <CORES>
+        --threads <THREADS>
 ```
 
 ## `rpk servers cpu set`
@@ -247,14 +247,14 @@ USAGE:
     rpk servers cpu set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help                 Prints help information
-        --index <INDEX>                               
-        --model <MODEL>                               
-        --cores <CORES>                               
-        --threads <THREADS>                           
+        --index <INDEX>
+        --model <MODEL>
+        --cores <CORES>
+        --threads <THREADS>
 ```
 
 ## `rpk servers cpu del`
@@ -266,11 +266,11 @@ USAGE:
     rpk servers cpu del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
+        --index <INDEX>
 ```
 
 ## `rpk servers drive`
@@ -285,9 +285,9 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>    Add a storage drive to a server    
+    add <name>    Add a storage drive to a server
     set <name>    Update properties of a server drive
-    del <name>    Remove a drive from a server       
+    del <name>    Remove a drive from a server
 ```
 
 ## `rpk servers drive add`
@@ -299,12 +299,12 @@ USAGE:
     rpk servers drive add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help           Prints help information     
+    -h, --help           Prints help information
         --type <TYPE>    The drive type e.g hdd / ssd
-        --size <SIZE>    The drive capacity in GB    
+        --size <SIZE>    The drive capacity in GB
 ```
 
 ## `rpk servers drive set`
@@ -316,13 +316,13 @@ USAGE:
     rpk servers drive set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
-        --type <TYPE>                             
-        --size <SIZE>                             
+        --index <INDEX>
+        --type <TYPE>
+        --size <SIZE>
 ```
 
 ## `rpk servers drive del`
@@ -334,11 +334,11 @@ USAGE:
     rpk servers drive del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
+        --index <INDEX>
 ```
 
 ## `rpk servers gpu`
@@ -353,9 +353,9 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>    Add a GPU to a server            
+    add <name>    Add a GPU to a server
     set <name>    Update properties of a server GPU
-    del <name>    Remove a GPU from a server       
+    del <name>    Remove a GPU from a server
 ```
 
 ## `rpk servers gpu add`
@@ -367,12 +367,12 @@ USAGE:
     rpk servers gpu add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --model <MODEL>                           
-        --vram <VRAM>                             
+        --model <MODEL>
+        --vram <VRAM>
 ```
 
 ## `rpk servers gpu set`
@@ -384,13 +384,13 @@ USAGE:
     rpk servers gpu set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
-        --model <MODEL>                           
-        --vram <VRAM>                             
+        --index <INDEX>
+        --model <MODEL>
+        --vram <VRAM>
 ```
 
 ## `rpk servers gpu del`
@@ -402,11 +402,11 @@ USAGE:
     rpk servers gpu del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
+        --index <INDEX>
 ```
 
 ## `rpk servers nic`
@@ -421,9 +421,9 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>    Add a NIC to a server            
+    add <name>    Add a NIC to a server
     set <name>    Update properties of a server NIC
-    del <name>    Remove a NIC from a server       
+    del <name>    Remove a NIC from a server
 ```
 
 ## `rpk servers nic add`
@@ -435,13 +435,13 @@ USAGE:
     rpk servers nic add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --type <TYPE>                             
-        --speed <SPEED>                           
-        --ports <PORTS>                           
+        --type <TYPE>
+        --speed <SPEED>
+        --ports <PORTS>
 ```
 
 ## `rpk servers nic set`
@@ -453,14 +453,14 @@ USAGE:
     rpk servers nic set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
-        --type <TYPE>                             
-        --speed <SPEED>                           
-        --ports <PORTS>                           
+        --index <INDEX>
+        --type <TYPE>
+        --speed <SPEED>
+        --ports <PORTS>
 ```
 
 ## `rpk servers nic del`
@@ -472,11 +472,11 @@ USAGE:
     rpk servers nic del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
+        --index <INDEX>
 ```
 
 ## `rpk servers label`
@@ -491,7 +491,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to a server     
+    add <name>       Add a label to a server
     remove <name>    Remove a label from a server
 ```
 
@@ -504,12 +504,12 @@ USAGE:
     rpk servers label add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk servers label remove`
@@ -521,11 +521,11 @@ USAGE:
     rpk servers label remove <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk servers tag`
@@ -540,7 +540,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to a server     
+    add <name> <tag>       Add a tag to a server
     remove <name> <tag>    Remove a tag from a server
 ```
 
@@ -553,8 +553,8 @@ USAGE:
     rpk servers tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -569,8 +569,8 @@ USAGE:
     rpk servers tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -588,17 +588,17 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary                     Show a hardware report for all switches      
-    add <name>                  Add a new network switch to the inventory    
-    list                        List all switches in the system              
+    summary                     Show a hardware report for all switches
+    add <name>                  Add a new network switch to the inventory
+    list                        List all switches in the system
     get <name>                  Retrieve details of a specific switch by name
-    describe <name>             Show detailed information about a switch     
-    set <name>                  Update properties of a switch                
-    del <name>                  Delete a switch from the inventory           
-    rename <name> <new-name>    Rename a switch to a new name                
-    port                        Manage ports on a network switch             
-    label                       Manage labels on a switch                    
-    tag                         Manage tags on a switch                      
+    describe <name>             Show detailed information about a switch
+    set <name>                  Update properties of a switch
+    del <name>                  Delete a switch from the inventory
+    rename <name> <new-name>    Rename a switch to a new name
+    port                        Manage ports on a network switch
+    label                       Manage labels on a switch
+    tag                         Manage tags on a switch
 ```
 
 ## `rpk switches summary`
@@ -622,7 +622,7 @@ USAGE:
     rpk switches add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -649,7 +649,7 @@ USAGE:
     rpk switches get <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -664,7 +664,7 @@ USAGE:
     rpk switches describe <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -679,13 +679,13 @@ USAGE:
     rpk switches set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help       Prints help information
-        --Model                             
-        --managed                           
-        --poe                               
+        --Model
+        --managed
+        --poe
 ```
 
 ## `rpk switches del`
@@ -697,7 +697,7 @@ USAGE:
     rpk switches del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -712,8 +712,8 @@ USAGE:
     rpk switches rename <name> <new-name> [OPTIONS]
 
 ARGUMENTS:
-    <name>         
-    <new-name>     
+    <name>
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -731,8 +731,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>    Add a port to a switch     
-    set <name>    Update a switch port       
+    add <name>    Add a port to a switch
+    set <name>    Update a switch port
     del <name>    Remove a port from a switch
 ```
 
@@ -745,13 +745,13 @@ USAGE:
     rpk switches port add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help     Prints help information          
-        --type     The port type (e.g., rj45, sfp+) 
+    -h, --help     Prints help information
+        --type     The port type (e.g., rj45, sfp+)
         --speed    The port speed (e.g., 1, 2.5, 10)
-        --count    Number of ports of this type     
+        --count    Number of ports of this type
 ```
 
 ## `rpk switches port set`
@@ -763,14 +763,14 @@ USAGE:
     rpk switches port set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
-        --type                                    
-        --speed                                   
-        --count                                   
+        --index <INDEX>
+        --type
+        --speed
+        --count
 ```
 
 ## `rpk switches port del`
@@ -782,11 +782,11 @@ USAGE:
     rpk switches port del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
+        --index <INDEX>
 ```
 
 ## `rpk switches label`
@@ -801,7 +801,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to a switch     
+    add <name>       Add a label to a switch
     remove <name>    Remove a label from a switch
 ```
 
@@ -814,12 +814,12 @@ USAGE:
     rpk switches label add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk switches label remove`
@@ -831,11 +831,11 @@ USAGE:
     rpk switches label remove <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk switches tag`
@@ -850,7 +850,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to a switch     
+    add <name> <tag>       Add a tag to a switch
     remove <name> <tag>    Remove a tag from a switch
 ```
 
@@ -863,8 +863,8 @@ USAGE:
     rpk switches tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -879,8 +879,8 @@ USAGE:
     rpk switches tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -898,17 +898,17 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary                     Show a hardware report for all routers       
-    add <name>                  Add a new network router to the inventory    
-    list                        List all routers in the system               
+    summary                     Show a hardware report for all routers
+    add <name>                  Add a new network router to the inventory
+    list                        List all routers in the system
     get <name>                  Retrieve details of a specific router by name
-    describe <name>             Show detailed information about a router     
-    set <name>                  Update properties of a router                
-    del <name>                  Delete a router from the inventory           
-    rename <name> <new-name>    Rename a router to a new name                
-    port                        Manage ports on a router                     
-    label                       Manage labels on a router                    
-    tag                         Manage tags on a router                      
+    describe <name>             Show detailed information about a router
+    set <name>                  Update properties of a router
+    del <name>                  Delete a router from the inventory
+    rename <name> <new-name>    Rename a router to a new name
+    port                        Manage ports on a router
+    label                       Manage labels on a router
+    tag                         Manage tags on a router
 ```
 
 ## `rpk routers summary`
@@ -932,7 +932,7 @@ USAGE:
     rpk routers add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -959,7 +959,7 @@ USAGE:
     rpk routers get <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -974,7 +974,7 @@ USAGE:
     rpk routers describe <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -989,13 +989,13 @@ USAGE:
     rpk routers set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help       Prints help information
-        --Model                             
-        --managed                           
-        --poe                               
+        --Model
+        --managed
+        --poe
 ```
 
 ## `rpk routers del`
@@ -1007,7 +1007,7 @@ USAGE:
     rpk routers del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1022,8 +1022,8 @@ USAGE:
     rpk routers rename <name> <new-name> [OPTIONS]
 
 ARGUMENTS:
-    <name>         
-    <new-name>     
+    <name>
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1041,8 +1041,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>    Add a port to a router     
-    set <name>    Update a router port       
+    add <name>    Add a port to a router
+    set <name>    Update a router port
     del <name>    Remove a port from a router
 ```
 
@@ -1055,13 +1055,13 @@ USAGE:
     rpk routers port add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help     Prints help information
-        --type                            
-        --speed                           
-        --count                           
+        --type
+        --speed
+        --count
 ```
 
 ## `rpk routers port set`
@@ -1073,14 +1073,14 @@ USAGE:
     rpk routers port set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
-        --type                                    
-        --speed                                   
-        --count                                   
+        --index <INDEX>
+        --type
+        --speed
+        --count
 ```
 
 ## `rpk routers port del`
@@ -1092,11 +1092,11 @@ USAGE:
     rpk routers port del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
+        --index <INDEX>
 ```
 
 ## `rpk routers label`
@@ -1111,7 +1111,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to a router     
+    add <name>       Add a label to a router
     remove <name>    Remove a label from a router
 ```
 
@@ -1124,12 +1124,12 @@ USAGE:
     rpk routers label add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk routers label remove`
@@ -1141,11 +1141,11 @@ USAGE:
     rpk routers label remove <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk routers tag`
@@ -1160,7 +1160,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to a router     
+    add <name> <tag>       Add a tag to a router
     remove <name> <tag>    Remove a tag from a router
 ```
 
@@ -1173,8 +1173,8 @@ USAGE:
     rpk routers tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1189,8 +1189,8 @@ USAGE:
     rpk routers tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1208,17 +1208,17 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary                     Show a hardware report for all firewalls       
-    add <name>                  Add a new firewall to the inventory            
-    list                        List all firewalls in the system               
+    summary                     Show a hardware report for all firewalls
+    add <name>                  Add a new firewall to the inventory
+    list                        List all firewalls in the system
     get <name>                  Retrieve details of a specific firewall by name
-    describe <name>             Show detailed information about a firewall     
-    set <name>                  Update properties of a firewall                
-    del <name>                  Delete a firewall from the inventory           
-    rename <name> <new-name>    Rename a firewall to a new name                
-    port                        Manage ports on a firewall                     
-    label                       Manage labels on a firewall                    
-    tag                         Manage tags on a firewall                      
+    describe <name>             Show detailed information about a firewall
+    set <name>                  Update properties of a firewall
+    del <name>                  Delete a firewall from the inventory
+    rename <name> <new-name>    Rename a firewall to a new name
+    port                        Manage ports on a firewall
+    label                       Manage labels on a firewall
+    tag                         Manage tags on a firewall
 ```
 
 ## `rpk firewalls summary`
@@ -1242,7 +1242,7 @@ USAGE:
     rpk firewalls add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1269,7 +1269,7 @@ USAGE:
     rpk firewalls get <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1284,7 +1284,7 @@ USAGE:
     rpk firewalls describe <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1299,13 +1299,13 @@ USAGE:
     rpk firewalls set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help       Prints help information
-        --Model                             
-        --managed                           
-        --poe                               
+        --Model
+        --managed
+        --poe
 ```
 
 ## `rpk firewalls del`
@@ -1317,7 +1317,7 @@ USAGE:
     rpk firewalls del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1332,8 +1332,8 @@ USAGE:
     rpk firewalls rename <name> <new-name> [OPTIONS]
 
 ARGUMENTS:
-    <name>         
-    <new-name>     
+    <name>
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1351,8 +1351,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>    Add a port to a firewall     
-    set <name>    Update a firewall port       
+    add <name>    Add a port to a firewall
+    set <name>    Update a firewall port
     del <name>    Remove a port from a firewall
 ```
 
@@ -1365,13 +1365,13 @@ USAGE:
     rpk firewalls port add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help     Prints help information
-        --type                            
-        --speed                           
-        --count                           
+        --type
+        --speed
+        --count
 ```
 
 ## `rpk firewalls port set`
@@ -1383,14 +1383,14 @@ USAGE:
     rpk firewalls port set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
-        --type                                    
-        --speed                                   
-        --count                                   
+        --index <INDEX>
+        --type
+        --speed
+        --count
 ```
 
 ## `rpk firewalls port del`
@@ -1402,11 +1402,11 @@ USAGE:
     rpk firewalls port del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --index <INDEX>                           
+        --index <INDEX>
 ```
 
 ## `rpk firewalls label`
@@ -1421,7 +1421,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to a firewall     
+    add <name>       Add a label to a firewall
     remove <name>    Remove a label from a firewall
 ```
 
@@ -1434,12 +1434,12 @@ USAGE:
     rpk firewalls label add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk firewalls label remove`
@@ -1451,11 +1451,11 @@ USAGE:
     rpk firewalls label remove <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk firewalls tag`
@@ -1470,7 +1470,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to a firewall     
+    add <name> <tag>       Add a tag to a firewall
     remove <name> <tag>    Remove a tag from a firewall
 ```
 
@@ -1483,8 +1483,8 @@ USAGE:
     rpk firewalls tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1499,8 +1499,8 @@ USAGE:
     rpk firewalls tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1518,17 +1518,17 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary                     Show a summary report for all systems      
-    add <name>                  Add a new system to the inventory          
-    list                        List all systems                           
-    get <name>                  Retrieve a system by name                  
+    summary                     Show a summary report for all systems
+    add <name>                  Add a new system to the inventory
+    list                        List all systems
+    get <name>                  Retrieve a system by name
     describe <name>             Display detailed information about a system
-    set <name>                  Update properties of a system              
-    del <name>                  Delete a system from the inventory         
-    rename <name> <new-name>    Rename a system to a new name              
-    tree <name>                 Display the dependency tree for a system   
-    label                       Manage labels on a system                  
-    tag                         Manage tags on a system                    
+    set <name>                  Update properties of a system
+    del <name>                  Delete a system from the inventory
+    rename <name> <new-name>    Rename a system to a new name
+    tree <name>                 Display the dependency tree for a system
+    label                       Manage labels on a system
+    tag                         Manage tags on a system
 ```
 
 ## `rpk systems summary`
@@ -1552,7 +1552,7 @@ USAGE:
     rpk systems add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1609,16 +1609,16 @@ USAGE:
     rpk systems set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help                Prints help information                          
-        --type                                                                 
-        --os                                                                   
-        --cores                                                                
-        --ram                                                                  
+    -h, --help                Prints help information
+        --type
+        --os
+        --cores
+        --ram
         --runs-on <RUNSON>    The physical machine(s) the service is running on
-        --ip                  The ip address of the system                     
+        --ip                  The ip address of the system
 ```
 
 ## `rpk systems del`
@@ -1646,7 +1646,7 @@ USAGE:
 
 ARGUMENTS:
     <name>        The name of the system
-    <new-name>                          
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1679,7 +1679,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to a system     
+    add <name>       Add a label to a system
     remove <name>    Remove a label from a system
 ```
 
@@ -1696,8 +1696,8 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk systems label remove`
@@ -1713,7 +1713,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk systems tag`
@@ -1728,7 +1728,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to a system     
+    add <name> <tag>       Add a tag to a system
     remove <name> <tag>    Remove a tag from a system
 ```
 
@@ -1741,8 +1741,8 @@ USAGE:
     rpk systems tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1757,8 +1757,8 @@ USAGE:
     rpk systems tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1776,16 +1776,16 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary                     Show a hardware report for all access points   
-    add <name>                  Add a new access point                         
-    list                        List all access points                         
-    get <name>                  Retrieve an access point by name               
+    summary                     Show a hardware report for all access points
+    add <name>                  Add a new access point
+    list                        List all access points
+    get <name>                  Retrieve an access point by name
     describe <name>             Show detailed information about an access point
-    set <name>                  Update properties of an access point           
-    del <name>                  Delete an access point                         
-    rename <name> <new-name>    Rename an access point to a new name           
-    label                       Manage labels on an access point               
-    tag                         Manage tags on an access point                 
+    set <name>                  Update properties of an access point
+    del <name>                  Delete an access point
+    rename <name> <new-name>    Rename an access point to a new name
+    label                       Manage labels on an access point
+    tag                         Manage tags on an access point
 ```
 
 ## `rpk accesspoints summary`
@@ -1866,11 +1866,11 @@ USAGE:
     rpk accesspoints set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help     Prints help information            
-        --model    The access point model name        
+    -h, --help     Prints help information
+        --model    The access point model name
         --speed    The speed of the access point in Gb
 ```
 
@@ -1899,7 +1899,7 @@ USAGE:
 
 ARGUMENTS:
     <name>        The access point name
-    <new-name>                         
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1917,7 +1917,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to an access point     
+    add <name>       Add a label to an access point
     remove <name>    Remove a label from an access point
 ```
 
@@ -1934,8 +1934,8 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk accesspoints label remove`
@@ -1951,7 +1951,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk accesspoints tag`
@@ -1966,7 +1966,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to an access point     
+    add <name> <tag>       Add a tag to an access point
     remove <name> <tag>    Remove a tag from an access point
 ```
 
@@ -1979,8 +1979,8 @@ USAGE:
     rpk accesspoints tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -1995,8 +1995,8 @@ USAGE:
     rpk accesspoints tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2014,17 +2014,17 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary                     Show a hardware report for all UPS units  
-    add <name>                  Add a new UPS unit                        
-    list                        List all UPS units                        
-    get <name>                  Retrieve a UPS unit by name               
+    summary                     Show a hardware report for all UPS units
+    add <name>                  Add a new UPS unit
+    list                        List all UPS units
+    get <name>                  Retrieve a UPS unit by name
     describe <name>             Show detailed information about a UPS unit
-    set <name>                  Update properties of a UPS unit           
-    del <name>                  Delete a UPS unit                         
-    rename <name> <new-name>    Rename a UPS unit to a new name           
-    port                        Manage ports on a UPS unit                
-    label                       Manage labels on a UPS unit               
-    tag                         Manage tags on a UPS unit                 
+    set <name>                  Update properties of a UPS unit
+    del <name>                  Delete a UPS unit
+    rename <name> <new-name>    Rename a UPS unit to a new name
+    port                        Manage ports on a UPS unit
+    label                       Manage labels on a UPS unit
+    tag                         Manage tags on a UPS unit
 ```
 
 ## `rpk ups summary`
@@ -2048,7 +2048,7 @@ USAGE:
     rpk ups add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2075,7 +2075,7 @@ USAGE:
     rpk ups get <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2090,7 +2090,7 @@ USAGE:
     rpk ups describe <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2105,12 +2105,12 @@ USAGE:
     rpk ups set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help     Prints help information
-        --model                           
-        --va                              
+        --model
+        --va
 ```
 
 ## `rpk ups del`
@@ -2122,7 +2122,7 @@ USAGE:
     rpk ups del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2137,8 +2137,8 @@ USAGE:
     rpk ups rename <name> <new-name> [OPTIONS]
 
 ARGUMENTS:
-    <name>         
-    <new-name>     
+    <name>
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2156,8 +2156,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>    Add a port to a UPS unit     
-    set <name>    Update a UPS unit port       
+    add <name>    Add a port to a UPS unit
+    set <name>    Update a UPS unit port
     del <name>    Remove a port from a UPS unit
 ```
 
@@ -2170,13 +2170,13 @@ USAGE:
     rpk ups port add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help     Prints help information        
+    -h, --help     Prints help information
         --type     The port type (e.g., rj45, usb)
-        --speed    The port speed (e.g., 0.1, 1)  
-        --count    Number of ports of this type   
+        --speed    The port speed (e.g., 0.1, 1)
+        --count    Number of ports of this type
 ```
 
 ## `rpk ups port set`
@@ -2188,14 +2188,14 @@ USAGE:
     rpk ups port set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help             Prints help information        
+    -h, --help             Prints help information
         --index <INDEX>    The index of the port to update
         --type             The port type (e.g., rj45, usb)
-        --speed            The port speed (e.g., 0.1, 1)  
-        --count            Number of ports of this type   
+        --speed            The port speed (e.g., 0.1, 1)
+        --count            Number of ports of this type
 ```
 
 ## `rpk ups port del`
@@ -2207,10 +2207,10 @@ USAGE:
     rpk ups port del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help             Prints help information        
+    -h, --help             Prints help information
         --index <INDEX>    The index of the port to remove
 ```
 
@@ -2226,7 +2226,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to a UPS unit     
+    add <name>       Add a label to a UPS unit
     remove <name>    Remove a label from a UPS unit
 ```
 
@@ -2239,12 +2239,12 @@ USAGE:
     rpk ups label add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk ups label remove`
@@ -2256,11 +2256,11 @@ USAGE:
     rpk ups label remove <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk ups tag`
@@ -2275,7 +2275,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to a UPS unit     
+    add <name> <tag>       Add a tag to a UPS unit
     remove <name> <tag>    Remove a tag from a UPS unit
 ```
 
@@ -2288,8 +2288,8 @@ USAGE:
     rpk ups tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2304,8 +2304,8 @@ USAGE:
     rpk ups tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2323,17 +2323,17 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary                     Show a hardware report for all other hardware 
-    add <name>                  Add new other hardware                        
-    list                        List all other hardware                       
-    get <name>                  Retrieve other hardware by name               
+    summary                     Show a hardware report for all other hardware
+    add <name>                  Add new other hardware
+    list                        List all other hardware
+    get <name>                  Retrieve other hardware by name
     describe <name>             Show detailed information about other hardware
-    set <name>                  Update properties of other hardware           
-    del <name>                  Delete other hardware                         
-    rename <name> <new-name>    Rename other hardware to a new name           
-    port                        Manage ports on other hardware                
-    label                       Manage labels on other hardware               
-    tag                         Manage tags on other hardware                 
+    set <name>                  Update properties of other hardware
+    del <name>                  Delete other hardware
+    rename <name> <new-name>    Rename other hardware to a new name
+    port                        Manage ports on other hardware
+    label                       Manage labels on other hardware
+    tag                         Manage tags on other hardware
 ```
 
 ## `rpk other summary`
@@ -2357,7 +2357,7 @@ USAGE:
     rpk other add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2384,7 +2384,7 @@ USAGE:
     rpk other get <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2399,7 +2399,7 @@ USAGE:
     rpk other describe <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2414,12 +2414,12 @@ USAGE:
     rpk other set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help           Prints help information
-        --model                                 
-        --description                           
+        --model
+        --description
 ```
 
 ## `rpk other del`
@@ -2431,7 +2431,7 @@ USAGE:
     rpk other del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2446,8 +2446,8 @@ USAGE:
     rpk other rename <name> <new-name> [OPTIONS]
 
 ARGUMENTS:
-    <name>         
-    <new-name>     
+    <name>
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2465,8 +2465,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>    Add a port to other hardware     
-    set <name>    Update an other hardware port    
+    add <name>    Add a port to other hardware
+    set <name>    Update an other hardware port
     del <name>    Remove a port from other hardware
 ```
 
@@ -2479,13 +2479,13 @@ USAGE:
     rpk other port add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help     Prints help information          
-        --type     The port type (e.g., rj45, sfp+) 
+    -h, --help     Prints help information
+        --type     The port type (e.g., rj45, sfp+)
         --speed    The port speed (e.g., 1, 2.5, 10)
-        --count    Number of ports of this type     
+        --count    Number of ports of this type
 ```
 
 ## `rpk other port set`
@@ -2497,14 +2497,14 @@ USAGE:
     rpk other port set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help             Prints help information          
-        --index <INDEX>    The index of the port to update  
-        --type             The port type (e.g., rj45, sfp+) 
+    -h, --help             Prints help information
+        --index <INDEX>    The index of the port to update
+        --type             The port type (e.g., rj45, sfp+)
         --speed            The port speed (e.g., 1, 2.5, 10)
-        --count            Number of ports of this type     
+        --count            Number of ports of this type
 ```
 
 ## `rpk other port del`
@@ -2516,10 +2516,10 @@ USAGE:
     rpk other port del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help             Prints help information        
+    -h, --help             Prints help information
         --index <INDEX>    The index of the port to remove
 ```
 
@@ -2535,7 +2535,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to other hardware     
+    add <name>       Add a label to other hardware
     remove <name>    Remove a label from other hardware
 ```
 
@@ -2548,12 +2548,12 @@ USAGE:
     rpk other label add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk other label remove`
@@ -2565,11 +2565,11 @@ USAGE:
     rpk other label remove <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk other tag`
@@ -2584,7 +2584,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to other hardware     
+    add <name> <tag>       Add a tag to other hardware
     remove <name> <tag>    Remove a tag from other hardware
 ```
 
@@ -2597,8 +2597,8 @@ USAGE:
     rpk other tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2613,8 +2613,8 @@ USAGE:
     rpk other tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2632,23 +2632,23 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>                  Add a new desktop                               
-    list                        List all desktops                               
-    get <name>                  Retrieve a desktop by name                      
-    describe <name>             Show detailed information about a desktop       
-    set <name>                  Update properties of a desktop                  
-    del <name>                  Delete a desktop from the inventory             
-    rename <name> <new-name>    Rename a desktop to a new name                  
-    summary                     Show a summarized hardware report for all       
-                                desktops                                        
-    tree <name>                 Display the dependency tree for a desktop       
-    cpu                         Manage CPUs attached to desktops                
-    drive                       Manage storage drives attached to desktops      
-    gpu                         Manage GPUs attached to desktops                
-    nic                         Manage network interface cards (NICs) for       
-                                desktops                                        
-    label                       Manage labels on a desktop                      
-    tag                         Manage tags on a desktop                        
+    add <name>                  Add a new desktop
+    list                        List all desktops
+    get <name>                  Retrieve a desktop by name
+    describe <name>             Show detailed information about a desktop
+    set <name>                  Update properties of a desktop
+    del <name>                  Delete a desktop from the inventory
+    rename <name> <new-name>    Rename a desktop to a new name
+    summary                     Show a summarized hardware report for all
+                                desktops
+    tree <name>                 Display the dependency tree for a desktop
+    cpu                         Manage CPUs attached to desktops
+    drive                       Manage storage drives attached to desktops
+    gpu                         Manage GPUs attached to desktops
+    nic                         Manage network interface cards (NICs) for
+                                desktops
+    label                       Manage labels on a desktop
+    tag                         Manage tags on a desktop
 ```
 
 ## `rpk desktops add`
@@ -2660,7 +2660,7 @@ USAGE:
     rpk desktops add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2687,7 +2687,7 @@ USAGE:
     rpk desktops get <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2702,7 +2702,7 @@ USAGE:
     rpk desktops describe <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2717,11 +2717,11 @@ USAGE:
     rpk desktops set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help     Prints help information
-        --model                           
+        --model
 ```
 
 ## `rpk desktops del`
@@ -2733,7 +2733,7 @@ USAGE:
     rpk desktops del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2748,8 +2748,8 @@ USAGE:
     rpk desktops rename <name> <new-name> [OPTIONS]
 
 ARGUMENTS:
-    <name>         
-    <new-name>     
+    <name>
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2776,7 +2776,7 @@ USAGE:
     rpk desktops tree <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -2794,8 +2794,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <desktop>            Add a CPU to a desktop     
-    set <desktop> <index>    Update a desktop CPU       
+    add <desktop>            Add a CPU to a desktop
+    set <desktop> <index>    Update a desktop CPU
     del <desktop> <index>    Remove a CPU from a desktop
 ```
 
@@ -2811,9 +2811,9 @@ ARGUMENTS:
     <desktop>    The desktop name
 
 OPTIONS:
-    -h, --help       Prints help information  
-        --model      The model name           
-        --cores      The number of cpu cores  
+    -h, --help       Prints help information
+        --model      The model name
+        --cores      The number of cpu cores
         --threads    The number of cpu threads
 ```
 
@@ -2826,13 +2826,13 @@ USAGE:
     rpk desktops cpu set <desktop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <desktop>    The desktop name            
+    <desktop>    The desktop name
     <index>      The index of the desktop cpu
 
 OPTIONS:
-    -h, --help       Prints help information  
-        --model      The cpu model            
-        --cores      The number of cpu cores  
+    -h, --help       Prints help information
+        --model      The cpu model
+        --cores      The number of cpu cores
         --threads    The number of cpu threads
 ```
 
@@ -2845,7 +2845,7 @@ USAGE:
     rpk desktops cpu del <desktop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <desktop>    The name of the desktop               
+    <desktop>    The name of the desktop
     <index>      The index of the desktop cpu to remove
 
 OPTIONS:
@@ -2864,8 +2864,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <desktop>            Add a drive to a desktop     
-    set <desktop> <index>    Update a desktop drive       
+    add <desktop>            Add a drive to a desktop
+    set <desktop> <index>    Update a desktop drive
     del <desktop> <index>    Remove a drive from a desktop
 ```
 
@@ -2881,9 +2881,9 @@ ARGUMENTS:
     <desktop>    The name of the desktop
 
 OPTIONS:
-    -h, --help    Prints help information     
+    -h, --help    Prints help information
         --type    The drive type e.g hdd / ssd
-        --size    The drive capacity in GB    
+        --size    The drive capacity in GB
 ```
 
 ## `rpk desktops drive set`
@@ -2895,13 +2895,13 @@ USAGE:
     rpk desktops drive set <desktop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <desktop>    The desktop name         
+    <desktop>    The desktop name
     <index>      The drive index to update
 
 OPTIONS:
-    -h, --help    Prints help information     
+    -h, --help    Prints help information
         --type    The drive type e.g hdd / ssd
-        --size    The drive capacity in Gb    
+        --size    The drive capacity in Gb
 ```
 
 ## `rpk desktops drive del`
@@ -2913,7 +2913,7 @@ USAGE:
     rpk desktops drive del <desktop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <desktop>    The name of the desktop         
+    <desktop>    The name of the desktop
     <index>      The index of the drive to remove
 
 OPTIONS:
@@ -2932,8 +2932,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <desktop>            Add a GPU to a desktop     
-    set <desktop> <index>    Update a desktop GPU       
+    add <desktop>            Add a GPU to a desktop
+    set <desktop> <index>    Update a desktop GPU
     del <desktop> <index>    Remove a GPU from a desktop
 ```
 
@@ -2949,8 +2949,8 @@ ARGUMENTS:
     <desktop>    The name of the desktop
 
 OPTIONS:
-    -h, --help     Prints help information     
-        --model    The Gpu model               
+    -h, --help     Prints help information
+        --model    The Gpu model
         --vram     The amount of gpu vram in Gb
 ```
 
@@ -2963,12 +2963,12 @@ USAGE:
     rpk desktops gpu set <desktop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <desktop>    The desktop name              
+    <desktop>    The desktop name
     <index>      The index of the gpu to update
 
 OPTIONS:
-    -h, --help     Prints help information     
-        --model    The gpu model name          
+    -h, --help     Prints help information
+        --model    The gpu model name
         --vram     The amount of gpu vram in Gb
 ```
 
@@ -2981,7 +2981,7 @@ USAGE:
     rpk desktops gpu del <desktop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <desktop>    The desktop name              
+    <desktop>    The desktop name
     <index>      The index of the Gpu to remove
 
 OPTIONS:
@@ -3000,8 +3000,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <desktop>            Add a NIC to a desktop     
-    set <desktop> <index>    Update a desktop NIC       
+    add <desktop>            Add a NIC to a desktop
+    set <desktop> <index>    Update a desktop NIC
     del <desktop> <index>    Remove a NIC from a desktop
 ```
 
@@ -3017,10 +3017,10 @@ ARGUMENTS:
     <desktop>    The desktop name
 
 OPTIONS:
-    -h, --help     Prints help information          
+    -h, --help     Prints help information
         --type     The nic port type e.g rj45 / sfp+
-        --speed    The port speed                   
-        --ports    The number of ports              
+        --speed    The port speed
+        --ports    The number of ports
 ```
 
 ## `rpk desktops nic set`
@@ -3032,14 +3032,14 @@ USAGE:
     rpk desktops nic set <desktop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <desktop>    The desktop name              
+    <desktop>    The desktop name
     <index>      The index of the nic to remove
 
 OPTIONS:
-    -h, --help     Prints help information          
+    -h, --help     Prints help information
         --type     The nic port type e.g rj45 / sfp+
-        --speed    The speed of the nic in Gb/s     
-        --ports    The number of ports              
+        --speed    The speed of the nic in Gb/s
+        --ports    The number of ports
 ```
 
 ## `rpk desktops nic del`
@@ -3051,7 +3051,7 @@ USAGE:
     rpk desktops nic del <desktop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <desktop>    The desktop name              
+    <desktop>    The desktop name
     <index>      The index of the nic to remove
 
 OPTIONS:
@@ -3070,7 +3070,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to a desktop     
+    add <name>       Add a label to a desktop
     remove <name>    Remove a label from a desktop
 ```
 
@@ -3083,12 +3083,12 @@ USAGE:
     rpk desktops label add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk desktops label remove`
@@ -3100,11 +3100,11 @@ USAGE:
     rpk desktops label remove <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk desktops tag`
@@ -3119,7 +3119,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to a desktop     
+    add <name> <tag>       Add a tag to a desktop
     remove <name> <tag>    Remove a tag from a desktop
 ```
 
@@ -3132,8 +3132,8 @@ USAGE:
     rpk desktops tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3148,8 +3148,8 @@ USAGE:
     rpk desktops tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3167,23 +3167,23 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>                  Add a new Laptop                                
-    list                        List all Laptops                                
-    get <name>                  Retrieve a Laptop by name                       
-    describe <name>             Show detailed information about a Laptop        
-    set <name>                  Update properties of a laptop                   
-    del <name>                  Delete a Laptop from the inventory              
-    rename <name> <new-name>    Rename a Laptop to a new name                   
-    summary                     Show a summarized hardware report for all       
-                                Laptops                                         
-    tree <name>                 Display the dependency tree for a Laptop        
-    cpu                         Manage CPUs attached to Laptops                 
-    drive                       Manage storage drives attached to Laptops       
-    gpu                         Manage GPUs attached to Laptops                 
-    nic                         Manage network interface cards (NICs) for       
-                                Laptops                                         
-    label                       Manage labels on a laptop                       
-    tag                         Manage tags on a laptop                         
+    add <name>                  Add a new Laptop
+    list                        List all Laptops
+    get <name>                  Retrieve a Laptop by name
+    describe <name>             Show detailed information about a Laptop
+    set <name>                  Update properties of a laptop
+    del <name>                  Delete a Laptop from the inventory
+    rename <name> <new-name>    Rename a Laptop to a new name
+    summary                     Show a summarized hardware report for all
+                                Laptops
+    tree <name>                 Display the dependency tree for a Laptop
+    cpu                         Manage CPUs attached to Laptops
+    drive                       Manage storage drives attached to Laptops
+    gpu                         Manage GPUs attached to Laptops
+    nic                         Manage network interface cards (NICs) for
+                                Laptops
+    label                       Manage labels on a laptop
+    tag                         Manage tags on a laptop
 ```
 
 ## `rpk laptops add`
@@ -3195,7 +3195,7 @@ USAGE:
     rpk laptops add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3222,7 +3222,7 @@ USAGE:
     rpk laptops get <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3237,7 +3237,7 @@ USAGE:
     rpk laptops describe <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3252,11 +3252,11 @@ USAGE:
     rpk laptops set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help     Prints help information
-        --model                           
+        --model
 ```
 
 ## `rpk laptops del`
@@ -3268,7 +3268,7 @@ USAGE:
     rpk laptops del <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3283,8 +3283,8 @@ USAGE:
     rpk laptops rename <name> <new-name> [OPTIONS]
 
 ARGUMENTS:
-    <name>         
-    <new-name>     
+    <name>
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3311,7 +3311,7 @@ USAGE:
     rpk laptops tree <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3329,8 +3329,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <Laptop>            Add a CPU to a Laptop     
-    set <Laptop> <index>    Update a Laptop CPU       
+    add <Laptop>            Add a CPU to a Laptop
+    set <Laptop> <index>    Update a Laptop CPU
     del <Laptop> <index>    Remove a CPU from a Laptop
 ```
 
@@ -3346,9 +3346,9 @@ ARGUMENTS:
     <Laptop>    The Laptop name
 
 OPTIONS:
-    -h, --help       Prints help information  
-        --model      The model name           
-        --cores      The number of cpu cores  
+    -h, --help       Prints help information
+        --model      The model name
+        --cores      The number of cpu cores
         --threads    The number of cpu threads
 ```
 
@@ -3361,13 +3361,13 @@ USAGE:
     rpk laptops cpu set <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <Laptop>    The Laptop name            
+    <Laptop>    The Laptop name
     <index>     The index of the Laptop cpu
 
 OPTIONS:
-    -h, --help       Prints help information  
-        --model      The cpu model            
-        --cores      The number of cpu cores  
+    -h, --help       Prints help information
+        --model      The cpu model
+        --cores      The number of cpu cores
         --threads    The number of cpu threads
 ```
 
@@ -3380,7 +3380,7 @@ USAGE:
     rpk laptops cpu del <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <Laptop>    The name of the Laptop               
+    <Laptop>    The name of the Laptop
     <index>     The index of the Laptop cpu to remove
 
 OPTIONS:
@@ -3399,8 +3399,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <laptop>            Add a drive to a Laptop     
-    set <Laptop> <index>    Update a Laptop drive       
+    add <laptop>            Add a drive to a Laptop
+    set <Laptop> <index>    Update a Laptop drive
     del <Laptop> <index>    Remove a drive from a Laptop
 ```
 
@@ -3416,9 +3416,9 @@ ARGUMENTS:
     <laptop>    The name of the Laptop
 
 OPTIONS:
-    -h, --help    Prints help information     
+    -h, --help    Prints help information
         --type    The drive type e.g hdd / ssd
-        --size    The drive capacity in GB:   
+        --size    The drive capacity in GB:
 ```
 
 ## `rpk laptops drive set`
@@ -3430,13 +3430,13 @@ USAGE:
     rpk laptops drive set <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <Laptop>    The Laptop name          
+    <Laptop>    The Laptop name
     <index>     The drive index to update
 
 OPTIONS:
-    -h, --help    Prints help information     
+    -h, --help    Prints help information
         --type    The drive type e.g hdd / ssd
-        --size    The drive capacity in Gb    
+        --size    The drive capacity in Gb
 ```
 
 ## `rpk laptops drive del`
@@ -3448,7 +3448,7 @@ USAGE:
     rpk laptops drive del <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <Laptop>    The name of the Laptop          
+    <Laptop>    The name of the Laptop
     <index>     The index of the drive to remove
 
 OPTIONS:
@@ -3467,8 +3467,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <Laptop>            Add a GPU to a Laptop     
-    set <Laptop> <index>    Update a Laptop GPU       
+    add <Laptop>            Add a GPU to a Laptop
+    set <Laptop> <index>    Update a Laptop GPU
     del <Laptop> <index>    Remove a GPU from a Laptop
 ```
 
@@ -3484,8 +3484,8 @@ ARGUMENTS:
     <Laptop>    The name of the Laptop
 
 OPTIONS:
-    -h, --help     Prints help information     
-        --model    The Gpu model               
+    -h, --help     Prints help information
+        --model    The Gpu model
         --vram     The amount of gpu vram in Gb
 ```
 
@@ -3498,12 +3498,12 @@ USAGE:
     rpk laptops gpu set <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <Laptop>    The Laptop name               
+    <Laptop>    The Laptop name
     <index>     The index of the gpu to update
 
 OPTIONS:
-    -h, --help     Prints help information     
-        --model    The gpu model name          
+    -h, --help     Prints help information
+        --model    The gpu model name
         --vram     The amount of gpu vram in Gb
 ```
 
@@ -3516,7 +3516,7 @@ USAGE:
     rpk laptops gpu del <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <Laptop>    The Laptop name               
+    <Laptop>    The Laptop name
     <index>     The index of the Gpu to remove
 
 OPTIONS:
@@ -3535,8 +3535,8 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <Laptop>            Add a NIC to a Laptop     
-    set <Laptop> <index>    Update a Laptop NIC       
+    add <Laptop>            Add a NIC to a Laptop
+    set <Laptop> <index>    Update a Laptop NIC
     del <Laptop> <index>    Remove a NIC from a Laptop
 ```
 
@@ -3552,10 +3552,10 @@ ARGUMENTS:
     <Laptop>    The name of the Laptop
 
 OPTIONS:
-    -h, --help     Prints help information          
+    -h, --help     Prints help information
         --type     The nic port type e.g rj45 / sfp+
-        --speed    The port speed                   
-        --ports    The number of ports              
+        --speed    The port speed
+        --ports    The number of ports
 ```
 
 ## `rpk laptops nic set`
@@ -3567,14 +3567,14 @@ USAGE:
     rpk laptops nic set <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <Laptop>    The Laptop name               
+    <Laptop>    The Laptop name
     <index>     The index of the nic to update
 
 OPTIONS:
-    -h, --help     Prints help information          
+    -h, --help     Prints help information
         --type     The nic port type e.g rj45 / sfp+
-        --speed    The port speed                   
-        --ports    The number of ports              
+        --speed    The port speed
+        --ports    The number of ports
 ```
 
 ## `rpk laptops nic del`
@@ -3586,7 +3586,7 @@ USAGE:
     rpk laptops nic del <Laptop> <index> [OPTIONS]
 
 ARGUMENTS:
-    <Laptop>    The Laptop name               
+    <Laptop>    The Laptop name
     <index>     The index of the nic to remove
 
 OPTIONS:
@@ -3605,7 +3605,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to a laptop     
+    add <name>       Add a label to a laptop
     remove <name>    Remove a label from a laptop
 ```
 
@@ -3618,12 +3618,12 @@ USAGE:
     rpk laptops label add <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk laptops label remove`
@@ -3635,11 +3635,11 @@ USAGE:
     rpk laptops label remove <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk laptops tag`
@@ -3654,7 +3654,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to a laptop     
+    add <name> <tag>       Add a tag to a laptop
     remove <name> <tag>    Remove a tag from a laptop
 ```
 
@@ -3667,8 +3667,8 @@ USAGE:
     rpk laptops tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3683,8 +3683,8 @@ USAGE:
     rpk laptops tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3702,18 +3702,18 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    summary                     Show a summary report for all services          
-    add <name>                  Add a new service                               
-    list                        List all services                               
-    get <name>                  Retrieve a service by name                      
-    describe <name>             Show detailed information about a service       
-    set <name>                  Update properties of a service                  
-    del <name>                  Delete a service                                
-    rename <name> <new-name>    Rename a service to a new name                  
-    subnets                     List subnets associated with a service,         
-                                optionally filtered by CIDR                     
-    label                       Manage labels on a service                      
-    tag                         Manage tags on a service                        
+    summary                     Show a summary report for all services
+    add <name>                  Add a new service
+    list                        List all services
+    get <name>                  Retrieve a service by name
+    describe <name>             Show detailed information about a service
+    set <name>                  Update properties of a service
+    del <name>                  Delete a service
+    rename <name> <new-name>    Rename a service to a new name
+    subnets                     List subnets associated with a service,
+                                optionally filtered by CIDR
+    label                       Manage labels on a service
+    tag                         Manage tags on a service
 ```
 
 ## `rpk services summary`
@@ -3794,14 +3794,14 @@ USAGE:
     rpk services set <name> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
+    <name>
 
 OPTIONS:
-    -h, --help                Prints help information                
-        --ip                  The ip address of the service          
-        --port                The port the service is running on     
-        --protocol            The service protocol                   
-        --url                 The service URL                        
+    -h, --help                Prints help information
+        --ip                  The ip address of the service
+        --port                The port the service is running on
+        --protocol            The service protocol
+        --url                 The service URL
         --runs-on <RUNSON>    The system(s) the service is running on
 ```
 
@@ -3830,7 +3830,7 @@ USAGE:
 
 ARGUMENTS:
     <name>        The name of the service
-    <new-name>                           
+    <new-name>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3846,8 +3846,8 @@ USAGE:
 
 OPTIONS:
     -h, --help               Prints help information
-        --cidr <CIDR>                               
-        --prefix <PREFIX>                           
+        --cidr <CIDR>
+        --prefix <PREFIX>
 ```
 
 ## `rpk services label`
@@ -3862,7 +3862,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name>       Add a label to a service     
+    add <name>       Add a label to a service
     remove <name>    Remove a label from a service
 ```
 
@@ -3879,8 +3879,8 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help             Prints help information
-        --key <KEY>                               
-        --value <VALUE>                           
+        --key <KEY>
+        --value <VALUE>
 ```
 
 ## `rpk services label remove`
@@ -3896,7 +3896,7 @@ ARGUMENTS:
 
 OPTIONS:
     -h, --help         Prints help information
-        --key <KEY>                           
+        --key <KEY>
 ```
 
 ## `rpk services tag`
@@ -3911,7 +3911,7 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    add <name> <tag>       Add a tag to a service     
+    add <name> <tag>       Add a tag to a service
     remove <name> <tag>    Remove a tag from a service
 ```
 
@@ -3924,8 +3924,8 @@ USAGE:
     rpk services tag add <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3940,8 +3940,8 @@ USAGE:
     rpk services tag remove <name> <tag> [OPTIONS]
 
 ARGUMENTS:
-    <name>     
-    <tag>      
+    <name>
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -3966,14 +3966,14 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    system      Inspect this machine and emit it as a System resource           
-    docker      Read the Docker API and emit each published container as a      
-                Service on this host's System                                   
-    proxmox     Read a Proxmox cluster and emit its nodes and guests as Systems 
-    opnsense    Read an OPNsense firewall's neighbour table and emit every      
-                machine on it                                                   
-    network     Sweep a subnet and emit every answering host as a System        
-                resource                                                        
+    system      Inspect this machine and emit it as a System resource
+    docker      Read the Docker API and emit each published container as a
+                Service on this host's System
+    proxmox     Read a Proxmox cluster and emit its nodes and guests as Systems
+    opnsense    Read an OPNsense firewall's neighbour table and emit every
+                machine on it
+    network     Sweep a subnet and emit every answering host as a System
+                resource
 ```
 
 ## `rpk discover system`
@@ -3989,23 +3989,23 @@ EXAMPLES:
     rpk discover system --name nas01 --push
 
 OPTIONS:
-    -h, --help             Prints help information                              
-        --push             Upload the result to a RackPeek server instead of    
-                           printing it                                          
-        --server <URL>     RackPeek server to upload to. Defaults to the        
-                           RPK_SERVER environment variable                      
-        --api-key <KEY>    API key for the server. Defaults to the RPK_API_KEY  
-                           environment variable                                 
-        --dry-run          Ask the server what would change, without changing   
-                           anything. Implies --push                             
-    -n, --name <NAME>      Name for this machine. Defaults to its hostname.     
-                           Recommended when running from a timer                
+    -h, --help             Prints help information
+        --push             Upload the result to a RackPeek server instead of
+                           printing it
+        --server <URL>     RackPeek server to upload to. Defaults to the
+                           RPK_SERVER environment variable
+        --api-key <KEY>    API key for the server. Defaults to the RPK_API_KEY
+                           environment variable
+        --dry-run          Ask the server what would change, without changing
+                           anything. Implies --push
+    -n, --name <NAME>      Name for this machine. Defaults to its hostname.
+                           Recommended when running from a timer
 ```
 
 ## `rpk discover docker`
 ```
 DESCRIPTION:
-Read the Docker API and emit each published container as a Service on this 
+Read the Docker API and emit each published container as a Service on this
 host's System
 
 USAGE:
@@ -4016,20 +4016,20 @@ EXAMPLES:
     rpk discover docker --push
 
 OPTIONS:
-    -h, --help                 Prints help information                          
+    -h, --help                 Prints help information
         --push                 Upload the result to a RackPeek server instead of
-                               printing it                                      
-        --server <URL>         RackPeek server to upload to. Defaults to the    
-                               RPK_SERVER environment variable                  
-        --api-key <KEY>        API key for the server. Defaults to the          
-                               RPK_API_KEY environment variable                 
-        --dry-run              Ask the server what would change, without        
-                               changing anything. Implies --push                
+                               printing it
+        --server <URL>         RackPeek server to upload to. Defaults to the
+                               RPK_SERVER environment variable
+        --api-key <KEY>        API key for the server. Defaults to the
+                               RPK_API_KEY environment variable
+        --dry-run              Ask the server what would change, without
+                               changing anything. Implies --push
         --docker-host <URI>    Docker endpoint, e.g. unix:///var/run/docker.sock
                                or tcp://host:2375. Defaults to DOCKER_HOST, then
-                               the local socket                                 
-        --host <NAME>          Name of the machine these containers run on.     
-                               Defaults to its hostname                         
+                               the local socket
+        --host <NAME>          Name of the machine these containers run on.
+                               Defaults to its hostname
 ```
 
 ## `rpk discover proxmox`
@@ -4045,23 +4045,23 @@ EXAMPLES:
     rpk discover proxmox --host pve.lan --push
 
 OPTIONS:
-    -h, --help                     Prints help information                      
-        --push                     Upload the result to a RackPeek server       
-                                   instead of printing it                       
+    -h, --help                     Prints help information
+        --push                     Upload the result to a RackPeek server
+                                   instead of printing it
         --server <URL>             RackPeek server to upload to. Defaults to the
-                                   RPK_SERVER environment variable              
-        --api-key <KEY>            API key for the server. Defaults to the      
-                                   RPK_API_KEY environment variable             
-        --dry-run                  Ask the server what would change, without    
-                                   changing anything. Implies --push            
-        --host <URL>               Proxmox host, e.g. https://pve.lan:8006. A   
-                                   bare host name gets https and :8006          
-        --token-id <ID>            API token id, e.g. root@pam!rackpeek.        
-                                   Defaults to RPK_PVE_TOKEN_ID                 
-        --token-secret <SECRET>    API token secret. Defaults to                
-                                   RPK_PVE_TOKEN_SECRET                         
-        --insecure                 Accept a self-signed certificate, which      
-                                   Proxmox ships with by default                
+                                   RPK_SERVER environment variable
+        --api-key <KEY>            API key for the server. Defaults to the
+                                   RPK_API_KEY environment variable
+        --dry-run                  Ask the server what would change, without
+                                   changing anything. Implies --push
+        --host <URL>               Proxmox host, e.g. https://pve.lan:8006. A
+                                   bare host name gets https and :8006
+        --token-id <ID>            API token id, e.g. root@pam!rackpeek.
+                                   Defaults to RPK_PVE_TOKEN_ID
+        --token-secret <SECRET>    API token secret. Defaults to
+                                   RPK_PVE_TOKEN_SECRET
+        --insecure                 Accept a self-signed certificate, which
+                                   Proxmox ships with by default
 ```
 
 ## `rpk discover opnsense`
@@ -4077,23 +4077,23 @@ EXAMPLES:
     rpk discover opnsense --host firewall.lan --push
 
 OPTIONS:
-    -h, --help               Prints help information                            
-        --push               Upload the result to a RackPeek server instead of  
-                             printing it                                        
-        --server <URL>       RackPeek server to upload to. Defaults to the      
-                             RPK_SERVER environment variable                    
+    -h, --help               Prints help information
+        --push               Upload the result to a RackPeek server instead of
+                             printing it
+        --server <URL>       RackPeek server to upload to. Defaults to the
+                             RPK_SERVER environment variable
         --api-key <KEY>      API key for the server. Defaults to the RPK_API_KEY
-                             environment variable                               
-        --dry-run            Ask the server what would change, without changing 
-                             anything. Implies --push                           
-        --host <URL>         OPNsense host, e.g. https://firewall.lan. A bare   
-                             host name gets https                               
-        --key <KEY>          API key. Defaults to RPK_OPN_KEY                   
-        --secret <SECRET>    API secret. Defaults to RPK_OPN_SECRET             
-        --insecure           Accept a self-signed certificate, which OPNsense   
-                             ships with by default                              
+                             environment variable
+        --dry-run            Ask the server what would change, without changing
+                             anything. Implies --push
+        --host <URL>         OPNsense host, e.g. https://firewall.lan. A bare
+                             host name gets https
+        --key <KEY>          API key. Defaults to RPK_OPN_KEY
+        --secret <SECRET>    API secret. Defaults to RPK_OPN_SECRET
+        --insecure           Accept a self-signed certificate, which OPNsense
+                             ships with by default
         --include-public     Also record neighbours on public addresses, such as
-                             the ISP equipment on the WAN leg                   
+                             the ISP equipment on the WAN leg
 ```
 
 ## `rpk discover network`
@@ -4110,23 +4110,23 @@ EXAMPLES:
     rpk discover network --cidr 10.0.0.0/24 --ports 22,80,443 --push
 
 OPTIONS:
-    -h, --help             Prints help information                              
-        --push             Upload the result to a RackPeek server instead of    
-                           printing it                                          
-        --server <URL>     RackPeek server to upload to. Defaults to the        
-                           RPK_SERVER environment variable                      
-        --api-key <KEY>    API key for the server. Defaults to the RPK_API_KEY  
-                           environment variable                                 
-        --dry-run          Ask the server what would change, without changing   
-                           anything. Implies --push                             
-        --cidr <CIDR>      Subnet to sweep, e.g. 192.168.1.0/24. Defaults to    
-                           this machine's own subnet                            
-        --ports <LIST>     TCP ports probed to catch hosts that ignore ping,    
-                           e.g. 22,80,443. Defaults to a curated homelab list   
-        --timeout <MS>     Milliseconds to wait on each port probe              
-        --parallel <N>     How many hosts to probe at once                      
-        --no-identify      Skip asking living hosts what they are — sweep for   
-                           liveness only                                        
+    -h, --help             Prints help information
+        --push             Upload the result to a RackPeek server instead of
+                           printing it
+        --server <URL>     RackPeek server to upload to. Defaults to the
+                           RPK_SERVER environment variable
+        --api-key <KEY>    API key for the server. Defaults to the RPK_API_KEY
+                           environment variable
+        --dry-run          Ask the server what would change, without changing
+                           anything. Implies --push
+        --cidr <CIDR>      Subnet to sweep, e.g. 192.168.1.0/24. Defaults to
+                           this machine's own subnet
+        --ports <LIST>     TCP ports probed to catch hosts that ignore ping,
+                           e.g. 22,80,443. Defaults to a curated homelab list
+        --timeout <MS>     Milliseconds to wait on each port probe
+        --parallel <N>     How many hosts to probe at once
+        --no-identify      Skip asking living hosts what they are — sweep for
+                           liveness only
 ```
 
 ## `rpk ansible`
@@ -4153,16 +4153,16 @@ USAGE:
     rpk ansible inventory [OPTIONS]
 
 OPTIONS:
-                          DEFAULT                                               
-    -h, --help                       Prints help information                    
-        --group-tags                 Comma-separated list of tags to group by   
-                                     (e.g. prod,staging)                        
+                          DEFAULT
+    -h, --help                       Prints help information
+        --group-tags                 Comma-separated list of tags to group by
+                                     (e.g. prod,staging)
         --group-labels               Comma-separated list of label keys to group
-                                     by (e.g. env,site)                         
-        --global-var                 Global variable (repeatable). Format:      
-                                     key=value                                  
-        --format          ini        Inventory format: ini (default) or yaml    
-    -o, --output                     Write inventory to file instead of stdout  
+                                     by (e.g. env,site)
+        --global-var                 Global variable (repeatable). Format:
+                                     key=value
+        --format          ini        Inventory format: ini (default) or yaml
+    -o, --output                     Write inventory to file instead of stdout
 ```
 
 ## `rpk ssh`
@@ -4189,18 +4189,18 @@ USAGE:
     rpk ssh export [OPTIONS]
 
 OPTIONS:
-                              DEFAULT                                           
-    -h, --help                           Prints help information                
+                              DEFAULT
+    -h, --help                           Prints help information
         --include-tags                   Comma-separated list of tags to include
-                                         (e.g. prod,linux)                      
-        --default-user                   Default SSH user if not defined in     
-                                         labels                                 
-        --default-port        22         Default SSH port if not defined in     
-                                         labels (default: 22)                   
-        --default-identity               Default SSH identity file (e.g.        
-                                         ~/.ssh/id_rsa)                         
-    -o, --output                         Write SSH config to file instead of    
-                                         stdout                                 
+                                         (e.g. prod,linux)
+        --default-user                   Default SSH user if not defined in
+                                         labels
+        --default-port        22         Default SSH port if not defined in
+                                         labels (default: 22)
+        --default-identity               Default SSH identity file (e.g.
+                                         ~/.ssh/id_rsa)
+    -o, --output                         Write SSH config to file instead of
+                                         stdout
 ```
 
 ## `rpk hosts`
@@ -4227,12 +4227,12 @@ USAGE:
     rpk hosts export [OPTIONS]
 
 OPTIONS:
-    -h, --help             Prints help information                              
-        --include-tags     Comma-separated list of tags to include (e.g.        
-                           prod,staging)                                        
-        --domain-suffix    Optional domain suffix to append (e.g. home.local)   
-        --no-localhost     Do not include localhost defaults                    
-    -o, --output           Write hosts file to file instead of stdout           
+    -h, --help             Prints help information
+        --include-tags     Comma-separated list of tags to include (e.g.
+                           prod,staging)
+        --domain-suffix    Optional domain suffix to append (e.g. home.local)
+        --no-localhost     Do not include localhost defaults
+    -o, --output           Write hosts file to file instead of stdout
 ```
 
 ## `rpk graph`
@@ -4247,10 +4247,10 @@ OPTIONS:
     -h, --help    Prints help information
 
 COMMANDS:
-    topology    Emit a Mermaid flowchart of the physical topology (hardware +   
-                connections)                                                    
+    topology    Emit a Mermaid flowchart of the physical topology (hardware +
+                connections)
     logical     Emit a Mermaid flowchart of services & systems grouped by subnet
-                and host                                                        
+                and host
 ```
 
 ## `rpk graph topology`
@@ -4314,7 +4314,7 @@ USAGE:
     rpk tags show <tag> [OPTIONS]
 
 ARGUMENTS:
-    <tag>     
+    <tag>
 
 OPTIONS:
     -h, --help    Prints help information
@@ -4334,31 +4334,31 @@ OPTIONS:
 COMMANDS:
     add <A_RESOURCE> <A_GROUP> <A_INDEX> <B_RESOURCE> <B_GROUP> <B_INDEX>    Cre
                                                                              ate
-                                                                             a  
+                                                                             a
                                                                              con
                                                                              nec
                                                                              tio
-                                                                             n  
+                                                                             n
                                                                              bet
                                                                              wee
-                                                                             n  
+                                                                             n
                                                                              two
                                                                              por
-                                                                             ts 
+                                                                             ts
     remove <RESOURCE> <PORT_GROUP> <PORT_INDEX>                              Rem
                                                                              ove
                                                                              the
                                                                              con
                                                                              nec
                                                                              tio
-                                                                             n  
+                                                                             n
                                                                              fro
                                                                              m a
                                                                              spe
                                                                              cif
-                                                                             ic 
+                                                                             ic
                                                                              por
-                                                                             t  
+                                                                             t
 ```
 
 ## `rpk connections add`
@@ -4367,19 +4367,19 @@ DESCRIPTION:
 Create a connection between two ports
 
 USAGE:
-    rpk connections add <A_RESOURCE> <A_GROUP> <A_INDEX> <B_RESOURCE> <B_GROUP> 
+    rpk connections add <A_RESOURCE> <A_GROUP> <A_INDEX> <B_RESOURCE> <B_GROUP>
 <B_INDEX> [OPTIONS]
 
 ARGUMENTS:
-    <A_RESOURCE>    Resource name for endpoint A   
+    <A_RESOURCE>    Resource name for endpoint A
     <A_GROUP>       Port group index for endpoint A
-    <A_INDEX>       Port index for endpoint A      
-    <B_RESOURCE>    Resource name for endpoint B   
+    <A_INDEX>       Port index for endpoint A
+    <B_RESOURCE>    Resource name for endpoint B
     <B_GROUP>       Port group index for endpoint B
-    <B_INDEX>       Port index for endpoint B      
+    <B_INDEX>       Port index for endpoint B
 
 OPTIONS:
-    -h, --help     Prints help information          
+    -h, --help     Prints help information
         --label    Optional label for the connection
         --notes    Optional notes for the connection
 ```
@@ -4393,9 +4393,9 @@ USAGE:
     rpk connections remove <RESOURCE> <PORT_GROUP> <PORT_INDEX> [OPTIONS]
 
 ARGUMENTS:
-    <RESOURCE>      Resource name   
+    <RESOURCE>      Resource name
     <PORT_GROUP>    Port group index
-    <PORT_INDEX>    Port index      
+    <PORT_INDEX>    Port index
 
 OPTIONS:
     -h, --help    Prints help information

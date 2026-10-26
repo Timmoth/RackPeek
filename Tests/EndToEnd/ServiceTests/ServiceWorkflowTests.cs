@@ -46,7 +46,7 @@ public class ServiceWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper outpu
         outputHelper.WriteLine(yaml);
 
         Assert.Equal("""
-                     version: 4
+                     version: 5
                      resources:
                      - kind: System
                        name: sys01

@@ -39,11 +39,15 @@ public static class DockerServiceMapper {
 
         // A wildcard binding is reachable on the host's own address; a binding pinned to
         // one interface is only reachable there, so that address wins over the host's.
-        DockerPortBinding port = container.PublishedPorts
+        var ports = container.PublishedPorts
             .Where(p => !p.IsLoopback)
             .OrderBy(p => p.IsWildcard ? 0 : 1)
             .ThenBy(p => p.HostPort)
-            .First();
+            .ThenBy(p => p.Protocol, StringComparer.Ordinal)
+            .ThenBy(p => p.HostIp, StringComparer.Ordinal)
+            .ToList();
+
+        DockerPortBinding port = ports[0];
 
         return new Service {
             Kind = Service.KindLabel,
@@ -57,6 +61,11 @@ public static class DockerServiceMapper {
                 Port = port.HostPort,
                 Protocol = port.Protocol
             },
+            Endpoints = ports.Select(p => new Network {
+                Ip = ServiceIp(p, hostIp),
+                Port = p.HostPort,
+                Protocol = p.Protocol
+            }).ToList(),
             Notes = container.Image,
             Tags = string.IsNullOrWhiteSpace(container.ComposeProject)
                 ? []

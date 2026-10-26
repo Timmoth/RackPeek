@@ -18,17 +18,28 @@
 
         <!-- Top row: brand + search (always visible) + nav cluster | mobile dropdown -->
         <div class="flex items-center gap-3 sm:gap-4 px-6 sm:px-8 lg:px-12 py-4">
-            <NavLink href=""
-                     data-testid="brand-link"
-                     class="hover:text-emerald-400 flex-shrink-0"
-                     activeClass="text-emerald-400 font-semibold">
-
-                <div class="flex items-baseline gap-2"
-                     data-testid="brand-text">
-                    <span class="text-xl font-bold text-emerald-400 tracking-wider">rackpeek</span>
-                    <span class="text-[10px] text-zinc-500 tracking-wide">@RpkConstants.Version</span>
-                </div>
-            </NavLink>
+            <div class="flex flex-col items-start flex-shrink-0">
+                <NavLink href=""
+                         data-testid="brand-link"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold">
+                    <div class="flex items-baseline gap-2"
+                         data-testid="brand-text">
+                        <span class="text-xl font-bold text-emerald-400 tracking-wider">rackpeek</span>
+                        <span class="text-[10px] text-zinc-500 tracking-wide">@RpkConstants.Version</span>
+                    </div>
+                </NavLink>
+                <a href="https://discord.gg/egXRPdesee"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Mobile app early access: join the RackPeek Discord"
+                   class="mt-0.5 inline-flex items-center gap-1 text-[9px] leading-none text-zinc-500 transition hover:text-emerald-300"
+                   data-testid="mobile-early-access">
+                    <span class="h-1 w-1 rounded-full bg-emerald-500/80"></span>
+                    <span>Mobile App Early Access</span>
+                    <span aria-hidden="true" class="text-zinc-600">→</span>
+                </a>
+            </div>
 
             <!-- Single search instance, sized responsively. Sits next to the
                  brand on the left at every viewport — fills available space
@@ -135,6 +146,7 @@
                 <GitStatusIndicator/>
             </div>
         }
+
     </header>
 
     <main class="p-6" data-testid="page-content">

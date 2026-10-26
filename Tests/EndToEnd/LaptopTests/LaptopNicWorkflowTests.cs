@@ -47,7 +47,7 @@ public class LaptopNicWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper out
         Assert.Equal("NIC added to Laptop 'lap01'.\n", output);
 
         Assert.Equal("""
-                     version: 4
+                     version: 5
                      resources:
                      - kind: Laptop
                        model: ThinkPad X1 Carbon
@@ -81,7 +81,7 @@ public class LaptopNicWorkflowTests(TempYamlCliFixture fs, ITestOutputHelper out
         Assert.Equal("NIC #1 removed from Laptop 'lap01'.\n", output);
 
         Assert.Equal("""
-                     version: 4
+                     version: 5
                      resources:
                      - kind: Laptop
                        model: ThinkPad X1 Carbon

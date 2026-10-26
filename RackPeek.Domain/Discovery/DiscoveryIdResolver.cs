@@ -10,9 +10,10 @@ namespace RackPeek.Domain.Discovery;
 ///     Reconciles incoming discovered resources against what is already stored, by
 ///     <see cref="Resource.DiscoveryId" /> rather than by name.
 ///     <para>
-///         Runs immediately before the merge, and only ever rewrites the *incoming*
-///         names. The invariant it exists to protect: discovery never renames a
-///         resource the user already has. Names are user-owned, ids are machine-owned.
+///         It rewrites incoming names to match stored resources. When allowed, it can
+///         also improve generated placeholder names in the existing inventory. Callers
+///         that allow stored-name improvement must pass a detached snapshot and publish
+///         it only after validation, so failed previews cannot mutate the store.
 ///     </para>
 /// </summary>
 public static class DiscoveryIdResolver {
@@ -25,12 +26,12 @@ public static class DiscoveryIdResolver {
     ///         The one exception is <paramref name="improveStoredNames" />, which lets a
     ///         stored placeholder nobody chose be replaced by a real name this payload
     ///         knows — see <see cref="CanImproveName" />. That rewrites the stored side, so
-    ///         only a caller that is about to persist should ask for it, and it must hand
-    ///         over <paramref name="storedConnections" /> for the same reason the incoming
-    ///         side hands over its own.
+    ///         only a caller working on a detached snapshot should ask for it, and it
+    ///         must hand over <paramref name="storedConnections" /> for the same reason
+    ///         the incoming side hands over its own.
     ///     </para>
     /// </summary>
-    public static void ResolveNames(
+    public static Dictionary<string, string> ResolveNames(
         IReadOnlyList<Resource> existing,
         IReadOnlyList<Resource> incoming,
         IReadOnlyList<Connection>? connections = null,
@@ -41,7 +42,7 @@ public static class DiscoveryIdResolver {
             .ToList();
 
         if (incomingWithId.Count == 0)
-            return;
+            return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         GuardAgainstDuplicates(incomingWithId, "payload");
         GuardAgainstDuplicates(existing.Where(r => !string.IsNullOrWhiteSpace(r.DiscoveryId)), "inventory");
@@ -119,6 +120,8 @@ public static class DiscoveryIdResolver {
 
         PreserveStoredRunsOn(incomingWithId, incoming, existingById, existingByName);
         AnchorRunsOnByIp(existing, incoming, existingByName);
+
+        return storedRenames;
     }
 
     /// <summary>

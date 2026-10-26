@@ -17,8 +17,7 @@ public class ProtocolTests {
         "upsert_resources", "delete_resource", "rename_resource", "clone_resource",
         "edit_tags", "edit_labels", "add_connection", "remove_connection",
         "export_ansible_inventory", "export_ssh_config", "export_hosts_file", "export_topology_mermaid",
-        "git_status", "git_commit",
-        "discover_docker", "discover_proxmox"
+        "git_status", "git_commit"
     ];
 
     [Fact]
@@ -63,6 +62,20 @@ public class ProtocolTests {
 
         await Assert.ThrowsAnyAsync<McpException>(async () =>
             await client.CallToolAsync("does_not_exist"));
+    }
+
+    [Theory]
+    [InlineData("discover_docker")]
+    [InlineData("discover_proxmox")]
+    public async Task Discovery_tools_are_not_available_over_mcp(string toolName) {
+        using var api = new McpFixture();
+        await using McpClient client = await api.ConnectAsync();
+
+        IList<McpClientTool> tools = await client.ListToolsAsync();
+        Assert.DoesNotContain(tools, tool => tool.Name == toolName);
+
+        await Assert.ThrowsAnyAsync<McpException>(async () =>
+            await client.CallToolAsync(toolName));
     }
 
     [Fact]

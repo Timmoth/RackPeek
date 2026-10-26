@@ -22,7 +22,7 @@ public static class Fixture {
     ///     Asserts a discovery document satisfies the published RackPeek schema, so the
     ///     collectors cannot drift away from the contract the rest of the world imports.
     /// </summary>
-    public static void AssertConformsToSchema(string yaml, int version = 4) {
+    public static void AssertConformsToSchema(string yaml, int version = 5) {
         JsonSchema schema = _schemas.GetOrAdd(version, v => new Lazy<JsonSchema>(() =>
             JsonSchema.FromText(
                 File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "schemas", $"schema.v{v}.json"))),

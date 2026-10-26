@@ -25,7 +25,8 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
             EnsureSchemaVersionExists,
             ConvertScalarRunsOnToList,
             ConvertNicsToPortsV3,
-            AllowDiscoveryIdsV4
+            AllowDiscoveryIdsV4,
+            AddServiceEndpointsV5
         };
 
     public RackPeekConfigMigrationDeserializer(IServiceProvider serviceProvider,
@@ -96,9 +97,12 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
                     break;
 
                 case List<object> list:
-                    resourceDict[key] = list
-                        .OfType<string>()
-                        .ToList();
+                    if (list.Any(item => item is not string))
+                        throw new InvalidCastException(
+                            $"Cannot convert every item in '{key}' to a string for resource " +
+                            $"'{resourceDict.GetValueOrDefault("name", "unknown")}'.");
+
+                    resourceDict[key] = list.Cast<string>().ToList();
                     break;
 
                 case List<string>:
@@ -137,7 +141,17 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
 
             foreach (var nicObj in nics) {
                 if (nicObj is not Dictionary<object, object> nicDict)
-                    continue;
+                    throw new InvalidCastException(
+                        $"Cannot convert a non-object NIC to a port for resource " +
+                        $"'{resourceDict.GetValueOrDefault("name", "unknown")}'.");
+
+                var unsupportedKeys = nicDict.Keys
+                    .Where(key => key is not string text || text is not ("type" or "speed" or "ports"))
+                    .ToList();
+                if (unsupportedKeys.Count > 0)
+                    throw new InvalidCastException(
+                        $"Cannot migrate NIC with unsupported fields for resource " +
+                        $"'{resourceDict.GetValueOrDefault("name", "unknown")}'.");
 
                 var port = new Dictionary<object, object>();
 
@@ -177,6 +191,28 @@ public class RackPeekConfigMigrationDeserializer : YamlMigrationDeserializer<Yam
     /// </summary>
     public static ValueTask AllowDiscoveryIdsV4(IServiceProvider serviceProvider, Dictionary<object, object> obj) {
         obj["version"] = 4;
+
+        return ValueTask.CompletedTask;
+    }
+
+    public static ValueTask AddServiceEndpointsV5(IServiceProvider serviceProvider, Dictionary<object, object> obj) {
+        if (obj.TryGetValue("resources", out var resourcesObj) && resourcesObj is List<object> resources) {
+            foreach (var resourceObj in resources) {
+                if (resourceObj is not Dictionary<object, object> resource
+                    || !resource.TryGetValue("kind", out var kind)
+                    || !Equals(kind, Service.KindLabel)
+                    || !resource.TryGetValue("network", out var network)
+                    || network is not Dictionary<object, object> networkDict
+                    || resource.ContainsKey("endpoints"))
+                    continue;
+
+                resource["endpoints"] = new List<object> {
+                    new Dictionary<object, object>(networkDict)
+                };
+            }
+        }
+
+        obj["version"] = 5;
 
         return ValueTask.CompletedTask;
     }
