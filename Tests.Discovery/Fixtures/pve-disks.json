@@ -1,0 +1,6 @@
+{"data":[
+  {"devpath":"/dev/nvme0n1","size":1000204886016,"type":"nvme","model":"Samsung SSD 980 1TB","serial":"S64ANL0T123456","rpm":0,"used":"LVM","health":"PASSED","wearout":97},
+  {"devpath":"/dev/sda","size":8001563222016,"type":"hdd","model":"WDC WD80EFAX-68LHPN0","serial":"7SGXYZ1B","rpm":5400,"used":"ZFS","health":"PASSED"},
+  {"devpath":"/dev/sdb","size":512110190592,"type":"ssd","model":"Crucial CT500MX500SSD1","serial":"2019E2345678","rpm":0,"health":"PASSED"},
+  {"devpath":"/dev/sdc","size":0,"type":"unknown","model":"","serial":""}
+]}

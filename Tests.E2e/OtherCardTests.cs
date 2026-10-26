@@ -222,4 +222,49 @@ public class OtherCardTests(
             await context.CloseAsync();
         }
     }
+
+    // =============================================================
+    // Ports
+    // =============================================================
+
+    [Fact]
+    public async Task User_Can_Add_Port_Groups_To_Other_Hardware() {
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
+
+        var name = $"e2e-oth-{Guid.NewGuid():N}"[..16];
+
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/other/list");
+
+            var list = new OtherListPom(page);
+            await list.AddOtherAsync(name);
+
+            if (!page.Url.Contains($"/resources/hardware/{name}",
+                    StringComparison.OrdinalIgnoreCase))
+                await list.OpenOtherAsync(name);
+
+            var card = new OtherCardPom(page);
+            await card.AssertVisibleAsync(name);
+
+            await Assertions.Expect(card.PortGroupSection).ToBeVisibleAsync();
+
+            await card.AddPortGroupAsync("rj45", "0.1", 1);
+            await card.AssertPortGroupVisibleAsync(0);
+
+            await card.AddPortGroupAsync("usb", "0.48", 2);
+            await card.AssertPortGroupVisibleAsync(1);
+
+            await page.ReloadAsync();
+            await card.AssertVisibleAsync(name);
+
+            await card.AssertPortVisibleAsync(0, 0);
+            await card.AssertPortVisibleAsync(1, 0);
+            await card.AssertPortVisibleAsync(1, 1);
+
+            await card.DeleteAsync(name);
+        }
+        finally {
+            await context.CloseAsync();
+        }
+    }
 }

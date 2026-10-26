@@ -1,0 +1,5 @@
+{"data":[
+  {"vmid":104,"name":"docker-01","status":"running","cpus":4,"maxmem":8589934592,"maxdisk":68719476736,"tags":"production;web","uptime":604800},
+  {"vmid":105,"name":"windows-vm","status":"stopped","cpus":8,"maxmem":17179869184,"maxdisk":274877906944,"tags":"","uptime":0},
+  {"vmid":110,"name":"","status":"running","cpus":2,"maxmem":4294967296,"maxdisk":34359738368}
+]}

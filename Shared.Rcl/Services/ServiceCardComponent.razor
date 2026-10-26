@@ -191,6 +191,22 @@
         </div>
 
 
+        @if (!_isEditing && Service.Endpoints.Count > 1)
+        {
+            <div class="md:col-span-2" data-testid="service-published-endpoints">
+                <div class="text-zinc-400 mb-1">Published endpoints</div>
+                <div class="flex flex-wrap gap-x-4 gap-y-1">
+                    @foreach (var endpoint in Service.Endpoints)
+                    {
+                        <span class="text-zinc-300" data-testid="service-published-endpoint">
+                            @($"{ServiceEndpoint.Describe(endpoint)} {endpoint.Protocol}")
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+
+
         <!-- Runs On -->
         <div data-testid="service-runson-section">
             <div class="text-zinc-400 mb-1">
@@ -461,27 +477,10 @@
         Nav.NavigateTo($"resources/services/{Uri.EscapeDataString(newName)}");
     }
 
-    private string? GetBrowsableHref()
-    {
-        var ip = Service.Network?.Ip ?? EffectiveIp;
-        var port = Service.Network?.Port;
-
-        if (string.IsNullOrWhiteSpace(ip) || port is null)
-            return null;
-
-        var proto = Service.Network?.Protocol?.Trim().ToLowerInvariant();
-
-        var scheme = proto switch
-        {
-            "https" => "https",
-            "http" => "http",
-            _ => "http"
-        };
-
-        // Build a correct absolute URL
-        var ub = new UriBuilder(scheme, ip) { Port = port.Value };
-        return ub.Uri.ToString();
-    }
+    // A port is a convention, not a promise: ssh on 22 is not browsable and an http://
+    // link to it only wastes a click. The domain owns that judgement so this page, the
+    // dependency trees and anything else agree on it.
+    private string? GetBrowsableHref() => Service.BrowsableUrl(EffectiveIp);
 }
 
 @code

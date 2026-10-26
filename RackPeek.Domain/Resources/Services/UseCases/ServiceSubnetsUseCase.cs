@@ -9,13 +9,8 @@ public class ServiceSubnetsUseCase(IResourceCollection repo) : IUseCase {
 
         // If CIDR is provided → filter mode
         if (cidr is not null) {
-            Cidr parsed;
-            try {
-                parsed = Cidr.Parse(cidr);
-            }
-            catch {
+            if (!Cidr.TryParse(cidr, out Cidr parsed))
                 return ServiceSubnetsResult.InvalidCidr(cidr);
-            }
 
             var matches = services
                 .Where(s => s.Network?.Ip != null)

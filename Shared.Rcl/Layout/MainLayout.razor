@@ -6,6 +6,11 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
+<!-- Flips to true only after the first interactive render, which cannot happen on
+     the prerendered HTML. Tests wait on it before typing: input events sent before
+     the circuit attaches are silently lost and never reach the server-side model. -->
+<span hidden data-testid="circuit-probe" data-circuit-ready="@(_circuitReady ? "true" : "false")"></span>
+
 <div class="min-h-screen bg-zinc-950 text-zinc-200 font-mono"
      data-testid="app-root">
 
@@ -13,17 +18,28 @@
 
         <!-- Top row: brand + search (always visible) + nav cluster | mobile dropdown -->
         <div class="flex items-center gap-3 sm:gap-4 px-6 sm:px-8 lg:px-12 py-4">
-            <NavLink href=""
-                     data-testid="brand-link"
-                     class="hover:text-emerald-400 flex-shrink-0"
-                     activeClass="text-emerald-400 font-semibold">
-
-                <div class="flex items-baseline gap-2"
-                     data-testid="brand-text">
-                    <span class="text-xl font-bold text-emerald-400 tracking-wider">rackpeek</span>
-                    <span class="text-[10px] text-zinc-500 tracking-wide">@RpkConstants.Version</span>
-                </div>
-            </NavLink>
+            <div class="flex flex-col items-start flex-shrink-0">
+                <NavLink href=""
+                         data-testid="brand-link"
+                         class="hover:text-emerald-400"
+                         activeClass="text-emerald-400 font-semibold">
+                    <div class="flex items-baseline gap-2"
+                         data-testid="brand-text">
+                        <span class="text-xl font-bold text-emerald-400 tracking-wider">rackpeek</span>
+                        <span class="text-[10px] text-zinc-500 tracking-wide">@RpkConstants.Version</span>
+                    </div>
+                </NavLink>
+                <a href="https://discord.gg/egXRPdesee"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Mobile app early access: join the RackPeek Discord"
+                   class="mt-0.5 inline-flex items-center gap-1 text-[9px] leading-none text-zinc-500 transition hover:text-emerald-300"
+                   data-testid="mobile-early-access">
+                    <span class="h-1 w-1 rounded-full bg-emerald-500/80"></span>
+                    <span>Mobile App Early Access</span>
+                    <span aria-hidden="true" class="text-zinc-600">→</span>
+                </a>
+            </div>
 
             <!-- Single search instance, sized responsively. Sits next to the
                  brand on the left at every viewport — fills available space
@@ -130,6 +146,7 @@
                 <GitStatusIndicator/>
             </div>
         }
+
     </header>
 
     <main class="p-6" data-testid="page-content">
@@ -142,6 +159,7 @@
     private const string _outsideDismissId = "rpk-mobile-nav";
     private const string _containerSelector = "#rpk-mobile-nav";
 
+    private bool _circuitReady;
     private bool _dropdownOpen;
     private bool _listenerRegistered;
     private DotNetObjectReference<MainLayout>? _selfRef;
@@ -169,6 +187,14 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // OnAfterRender never runs during prerendering, so this re-render proves a
+        // live circuit to anything watching the probe above.
+        if (firstRender && !_circuitReady)
+        {
+            _circuitReady = true;
+            StateHasChanged();
+        }
+
         // Mirror the dropdown state into the JS dismiss-listener registration
         // so the listener only exists while it's needed.
         if (_dropdownOpen && !_listenerRegistered)

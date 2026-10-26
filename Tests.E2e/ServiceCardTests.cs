@@ -11,6 +11,47 @@ public class ServiceCardTests(
     private readonly PlaywrightFixture _fixture = fixture;
     private readonly ITestOutputHelper _output = output;
 
+    [Fact]
+    public async Task Multiple_published_endpoints_are_visible_on_the_service_card() {
+        await _fixture.WriteConfigAsync("""
+            version: 5
+            resources:
+              - kind: Service
+                name: multi-endpoint-service
+                network:
+                  ip: 192.168.1.10
+                  port: 8096
+                  protocol: TCP
+                endpoints:
+                  - ip: 192.168.1.10
+                    port: 8096
+                    protocol: TCP
+                  - ip: 192.168.1.11
+                    port: 8920
+                    protocol: UDP
+            """);
+
+        (IBrowserContext context, IPage page) = await CreatePageAsync();
+
+        try {
+            await page.GotoAsync($"{_fixture.BaseUrl}/resources/services/multi-endpoint-service");
+            await Assertions.Expect(page.GetByTestId("service-published-endpoints")).ToBeVisibleAsync();
+            await Assertions.Expect(page.GetByTestId("service-published-endpoint").Nth(0))
+                .ToHaveTextAsync("192.168.1.10:8096 TCP");
+            await Assertions.Expect(page.GetByTestId("service-published-endpoint").Nth(1))
+                .ToHaveTextAsync("192.168.1.11:8920 UDP");
+        }
+        catch {
+            (string Stdout, string Stderr) logs = await _fixture.ReadLogsAsync();
+            _output.WriteLine(logs.Stdout);
+            _output.WriteLine(logs.Stderr);
+            throw;
+        }
+        finally {
+            await context.CloseAsync();
+        }
+    }
+
     // =============================================================
     // Rename / Clone / Delete Flow
     // =============================================================

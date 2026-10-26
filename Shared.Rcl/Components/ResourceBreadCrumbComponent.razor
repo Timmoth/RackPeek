@@ -1,5 +1,6 @@
 ﻿@using RackPeek.Domain.Persistence
 @using RackPeek.Domain.Resources
+@using RackPeek.Domain.Resources.SystemResources
 @inject IResourceCollection Repo
 
 <div class="text-sm text-zinc-300 flex items-stretch gap-3">
@@ -35,7 +36,7 @@
             case ResourceType.Hardware:
                 AddLevel(new Breadcrumb(
                     ResourceName,
-                    Kind,
+                    Humanise(Kind),
                     Resource.GetResourceUrl("hardware", ResourceName)));
                 break;
 
@@ -60,11 +61,45 @@
 
         AddLevel(new Breadcrumb(
             name,
-            kind,
+            DescribeKind(kind, resource),
             Resource.GetResourceUrl(kind, name)));
     }
 
-    private void RenderLevels(Dictionary<int, List<(string Name, string Kind)>> byDistance)
+    /// <summary>
+    ///     What to show in brackets after a crumb. "System" is the storage kind, not a
+    ///     useful description — a chain reading Server / System / System hides the very
+    ///     thing the chain exists to show, so a system reports its own type instead:
+    ///     Server / Hypervisor / VM.
+    /// </summary>
+    private static string DescribeKind(string kind, Resource? resource)
+    {
+        var type = (resource as SystemResource)?.Type;
+
+        return Humanise(string.IsNullOrWhiteSpace(type) ? kind : type);
+    }
+
+    /// <summary>
+    ///     Kinds and types are stored lower-case. Title-case them for display, keeping
+    ///     the initialisms that would look wrong that way.
+    /// </summary>
+    private static string Humanise(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        var trimmed = value.Trim();
+
+        return trimmed.ToLowerInvariant() switch
+        {
+            "vm" => "VM",
+            "ups" => "UPS",
+            "accesspoint" => "Access Point",
+            "baremetal" => "Bare metal",
+            _ => char.ToUpperInvariant(trimmed[0]) + trimmed[1..].ToLowerInvariant()
+        };
+    }
+
+    private void RenderLevels(Dictionary<int, List<(string Name, string Kind, string Description)>> byDistance)
     {
         foreach (var dist in byDistance.Keys.OrderByDescending(x => x))
         {
@@ -75,7 +110,7 @@
                 .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
                 .Select(x => new Breadcrumb(
                     x.Name,
-                    x.Kind,
+                    x.Description,
                     Resource.GetResourceUrl(x.Kind, x.Name)));
 
             var systems = items
@@ -83,7 +118,7 @@
                 .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
                 .Select(x => new Breadcrumb(
                     x.Name,
-                    x.Kind,
+                    x.Description,
                     Resource.GetResourceUrl(x.Kind, x.Name)));
 
             AddLevel(hardware);
@@ -91,10 +126,10 @@
         }
     }
 
-    private async Task<Dictionary<int, List<(string Name, string Kind)>>>
+    private async Task<Dictionary<int, List<(string Name, string Kind, string Description)>>>
         BuildAncestorGraph(IEnumerable<string> startingNodes)
     {
-        var byDistance = new Dictionary<int, List<(string, string)>>();
+        var byDistance = new Dictionary<int, List<(string, string, string)>>();
         var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var queue = new Queue<(string Name, int Dist)>();
 
@@ -119,15 +154,16 @@
 
             if (!byDistance.TryGetValue(dist, out var list))
             {
-                list = new List<(string, string)>();
+                list = new List<(string, string, string)>();
                 byDistance[dist] = list;
             }
 
-            list.Add((name, kind));
+            var res = await Repo.GetByNameAsync(name);
+
+            list.Add((name, kind, DescribeKind(kind, res)));
 
             if (kind == "system")
             {
-                var res = await Repo.GetByNameAsync(name);
                 foreach (var parent in (res?.RunsOn ?? Enumerable.Empty<string>())
                          .Where(x => !string.IsNullOrWhiteSpace(x))
                          .Distinct(StringComparer.OrdinalIgnoreCase))
@@ -152,6 +188,8 @@
             Levels.Add(list);
     }
 
-    public record Breadcrumb(string Label, string Kind, string Href);
+    /// <summary><c>Description</c> is what shows in brackets: a system's type
+    /// (Hypervisor, VM) where it has one, otherwise its kind.</summary>
+    public record Breadcrumb(string Label, string Description, string Href);
 
 }

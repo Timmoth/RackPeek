@@ -1,3 +1,4 @@
+using System.Text;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using Microsoft.Playwright;
@@ -45,6 +46,24 @@ public class PlaywrightFixture : IAsyncLifetime {
         });
         Assertions.SetDefaultExpectTimeout(15000);
     }
+
+    /// <summary>
+    ///     Replaces the container's config.yaml wholesale. Used to stage a damaged
+    ///     config, which cannot be produced through the UI (the editor validates
+    ///     before saving) but is exactly what an interrupted write leaves behind.
+    /// </summary>
+    public async Task WriteConfigAsync(string contents) {
+        await _container.CopyAsync(
+            Encoding.UTF8.GetBytes(contents),
+            "/app/config/config.yaml");
+    }
+
+    public async Task<string> ReadConfigAsync() {
+        var bytes = await _container.ReadFileAsync("/app/config/config.yaml");
+        return Encoding.UTF8.GetString(bytes);
+    }
+
+    public async Task<(string Stdout, string Stderr)> ReadLogsAsync() => await _container.GetLogsAsync();
 
     public async Task DisposeAsync() {
         if (Browser != null)

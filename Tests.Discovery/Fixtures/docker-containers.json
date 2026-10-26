@@ -1,0 +1,71 @@
+[
+  {
+    "Id": "8f2c1e9a7b3d",
+    "Names": ["/jellyfin"],
+    "Image": "jellyfin/jellyfin:10.9.6",
+    "State": "running",
+    "Status": "Up 2 days",
+    "Labels": {
+      "com.docker.compose.project": "media",
+      "com.docker.compose.service": "jellyfin"
+    },
+    "Ports": [
+      { "IP": "0.0.0.0", "PrivatePort": 8096, "PublicPort": 8096, "Type": "tcp" },
+      { "IP": "::", "PrivatePort": 8096, "PublicPort": 8096, "Type": "tcp" },
+      { "PrivatePort": 8920, "Type": "tcp" }
+    ]
+  },
+  {
+    "Id": "1a2b3c4d5e6f",
+    "Names": ["/paperless-ngx"],
+    "Image": "ghcr.io/paperless-ngx/paperless-ngx:2.11",
+    "State": "running",
+    "Labels": {
+      "com.docker.compose.project": "Paperless Stack"
+    },
+    "Ports": [
+      { "IP": "0.0.0.0", "PrivatePort": 8000, "PublicPort": 8000, "Type": "tcp" }
+    ]
+  },
+  {
+    "Id": "9z8y7x6w5v4u",
+    "Names": ["/redis"],
+    "Image": "redis:7-alpine",
+    "State": "running",
+    "Labels": {},
+    "Ports": [
+      { "PrivatePort": 6379, "Type": "tcp" }
+    ]
+  },
+  {
+    "Id": "aabbccddeeff",
+    "Names": ["/wireguard"],
+    "Image": "linuxserver/wireguard:latest",
+    "State": "running",
+    "Labels": {},
+    "Ports": [
+      { "IP": "0.0.0.0", "PrivatePort": 51820, "PublicPort": 51820, "Type": "udp" }
+    ]
+  },
+  {
+    "Id": "5t4r3e2w1q0p",
+    "Names": ["/pgadmin"],
+    "Image": "dpage/pgadmin4:8.11",
+    "State": "running",
+    "Labels": {},
+    "Ports": [
+      { "IP": "127.0.0.1", "PrivatePort": 80, "PublicPort": 5050, "Type": "tcp" }
+    ]
+  },
+  {
+    "Id": "0p1o2i3u4y5t",
+    "Names": ["/unifi"],
+    "Image": "linuxserver/unifi-network-application:8.4",
+    "State": "running",
+    "Labels": {},
+    "Ports": [
+      { "IP": "127.0.0.1", "PrivatePort": 8843, "PublicPort": 8843, "Type": "tcp" },
+      { "IP": "192.168.1.21", "PrivatePort": 8443, "PublicPort": 8443, "Type": "tcp" }
+    ]
+  }
+]

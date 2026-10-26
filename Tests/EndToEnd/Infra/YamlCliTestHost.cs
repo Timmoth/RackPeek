@@ -14,7 +14,8 @@ public static class YamlCliTestHost {
         string[] args,
         string hardwarePath,
         ITestOutputHelper output,
-        string yamlFile) {
+        string yamlFile,
+        Action<int>? captureExitCode = null) {
         var services = new ServiceCollection();
 
         IConfigurationRoot config = new ConfigurationBuilder()
@@ -47,7 +48,8 @@ public static class YamlCliTestHost {
         Console.SetOut(rawCapture);
 
         try {
-            await app.RunAsync(args);
+            var exitCode = await app.RunAsync(args);
+            captureExitCode?.Invoke(exitCode);
         }
         finally {
             Console.SetOut(originalOut);

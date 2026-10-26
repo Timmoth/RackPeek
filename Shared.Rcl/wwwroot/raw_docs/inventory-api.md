@@ -51,6 +51,14 @@ key still loses to brute force — treat it like a password.
 
 ## Endpoints
 
+### `GET /api/status`
+
+Connection check for clients. No authentication is required. Returns the API and app versions:
+
+```json
+{"apiVersion":"1","appVersion":"v2.3.0"}
+```
+
 ### `GET /health`
 
 Liveness check. No authentication. Returns `200 OK` with body `rackpeek` as
@@ -99,6 +107,11 @@ with `version`, `resources`, and optional `connections`. The canonical
 schemas live in [`schemas/`](https://github.com/Timmoth/RackPeek/tree/main/schemas)
 in the repository.
 
+In schema version 5, a Service may include an `endpoints` array for multiple published
+addresses. The existing `network` object remains the primary endpoint for compatibility.
+When a version 4 file is loaded, its `network` value is retained and copied into a
+single-item `endpoints` list.
+
 ```json
 {
   "version": 3,
@@ -129,10 +142,14 @@ resource type: `Server`, `Switch`, `Router`, `Firewall`, `AccessPoint`,
 | `added` | Names of resources that were newly created. |
 | `updated` | Names of existing resources whose fields changed under `Merge` mode. |
 | `replaced` | Names of resources fully overwritten (either `Replace` mode, or a kind mismatch). |
+| `renamed` | Automatic stored-name improvements, keyed by old name with the new name as the value. |
 | `oldYaml` | YAML snapshot of each updated/replaced resource **before** the change, keyed by name. |
 | `newYaml` | YAML snapshot of each incoming resource **after** the change, keyed by name. |
+| `connectionsAdded` / `connectionsRemoved` | Connection descriptions added or removed by the import, including endpoint changes caused by automatic renames. |
 
 `oldYaml` is omitted for newly-added resources (nothing existed to snapshot).
+Dry runs return the same rename, resource, and connection diff as applying the
+same request, without changing the inventory.
 
 #### Error responses
 
@@ -141,6 +158,28 @@ resource type: `Server`, `Switch`, `Router`, `Firewall`, `AccessPoint`,
 | `400 Bad Request` | Validation failure — neither `yaml` nor `json` supplied, both supplied, malformed payload, duplicate resource names, etc. Body: `{ "error": "..." }`. |
 | `401 Unauthorized` | `X-Api-Key` header missing or doesn't match `RPK_API_KEY`. |
 | `503 Service Unavailable` | `RPK_API_KEY` is not configured on the server. |
+
+### Read endpoints
+
+All read endpoints require the same `X-Api-Key` header and return
+`401`/`503` exactly as above.
+
+| Endpoint | Returns |
+|---|---|
+| `GET /api/inventory` | The full inventory as a JSON document: `{ "version", "resources", "connections" }`, same shape the `json` field above accepts. Fetch once, render lists/details/trees client-side. |
+| `GET /api/inventory/summary` | Counts: `hardware` (total + by kind), `systems` (total + by type + by OS), `services` (total + IP addresses), `tags`, `labels`. |
+| `GET /api/inventory/search?q=<text>&max=<n>` | Ranked matches over names, IPs, tags and labels: `{ "matches": [{ "name", "kind", "url", "matchedField", "matchedValue", "score" }] }`. `max` defaults to 8. |
+| `GET /api/inventory/tree` | The containment forest: `{ "hardware": [{ "hardwareName", "kind", "systems": [{ "systemName", "services" }] }] }`. |
+
+The document from `GET /api/inventory` round-trips: send it back to
+`POST /api/inventory` as the `json` field (optionally with `dryRun: true`)
+and the server reports no changes. Every resource carries the correct
+case-sensitive `kind` discriminator, so clients never have to know the
+`AccessPoint`/`Accesspoint` spelling difference.
+
+```bash
+curl -s -H "X-Api-Key: $RPK_API_KEY" http://localhost:8080/api/inventory | jq '.resources | length'
+```
 
 ## Examples
 

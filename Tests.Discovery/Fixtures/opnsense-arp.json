@@ -1,0 +1,86 @@
+[
+  {
+    "mac": "00:50:c2:00:1a:01",
+    "ip": "198.51.100.7",
+    "intf": "igb0",
+    "expired": false,
+    "expires": -1,
+    "permanent": false,
+    "type": "ethernet",
+    "manufacturer": "Cisco Systems",
+    "hostname": "",
+    "intf_description": "WAN"
+  },
+  {
+    "mac": "00:1b:21:00:1a:02",
+    "ip": "192.0.2.1",
+    "intf": "igb1",
+    "expired": false,
+    "expires": -1,
+    "permanent": true,
+    "type": "ethernet",
+    "manufacturer": "Intel Corporate",
+    "hostname": "",
+    "intf_description": "LAB"
+  },
+  {
+    "mac": "1c:6a:1b:00:1a:03",
+    "ip": "192.168.10.150",
+    "intf": "igb1_vlan20",
+    "expired": false,
+    "expires": 1132,
+    "permanent": false,
+    "type": "ethernet",
+    "manufacturer": "Ubiquiti Inc",
+    "hostname": "ap-outdoor",
+    "intf_description": "home"
+  },
+  {
+    "mac": "bc:24:11:00:1a:04",
+    "ip": "192.168.50.105",
+    "intf": "igb1_vlan50",
+    "expired": false,
+    "expires": 980,
+    "permanent": false,
+    "type": "ethernet",
+    "manufacturer": "Proxmox Server Solutions GmbH",
+    "hostname": "forgejo",
+    "intf_description": "HomeServices"
+  },
+  {
+    "mac": "aa:bb:cc:00:1a:05",
+    "ip": "192.168.10.99",
+    "intf": "igb1_vlan20",
+    "expired": true,
+    "expires": -1,
+    "permanent": false,
+    "type": "ethernet",
+    "manufacturer": "",
+    "hostname": "gone-away",
+    "intf_description": "home"
+  },
+  {
+    "mac": "ff:ff:ff:ff:ff:ff",
+    "ip": "192.168.10.255",
+    "intf": "igb1_vlan20",
+    "expired": false,
+    "expires": -1,
+    "permanent": false,
+    "type": "ethernet",
+    "manufacturer": "",
+    "hostname": "",
+    "intf_description": "home"
+  },
+  {
+    "mac": "1c:6a:1b:00:1a:03",
+    "ip": "192.168.30.150",
+    "intf": "igb1_vlan30",
+    "expired": false,
+    "expires": 900,
+    "permanent": false,
+    "type": "ethernet",
+    "manufacturer": "Ubiquiti Inc",
+    "hostname": "ap-outdoor",
+    "intf_description": "IOT"
+  }
+]

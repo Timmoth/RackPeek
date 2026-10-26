@@ -1,138 +1,41 @@
+# Developer Cheat Sheet
 
-# Dev Cheat Sheet
+Run these commands from the repository root.
 
+## Build and run
 
-## Build CLI (macOS ARM64)
-
-Publish a self-contained single binary:
-
-```bash
-dotnet publish -c Release -r osx-arm64 \
-  --self-contained true \
-  -p:PublishSingleFile=true
+```sh
+just build                 # Build the solution
+just run-docker            # Build and run the web app at localhost:8080
+just build-cli osx-arm64   # Publish a macOS Apple Silicon CLI binary
 ```
 
-Install globally:
+Use `just build-cli linux-x64`, `linux-arm64`, `osx-x64`, or `win-x64` for other CLI targets.
 
-```bash
-sudo mv bin/Release/net*/osx-arm64/publish/RackPeek /usr/local/bin/rpk
-sudo chmod +x /usr/local/bin/rpk
+## Tests
+
+```sh
+just test-cli
+just test-discovery
+just test-mcp
+just test-e2e              # Builds rackpeek:ci and runs Playwright tests
+just ci                    # Full CI test workflow
 ```
 
-Verify:
+Install Playwright and its browser before the first E2E run with `just e2e-setup`. Repeat after upgrading Microsoft.Playwright.
 
-```bash
-rpk --help
+## Mobile
+
+```sh
+cd mobile
+flutter pub get
+flutter run
+flutter test
+flutter analyze
 ```
 
----
+## Demos
 
-## Generate CLI Demo (VHS)
+`just build-cli-demo` records the CLI with VHS. `just build-web-demo` captures the web UI. Both require their external capture tools; see the recipe output for missing dependencies.
 
-Install tools:
-
-```bash
-brew install vhs
-brew install imagemagick
-brew install --cask google-chrome # if not already installed
-```
-
-Run tape:
-
-```bash
-cd vhs
-vhs ./rpk.tape
-```
-
----
-
-## Capture Web UI Demo
-
-Make script executable:
-
-```bash
-chmod +x webui_capture.sh
-```
-
-Run:
-
-```bash
-cd vhs
-npm install
-node capture.js 
-./webui_capture.sh
-```
-
-> Requires Chrome + ImageMagick.
-
----
-
-## Build & Push Multi-Arch Docker Image
-
-Manual release build:
-
-```bash
-docker buildx build \
-  --platform linux/amd64,linux/arm64 \
-  -f ./Dockerfile \
-  -t aptacode/rackpeek:v0.0.11 \
-  -t aptacode/rackpeek:latest \
-  --push ..
-```
-
-Notes:
-
-* Uses `buildx` for multi-arch
-* Pushes directly to registry
-* Update version tag before running
-
----
-
-## Run E2E Tests (Playwright)
-
-Install tooling (first time only):
-
-```bash
-cd Tests.E2e
-dotnet tool install --global Microsoft.Playwright.CLI
-dotnet build
-playwright install
-```
-
-> ⚠ **Re-run `playwright install` whenever the `Microsoft.Playwright` NuGet is bumped.** Each Playwright release pins a specific Chromium build (e.g. 1.58 ships `chromium_headless_shell-1208`, 1.59 ships `-1217`). If the cache is stale every test fails with `PlaywrightException : Executable doesn't exist at .../chromium_headless_shell-NNNN`. `just e2e-setup` covers this.
-
-Build Web image (required before running tests):
-
-```bash
-docker build -t rackpeek:ci -f RackPeek.Web/Dockerfile .
-```
-
----
-
-## Common Workflows
-
-### Rebuild everything quickly
-
-```bash
-docker build -t rackpeek:ci -f RackPeek.Web/Dockerfile .
-cd Tests.E2e && dotnet test
-```
-
----
-
-## Debugging E2E Tests
-
-Temporarily set in `PlaywrightFixture.cs`:
-
-```csharp
-Headless = false,
-SlowMo = 500,
-```
-
-⚠ Revert to:
-
-```csharp
-Headless = true,
-```
-
-Before committing (CI requires headless mode).
+For versioning, release builds, and publishing steps, follow the [release guide](release-guide.md). `just docker-push <version>` publishes directly to Docker Hub.

@@ -33,6 +33,7 @@ public interface IResourceCollection {
     Task<IReadOnlyList<(Resource, string)>> GetResourceIpsAsync();
 
     Task<IReadOnlyList<T>> GetAllOfTypeAsync<T>();
+    Task<(IReadOnlyList<Resource> Resources, IReadOnlyList<Connection> Connections)> GetInventorySnapshotAsync();
     Task<IReadOnlyList<Resource>> GetDependantsAsync(string name);
 
     Task Merge(string incomingYaml, MergeMode mode);

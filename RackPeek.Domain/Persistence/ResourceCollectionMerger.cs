@@ -36,8 +36,8 @@ public static class ResourceCollectionMerger {
         IEnumerable<Resource> original,
         IEnumerable<Resource> incoming,
         MergeMode mode) {
-        List<Resource> originalClone = DeepCloneList(original);
-        List<Resource> incomingClone = DeepCloneList(incoming);
+        List<Resource> originalClone = DeepCloneResources(original);
+        List<Resource> incomingClone = DeepCloneResources(incoming);
 
         var result = originalClone.ToDictionary(r => r.Name, r => r, StringComparer.OrdinalIgnoreCase);
 
@@ -59,7 +59,7 @@ public static class ResourceCollectionMerger {
         return result.Values.ToList();
     }
 
-    private static List<Resource> DeepCloneList(IEnumerable<Resource> resources) {
+    public static List<Resource> DeepCloneResources(IEnumerable<Resource> resources) {
         var json = JsonSerializer.Serialize(resources, _cloneJsonOptions);
         return JsonSerializer.Deserialize<List<Resource>>(json, _cloneJsonOptions) ?? new List<Resource>();
     }
