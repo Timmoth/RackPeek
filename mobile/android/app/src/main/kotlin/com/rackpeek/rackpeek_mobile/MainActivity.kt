@@ -1,4 +1,4 @@
-package com.rackpeek.rackpeek_mobile
+package com.rackpeek.rackpeekMobile
 
 import io.flutter.embedding.android.FlutterActivity
 
